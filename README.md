@@ -9,7 +9,7 @@ mackerel-agent executes the following tasks in foreground:
 - Register your host to Mackerel
 - Collect and post specs and metrics of your host to Mackerel periodically
 
-You can see information of the host on [Mackerel](https://mackerel.io/).
+You can see the information of the host on [Mackerel](https://mackerel.io/).
 
 For now, mackerel-agent is guaranteed to run only on CentOS 5/6 and Debian 6/7.
 
