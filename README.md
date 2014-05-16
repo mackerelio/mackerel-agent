@@ -3,13 +3,13 @@ mackerel-agent
 
 ![agent-si](docs/images/agent-si.png "mackerel-agent")
 
-mackerel-agent is an agent to register your host to [Mackerel](https://mackerel.io/).
+mackerel-agent is an agent program to post your hosts' metrics to [Mackerel](https://mackerel.io/).
 
 mackerel-agent executes the following tasks in foreground:
-- Register a host information to Mackerel
-- Collect and post specs and metrics of a host to Mackerel periodically
+- Register your host to Mackerel
+- Collect and post specs and metrics of your host to Mackerel periodically
 
-You can see the host information on [Mackerel](https://mackerel.io/).
+You can see the information of the host on [Mackerel](https://mackerel.io/).
 
 For now, mackerel-agent is guaranteed to run only on CentOS 5/6 and Debian 6/7.
 
