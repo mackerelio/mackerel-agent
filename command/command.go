@@ -4,8 +4,6 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"os"
-	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/agent"
@@ -13,53 +11,17 @@ import (
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/spec"
-	"github.com/mackerelio/mackerel-agent/version"
 )
 
 var logger = logging.GetLogger("command")
 
-func collectSpecs(specGenerators []spec.Generator) map[string]interface{} {
-	specs := make(map[string]interface{})
-	for _, g := range specGenerators {
-		value, err := g.Generate()
-		if err != nil {
-			logger.Errorf("Failed to collect specs in %T (skip this spec): %s", g, err.Error())
-		}
-		specs[g.Key()] = value
-	}
-	specs["agent-version"] = version.VERSION
-	specs["agent-revision"] = version.GITCOMMIT
-	specs["agent-name"] = version.UserAgent()
-	return specs
-}
-
-func collectInterfaces() []map[string]interface{} {
-	g := &spec.InterfaceGenerator{}
-	value, err := g.Generate()
-	if err != nil {
-		logger.Errorf("Failed to collect interfaces in %T (skip the interfaces): %s", g, err.Error())
-		return nil
-	}
-	return value.([]map[string]interface{})
-}
-
-func getHostname() (string, error) {
-	out, err := exec.Command("uname", "-n").Output()
-
-	if err != nil {
-		return "", err
-	}
-	str := strings.TrimSpace(string(out))
-
-	return str, nil
-}
-
 func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
-	specs := collectSpecs(specGenerators)
+	meta := spec.CollectMeta(specGenerators)
+	interfaces := spec.CollectInterfaces()
 
-	hostname, err := getHostname()
+	hostname, err := spec.GetHostname()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to obtain hostname: %s", err.Error())
 	}
@@ -67,8 +29,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 	var result *mackerel.Host
 	if hostId, err := mackerel.LoadHostId(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
-		interfaces := collectInterfaces()
-		createdHostId, err := api.CreateHost(hostname, specs, interfaces, roleFullnames)
+		createdHostId, err := api.CreateHost(hostname, meta, interfaces, roleFullnames)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to register this host: %s", err.Error())
 		}
@@ -82,8 +43,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 		if err != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", mackerel.IdFilePath(root), err.Error())
 		}
-		interfaces := collectInterfaces()
-		err := api.UpdateHost(hostId, hostname, specs, interfaces, roleFullnames)
+		err := api.UpdateHost(hostId, hostname, meta, interfaces, roleFullnames)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
 		}
