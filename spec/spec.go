@@ -37,12 +37,3 @@ func CollectMeta(metaGenerators []Generator) map[string]interface{} {
 	meta["agent-name"] = version.UserAgent()
 	return meta
 }
-
-func CollectInterfaces(interfaceGenerator Generator) []map[string]interface{} {
-	value, err := interfaceGenerator.Generate()
-	if err != nil {
-		logger.Errorf("Failed to collect interfaces in %T (skip the interfaces): %s", interfaceGenerator, err.Error())
-		return nil
-	}
-	return value.([]map[string]interface{})
-}

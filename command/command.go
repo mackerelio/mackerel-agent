@@ -15,11 +15,14 @@ import (
 
 var logger = logging.GetLogger("command")
 
-func prepareHost(root string, api *mackerel.API, metaGenerators []spec.Generator, interfaceGenerator spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
+func prepareHost(root string, api *mackerel.API, metaGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
 	meta := spec.CollectMeta(metaGenerators)
-	interfaces := spec.CollectInterfaces(interfaceGenerator)
+
+	// retrieve intaface
+	interfaces, _ := meta["interface"].([]map[string]interface{})
+	delete(meta, "interface")
 
 	hostname, err := spec.GetHostname()
 	if err != nil {
@@ -134,11 +137,8 @@ func metaGenerators() []spec.Generator {
 		&spec.MemoryGenerator{},
 		&spec.BlockDeviceGenerator{},
 		&spec.FilesystemGenerator{},
+		&spec.InterfaceGenerator{},
 	}
-}
-
-func interfaceGenerator() spec.Generator {
-	return &spec.InterfaceGenerator{}
 }
 
 func metricsGenerators() []metrics.Generator {
@@ -159,7 +159,7 @@ func Run(config mackerel.Config) {
 		os.Exit(1)
 	}
 
-	host, err := prepareHost(config.Root, api, metaGenerators(), interfaceGenerator(), config.Roles)
+	host, err := prepareHost(config.Root, api, metaGenerators(), config.Roles)
 	if err != nil {
 		logger.Criticalf("Failed to run this agent: %s", err.Error())
 		os.Exit(1)
