@@ -1,4 +1,4 @@
-package spec
+package linux
 
 import (
 	"os/exec"

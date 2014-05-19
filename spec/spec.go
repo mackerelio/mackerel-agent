@@ -4,8 +4,11 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/version"
 )
+
+var logger = logging.GetLogger("spec")
 
 type Generator interface {
 	Key() string

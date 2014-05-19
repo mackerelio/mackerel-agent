@@ -11,6 +11,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/spec"
+	specLinux "github.com/mackerelio/mackerel-agent/spec/linux"
 )
 
 var logger = logging.GetLogger("command")
@@ -132,12 +133,12 @@ func loop(ag *agent.Agent, api *mackerel.API, host *mackerel.Host) {
 
 func metaGenerators() []spec.Generator {
 	return  []spec.Generator{
-		&spec.KernelGenerator{},
-		&spec.CPUGenerator{},
-		&spec.MemoryGenerator{},
-		&spec.BlockDeviceGenerator{},
-		&spec.FilesystemGenerator{},
-		&spec.InterfaceGenerator{},
+		&specLinux.KernelGenerator{},
+		&specLinux.CPUGenerator{},
+		&specLinux.MemoryGenerator{},
+		&specLinux.BlockDeviceGenerator{},
+		&specLinux.FilesystemGenerator{},
+		&specLinux.InterfaceGenerator{},
 	}
 }
 

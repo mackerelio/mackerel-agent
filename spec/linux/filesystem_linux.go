@@ -1,4 +1,4 @@
-package spec
+package linux
 
 // ref. https://github.com/opscode/ohai/blob/master/lib/ohai/plugins/linux/filesystem.rb
 
