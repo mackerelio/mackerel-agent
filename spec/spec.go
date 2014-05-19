@@ -38,11 +38,10 @@ func CollectMeta(metaGenerators []Generator) map[string]interface{} {
 	return meta
 }
 
-func CollectInterfaces() []map[string]interface{} {
-	g := &InterfaceGenerator{}
-	value, err := g.Generate()
+func CollectInterfaces(interfaceGenerator Generator) []map[string]interface{} {
+	value, err := interfaceGenerator.Generate()
 	if err != nil {
-		logger.Errorf("Failed to collect interfaces in %T (skip the interfaces): %s", g, err.Error())
+		logger.Errorf("Failed to collect interfaces in %T (skip the interfaces): %s", interfaceGenerator, err.Error())
 		return nil
 	}
 	return value.([]map[string]interface{})
