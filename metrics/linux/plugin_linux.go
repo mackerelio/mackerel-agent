@@ -55,7 +55,7 @@ func (g *PluginGenerator) collectValues(command string) (metrics.Values, error) 
 			pluginLogger.Warningf("Failed to parse values: %s", err)
 			continue
 		}
-		results[PLUGIN_PREFIX + items[0]] = value
+		results[PLUGIN_PREFIX+items[0]] = value
 	}
 
 	return results, nil

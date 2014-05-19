@@ -9,7 +9,7 @@ import (
 )
 
 func metaGenerators() []spec.Generator {
-	return  []spec.Generator{
+	return []spec.Generator{
 		&specLinux.KernelGenerator{},
 		&specLinux.CPUGenerator{},
 		&specLinux.MemoryGenerator{},
