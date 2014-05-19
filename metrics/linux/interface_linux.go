@@ -1,4 +1,4 @@
-package metrics
+package linux
 
 import (
 	"bufio"
@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 /*
@@ -42,7 +43,7 @@ var interfaceMetrics = []string{
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
-func (g *InterfaceGenerator) Generate() (Values, error) {
+func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	prevValues, err := g.collectIntarfacesValues()
 	if err != nil {
 		return nil, err
@@ -66,7 +67,7 @@ func (g *InterfaceGenerator) Generate() (Values, error) {
 	return currValues, nil
 }
 
-func (g *InterfaceGenerator) collectIntarfacesValues() (Values, error) {
+func (g *InterfaceGenerator) collectIntarfacesValues() (metrics.Values, error) {
 	file, err := os.Open("/proc/net/dev")
 	if err != nil {
 		interfaceLogger.Errorf("Failed (skip these metrics): %s", err)
@@ -130,5 +131,5 @@ func (g *InterfaceGenerator) collectIntarfacesValues() (Values, error) {
 	    ]
 	**/
 
-	return Values(results), nil
+	return metrics.Values(results), nil
 }

@@ -1,4 +1,4 @@
-package metrics
+package linux
 
 import (
 	"io/ioutil"
@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 /*
@@ -20,7 +21,7 @@ type UptimeGenerator struct {
 
 var uptimeLogger = logging.GetLogger("metrics.uptime")
 
-func (g *UptimeGenerator) Generate() (Values, error) {
+func (g *UptimeGenerator) Generate() (metrics.Values, error) {
 	contentbytes, err := ioutil.ReadFile("/proc/uptime")
 	if err != nil {
 		uptimeLogger.Errorf("Failed (skip these metrics): %s", err)
@@ -35,5 +36,5 @@ func (g *UptimeGenerator) Generate() (Values, error) {
 		return nil, err
 	}
 
-	return Values(map[string]float64{"uptime": f / 86400}), nil
+	return metrics.Values(map[string]float64{"uptime": f / 86400}), nil
 }

@@ -1,4 +1,4 @@
-package metrics
+package linux
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 type PluginGenerator struct {
@@ -17,7 +18,7 @@ type PluginGenerator struct {
 var pluginLogger = logging.GetLogger("metrics.plugin")
 var PLUGIN_PREFIX = "custom."
 
-func (g *PluginGenerator) Generate() (Values, error) {
+func (g *PluginGenerator) Generate() (metrics.Values, error) {
 	results, err := g.collectValues(g.Config.Command)
 	if err != nil {
 		return nil, err
@@ -25,7 +26,7 @@ func (g *PluginGenerator) Generate() (Values, error) {
 	return results, nil
 }
 
-func (g *PluginGenerator) collectValues(command string) (Values, error) {
+func (g *PluginGenerator) collectValues(command string) (metrics.Values, error) {
 	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
 
 	var outBuffer bytes.Buffer

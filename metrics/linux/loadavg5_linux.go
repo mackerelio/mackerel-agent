@@ -1,4 +1,4 @@
-package metrics
+package linux
 
 import (
 	"io/ioutil"
@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 /*
@@ -20,7 +21,7 @@ type Loadavg5Generator struct {
 
 var loadavg5Logger = logging.GetLogger("metrics.loadavg5")
 
-func (g *Loadavg5Generator) Generate() (Values, error) {
+func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 	contentbytes, err := ioutil.ReadFile("/proc/loadavg")
 	if err != nil {
 		loadavg5Logger.Errorf("Failed (skip these metrics): %s", err)
@@ -35,5 +36,5 @@ func (g *Loadavg5Generator) Generate() (Values, error) {
 		return nil, err
 	}
 
-	return Values(map[string]float64{"loadavg5": f}), nil
+	return metrics.Values(map[string]float64{"loadavg5": f}), nil
 }
