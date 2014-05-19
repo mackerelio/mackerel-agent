@@ -8,7 +8,7 @@ import (
 	specLinux "github.com/mackerelio/mackerel-agent/spec/linux"
 )
 
-func metaGenerators() []spec.Generator {
+func specGenerators() []spec.Generator {
 	return []spec.Generator{
 		&specLinux.KernelGenerator{},
 		&specLinux.CPUGenerator{},

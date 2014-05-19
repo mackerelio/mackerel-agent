@@ -26,17 +26,17 @@ func GetHostname() (string, error) {
 	return str, nil
 }
 
-func CollectMeta(metaGenerators []Generator) map[string]interface{} {
-	meta := make(map[string]interface{})
-	for _, g := range metaGenerators {
+func Collect(specGenerators []Generator) map[string]interface{} {
+	specs := make(map[string]interface{})
+	for _, g := range specGenerators {
 		value, err := g.Generate()
 		if err != nil {
 			logger.Errorf("Failed to collect meta in %T (skip this spec): %s", g, err.Error())
 		}
-		meta[g.Key()] = value
+		specs[g.Key()] = value
 	}
-	meta["agent-version"] = version.VERSION
-	meta["agent-revision"] = version.GITCOMMIT
-	meta["agent-name"] = version.UserAgent()
-	return meta
+	specs["agent-version"] = version.VERSION
+	specs["agent-revision"] = version.GITCOMMIT
+	specs["agent-name"] = version.UserAgent()
+	return specs
 }

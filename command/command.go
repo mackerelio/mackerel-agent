@@ -14,10 +14,10 @@ import (
 
 var logger = logging.GetLogger("command")
 
-func prepareHost(root string, api *mackerel.API, metaGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
+func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
-	meta := spec.CollectMeta(metaGenerators)
+	meta := spec.Collect(specGenerators)
 
 	// retrieve intaface
 	interfaces, _ := meta["interface"].([]map[string]interface{})
@@ -136,7 +136,7 @@ func Run(config mackerel.Config) {
 		os.Exit(1)
 	}
 
-	host, err := prepareHost(config.Root, api, metaGenerators(), config.Roles)
+	host, err := prepareHost(config.Root, api, specGenerators(), config.Roles)
 	if err != nil {
 		logger.Criticalf("Failed to run this agent: %s", err.Error())
 		os.Exit(1)
