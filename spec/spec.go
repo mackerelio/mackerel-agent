@@ -23,9 +23,9 @@ func GetHostname() (string, error) {
 	return str, nil
 }
 
-func CollectMeta(specGenerators []Generator) map[string]interface{} {
+func CollectMeta(metaGenerators []Generator) map[string]interface{} {
 	meta := make(map[string]interface{})
-	for _, g := range specGenerators {
+	for _, g := range metaGenerators {
 		value, err := g.Generate()
 		if err != nil {
 			logger.Errorf("Failed to collect meta in %T (skip this spec): %s", g, err.Error())

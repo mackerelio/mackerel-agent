@@ -15,10 +15,10 @@ import (
 
 var logger = logging.GetLogger("command")
 
-func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
+func prepareHost(root string, api *mackerel.API, metaGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
-	meta := spec.CollectMeta(specGenerators)
+	meta := spec.CollectMeta(metaGenerators)
 	interfaces := spec.CollectInterfaces()
 
 	hostname, err := spec.GetHostname()
@@ -134,7 +134,7 @@ func Run(config mackerel.Config) {
 		os.Exit(1)
 	}
 
-	specGenerators := []spec.Generator{
+	metaGenerators := []spec.Generator{
 		&spec.KernelGenerator{},
 		&spec.CPUGenerator{},
 		&spec.MemoryGenerator{},
@@ -142,7 +142,7 @@ func Run(config mackerel.Config) {
 		&spec.FilesystemGenerator{},
 	}
 
-	host, err := prepareHost(config.Root, api, specGenerators, config.Roles)
+	host, err := prepareHost(config.Root, api, metaGenerators, config.Roles)
 	if err != nil {
 		logger.Criticalf("Failed to run this agent: %s", err.Error())
 		os.Exit(1)
@@ -150,7 +150,7 @@ func Run(config mackerel.Config) {
 
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", config.Apibase, host.Name, host.Id)
 
-	generators := []metrics.Generator{
+	metricsGenerators := []metrics.Generator{
 		&metrics.Loadavg5Generator{},
 		&metrics.CpuusageGenerator{Interval: 60},
 		&metrics.MemoryGenerator{},
@@ -160,9 +160,9 @@ func Run(config mackerel.Config) {
 	}
 
 	for _, pluginConfig := range config.Plugin["metrics"] {
-		generators = append(generators, &metrics.PluginGenerator{pluginConfig})
+		metricsGenerators = append(metricsGenerators, &metrics.PluginGenerator{pluginConfig})
 	}
 
-	ag := &agent.Agent{generators}
+	ag := &agent.Agent{metricsGenerators}
 	loop(ag, api, host)
 }
