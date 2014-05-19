@@ -127,30 +127,18 @@ func loop(ag *agent.Agent, api *mackerel.API, host *mackerel.Host) {
 	}
 }
 
-func Run(config mackerel.Config) {
-	api, err := mackerel.NewApi(config.Apibase, config.Apikey, config.Verbose)
-	if err != nil {
-		logger.Criticalf("Failed to prepare an api: %s", err.Error())
-		os.Exit(1)
-	}
-
-	metaGenerators := []spec.Generator{
+func metaGenerators() []spec.Generator {
+	return  []spec.Generator{
 		&spec.KernelGenerator{},
 		&spec.CPUGenerator{},
 		&spec.MemoryGenerator{},
 		&spec.BlockDeviceGenerator{},
 		&spec.FilesystemGenerator{},
 	}
+}
 
-	host, err := prepareHost(config.Root, api, metaGenerators, config.Roles)
-	if err != nil {
-		logger.Criticalf("Failed to run this agent: %s", err.Error())
-		os.Exit(1)
-	}
-
-	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", config.Apibase, host.Name, host.Id)
-
-	metricsGenerators := []metrics.Generator{
+func metricsGenerators() []metrics.Generator {
+	return []metrics.Generator{
 		&metrics.Loadavg5Generator{},
 		&metrics.CpuusageGenerator{Interval: 60},
 		&metrics.MemoryGenerator{},
@@ -158,7 +146,24 @@ func Run(config mackerel.Config) {
 		&metrics.InterfaceGenerator{Interval: 60},
 		&metrics.DiskGenerator{Interval: 60},
 	}
+}
 
+func Run(config mackerel.Config) {
+	api, err := mackerel.NewApi(config.Apibase, config.Apikey, config.Verbose)
+	if err != nil {
+		logger.Criticalf("Failed to prepare an api: %s", err.Error())
+		os.Exit(1)
+	}
+
+	host, err := prepareHost(config.Root, api, metaGenerators(), config.Roles)
+	if err != nil {
+		logger.Criticalf("Failed to run this agent: %s", err.Error())
+		os.Exit(1)
+	}
+
+	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", config.Apibase, host.Name, host.Id)
+
+	metricsGenerators := metricsGenerators()
 	for _, pluginConfig := range config.Plugin["metrics"] {
 		metricsGenerators = append(metricsGenerators, &metrics.PluginGenerator{pluginConfig})
 	}
