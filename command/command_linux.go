@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	metricsLinux "github.com/mackerelio/mackerel-agent/metrics/linux"
 	"github.com/mackerelio/mackerel-agent/spec"
@@ -19,7 +19,7 @@ func specGenerators() []spec.Generator {
 	}
 }
 
-func metricsGenerators(config mackerel.Config) []metrics.Generator {
+func metricsGenerators(conf config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsLinux.Loadavg5Generator{},
 		&metricsLinux.CpuusageGenerator{Interval: 60},
@@ -28,7 +28,7 @@ func metricsGenerators(config mackerel.Config) []metrics.Generator {
 		&metricsLinux.InterfaceGenerator{Interval: 60},
 		&metricsLinux.DiskGenerator{Interval: 60},
 	}
-	for _, pluginConfig := range config.Plugin["metrics"] {
+	for _, pluginConfig := range conf.Plugin["metrics"] {
 		generators = append(generators, &metricsLinux.PluginGenerator{pluginConfig})
 	}
 

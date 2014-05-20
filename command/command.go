@@ -3,16 +3,53 @@ package command
 import (
 	"crypto/sha1"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/agent"
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/spec"
 )
 
 var logger = logging.GetLogger("command")
+
+const idFileName = "id"
+
+func IdFilePath(root string) string {
+	return filepath.Join(root, idFileName)
+}
+
+func LoadHostId(root string) (string, error) {
+	content, err := ioutil.ReadFile(IdFilePath(root))
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
+}
+
+func SaveHostId(root string, id string) error {
+	err := os.MkdirAll(root, 0755)
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Create(IdFilePath(root))
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.Write([]byte(id))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
@@ -29,7 +66,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 	}
 
 	var result *mackerel.Host
-	if hostId, err := mackerel.LoadHostId(root); err != nil { // create
+	if hostId, err := LoadHostId(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
 		createdHostId, err := api.CreateHost(hostname, meta, interfaces, roleFullnames)
 		if err != nil {
@@ -43,7 +80,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 	} else { // update
 		result, err = api.FindHost(hostId)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", mackerel.IdFilePath(root), err.Error())
+			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", IdFilePath(root), err.Error())
 		}
 		err := api.UpdateHost(hostId, hostname, meta, interfaces, roleFullnames)
 		if err != nil {
@@ -51,7 +88,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 		}
 	}
 
-	err = mackerel.SaveHostId(root, result.Id)
+	err = SaveHostId(root, result.Id)
 	if err != nil {
 		logger.Criticalf("Failed to save host ID: %s", err.Error())
 		os.Exit(1)
@@ -129,21 +166,21 @@ func loop(ag *agent.Agent, api *mackerel.API, host *mackerel.Host) {
 	}
 }
 
-func Run(config mackerel.Config) {
-	api, err := mackerel.NewApi(config.Apibase, config.Apikey, config.Verbose)
+func Run(conf config.Config) {
+	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
 		logger.Criticalf("Failed to prepare an api: %s", err.Error())
 		os.Exit(1)
 	}
 
-	host, err := prepareHost(config.Root, api, specGenerators(), config.Roles)
+	host, err := prepareHost(conf.Root, api, specGenerators(), conf.Roles)
 	if err != nil {
 		logger.Criticalf("Failed to run this agent: %s", err.Error())
 		os.Exit(1)
 	}
 
-	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", config.Apibase, host.Name, host.Id)
+	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
-	ag := &agent.Agent{metricsGenerators(config)}
+	ag := &agent.Agent{metricsGenerators(conf)}
 	loop(ag, api, host)
 }

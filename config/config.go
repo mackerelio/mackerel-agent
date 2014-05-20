@@ -1,49 +1,11 @@
-package mackerel
+package config
 
 import (
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/mackerel-agent/logging"
-
-	"io/ioutil"
-	"os"
-	"path/filepath"
 )
 
 var configLogger = logging.GetLogger("config")
-
-const idFileName = "id"
-
-func IdFilePath(root string) string {
-	return filepath.Join(root, idFileName)
-}
-
-func LoadHostId(root string) (string, error) {
-	content, err := ioutil.ReadFile(IdFilePath(root))
-	if err != nil {
-		return "", err
-	}
-	return string(content), nil
-}
-
-func SaveHostId(root string, id string) error {
-	err := os.MkdirAll(root, 0744)
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Create(IdFilePath(root))
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	_, err = file.Write([]byte(id))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 type Config struct {
 	Apibase         string
