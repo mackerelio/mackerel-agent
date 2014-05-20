@@ -23,7 +23,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 	interfaces, _ := meta["interface"].([]map[string]interface{})
 	delete(meta, "interface")
 
-	hostname, err := spec.GetHostname()
+	hostname, err := os.Hostname()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to obtain hostname: %s", err.Error())
 	}

@@ -1,9 +1,9 @@
 package spec
 
 import (
-	"github.com/mackerelio/mackerel-agent/version"
-	"regexp"
 	"testing"
+
+	"github.com/mackerelio/mackerel-agent/version"
 )
 
 func TestCollect(t *testing.T) {
@@ -21,16 +21,5 @@ func TestCollect(t *testing.T) {
 	}
 	if specs["agent-name"] != "mackerel-agent/1.0.0 (Revision 1234beaf)" {
 		t.Error("agent-name should be 'mackerel-agent/1.0.0 Revision/1234beaf'")
-	}
-}
-
-func TestGetHostname(t *testing.T) {
-	hostname, err := GetHostname()
-	if err != nil {
-		t.Error("should not raise error")
-	}
-
-	if !regexp.MustCompile(`\w+`).MatchString(hostname) {
-		t.Error("hostname should have length and not contains whitespace but:", hostname)
 	}
 }
