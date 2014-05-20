@@ -11,9 +11,9 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/version"
 )
 
@@ -43,9 +43,9 @@ func (r *roleFullnamesFlag) Set(input string) error {
 var logger = logging.GetLogger("main")
 
 func main() {
-	config := resolveConfig()
+	conf := resolveConfig()
 
-	if config.Verbose {
+	if conf.Verbose {
 		logging.ConfigureLoggers("DEBUG")
 	} else {
 		logging.ConfigureLoggers("INFO")
@@ -53,26 +53,26 @@ func main() {
 
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s", version.VERSION, version.GITCOMMIT)
 
-	if config.Apikey == "" {
+	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
 		os.Exit(1)
 	}
 
-	if err := start(config); err != nil {
+	if err := start(conf); err != nil {
 		os.Exit(1)
 	}
 }
 
-func resolveConfig() (config mackerel.Config) {
+func resolveConfig() (conf config.Config) {
 	conffile := flag.String("conf", "/etc/mackerel-agent/mackerel-agent.conf", "Config file path (Configs in this file are over-written by command line options)")
-	apibase := flag.String("apibase", mackerel.DefaultConfig.Apibase, "API base")
-	pidfile := flag.String("pidfile", mackerel.DefaultConfig.Pidfile, "File containing PID")
-	root := flag.String("root", mackerel.DefaultConfig.Root, "Directory containing variable state information")
+	apibase := flag.String("apibase", config.DefaultConfig.Apibase, "API base")
+	pidfile := flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
+	root := flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 	apikey := flag.String("apikey", "", "API key from mackerel.io web site")
 
 	var verbose bool
-	flag.BoolVar(&verbose, "verbose", mackerel.DefaultConfig.Verbose, "Toggle verbosity")
-	flag.BoolVar(&verbose, "v", mackerel.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
+	flag.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
+	flag.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
 
 	// The value of "role" option is internally "roll fullname",
 	// but we call it "role" here for ease.
@@ -81,7 +81,7 @@ func resolveConfig() (config mackerel.Config) {
 
 	flag.Parse()
 
-	config, confErr := mackerel.LoadConfig(*conffile)
+	conf, confErr := config.LoadConfig(*conffile)
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
 		os.Exit(1)
@@ -91,17 +91,17 @@ func resolveConfig() (config mackerel.Config) {
 	flag.Visit(func(f *flag.Flag) {
 		switch f.Name {
 		case "apibase":
-			config.Apibase = *apibase
+			conf.Apibase = *apibase
 		case "apikey":
-			config.Apikey = *apikey
+			conf.Apikey = *apikey
 		case "pidfile":
-			config.Pidfile = *pidfile
+			conf.Pidfile = *pidfile
 		case "root":
-			config.Root = *root
+			conf.Root = *root
 		case "verbose", "v":
-			config.Verbose = verbose
+			conf.Verbose = verbose
 		case "role":
-			config.Roles = roleFullnames
+			conf.Roles = roleFullnames
 		}
 	})
 
@@ -138,8 +138,8 @@ func removePidFile(pidfile string) {
 	}
 }
 
-func start(config mackerel.Config) error {
-	if err := createPidFile(config.Pidfile); err != nil {
+func start(conf config.Config) error {
+	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
 	}
 
@@ -153,12 +153,12 @@ func start(config mackerel.Config) error {
 				logger.Debugf("Received signal '%v'", sig)
 			} else {
 				logger.Infof("Received signal '%v', exiting", sig)
-				removePidFile(config.Pidfile)
+				removePidFile(conf.Pidfile)
 				os.Exit(0)
 			}
 		}
 	}()
 
-	command.Run(config)
+	command.Run(conf)
 	return nil
 }

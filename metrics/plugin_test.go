@@ -3,14 +3,14 @@ package metrics
 import (
 	"testing"
 
-	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/config"
 )
 
 func TestPluginGenerate(t *testing.T) {
-	config := mackerel.PluginConfig{
+	conf := config.PluginConfig{
 		Command: "ruby ../example/metrics-plugins/dice.rb",
 	}
-	g := &PluginGenerator{config}
+	g := &PluginGenerator{conf}
 	values, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)

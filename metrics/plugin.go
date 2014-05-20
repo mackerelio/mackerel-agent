@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/mackerel"
 )
 
 type PluginGenerator struct {
-	Config mackerel.PluginConfig
+	Config config.PluginConfig
 }
 
 var pluginLogger = logging.GetLogger("metrics.plugin")
