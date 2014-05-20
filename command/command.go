@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/agent"
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
@@ -203,8 +204,8 @@ func loop(ag *agent.Agent, api *mackerel.API, host *mackerel.Host) {
 	}
 }
 
-func Run(config mackerel.Config) {
-	api, err := mackerel.NewApi(config.Apibase, config.Apikey, config.Verbose)
+func Run(conf config.Config) {
+	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
 		logger.Criticalf("Failed to prepare an api: %s", err.Error())
 		os.Exit(1)
@@ -218,13 +219,13 @@ func Run(config mackerel.Config) {
 		&spec.FilesystemGenerator{},
 	}
 
-	host, err := prepareHost(config.Root, api, specGenerators, config.Roles)
+	host, err := prepareHost(conf.Root, api, specGenerators, conf.Roles)
 	if err != nil {
 		logger.Criticalf("Failed to run this agent: %s", err.Error())
 		os.Exit(1)
 	}
 
-	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", config.Apibase, host.Name, host.Id)
+	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
 	generators := []metrics.Generator{
 		&metrics.Loadavg5Generator{},
@@ -235,7 +236,7 @@ func Run(config mackerel.Config) {
 		&metrics.DiskGenerator{Interval: 60},
 	}
 
-	for _, pluginConfig := range config.Plugin["metrics"] {
+	for _, pluginConfig := range conf.Plugin["metrics"] {
 		generators = append(generators, &metrics.PluginGenerator{pluginConfig})
 	}
 

@@ -1,4 +1,4 @@
-package mackerel
+package config
 
 import (
 	"io/ioutil"
