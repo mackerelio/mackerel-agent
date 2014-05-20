@@ -3,8 +3,10 @@ package command
 import (
 	"crypto/sha1"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -54,6 +56,40 @@ func getHostname() (string, error) {
 	return str, nil
 }
 
+const idFileName = "id"
+
+func IdFilePath(root string) string {
+	return filepath.Join(root, idFileName)
+}
+
+func LoadHostId(root string) (string, error) {
+	content, err := ioutil.ReadFile(IdFilePath(root))
+	if err != nil {
+		return "", err
+	}
+	return string(content), nil
+}
+
+func SaveHostId(root string, id string) error {
+	err := os.MkdirAll(root, 0755)
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Create(IdFilePath(root))
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.Write([]byte(id))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
@@ -65,7 +101,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 	}
 
 	var result *mackerel.Host
-	if hostId, err := mackerel.LoadHostId(root); err != nil { // create
+	if hostId, err := LoadHostId(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
 		interfaces := collectInterfaces()
 		createdHostId, err := api.CreateHost(hostname, specs, interfaces, roleFullnames)
@@ -80,7 +116,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 	} else { // update
 		result, err = api.FindHost(hostId)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", mackerel.IdFilePath(root), err.Error())
+			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", IdFilePath(root), err.Error())
 		}
 		interfaces := collectInterfaces()
 		err := api.UpdateHost(hostId, hostname, specs, interfaces, roleFullnames)
@@ -89,7 +125,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 		}
 	}
 
-	err = mackerel.SaveHostId(root, result.Id)
+	err = SaveHostId(root, result.Id)
 	if err != nil {
 		logger.Criticalf("Failed to save host ID: %s", err.Error())
 		os.Exit(1)
