@@ -26,7 +26,7 @@ func LoadHostId(root string) (string, error) {
 }
 
 func SaveHostId(root string, id string) error {
-	err := os.MkdirAll(root, 0744)
+	err := os.MkdirAll(root, 0755)
 	if err != nil {
 		return err
 	}
