@@ -1,4 +1,6 @@
-package metrics
+// +build linux
+
+package linux
 
 import (
 	"bufio"
@@ -9,6 +11,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 /*
@@ -50,7 +53,7 @@ var cpuNumberPattern = regexp.MustCompile(`^cpu\d+\s`)
 
 var cpuusageLogger = logging.GetLogger("metrics.cpuusage")
 
-func (g *CpuusageGenerator) Generate() (Values, error) {
+func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 	prevValues, prevTotal, _, err := g.collectProcStatValues()
 	if err != nil {
 		return nil, err
@@ -78,7 +81,7 @@ func (g *CpuusageGenerator) Generate() (Values, error) {
 		ret[name+".percentage"] = (currValues[i] - prevValues[i]) * 100.0 * float64(cpuCount) / (currTotal - prevTotal)
 	}
 
-	return Values(ret), nil
+	return metrics.Values(ret), nil
 }
 
 // returns values corresponding to cpuusageMetricNames, those total and the number of CPUs

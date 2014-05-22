@@ -5,57 +5,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/agent"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
-	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/spec"
-	"github.com/mackerelio/mackerel-agent/version"
 )
 
 var logger = logging.GetLogger("command")
-
-func collectSpecs(specGenerators []spec.Generator) map[string]interface{} {
-	specs := make(map[string]interface{})
-	for _, g := range specGenerators {
-		value, err := g.Generate()
-		if err != nil {
-			logger.Errorf("Failed to collect specs in %T (skip this spec): %s", g, err.Error())
-		}
-		specs[g.Key()] = value
-	}
-	specs["agent-version"] = version.VERSION
-	specs["agent-revision"] = version.GITCOMMIT
-	specs["agent-name"] = version.UserAgent()
-	return specs
-}
-
-func collectInterfaces() []map[string]interface{} {
-	g := &spec.InterfaceGenerator{}
-	value, err := g.Generate()
-	if err != nil {
-		logger.Errorf("Failed to collect interfaces in %T (skip the interfaces): %s", g, err.Error())
-		return nil
-	}
-	return value.([]map[string]interface{})
-}
-
-func getHostname() (string, error) {
-	out, err := exec.Command("uname", "-n").Output()
-
-	if err != nil {
-		return "", err
-	}
-	str := strings.TrimSpace(string(out))
-
-	return str, nil
-}
 
 const idFileName = "id"
 
@@ -94,9 +54,13 @@ func SaveHostId(root string, id string) error {
 func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
-	specs := collectSpecs(specGenerators)
+	meta := spec.Collect(specGenerators)
 
-	hostname, err := getHostname()
+	// retrieve intaface
+	interfaces, _ := meta["interface"].([]map[string]interface{})
+	delete(meta, "interface")
+
+	hostname, err := os.Hostname()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to obtain hostname: %s", err.Error())
 	}
@@ -104,8 +68,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 	var result *mackerel.Host
 	if hostId, err := LoadHostId(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
-		interfaces := collectInterfaces()
-		createdHostId, err := api.CreateHost(hostname, specs, interfaces, roleFullnames)
+		createdHostId, err := api.CreateHost(hostname, meta, interfaces, roleFullnames)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to register this host: %s", err.Error())
 		}
@@ -119,8 +82,7 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 		if err != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", IdFilePath(root), err.Error())
 		}
-		interfaces := collectInterfaces()
-		err := api.UpdateHost(hostId, hostname, specs, interfaces, roleFullnames)
+		err := api.UpdateHost(hostId, hostname, meta, interfaces, roleFullnames)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
 		}
@@ -211,15 +173,7 @@ func Run(conf config.Config) {
 		os.Exit(1)
 	}
 
-	specGenerators := []spec.Generator{
-		&spec.KernelGenerator{},
-		&spec.CPUGenerator{},
-		&spec.MemoryGenerator{},
-		&spec.BlockDeviceGenerator{},
-		&spec.FilesystemGenerator{},
-	}
-
-	host, err := prepareHost(conf.Root, api, specGenerators, conf.Roles)
+	host, err := prepareHost(conf.Root, api, specGenerators(), conf.Roles)
 	if err != nil {
 		logger.Criticalf("Failed to run this agent: %s", err.Error())
 		os.Exit(1)
@@ -227,19 +181,6 @@ func Run(conf config.Config) {
 
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
-	generators := []metrics.Generator{
-		&metrics.Loadavg5Generator{},
-		&metrics.CpuusageGenerator{Interval: 60},
-		&metrics.MemoryGenerator{},
-		&metrics.UptimeGenerator{},
-		&metrics.InterfaceGenerator{Interval: 60},
-		&metrics.DiskGenerator{Interval: 60},
-	}
-
-	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, &metrics.PluginGenerator{pluginConfig})
-	}
-
-	ag := &agent.Agent{generators}
+	ag := &agent.Agent{metricsGenerators(conf)}
 	loop(ag, api, host)
 }

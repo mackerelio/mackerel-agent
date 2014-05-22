@@ -1,14 +1,27 @@
-package metrics
+// +build linux
+
+package linux
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/mackerelio/mackerel-agent/config"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
+
+func containsKeyRegexp(values metrics.Values, reg string) bool {
+	for name, _ := range values {
+		if matches := regexp.MustCompile(reg).FindStringSubmatch(name); matches != nil {
+			return true
+		}
+	}
+	return false
+}
 
 func TestPluginGenerate(t *testing.T) {
 	conf := config.PluginConfig{
-		Command: "ruby ../example/metrics-plugins/dice.rb",
+		Command: "ruby ../../example/metrics-plugins/dice.rb",
 	}
 	g := &PluginGenerator{conf}
 	values, err := g.Generate()
@@ -16,19 +29,19 @@ func TestPluginGenerate(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	if !ContainsKeyRegexp(values, "dice") {
+	if !containsKeyRegexp(values, "dice") {
 		t.Errorf("Value for dice should be collected")
 	}
 }
 
 func TestPluginCollectValues(t *testing.T) {
 	g := &PluginGenerator{}
-	command := "ruby ../example/metrics-plugins/dice.rb"
+	command := "ruby ../../example/metrics-plugins/dice.rb"
 	values, err := g.collectValues(command)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	if !ContainsKeyRegexp(values, "dice") {
+	if !containsKeyRegexp(values, "dice") {
 		t.Errorf("Value for dice should be collected")
 	}
 }

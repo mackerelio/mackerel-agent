@@ -1,4 +1,6 @@
-package spec
+// +build linux
+
+package linux
 
 import (
 	"bufio"

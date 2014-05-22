@@ -1,4 +1,6 @@
-package metrics
+// +build linux
+
+package linux
 
 import (
 	"bufio"
@@ -9,6 +11,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 /*
@@ -45,7 +48,7 @@ var diskMetricsNames = []string{
 
 var diskLogger = logging.GetLogger("metrics.disk")
 
-func (g *DiskGenerator) Generate() (Values, error) {
+func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	prevValues, err := g.collectDiskstatValues()
 	if err != nil {
 		return nil, err
@@ -69,7 +72,7 @@ func (g *DiskGenerator) Generate() (Values, error) {
 	return currValues, nil
 }
 
-func (g *DiskGenerator) collectDiskstatValues() (Values, error) {
+func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 	file, err := os.Open("/proc/diskstats")
 	if err != nil {
 		diskLogger.Errorf("Failed (skip these metrics): %s", err)

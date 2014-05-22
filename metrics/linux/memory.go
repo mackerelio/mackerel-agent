@@ -1,4 +1,6 @@
-package metrics
+// +build linux
+
+package linux
 
 import (
 	"bufio"
@@ -7,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 var memItems = map[string]*regexp.Regexp{
@@ -58,7 +61,7 @@ type MemoryGenerator struct {
 
 var memoryLogger = logging.GetLogger("metrics.memory")
 
-func (g *MemoryGenerator) Generate() (Values, error) {
+func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	file, err := os.Open("/proc/meminfo")
 	if err != nil {
 		memoryLogger.Errorf("Failed (skip these metrics): %s", err)
@@ -105,5 +108,5 @@ func (g *MemoryGenerator) Generate() (Values, error) {
 		ret["memory.used"] = used * 1024
 	}
 
-	return Values(ret), nil
+	return metrics.Values(ret), nil
 }

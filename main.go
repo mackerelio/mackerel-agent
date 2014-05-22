@@ -11,8 +11,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/command"
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/version"
 )

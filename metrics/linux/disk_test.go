@@ -1,4 +1,6 @@
-package metrics
+// +build linux
+
+package linux
 
 import (
 	"testing"
