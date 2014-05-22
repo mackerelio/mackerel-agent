@@ -64,7 +64,7 @@ func main() {
 }
 
 func resolveConfig() (conf config.Config) {
-	conffile := flag.String("conf", "/etc/mackerel-agent/mackerel-agent.conf", "Config file path (Configs in this file are over-written by command line options)")
+	conffile := flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
 	apibase := flag.String("apibase", config.DefaultConfig.Apibase, "API base")
 	pidfile := flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
 	root := flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
