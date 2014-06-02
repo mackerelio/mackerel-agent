@@ -26,14 +26,6 @@ func TestInterfaceGenerator(t *testing.T) {
 	}
 
 	for _, metric := range metrics {
-		if value, ok := values["interface.eth0."+metric]; !ok {
-			t.Errorf("Value for interface.eth0.%s should be collected", metric)
-		} else {
-			t.Logf("Interface eth0 '%s' collected: %+v", metric, value)
-		}
-	}
-
-	for _, metric := range metrics {
 		if value, ok := values["interface.eth0."+metric+".delta"]; !ok {
 			t.Errorf("Value for interface.eth0.%s.delta should be collected", metric)
 		} else {
@@ -42,7 +34,7 @@ func TestInterfaceGenerator(t *testing.T) {
 	}
 
 	for _, metric := range metrics {
-		if _, ok := values["interface.lo."+metric]; ok {
+		if _, ok := values["interface.lo."+metric+".delta"]; ok {
 			t.Errorf("Value for interface.lo.%s should NOT be collected", metric)
 		} else {
 			t.Logf("Interface lo '%s' NOT collected", metric)
