@@ -19,6 +19,10 @@ func TestDiskGenerator(t *testing.T) {
 		"ioInProgress", "ioTime", "ioTimeWeighted",
 	}
 
+	if _, ok := values["disk.sda.reads"]; !ok {
+		t.Skipf("Skip: this node does not have sda device")
+	}
+
 	for _, metric := range metrics {
 		if value, ok := values["disk.sda."+metric+".delta"]; !ok {
 			t.Errorf("Value for disk.sda.%s.delta should be collected", metric)
