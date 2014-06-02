@@ -26,12 +26,12 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 	_, err := exec.LookPath("ip")
 	// has ip command
 	if err == nil {
-		interfaces, err = g.GenerateByIpCommand()
+		interfaces, err = g.generateByIpCommand()
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		interfaces, err = g.GenerateByIfconfigCommand()
+		interfaces, err = g.generateByIfconfigCommand()
 		if err != nil {
 			return nil, err
 		}
@@ -52,7 +52,7 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 	return results, nil
 }
 
-func (g *InterfaceGenerator) GenerateByIpCommand() (map[string]map[string]interface{}, error) {
+func (g *InterfaceGenerator) generateByIpCommand() (map[string]map[string]interface{}, error) {
 	interfaces := make(map[string]map[string]interface{})
 	name := ""
 
@@ -73,7 +73,7 @@ func (g *InterfaceGenerator) GenerateByIpCommand() (map[string]map[string]interf
 
 			// ex.) link/ether 12:34:56:78:9a:bc brd ff:ff:ff:ff:ff:ff
 			if matches := regexp.MustCompile(`link\/(\w+) ([\da-f\:]+) `).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["encap"] = g.TranslateEncap(matches[1])
+				interfaces[name]["encap"] = g.translateEncap(matches[1])
 				interfaces[name]["macAddress"] = matches[2]
 			}
 
@@ -118,7 +118,7 @@ func (g *InterfaceGenerator) GenerateByIpCommand() (map[string]map[string]interf
 	return interfaces, nil
 }
 
-func (g *InterfaceGenerator) GenerateByIfconfigCommand() (map[string]map[string]interface{}, error) {
+func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]interface{}, error) {
 	interfaces := make(map[string]map[string]interface{})
 	name := ""
 
@@ -139,9 +139,9 @@ func (g *InterfaceGenerator) GenerateByIfconfigCommand() (map[string]map[string]
 			// ex.) eth0      Link encap:Ethernet  HWaddr 12:34:56:78:9a:bc
 			if matches := regexp.MustCompile(`Link encap:(Local Loopback)|Link encap:(.+?)\s`).FindStringSubmatch(line); matches != nil {
 				if matches[1] != "" {
-					interfaces[name]["encap"] = g.TranslateEncap(matches[1])
+					interfaces[name]["encap"] = g.translateEncap(matches[1])
 				} else {
-					interfaces[name]["encap"] = g.TranslateEncap(matches[2])
+					interfaces[name]["encap"] = g.translateEncap(matches[2])
 				}
 			}
 			// ex.) eth0      Link encap:Ethernet  HWaddr 00:16:3e:4f:f3:41
@@ -205,7 +205,7 @@ func (g *InterfaceGenerator) GenerateByIfconfigCommand() (map[string]map[string]
 	return interfaces, nil
 }
 
-func (g *InterfaceGenerator) TranslateEncap(encap string) string {
+func (g *InterfaceGenerator) translateEncap(encap string) string {
 	switch encap {
 	case "Local Loopback", "loopback":
 		return "Loopback"
