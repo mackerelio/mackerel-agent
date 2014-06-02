@@ -81,7 +81,7 @@ func (g *InterfaceGenerator) collectIntarfacesValues() (metrics.Values, error) {
 	for lineScanner.Scan() {
 		line := lineScanner.Text()
 		if matches := regexp.MustCompile(`^\s*([^:]+):\s*(.*)$`).FindStringSubmatch(line); matches != nil {
-			name := matches[1]
+			name := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(matches[1], "_")
 			if name == "lo" {
 				continue
 			}

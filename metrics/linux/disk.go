@@ -83,7 +83,7 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
 		cols := strings.Fields(lineScanner.Text())
-		device := cols[2]
+		device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(cols[2], "_")
 		values := cols[3:]
 
 		deviceResult := make(map[string]float64)
