@@ -6,15 +6,15 @@ import "math"
 import "testing"
 
 var cpuusageMetricNames = []string{
-	//"cpu.user",
-	//"cpu.nice",
-	//"cpu.system",
-	//"cpu.idle",
-	//"cpu.iowait",
-	//"cpu.irq",
-	//"cpu.softirq",
-	//"cpu.steal",
-	//"cpu.guest",
+//"cpu.user",
+//"cpu.nice",
+//"cpu.system",
+//"cpu.idle",
+//"cpu.iowait",
+//"cpu.irq",
+//"cpu.softirq",
+//"cpu.steal",
+//"cpu.guest",
 }
 
 func TestCpuusageGenerate(t *testing.T) {
