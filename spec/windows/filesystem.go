@@ -69,19 +69,17 @@ func (g *FilesystemGenerator) Generate() (interface{}, error) {
 		}
 		freeBytesAvailable := int64(0)
 		totalNumberOfBytes := int64(0)
-		totalNumberOfFreeBytes := int64(0)
 		r, _, err = GetDiskFreeSpaceEx.Call(
 			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
 			uintptr(unsafe.Pointer(&freeBytesAvailable)),
 			uintptr(unsafe.Pointer(&totalNumberOfBytes)),
-			uintptr(unsafe.Pointer(&totalNumberOfFreeBytes)))
+			0)
 		if r == 0 {
 			continue
 		}
-		// TODO This should be "C" simply, but currently mackerel.io doesn't handle windows drive path
-		filesystems["/"+drive] = map[string]interface{}{
-			"percent_used": fmt.Sprintf("%d%%", 100*freeBytesAvailable/totalNumberOfBytes),
-			"kb_used":      (totalNumberOfBytes - totalNumberOfFreeBytes) / 1024 / 1024,
+		filesystems[drive] = map[string]interface{}{
+			"percent_used": fmt.Sprintf("%d%%", 100*(totalNumberOfBytes - freeBytesAvailable)/totalNumberOfBytes),
+			"kb_used":      (totalNumberOfBytes - freeBytesAvailable) / 1024 / 1024,
 			"kb_size":      totalNumberOfBytes / 1024 / 1024,
 			"kb_available": freeBytesAvailable / 1024 / 1024,
 			"mount":        drive,
