@@ -20,22 +20,32 @@ func specGenerators() []spec.Generator {
 }
 
 func metricsGenerators(conf config.Config) []metrics.Generator {
-	impls := []metrics.Generator{
-		metricsWindows.NewLoadavg5Generator(),
-		metricsWindows.NewCpuusageGenerator(60),
-		metricsWindows.NewMemoryGenerator(),
-		metricsWindows.NewUptimeGenerator(),
-		metricsWindows.NewInterfaceGenerator(60),
-		metricsWindows.NewDiskGenerator(60),
-	}
+	var g metrics.Generator
+	var err error
+
 	generators := []metrics.Generator{}
-	for _, generator := range impls {
-		if generator != nil {
-			generators = append(generators, generator)
-		}
+	if g, err = metricsWindows.NewLoadavg5Generator(); err == nil {
+		generators = append(generators, g)
+	}
+	if g, err = metricsWindows.NewCpuusageGenerator(60); err == nil {
+		generators = append(generators, g)
+	}
+	if g, err = metricsWindows.NewMemoryGenerator(); err == nil {
+		generators = append(generators, g)
+	}
+	if g, err = metricsWindows.NewUptimeGenerator(); err == nil {
+		generators = append(generators, g)
+	}
+	if g, err = metricsWindows.NewInterfaceGenerator(60); err == nil {
+		generators = append(generators, g)
+	}
+	if g, err = metricsWindows.NewDiskGenerator(60); err == nil {
+		generators = append(generators, g)
 	}
 	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, metricsWindows.NewPluginGenerator(pluginConfig))
+		if g, err = metricsWindows.NewPluginGenerator(pluginConfig); err == nil {
+			generators = append(generators, g)
+		}
 	}
 
 	return generators
