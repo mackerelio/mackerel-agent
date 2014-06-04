@@ -20,13 +20,19 @@ func specGenerators() []spec.Generator {
 }
 
 func metricsGenerators(conf config.Config) []metrics.Generator {
-	generators := []metrics.Generator{
+	impls := []metrics.Generator{
 		metricsWindows.NewLoadavg5Generator(),
 		metricsWindows.NewCpuusageGenerator(60),
 		metricsWindows.NewMemoryGenerator(),
 		metricsWindows.NewUptimeGenerator(),
 		metricsWindows.NewInterfaceGenerator(60),
 		metricsWindows.NewDiskGenerator(60),
+	}
+	generators := []metrics.Generator{}
+	for _, generator := range impls {
+		if generator != nil {
+			generators = append(generators, generator)
+		}
 	}
 	for _, pluginConfig := range conf.Plugin["metrics"] {
 		generators = append(generators, metricsWindows.NewPluginGenerator(pluginConfig))
