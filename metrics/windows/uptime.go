@@ -14,8 +14,8 @@ type UptimeGenerator struct {
 
 var uptimeLogger = logging.GetLogger("metrics.uptime")
 
-func NewUptimeGenerator() *UptimeGenerator {
-	return &UptimeGenerator{}
+func NewUptimeGenerator() (*UptimeGenerator, error) {
+	return &UptimeGenerator{}, nil
 }
 
 func (g *UptimeGenerator) Generate() (metrics.Values, error) {

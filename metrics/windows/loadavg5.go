@@ -18,23 +18,23 @@ type Loadavg5Generator struct {
 
 var loadavg5Logger = logging.GetLogger("metrics.loadavg5")
 
-func NewLoadavg5Generator() *Loadavg5Generator {
+func NewLoadavg5Generator() (*Loadavg5Generator, error) {
 	g := &Loadavg5Generator{0, nil}
 
 	var err error
 	g.query, err = CreateQuery()
 	if err != nil {
 		loadavg5Logger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
 
 	counter, err := CreateCounter(g.query, "loadavg5", `\Processor(_Total)\% Processor Time`)
 	if err != nil {
 		loadavg5Logger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
 	g.counters = append(g.counters, counter)
-	return g
+	return g, nil
 }
 
 func (g *Loadavg5Generator) Generate() (metrics.Values, error) {

@@ -23,26 +23,26 @@ type InterfaceGenerator struct {
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
-func NewInterfaceGenerator(interval time.Duration) *InterfaceGenerator {
+func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) {
 	g := &InterfaceGenerator{interval, 0, nil}
 
 	var err error
 	g.query, err = CreateQuery()
 	if err != nil {
 		interfaceLogger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
 
 	ifs, err := net.Interfaces()
 	if err != nil {
 		interfaceLogger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
 
 	ai, err := GetAdapterList()
 	if err != nil {
 		interfaceLogger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
 
 	for _, ifi := range ifs {
@@ -59,7 +59,7 @@ func NewInterfaceGenerator(interval time.Duration) *InterfaceGenerator {
 					fmt.Sprintf(`\Network Interface(%s)\Bytes Received/sec`, name))
 				if err != nil {
 					interfaceLogger.Criticalf(err.Error())
-					return nil
+					return nil, err
 				}
 				g.counters = append(g.counters, counter)
 				counter, err = CreateCounter(
@@ -68,7 +68,7 @@ func NewInterfaceGenerator(interval time.Duration) *InterfaceGenerator {
 					fmt.Sprintf(`\Network Interface(%s)\Bytes Sent/sec`, name))
 				if err != nil {
 					interfaceLogger.Criticalf(err.Error())
-					return nil
+					return nil, err
 				}
 				g.counters = append(g.counters, counter)
 			}
@@ -76,12 +76,12 @@ func NewInterfaceGenerator(interval time.Duration) *InterfaceGenerator {
 	}
 
 	r, _, err := PdhCollectQueryData.Call(uintptr(g.query))
-	if r != 0 {
+	if r != 0 && err != nil {
 		interfaceLogger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
 
-	return g
+	return g, nil
 }
 
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {

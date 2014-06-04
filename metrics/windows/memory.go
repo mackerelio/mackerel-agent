@@ -15,8 +15,8 @@ type MemoryGenerator struct {
 
 var memoryLogger = logging.GetLogger("metrics.memory")
 
-func NewMemoryGenerator() *MemoryGenerator {
-	return &MemoryGenerator{}
+func NewMemoryGenerator() (*MemoryGenerator, error) {
+	return &MemoryGenerator{}, nil
 }
 
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {

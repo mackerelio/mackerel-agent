@@ -21,16 +21,19 @@ type PluginGenerator struct {
 var pluginLogger = logging.GetLogger("metrics.plugin")
 var PLUGIN_PREFIX = "custom."
 
-func NewPluginGenerator(c config.PluginConfig) *PluginGenerator {
-	return &PluginGenerator{c}
+func NewPluginGenerator(c config.PluginConfig) (*PluginGenerator, error) {
+	return &PluginGenerator{c}, nil
 }
 
 func (g *PluginGenerator) Generate() (metrics.Values, error) {
 	if g == nil {
-		return nil, errors.New("PluginGenerator is not initialized")
+		err := errors.New("PluginGenerator is not initialized")
+		pluginLogger.Criticalf(err.Error())
+		return nil, err
 	}
 	results, err := g.collectValues(g.Config.Command)
 	if err != nil {
+		pluginLogger.Criticalf(err.Error())
 		return nil, err
 	}
 	return results, nil

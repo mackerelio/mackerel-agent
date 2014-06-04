@@ -16,8 +16,8 @@ type CpuusageGenerator struct {
 
 var cpuusageLogger = logging.GetLogger("metrics.cpuusage")
 
-func NewCpuusageGenerator(interval time.Duration) *CpuusageGenerator {
-	return &CpuusageGenerator{interval}
+func NewCpuusageGenerator(interval time.Duration) (*CpuusageGenerator, error) {
+	return &CpuusageGenerator{interval}, nil
 }
 
 func (g *CpuusageGenerator) Generate() (metrics.Values, error) {

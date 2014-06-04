@@ -21,14 +21,14 @@ type DiskGenerator struct {
 
 var diskLogger = logging.GetLogger("metrics.disk")
 
-func NewDiskGenerator(interval time.Duration) *DiskGenerator {
+func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 	g := &DiskGenerator{interval, 0, nil}
 
 	var err error
 	g.query, err = CreateQuery()
 	if err != nil {
 		diskLogger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
 
 	drivebuf := make([]byte, 256)
@@ -37,7 +37,7 @@ func NewDiskGenerator(interval time.Duration) *DiskGenerator {
 		uintptr(unsafe.Pointer(&drivebuf[0])))
 	if r != 0 {
 		diskLogger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
 
 	for _, v := range drivebuf {
@@ -55,7 +55,7 @@ func NewDiskGenerator(interval time.Duration) *DiskGenerator {
 				fmt.Sprintf(`\PhysicalDisk(0 %s:)\Disk Reads/sec`, drive))
 			if err != nil {
 				diskLogger.Criticalf(err.Error())
-				return nil
+				return nil, err
 			}
 			g.counters = append(g.counters, counter)
 
@@ -65,18 +65,18 @@ func NewDiskGenerator(interval time.Duration) *DiskGenerator {
 				fmt.Sprintf(`\PhysicalDisk(0 %s:)\Disk Writes/sec`, drive))
 			if err != nil {
 				diskLogger.Criticalf(err.Error())
-				return nil
+				return nil, err
 			}
 			g.counters = append(g.counters, counter)
 		}
 	}
 
 	r, _, err = PdhCollectQueryData.Call(uintptr(g.query))
-	if r != 0 {
+	if r != 0 && err != nil {
 		diskLogger.Criticalf(err.Error())
-		return nil
+		return nil, err
 	}
-	return g
+	return g, nil
 }
 
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
