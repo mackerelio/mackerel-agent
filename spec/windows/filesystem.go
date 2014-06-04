@@ -78,7 +78,7 @@ func (g *FilesystemGenerator) Generate() (interface{}, error) {
 			continue
 		}
 		filesystems[drive] = map[string]interface{}{
-			"percent_used": fmt.Sprintf("%d%%", 100*(totalNumberOfBytes - freeBytesAvailable)/totalNumberOfBytes),
+			"percent_used": fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
 			"kb_used":      (totalNumberOfBytes - freeBytesAvailable) / 1024 / 1024,
 			"kb_size":      totalNumberOfBytes / 1024 / 1024,
 			"kb_available": freeBytesAvailable / 1024 / 1024,
