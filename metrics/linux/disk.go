@@ -19,8 +19,6 @@ collect disk I/O
 
 `disk.{device}.{metric}.delta`: The increased amount of disk I/O per minute retrieved from /proc/diskstats
 
-`disk.{device}.{metric}`: [DEPRECATED] The total amount of disk I/O retrieved from /proc/diskstats
-
 device = "sda1", "xvda1" and so on...
 
 metric = "reads", "readsMerged", "sectorsRead", "readTime", "writes", "writesMerged", "sectorsWritten", "writeTime", "ioInProgress", "ioTime", "ioTimeWeighted"
@@ -62,14 +60,15 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
+	ret := make(map[string]float64)
 	for name, value := range prevValues {
 		currValue, ok := currValues[name]
 		if ok {
-			currValues[name+".delta"] = (currValue - value) / interval.Seconds()
+			ret[name+".delta"] = (currValue - value) / interval.Seconds()
 		}
 	}
 
-	return currValues, nil
+	return metrics.Values(ret), nil
 }
 
 func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {

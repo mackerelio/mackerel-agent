@@ -19,8 +19,6 @@ collect network interface I/O
 
 `interface.{interface}.{metric}.delta`: The increased amount of network I/O per minute retrieved from /proc/net/dev
 
-`interface.{interface}.{metric}`: [DEPRECATED] The total amount of network I/O network device metrics retrieved from /proc/net/dev
-
 interface = "eth0", "eth1" and so on...
 
 metric = "rxBytes", "rxPackets", "rxErrors", "rxDrops", "rxFifo", "rxFrame", "rxCompressed", "rxMulticast", "txBytes", "txPackets", "txErrors", "txDrops", "txFifo", "txColls", "txCarrier", "txCompressed"
@@ -59,14 +57,15 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
+	ret := make(map[string]float64)
 	for name, value := range prevValues {
 		currValue, ok := currValues[name]
 		if ok {
-			currValues[name+".delta"] = (currValue - value) / interval.Seconds()
+			ret[name+".delta"] = (currValue - value) / interval.Seconds()
 		}
 	}
 
-	return currValues, nil
+	return metrics.Values(ret), nil
 }
 
 func (g *InterfaceGenerator) collectIntarfacesValues() (metrics.Values, error) {

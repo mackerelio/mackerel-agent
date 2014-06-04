@@ -19,8 +19,6 @@ collect CPU usage
 
 `cpu.{metric}.percentage`: The increased amount of CPU time per minute as percentage of total CPU cores x 100
 
-`cpu.{metric}`: [DEPRECATED] The total amount of CPU time retrieved from /proc/stat
-
 metric = "user", "nice", "system", "idle", "iowait", "irq", "softirq", "steal", "guest"
 
 graph: stacks `cpu.{metric}.percentage`
@@ -75,8 +73,6 @@ func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 			break
 		}
 
-		// [DEPRECATED] absolute amount of CPU time
-		ret[name] = currValues[i]
 		// percentage of increased amount of CPU time
 		ret[name+".percentage"] = (currValues[i] - prevValues[i]) * 100.0 * float64(cpuCount) / (currTotal - prevTotal)
 	}
