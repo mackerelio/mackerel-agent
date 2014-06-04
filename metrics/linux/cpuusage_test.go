@@ -9,15 +9,6 @@ func TestCpuusageGenerate(t *testing.T) {
 	g := &CpuusageGenerator{1}
 	values, _ := g.Generate()
 
-	for _, metricName := range cpuusageMetricNames {
-		value, ok := values[metricName]
-		if !ok {
-			t.Errorf("CpuusageGenerator should generate metric value for '%s'", metricName)
-		} else {
-			t.Logf("Cpuusage '%s' collected: %+v", metricName, value)
-		}
-	}
-
 	var sumPercentage float64 = 0
 	for _, metricName := range cpuusageMetricNames {
 		metricName += ".percentage"
