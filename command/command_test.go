@@ -37,7 +37,7 @@ func TestDelayByHost(t *testing.T) {
 	}
 }
 
-func TestPrepareRun(t *testing.T) {
+func TestPrepare(t *testing.T) {
 	_respondJSON := func(w http.ResponseWriter, data map[string]interface{}) {
 		respJson, err := json.Marshal(data)
 		if err != nil {
@@ -79,5 +79,5 @@ func TestPrepareRun(t *testing.T) {
 		Root:    root,
 	}
 
-	prepareRun(conf)
+	Prepare(conf)
 }
