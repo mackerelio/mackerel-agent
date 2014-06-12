@@ -15,8 +15,11 @@ func specGenerators() []spec.Generator {
 		&specLinux.MemoryGenerator{},
 		&specLinux.BlockDeviceGenerator{},
 		&specLinux.FilesystemGenerator{},
-		&specLinux.InterfaceGenerator{},
 	}
+}
+
+func interfaceGenerator() spec.Generator {
+	return &specLinux.InterfaceGenerator{}
 }
 
 func metricsGenerators(conf config.Config) []metrics.Generator {

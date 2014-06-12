@@ -51,14 +51,16 @@ func SaveHostId(root string, id string) error {
 	return nil
 }
 
-func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
+// prepareHost collects specs of the host and sends them to Mackerel server.
+// A unique host-id is returned by the server if one is not specified.
+func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, interfaceGenerator spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
 	meta := spec.Collect(specGenerators)
 
-	// retrieve intaface
-	interfaces, _ := meta["interface"].([]map[string]interface{})
-	delete(meta, "interface")
+	// retrieve interface
+	interfacesSpec, _ := interfaceGenerator.Generate()
+	interfaces, _ := interfacesSpec.([]map[string]interface{})
 
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -166,18 +168,25 @@ func loop(ag *agent.Agent, api *mackerel.API, host *mackerel.Host) {
 	}
 }
 
-func Run(conf config.Config) {
+// prepareRun prepares required data for Run().
+func prepareRun(conf config.Config) (*mackerel.API, *mackerel.Host) {
 	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
 		logger.Criticalf("Failed to prepare an api: %s", err.Error())
 		os.Exit(1)
 	}
 
-	host, err := prepareHost(conf.Root, api, specGenerators(), conf.Roles)
+	host, err := prepareHost(conf.Root, api, specGenerators(), interfaceGenerator(), conf.Roles)
 	if err != nil {
 		logger.Criticalf("Failed to run this agent: %s", err.Error())
 		os.Exit(1)
 	}
+
+	return api, host
+}
+
+func Run(conf config.Config) {
+	api, host := prepareRun(conf)
 
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 

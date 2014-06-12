@@ -15,8 +15,11 @@ func specGenerators() []spec.Generator {
 		&specWindows.MemoryGenerator{},
 		&specWindows.BlockDeviceGenerator{},
 		&specWindows.FilesystemGenerator{},
-		&specWindows.InterfaceGenerator{},
 	}
+}
+
+func interfaceGenerator() spec.Generator {
+	return &specWindows.InterfaceGenerator{}
 }
 
 func metricsGenerators(conf config.Config) []metrics.Generator {
