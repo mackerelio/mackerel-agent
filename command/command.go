@@ -59,7 +59,10 @@ func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator
 	meta := spec.Collect(specGenerators)
 
 	// retrieve interface
-	interfacesSpec, _ := interfaceGenerator.Generate()
+	interfacesSpec, err := interfaceGenerator.Generate()
+	if err != nil {
+		logger.Errorf("Failed to collect interfaces spec: %s", err.Error())
+	}
 	interfaces, _ := interfacesSpec.([]map[string]interface{})
 
 	hostname, err := os.Hostname()
