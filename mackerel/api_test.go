@@ -3,11 +3,12 @@ package mackerel
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mackerelio/mackerel-agent/version"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/mackerelio/mackerel-agent/version"
 )
 
 func TestNewApi(t *testing.T) {
@@ -166,6 +167,55 @@ func TestCreateHost(t *testing.T) {
 
 	if !called {
 		t.Error("should http-request")
+	}
+
+	if hostId != "ABCD123" {
+		t.Error("should returns ABCD123 but:", hostId)
+	}
+}
+
+func TestCreateHostWithNilArgs(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/hosts" {
+			t.Error("request URL should be /api/v0/hosts but :", req.URL.Path)
+		}
+
+		if req.Method != "POST" {
+			t.Error("request method should be POST but :", req.Method)
+		}
+
+		body, _ := ioutil.ReadAll(req.Body)
+		content := string(body)
+
+		var data struct {
+			Name          string              `json:"name"`
+			Tame          string              `json:"type"`
+			Status        string              `json:"status"`
+			Meta          map[string]string   `json:"meta"`
+			Interfaces    []map[string]string `json:"interfaces"`
+			RoleFullnames []string            `json:"roleFullnames"`
+		}
+
+		err := json.Unmarshal(body, &data)
+		if err != nil {
+			t.Fatal("request content should be decoded as json", content)
+		}
+
+		respJson, _ := json.Marshal(map[string]interface{}{
+			"id": "ABCD123",
+		})
+
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJson))
+	}))
+	defer ts.Close()
+
+	api, _ := NewApi(ts.URL, "dummy-key", false)
+
+	// with nil args
+	hostId, err := api.CreateHost("nilsome", nil, nil, nil)
+	if err != nil {
+		t.Error("should not return error but got: ", err)
 	}
 
 	if hostId != "ABCD123" {
