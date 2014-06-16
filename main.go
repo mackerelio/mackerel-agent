@@ -143,14 +143,17 @@ func start(conf config.Config) error {
 		return err
 	}
 
+	api, host := command.Prepare(conf)
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go func() {
 		for sig := range c {
 			if sig == syscall.SIGHUP {
-				// nop
-				// TODO reload configuration file
 				logger.Debugf("Received signal '%v'", sig)
+				// TODO reload configuration file
+
+				command.UpdateHostSpecs(conf, api, host)
 			} else {
 				logger.Infof("Received signal '%v', exiting", sig)
 				removePidFile(conf.Pidfile)
@@ -159,6 +162,7 @@ func start(conf config.Config) error {
 		}
 	}()
 
-	command.Run(conf)
+	command.Run(conf, api, host)
+
 	return nil
 }

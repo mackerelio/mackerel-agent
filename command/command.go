@@ -53,17 +53,12 @@ func SaveHostId(root string, id string) error {
 
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
-func prepareHost(root string, api *mackerel.API, specGenerators []spec.Generator, interfaceGenerator spec.Generator, roleFullnames []string) (*mackerel.Host, error) {
+func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*mackerel.Host, error) {
+	// XXX this configuration should be moved to under spec/linux
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
-	meta := spec.Collect(specGenerators)
 
-	// retrieve interface
-	interfacesSpec, err := interfaceGenerator.Generate()
-	if err != nil {
-		logger.Errorf("Failed to collect interfaces spec: %s", err.Error())
-	}
-	interfaces, _ := interfacesSpec.([]map[string]interface{})
+	meta, interfaces := collectHostSpecs()
 
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -107,12 +102,15 @@ const METRICS_POST_RETRY_DELAY = 1 * time.Minute    // delay for retring a reque
 const METRICS_POST_RETRY_MAX = 10                   // max numbers of retries for a request that causes errors
 const METRICS_POST_BUFFER_SIZE = 30                 // max numbers of requests stored in buffer queue.
 
+// Interval between each updating host specs.
+var specsUpdateInterval = 1 * time.Hour
+
 func delayByHost(host *mackerel.Host) time.Duration {
 	s := sha1.Sum([]byte(host.Id))
 	return time.Duration(int(s[len(s)-1])%60) * time.Second
 }
 
-func loop(ag *agent.Agent, api *mackerel.API, host *mackerel.Host) {
+func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel.Host) {
 	metricsResult := ag.Watch()
 
 	postQueue := make(chan []*mackerel.CreatingMetricsValue, METRICS_POST_BUFFER_SIZE)
@@ -139,6 +137,14 @@ func loop(ag *agent.Agent, api *mackerel.API, host *mackerel.Host) {
 			}
 
 			time.Sleep(METRICS_POST_DEQUEUE_DELAY)
+		}
+	}()
+
+	// Periodically update host specs.
+	go func() {
+		for {
+			time.Sleep(specsUpdateInterval)
+			UpdateHostSpecs(conf, api, host)
 		}
 	}()
 
@@ -171,15 +177,43 @@ func loop(ag *agent.Agent, api *mackerel.API, host *mackerel.Host) {
 	}
 }
 
-// prepareRun prepares required data for Run().
-func prepareRun(conf config.Config) (*mackerel.API, *mackerel.Host) {
+// collectHostSpecs collects host specs ("meta" and "interfaces" field in API v0)
+func collectHostSpecs() (map[string]interface{}, []map[string]interface{}) {
+	meta := spec.Collect(specGenerators())
+
+	interfacesSpec, err := interfaceGenerator().Generate()
+	if err != nil {
+		logger.Errorf("Failed to collect interfaces spec: %s", err.Error())
+	}
+	interfaces, _ := interfacesSpec.([]map[string]interface{})
+
+	return meta, interfaces
+}
+
+// UpdateHostSpecs updates the host information that is already registered on Mackerel.
+func UpdateHostSpecs(conf config.Config, api *mackerel.API, host *mackerel.Host) {
+	logger.Debugf("Updating host specs...")
+
+	meta, interfaces := collectHostSpecs()
+
+	err := api.UpdateHost(host.Id, host.Name, meta, interfaces, conf.Roles)
+	if err != nil {
+		logger.Errorf("Error while updating host specs: %s", err)
+	} else {
+		logger.Debugf("Host specs sent.")
+	}
+}
+
+// Prepare sets up API and registers the host data to the Mackerel server.
+// Use returned values to call Run().
+func Prepare(conf config.Config) (*mackerel.API, *mackerel.Host) {
 	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
 		logger.Criticalf("Failed to prepare an api: %s", err.Error())
 		os.Exit(1)
 	}
 
-	host, err := prepareHost(conf.Root, api, specGenerators(), interfaceGenerator(), conf.Roles)
+	host, err := prepareHost(conf.Root, api, conf.Roles)
 	if err != nil {
 		logger.Criticalf("Failed to run this agent: %s", err.Error())
 		os.Exit(1)
@@ -188,11 +222,10 @@ func prepareRun(conf config.Config) (*mackerel.API, *mackerel.Host) {
 	return api, host
 }
 
-func Run(conf config.Config) {
-	api, host := prepareRun(conf)
-
+// Run starts the main metric collecting logic and this function will never return.
+func Run(conf config.Config, api *mackerel.API, host *mackerel.Host) {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
 	ag := &agent.Agent{metricsGenerators(conf)}
-	loop(ag, api, host)
+	loop(ag, conf, api, host)
 }

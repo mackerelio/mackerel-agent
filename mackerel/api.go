@@ -154,13 +154,12 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 	return data.Id, nil
 }
 
+// UpdateHost updates the host information on Mackerel.
 func (api *API) UpdateHost(hostId string, name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string) error {
 	url := api.urlFor("/api/v0/hosts/" + hostId)
 
 	requestJson, err := json.Marshal(map[string]interface{}{
 		"name":          name,
-		"type":          "unknown",
-		"status":        "working",
 		"meta":          meta,
 		"interfaces":    interfaces,
 		"roleFullnames": roleFullnames,
