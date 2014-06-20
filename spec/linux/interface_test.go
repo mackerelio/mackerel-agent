@@ -54,7 +54,7 @@ func TestGenerateByIpCommand(t *testing.T) {
 	}
 
 	g := &InterfaceGenerator{}
-	interfaces, err := g.GenerateByIpCommand()
+	interfaces, err := g.generateByIpCommand()
 	if err != nil {
 		t.Error("should not raise error")
 	}
@@ -87,7 +87,7 @@ func TestGenerateByIpCommand(t *testing.T) {
 
 func TestGenerateByIfconfigCommand(t *testing.T) {
 	g := &InterfaceGenerator{}
-	interfaces, err := g.GenerateByIfconfigCommand()
+	interfaces, err := g.generateByIfconfigCommand()
 	if err != nil {
 		t.Log("Skip: should not raise error")
 	}
