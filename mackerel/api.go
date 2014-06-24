@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"time"
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/version"
@@ -60,7 +61,11 @@ func (api *API) Do(req *http.Request) (resp *http.Response, err error) {
 			logger.Tracef("%s", dump)
 		}
 	}
-	resp, err = http.DefaultClient.Do(req)
+
+	const apiRequestTimeout = 30 * time.Second
+	client := http.DefaultClient
+	client.Timeout = apiRequestTimeout
+	resp, err = client.Do(req)
 	if err != nil {
 		return nil, err
 	}
