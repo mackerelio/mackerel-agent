@@ -64,7 +64,6 @@ func (api *API) Do(req *http.Request) (resp *http.Response, err error) {
 		}
 	}
 
-	const apiRequestTimeout = 30 * time.Second
 	client := &http.Client{} // same as http.DefaultClient
 	client.Timeout = apiRequestTimeout
 	resp, err = client.Do(req)
