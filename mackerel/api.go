@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"time"
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/version"
@@ -48,6 +49,8 @@ func (api *API) urlFor(path string) *url.URL {
 	return newUrl
 }
 
+var apiRequestTimeout = 30 * time.Second
+
 func (api *API) Do(req *http.Request) (resp *http.Response, err error) {
 	req.Header.Add("X-Api-Key", api.ApiKey)
 	req.Header.Add("X-Agent-Version", version.VERSION)
@@ -60,7 +63,10 @@ func (api *API) Do(req *http.Request) (resp *http.Response, err error) {
 			logger.Tracef("%s", dump)
 		}
 	}
-	resp, err = http.DefaultClient.Do(req)
+
+	client := &http.Client{} // same as http.DefaultClient
+	client.Timeout = apiRequestTimeout
+	resp, err = client.Do(req)
 	if err != nil {
 		return nil, err
 	}
