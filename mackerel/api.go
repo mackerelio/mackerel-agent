@@ -49,6 +49,8 @@ func (api *API) urlFor(path string) *url.URL {
 	return newUrl
 }
 
+var apiRequestTimeout = 30 * time.Second
+
 func (api *API) Do(req *http.Request) (resp *http.Response, err error) {
 	req.Header.Add("X-Api-Key", api.ApiKey)
 	req.Header.Add("X-Agent-Version", version.VERSION)
