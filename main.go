@@ -55,11 +55,11 @@ func main() {
 
 	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		os.Exit(1)
+		exit(1, conf)
 	}
 
 	if err := start(conf); err != nil {
-		os.Exit(1)
+		exit(1, conf)
 	}
 }
 
@@ -84,7 +84,7 @@ func resolveConfig() (conf config.Config) {
 	conf, confErr := config.LoadConfig(*conffile)
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
-		os.Exit(1)
+		exitWithoutPidfileCleaning(1)
 	}
 
 	// overwrite config from file by config from args
@@ -138,12 +138,25 @@ func removePidFile(pidfile string) {
 	}
 }
 
+func exit(exitCode int, conf config.Config) {
+	removePidFile(conf.Pidfile)
+	exitWithoutPidfileCleaning(exitCode)
+}
+
+func exitWithoutPidfileCleaning(exitCode int) {
+	os.Exit(exitCode)
+}
+
 func start(conf config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
 	}
 
-	api, host := command.Prepare(conf)
+	api, host, err := command.Prepare(conf)
+	if err != nil {
+		logger.Criticalf(err.Error())
+		exit(1, conf)
+	}
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
@@ -156,8 +169,7 @@ func start(conf config.Config) error {
 				command.UpdateHostSpecs(conf, api, host)
 			} else {
 				logger.Infof("Received signal '%v', exiting", sig)
-				removePidFile(conf.Pidfile)
-				os.Exit(0)
+				exit(0, conf)
 			}
 		}
 	}()
