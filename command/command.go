@@ -90,8 +90,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 
 	err = SaveHostId(root, result.Id)
 	if err != nil {
-		logger.Criticalf("Failed to save host ID: %s", err.Error())
-		os.Exit(1)
+		return nil, fmt.Errorf("Failed to save host ID: %s", err.Error())
 	}
 
 	return result, nil
@@ -206,20 +205,18 @@ func UpdateHostSpecs(conf config.Config, api *mackerel.API, host *mackerel.Host)
 
 // Prepare sets up API and registers the host data to the Mackerel server.
 // Use returned values to call Run().
-func Prepare(conf config.Config) (*mackerel.API, *mackerel.Host) {
+func Prepare(conf config.Config) (*mackerel.API, *mackerel.Host, error) {
 	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
-		logger.Criticalf("Failed to prepare an api: %s", err.Error())
-		os.Exit(1)
+		return nil, nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
 
 	host, err := prepareHost(conf.Root, api, conf.Roles)
 	if err != nil {
-		logger.Criticalf("Failed to run this agent: %s", err.Error())
-		os.Exit(1)
+		return nil, nil, fmt.Errorf("Failed to preapre host: %s", err.Error())
 	}
 
-	return api, host
+	return api, host, nil
 }
 
 // Run starts the main metric collecting logic and this function will never return.
