@@ -127,10 +127,10 @@ func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel
 				}
 
 				logger.Debugf("Retrying to post metrics...")
-				time.Sleep(conf.Connection.Post_Metrics_Retry_Delay_Seconds * time.Second)
+				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
 			}
 
-			time.Sleep(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds * time.Second)
+			time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
 		}
 	}()
 
