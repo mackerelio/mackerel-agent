@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"time"
 )
 
 var configLogger = logging.GetLogger("config")
@@ -15,6 +16,7 @@ type Config struct {
 	Conffile        string
 	Roles           []string
 	Verbose         bool
+	Metrics         MetricsConfig
 	Plugin          map[string]PluginConfigs
 	DeprecatedSensu map[string]PluginConfigs `toml:"sensu"` // DEPRECATED this is for backward compatibility
 }
@@ -23,6 +25,13 @@ type PluginConfigs map[string]PluginConfig
 
 type PluginConfig struct {
 	Command string
+}
+
+type MetricsConfig struct {
+	Dequeue_Delay time.Duration // delay for dequeuing from buffer queue
+	Retry_Delay   time.Duration // delay for retring a request that causes errors
+	Retry_Max     int           // max numbers of retries for a request that causes errors
+	Buffer_Size   int           // max numbers of requests stored in buffer queue.
 }
 
 func LoadConfig(conffile string) (Config, error) {
@@ -40,6 +49,18 @@ func LoadConfig(conffile string) (Config, error) {
 	}
 	if config.Verbose == false {
 		config.Verbose = DefaultConfig.Verbose
+	}
+	if config.Metrics.Dequeue_Delay == 0 {
+		config.Metrics.Dequeue_Delay = DefaultConfig.Metrics.Dequeue_Delay
+	}
+	if config.Metrics.Retry_Delay == 0 {
+		config.Metrics.Retry_Delay = DefaultConfig.Metrics.Retry_Delay
+	}
+	if config.Metrics.Retry_Max == 0 {
+		config.Metrics.Retry_Max = DefaultConfig.Metrics.Retry_Max
+	}
+	if config.Metrics.Buffer_Size == 0 {
+		config.Metrics.Buffer_Size = DefaultConfig.Metrics.Buffer_Size
 	}
 
 	return config, err

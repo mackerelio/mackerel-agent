@@ -9,6 +9,9 @@ import (
 var sampleConfig = `
 apikey = "abcde"
 
+[metrics]
+retry_max = 5
+
 [plugin.metrics.mysql]
 command = "ruby /path/to/your/plugin/mysql.rb"
 
@@ -38,6 +41,14 @@ func TestLoadConfig(t *testing.T) {
 	if config.Apikey != "abcde" {
 		t.Error("should be abcde (config value should be used)")
 	}
+
+	if config.Metrics.Dequeue_Delay != 30 {
+		t.Error("should be 30 (default value should be used)")
+	}
+
+	if config.Metrics.Retry_Max != 5 {
+		t.Error("should be 5 (config value should be used)")
+	}
 }
 
 func TestLoadConfigFile(t *testing.T) {
@@ -59,6 +70,10 @@ func TestLoadConfigFile(t *testing.T) {
 
 	if config.Apikey != "abcde" {
 		t.Error("Apikey should be abcde")
+	}
+
+	if config.Metrics.Retry_Max != 5 {
+		t.Error("Retry_Max should be 5")
 	}
 
 	if config.Plugin["metrics"] == nil {
