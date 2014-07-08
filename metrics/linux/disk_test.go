@@ -14,12 +14,10 @@ func TestDiskGenerator(t *testing.T) {
 	}
 
 	metrics := []string{
-		"reads", "readsMerged", "sectorsRead", "readTime",
-		"writes", "writesMerged", "sectorsWritten", "writeTime",
-		"ioInProgress", "ioTime", "ioTimeWeighted",
+		"reads", "writes",
 	}
 
-	if _, ok := values["disk.sda.reads"]; !ok {
+	if _, ok := values["disk.sda.reads.delta"]; !ok {
 		t.Skipf("Skip: this node does not have sda device")
 	}
 

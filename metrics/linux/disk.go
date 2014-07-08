@@ -45,6 +45,11 @@ var diskMetricsNames = []string{
 	"ioInProgress", "ioTime", "ioTimeWeighted",
 }
 
+// metrics for posting to Mackerel
+var postDiskMetricsNames = map[string]bool{
+	"reads": true, "writes": true,
+}
+
 var diskLogger = logging.GetLogger("metrics.disk")
 
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
@@ -89,6 +94,9 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 		deviceResult := make(map[string]float64)
 		hasNonZeroValue := false
 		for i, _ := range diskMetricsNames {
+			if _, ok := postDiskMetricsNames[diskMetricsNames[i]]; !ok {
+				continue
+			}
 			key := fmt.Sprintf("disk.%s.%s", device, diskMetricsNames[i])
 			value, err := strconv.ParseFloat(values[i], 64)
 			if err != nil {

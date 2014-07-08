@@ -19,10 +19,7 @@ func TestInterfaceGenerator(t *testing.T) {
 	}
 
 	metrics := []string{
-		"rxBytes", "rxPackets", "rxErrors", "rxDrops",
-		"rxFifo", "rxFrame", "rxCompressed", "rxMulticast",
-		"txBytes", "txPackets", "txErrors", "txDrops",
-		"txFifo", "txColls", "txCarrier", "txCompressed",
+		"rxBytes", "txBytes",
 	}
 
 	for _, metric := range metrics {
