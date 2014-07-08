@@ -96,11 +96,6 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 	return result, nil
 }
 
-const METRICS_POST_DEQUEUE_DELAY = 30 * time.Second // delay for dequeuing from buffer queue
-const METRICS_POST_RETRY_DELAY = 1 * time.Minute    // delay for retring a request that causes errors
-const METRICS_POST_RETRY_MAX = 10                   // max numbers of retries for a request that causes errors
-const METRICS_POST_BUFFER_SIZE = 30                 // max numbers of requests stored in buffer queue.
-
 // Interval between each updating host specs.
 var specsUpdateInterval = 1 * time.Hour
 
@@ -112,11 +107,11 @@ func delayByHost(host *mackerel.Host) time.Duration {
 func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel.Host) {
 	metricsResult := ag.Watch()
 
-	postQueue := make(chan []*mackerel.CreatingMetricsValue, METRICS_POST_BUFFER_SIZE)
+	postQueue := make(chan []*mackerel.CreatingMetricsValue, conf.Connection.Post_Metrics_Buffer_Size)
 
 	go func() {
 		for values := range postQueue {
-			tries := METRICS_POST_RETRY_MAX
+			tries := conf.Connection.Post_Metrics_Retry_Max
 			for {
 				err := api.PostMetricsValues(values)
 				if err == nil {
@@ -132,10 +127,10 @@ func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel
 				}
 
 				logger.Debugf("Retrying to post metrics...")
-				time.Sleep(METRICS_POST_RETRY_DELAY)
+				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
 			}
 
-			time.Sleep(METRICS_POST_DEQUEUE_DELAY)
+			time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
 		}
 	}()
 
