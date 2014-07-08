@@ -7,10 +7,10 @@ var DefaultConfig = &Config{
 	Conffile: "/etc/mackerel-agent/mackerel-agent.conf",
 	Roles:    []string{},
 	Verbose:  false,
-	Metrics: MetricsConfig{
-		Dequeue_Delay: 30,
-		Retry_Delay:   60,
-		Retry_Max:     10,
-		Buffer_Size:   30,
+	Connection: ConnectionConfig{
+		Metrics_Dequeue_Delay: 30,
+		Metrics_Retry_Delay:   60,
+		Metrics_Retry_Max:     10,
+		Metrics_Buffer_Size:   30,
 	},
 }
