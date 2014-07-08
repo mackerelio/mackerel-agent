@@ -107,11 +107,11 @@ func delayByHost(host *mackerel.Host) time.Duration {
 func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel.Host) {
 	metricsResult := ag.Watch()
 
-	postQueue := make(chan []*mackerel.CreatingMetricsValue, conf.Connection.Metrics_Buffer_Size)
+	postQueue := make(chan []*mackerel.CreatingMetricsValue, conf.Connection.Post_Metrics_Buffer_Size)
 
 	go func() {
 		for values := range postQueue {
-			tries := conf.Connection.Metrics_Retry_Max
+			tries := conf.Connection.Post_Metrics_Retry_Max
 			for {
 				err := api.PostMetricsValues(values)
 				if err == nil {
@@ -127,10 +127,10 @@ func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel
 				}
 
 				logger.Debugf("Retrying to post metrics...")
-				time.Sleep(conf.Connection.Metrics_Retry_Delay * time.Second)
+				time.Sleep(conf.Connection.Post_Metrics_Retry_Delay_Seconds * time.Second)
 			}
 
-			time.Sleep(conf.Connection.Metrics_Dequeue_Delay * time.Second)
+			time.Sleep(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds * time.Second)
 		}
 	}()
 

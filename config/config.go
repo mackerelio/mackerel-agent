@@ -28,10 +28,10 @@ type PluginConfig struct {
 }
 
 type ConnectionConfig struct {
-	Metrics_Dequeue_Delay time.Duration // delay for dequeuing from buffer queue
-	Metrics_Retry_Delay   time.Duration // delay for retring a request that causes errors
-	Metrics_Retry_Max     int           // max numbers of retries for a request that causes errors
-	Metrics_Buffer_Size   int           // max numbers of requests stored in buffer queue.
+	Post_Metrics_Dequeue_Delay_Seconds time.Duration // delay for dequeuing from buffer queue
+	Post_Metrics_Retry_Delay_Seconds   time.Duration // delay for retring a request that causes errors
+	Post_Metrics_Retry_Max             int           // max numbers of retries for a request that causes errors
+	Post_Metrics_Buffer_Size           int           // max numbers of requests stored in buffer queue.
 }
 
 func LoadConfig(conffile string) (Config, error) {
@@ -50,17 +50,17 @@ func LoadConfig(conffile string) (Config, error) {
 	if config.Verbose == false {
 		config.Verbose = DefaultConfig.Verbose
 	}
-	if config.Connection.Metrics_Dequeue_Delay == 0 {
-		config.Connection.Metrics_Dequeue_Delay = DefaultConfig.Connection.Metrics_Dequeue_Delay
+	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds == 0 {
+		config.Connection.Post_Metrics_Dequeue_Delay_Seconds = DefaultConfig.Connection.Post_Metrics_Dequeue_Delay_Seconds
 	}
-	if config.Connection.Metrics_Retry_Delay == 0 {
-		config.Connection.Metrics_Retry_Delay = DefaultConfig.Connection.Metrics_Retry_Delay
+	if config.Connection.Post_Metrics_Retry_Delay_Seconds == 0 {
+		config.Connection.Post_Metrics_Retry_Delay_Seconds = DefaultConfig.Connection.Post_Metrics_Retry_Delay_Seconds
 	}
-	if config.Connection.Metrics_Retry_Max == 0 {
-		config.Connection.Metrics_Retry_Max = DefaultConfig.Connection.Metrics_Retry_Max
+	if config.Connection.Post_Metrics_Retry_Max == 0 {
+		config.Connection.Post_Metrics_Retry_Max = DefaultConfig.Connection.Post_Metrics_Retry_Max
 	}
-	if config.Connection.Metrics_Buffer_Size == 0 {
-		config.Connection.Metrics_Buffer_Size = DefaultConfig.Connection.Metrics_Buffer_Size
+	if config.Connection.Post_Metrics_Buffer_Size == 0 {
+		config.Connection.Post_Metrics_Buffer_Size = DefaultConfig.Connection.Post_Metrics_Buffer_Size
 	}
 
 	return config, err
