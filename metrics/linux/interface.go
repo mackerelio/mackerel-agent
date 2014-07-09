@@ -41,6 +41,9 @@ var interfaceMetrics = []string{
 	"txFifo", "txColls", "txCarrier", "txCompressed",
 }
 
+// metrics for posting to Mackerel
+var postInterfaceMetricsRegexp = regexp.MustCompile(`^interface\..+\.(rxBytes|txBytes)$`)
+
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
@@ -59,6 +62,9 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, value := range prevValues {
+		if !postInterfaceMetricsRegexp.MatchString(name) {
+			continue
+		}
 		currValue, ok := currValues[name]
 		if ok {
 			ret[name+".delta"] = (currValue - value) / interval.Seconds()

@@ -45,6 +45,9 @@ var diskMetricsNames = []string{
 	"ioInProgress", "ioTime", "ioTimeWeighted",
 }
 
+// metrics for posting to Mackerel
+var postDiskMetricsRegexp = regexp.MustCompile(`^disk\..+\.(reads|writes)$`)
+
 var diskLogger = logging.GetLogger("metrics.disk")
 
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
@@ -63,6 +66,9 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, value := range prevValues {
+		if !postDiskMetricsRegexp.MatchString(name) {
+			continue
+		}
 		currValue, ok := currValues[name]
 		if ok {
 			ret[name+".delta"] = (currValue - value) / interval.Seconds()
