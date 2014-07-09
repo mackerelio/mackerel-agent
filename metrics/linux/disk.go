@@ -46,9 +46,7 @@ var diskMetricsNames = []string{
 }
 
 // metrics for posting to Mackerel
-var postDiskMetricsNames = map[string]bool{
-	"reads": true, "writes": true,
-}
+var postDiskMetricsRegexp = regexp.MustCompile(`^disk\..+\.(reads|writes)$`)
 
 var diskLogger = logging.GetLogger("metrics.disk")
 
@@ -68,6 +66,9 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, value := range prevValues {
+		if !postDiskMetricsRegexp.MatchString(name) {
+			continue
+		}
 		currValue, ok := currValues[name]
 		if ok {
 			ret[name+".delta"] = (currValue - value) / interval.Seconds()
@@ -94,9 +95,6 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 		deviceResult := make(map[string]float64)
 		hasNonZeroValue := false
 		for i, _ := range diskMetricsNames {
-			if _, ok := postDiskMetricsNames[diskMetricsNames[i]]; !ok {
-				continue
-			}
 			key := fmt.Sprintf("disk.%s.%s", device, diskMetricsNames[i])
 			value, err := strconv.ParseFloat(values[i], 64)
 			if err != nil {

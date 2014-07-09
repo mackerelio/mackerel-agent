@@ -42,9 +42,7 @@ var interfaceMetrics = []string{
 }
 
 // metrics for posting to Mackerel
-var postInterfaceMetrics = map[string]bool{
-	"rxBytes": true, "txBytes": true,
-}
+var postInterfaceMetricsRegexp = regexp.MustCompile(`^interface\..+\.(rxBytes|txBytes)$`)
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
@@ -64,6 +62,9 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, value := range prevValues {
+		if !postInterfaceMetricsRegexp.MatchString(name) {
+			continue
+		}
 		currValue, ok := currValues[name]
 		if ok {
 			ret[name+".delta"] = (currValue - value) / interval.Seconds()
@@ -98,9 +99,6 @@ func (g *InterfaceGenerator) collectIntarfacesValues() (metrics.Values, error) {
 			interfaceResult := make(map[string]float64)
 			hasNonZeroValue := false
 			for i, _ := range interfaceMetrics {
-				if _, ok := postInterfaceMetrics[interfaceMetrics[i]]; !ok {
-					continue
-				}
 				key := fmt.Sprintf("interface.%s.%s", name, interfaceMetrics[i])
 				value, err := strconv.ParseFloat(cols[i], 64)
 				if err != nil {
@@ -122,7 +120,21 @@ func (g *InterfaceGenerator) collectIntarfacesValues() (metrics.Values, error) {
 
 	// results (eth0) sample
 	/** [%!s(*metrics.Value=&{interface.eth0.rxBytes 6.6074069281e+10})
+	     %!s(*metrics.Value=&{interface.eth0.rxPackets 1.0483646e+08})
+	     %!s(*metrics.Value=&{interface.eth0.rxErrors 0})
+	     %!s(*metrics.Value=&{interface.eth0.rxDrops 1})
+	     %!s(*metrics.Value=&{interface.eth0.rxFifo 0})
+	     %!s(*metrics.Value=&{interface.eth0.rxFrame 0})
+	     %!s(*metrics.Value=&{interface.eth0.rxCompressed 0})
+	     %!s(*metrics.Value=&{interface.eth0.rxMulticast 0})
 	     %!s(*metrics.Value=&{interface.eth0.txBytes 9.180531994e+09})
+	     %!s(*metrics.Value=&{interface.eth0.txPackets 5.3107958e+07})
+	     %!s(*metrics.Value=&{interface.eth0.txErrors 0})
+	     %!s(*metrics.Value=&{interface.eth0.txDrops 0})
+	     %!s(*metrics.Value=&{interface.eth0.txFifo 0})
+	     %!s(*metrics.Value=&{interface.eth0.txColls 0})
+	     %!s(*metrics.Value=&{interface.eth0.txCarrier 0})
+	     %!s(*metrics.Value=&{interface.eth0.txCompressed 0})
 	    ]
 	**/
 
