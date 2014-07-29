@@ -32,7 +32,14 @@ func metricsGenerators(conf config.Config) []metrics.Generator {
 		&metricsLinux.DiskGenerator{Interval: 60},
 	}
 	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, &metricsLinux.PluginGenerator{pluginConfig})
+		pluginGenerator := &metricsLinux.PluginGenerator{Config: pluginConfig}
+		err := pluginGenerator.Init()
+
+		if err == nil {
+			generators = append(generators, pluginGenerator)
+		} else {
+			logger.Errorf("Error while loading plugin: %s", err)
+		}
 	}
 
 	return generators

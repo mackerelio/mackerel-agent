@@ -22,26 +22,26 @@ import (
 // mackerel-agent runs specified command and parses the result for the metric names and values.
 type PluginGenerator struct {
 	Config config.PluginConfig
+	Meta   *pluginMeta
 }
 
 // pluginMeta is generated from plugin command. (not the configuration file)
 type pluginMeta struct {
-	Schema struct {
-		Graphs []customGraphDef
-	}
+	Namespace string
+	Graphs    map[string]customGraphDef
 }
 
 type customGraphDef struct {
-	Name        string
-	DisplayName string
-	Unit        string
-	Metrics     []customGraphMetricDef
+	Prefix  string
+	Label   string
+	Unit    string
+	Metrics map[string]customGraphMetricDef
 }
 
 type customGraphMetricDef struct {
-	Name        string
-	DisplayName string
-	Stacked     bool
+	Name    string
+	Label   string
+	Stacked bool
 }
 
 var pluginLogger = logging.GetLogger("metrics.plugin")
@@ -55,6 +55,12 @@ func (g *PluginGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 	return results, nil
+}
+
+func (g *PluginGenerator) Init() error {
+	var err error
+	g.Meta, err = g.loadPluginMeta()
+	return err
 }
 
 // loadPluginMeta obtains plugin information (e.g. graph visuals, metric
@@ -95,37 +101,35 @@ func (g *PluginGenerator) loadPluginMeta() (*pluginMeta, error) {
 		return nil, fmt.Errorf("while reading the first line of command %q: %s", command, err)
 	}
 
-	var pluginConfigMeta map[string]string
+	// Parse the header line of format:
+	// # mackerel-agent-plugin [key=value]...
+	pluginMetaHeader := map[string]string{}
 
-	if pluginConfigMeta == nil {
-		pluginConfigMeta = map[string]string{}
+	re := regexp.MustCompile(`^#\s*mackerel-agent-plugin\b(.*)`)
+	m := re.FindStringSubmatch(headerLine)
+	if m == nil {
+		return nil, fmt.Errorf("bad format of first line: %q", headerLine)
+	}
 
-		re := regexp.MustCompile(`^#\s*mackerel-agent-plugin\b(.*)`)
-		m := re.FindStringSubmatch(headerLine)
-		if m == nil {
-			return nil, fmt.Errorf("bad format of first line: %q", headerLine)
+	for _, field := range strings.Fields(m[1]) {
+		keyValue := strings.Split(field, "=")
+		var value string
+		if len(keyValue) > 1 {
+			value = keyValue[1]
+		} else {
+			value = ""
 		}
+		pluginMetaHeader[keyValue[0]] = value
+	}
 
-		for _, field := range strings.Fields(m[1]) {
-			keyValue := strings.Split(field, "=")
-			var value string
-			if len(keyValue) > 1 {
-				value = keyValue[1]
-			} else {
-				value = ""
-			}
-			pluginConfigMeta[keyValue[0]] = value
-		}
+	// Check schema version
+	version, ok := pluginMetaHeader["version"]
+	if !ok {
+		version = "1"
+	}
 
-		// Check schema version
-		version, ok := pluginConfigMeta["version"]
-		if !ok {
-			version = "1"
-		}
-
-		if version != "1" {
-			return nil, fmt.Errorf("unsupported plugin meta version: %q", version)
-		}
+	if version != "1" {
+		return nil, fmt.Errorf("unsupported plugin meta version: %q", version)
 	}
 
 	conf := &pluginMeta{}
@@ -169,6 +173,7 @@ func (g *PluginGenerator) collectValues() (metrics.Values, error) {
 			pluginLogger.Warningf("Failed to parse values: %s", err)
 			continue
 		}
+
 		results[PLUGIN_PREFIX+items[0]] = value
 	}
 

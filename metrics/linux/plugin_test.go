@@ -23,7 +23,7 @@ func TestPluginGenerate(t *testing.T) {
 	conf := config.PluginConfig{
 		Command: "ruby ../../example/metrics-plugins/dice.rb",
 	}
-	g := &PluginGenerator{conf}
+	g := &PluginGenerator{Config: conf}
 	values, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
@@ -35,10 +35,9 @@ func TestPluginGenerate(t *testing.T) {
 }
 
 func TestPluginCollectValues(t *testing.T) {
-	g := &PluginGenerator{
-		config.PluginConfig{
-			Command: "ruby ../../example/metrics-plugins/dice.rb",
-		},
+	g := &PluginGenerator{Config: config.PluginConfig{
+		Command: "ruby ../../example/metrics-plugins/dice.rb",
+	},
 	}
 	values, err := g.collectValues()
 	if err != nil {
@@ -50,10 +49,9 @@ func TestPluginCollectValues(t *testing.T) {
 }
 
 func TestPluginCollectValuesCommand(t *testing.T) {
-	g := &PluginGenerator{
-		config.PluginConfig{
-			Command: "echo \"just.echo.1\t1\t1397822016\"",
-		},
+	g := &PluginGenerator{Config: config.PluginConfig{
+		Command: "echo \"just.echo.1\t1\t1397822016\"",
+	},
 	}
 
 	values, err := g.collectValues()
@@ -76,31 +74,28 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 }
 
 func TestPluginObtainConfiguration(t *testing.T) {
-	g := &PluginGenerator{
-		config.PluginConfig{
-			Command: `echo '# mackerel-agent-plugin version=1
-[[schema.graphs]]
-name = "my.mysql.query"
+	g := &PluginGenerator{Config: config.PluginConfig{
+		Command: `echo '# mackerel-agent-plugin version=1
+namespace = "my.custom.metric"
+
+[graphs.query]
+prefix = "query"
 label = "MySQL query"
-[[schema.graphs.metrics]]
-name = "query.foo1"
+[graphs.query.metrics.foo1]
 label = "Foo-1"
-[[schema.graphs.metrics]]
-name = "query.foo2"
+[graphs.query.metrics.foo2]
 label = "Foo-2"
 
-[[schema.graphs]]
-name = "my.mysql.memory"
+[graphs.memory]
+prefix = "memory"
 label = "MySQL memory"
-[[schema.graphs.metrics]]
-name = "memory.bar1"
-label = "Foo-1"
-[[schema.graphs.metrics]]
-name = "memory.bar2"
-label = "Foo-2"
+[graphs.memory.metrics.bar1]
+label = "Bar-1"
+[graphs.memory.metrics.bar2]
+label = "Bar-2"
 '
 `,
-		},
+	},
 	}
 
 	meta, err := g.loadPluginMeta()
@@ -108,18 +103,16 @@ label = "Foo-2"
 		t.Errorf("should parse meta: %s", err)
 	}
 
-	if len(meta.Schema.Graphs) != 2 ||
-		meta.Schema.Graphs[0].Name != "my.mysql.query" ||
-		len(meta.Schema.Graphs[0].Metrics) != 2 ||
-		meta.Schema.Graphs[0].Metrics[0].Name != "query.foo1" {
+	if meta.Namespace != "my.custom.metric" ||
+		meta.Graphs["memory"].Prefix != "memory" ||
+		meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" {
 
 		t.Errorf("loading meta failed got: %+v", meta)
 	}
 
-	generatorWithoutConf := &PluginGenerator{
-		config.PluginConfig{
-			Command: "echo \"just.echo.1\t1\t1397822016\"",
-		},
+	generatorWithoutConf := &PluginGenerator{Config: config.PluginConfig{
+		Command: "echo \"just.echo.1\t1\t1397822016\"",
+	},
 	}
 
 	_, err = generatorWithoutConf.loadPluginMeta()
@@ -127,10 +120,9 @@ label = "Foo-2"
 		t.Error("should raise error")
 	}
 
-	generatorWithBadVersion := &PluginGenerator{
-		config.PluginConfig{
-			Command: `echo "# mackerel-agent-plugin version=666"`,
-		},
+	generatorWithBadVersion := &PluginGenerator{Config: config.PluginConfig{
+		Command: `echo "# mackerel-agent-plugin version=666"`,
+	},
 	}
 
 	_, err = generatorWithBadVersion.loadPluginMeta()
