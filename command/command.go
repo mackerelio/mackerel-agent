@@ -218,6 +218,11 @@ func Prepare(conf config.Config) (*mackerel.API, *mackerel.Host, error) {
 func Run(conf config.Config, api *mackerel.API, host *mackerel.Host) {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
-	ag := &agent.Agent{metricsGenerators(conf)}
+	ag := &agent.Agent{
+		MetricsGenerators: metricsGenerators(conf),
+		PluginGenerators:  pluginGenerators(conf),
+	}
+	ag.InitPluginGenerators(api)
+
 	loop(ag, conf, api, host)
 }

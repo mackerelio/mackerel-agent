@@ -13,6 +13,7 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 
 	"github.com/BurntSushi/toml"
@@ -21,14 +22,15 @@ import (
 // PluginGenerator collects user-defined metrics.
 // mackerel-agent runs specified command and parses the result for the metric names and values.
 type PluginGenerator struct {
-	Config config.PluginConfig
-	Meta   *pluginMeta
+	Config    config.PluginConfig
+	ConfigKey string
+	Meta      *pluginMeta
+	Version   int
 }
 
 // pluginMeta is generated from plugin command. (not the configuration file)
 type pluginMeta struct {
-	Namespace string
-	Graphs    map[string]customGraphDef
+	Graphs map[string]customGraphDef
 }
 
 type customGraphDef struct {
@@ -57,10 +59,20 @@ func (g *PluginGenerator) Generate() (metrics.Values, error) {
 	return results, nil
 }
 
-func (g *PluginGenerator) Init() error {
+func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 	var err error
 	g.Meta, err = g.loadPluginMeta()
-	return err
+	if err != nil {
+		return err
+	}
+
+	payload := g.makeCreateGraphDefsPayload()
+	if payload == nil {
+		// this plugin does not provide graph definitions
+		return nil
+	}
+
+	return api.CreateGraphDefs(payload)
 }
 
 // loadPluginMeta obtains plugin information (e.g. graph visuals, metric
@@ -68,9 +80,8 @@ func (g *PluginGenerator) Init() error {
 // mackerel-agent runs the command with MACKEREL_AGENT_PLUGIN_META
 // environment variable set.  The command is supposed to output like below:
 //
-//	# mackerel-agent-plugin version=1
-//	[[graphs]]
-//	...
+//	# mackerel-agent-plugin
+//	TBD
 //
 // The output should start with a line beginning with '#', which contains
 // meta-info of the configuration. (eg. plugin schema version)
@@ -132,6 +143,8 @@ func (g *PluginGenerator) loadPluginMeta() (*pluginMeta, error) {
 		return nil, fmt.Errorf("unsupported plugin meta version: %q", version)
 	}
 
+	g.Version = 1
+
 	conf := &pluginMeta{}
 	_, err = toml.DecodeReader(&outBuffer, conf)
 
@@ -140,6 +153,38 @@ func (g *PluginGenerator) loadPluginMeta() (*pluginMeta, error) {
 	}
 
 	return conf, nil
+}
+
+func (g *PluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDefsPayload {
+	if g.Meta == nil {
+		return nil
+	}
+
+	payloads := []mackerel.CreateGraphDefsPayload{}
+
+	for key, graph := range g.Meta.Graphs {
+		payload := mackerel.CreateGraphDefsPayload{
+			Name:        PLUGIN_PREFIX + key,
+			DisplayName: graph.Label,
+			Unit:        graph.Unit,
+		}
+		if payload.Unit == "" {
+			payload.Unit = "float"
+		}
+
+		for metricKey, metric := range graph.Metrics {
+			metricPayload := mackerel.CreateGraphDefsPayloadMetric{
+				Name:        PLUGIN_PREFIX + key + "." + metricKey,
+				DisplayName: metric.Label,
+				IsStacked:   metric.Stacked,
+			}
+			payload.Metrics = append(payload.Metrics, metricPayload)
+		}
+
+		payloads = append(payloads, payload)
+	}
+
+	return payloads
 }
 
 func (g *PluginGenerator) collectValues() (metrics.Values, error) {
@@ -174,7 +219,13 @@ func (g *PluginGenerator) collectValues() (metrics.Values, error) {
 			continue
 		}
 
-		results[PLUGIN_PREFIX+items[0]] = value
+		key := items[0]
+
+		if g.Version == 1 {
+			key = g.ConfigKey + "." + key
+		}
+
+		results[PLUGIN_PREFIX+key] = value
 	}
 
 	return results, nil

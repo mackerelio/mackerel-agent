@@ -76,8 +76,6 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 func TestPluginObtainConfiguration(t *testing.T) {
 	g := &PluginGenerator{Config: config.PluginConfig{
 		Command: `echo '# mackerel-agent-plugin version=1
-namespace = "my.custom.metric"
-
 [graphs.query]
 prefix = "query"
 label = "MySQL query"
@@ -103,8 +101,7 @@ label = "Bar-2"
 		t.Errorf("should parse meta: %s", err)
 	}
 
-	if meta.Namespace != "my.custom.metric" ||
-		meta.Graphs["memory"].Prefix != "memory" ||
+	if meta.Graphs["memory"].Prefix != "memory" ||
 		meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" {
 
 		t.Errorf("loading meta failed got: %+v", meta)

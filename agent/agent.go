@@ -1,12 +1,15 @@
 package agent
 
 import (
-	"github.com/mackerelio/mackerel-agent/metrics"
 	"time"
+
+	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 type Agent struct {
 	MetricsGenerators []metrics.Generator
+	PluginGenerators  []metrics.PluginGenerator
 }
 
 type MetricsResult struct {
@@ -15,7 +18,11 @@ type MetricsResult struct {
 }
 
 func (agent *Agent) collectMetrics(collectedTime time.Time) *MetricsResult {
-	result := generateValues(agent.MetricsGenerators)
+	generators := agent.MetricsGenerators
+	for _, g := range agent.PluginGenerators {
+		generators = append(generators, g)
+	}
+	result := generateValues(generators)
 	values := <-result
 	return &MetricsResult{Created: collectedTime, Values: values}
 }
@@ -58,4 +65,10 @@ func (agent *Agent) Watch() chan *MetricsResult {
 	}()
 
 	return metricsResult
+}
+
+func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
+	for _, g := range agent.PluginGenerators {
+		g.InitWithAPI(api)
+	}
 }

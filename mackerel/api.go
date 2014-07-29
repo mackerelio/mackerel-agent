@@ -222,3 +222,52 @@ func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error
 
 	return nil
 }
+
+type CreateGraphDefsPayload struct {
+	Name        string                         `json:"name"`
+	DisplayName string                         `json:"displayName"`
+	Unit        string                         `json:"unit"`
+	Metrics     []CreateGraphDefsPayloadMetric `json:"metrics"`
+}
+
+type CreateGraphDefsPayloadMetric struct {
+	Name        string `json:"name"`
+	DisplayName string `json:"displayName"`
+	IsStacked   bool   `json:"isStacked"`
+}
+
+func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
+	requestJSON, err := json.Marshal(payloads)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(
+		"POST",
+		api.urlFor("/api/v0/graph-defs/create").String(),
+		bytes.NewReader(requestJSON),
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := api.Do(req)
+	if err != nil {
+		return err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 300 {
+		logger.Warningf("Create graph defs response: %s", string(body))
+	} else {
+		logger.Debugf("Create graph defs response: %s", string(body))
+	}
+
+	return nil
+}
