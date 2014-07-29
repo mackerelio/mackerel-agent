@@ -22,10 +22,8 @@ import (
 // PluginGenerator collects user-defined metrics.
 // mackerel-agent runs specified command and parses the result for the metric names and values.
 type PluginGenerator struct {
-	Config    config.PluginConfig
-	ConfigKey string
-	Meta      *pluginMeta
-	Version   int
+	Config config.PluginConfig
+	Meta   *pluginMeta
 }
 
 // pluginMeta is generated from plugin command. (not the configuration file)
@@ -143,8 +141,6 @@ func (g *PluginGenerator) loadPluginMeta() (*pluginMeta, error) {
 		return nil, fmt.Errorf("unsupported plugin meta version: %q", version)
 	}
 
-	g.Version = 1
-
 	conf := &pluginMeta{}
 	_, err = toml.DecodeReader(&outBuffer, conf)
 
@@ -220,10 +216,6 @@ func (g *PluginGenerator) collectValues() (metrics.Values, error) {
 		}
 
 		key := items[0]
-
-		if g.Version == 1 {
-			key = g.ConfigKey + "." + key
-		}
 
 		results[PLUGIN_PREFIX+key] = value
 	}
