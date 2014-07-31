@@ -96,15 +96,15 @@ label = "Bar-2"
 	},
 	}
 
-	meta, err := g.loadPluginMeta()
-	if meta == nil {
+	err := g.loadPluginMeta()
+	if g.Meta == nil {
 		t.Errorf("should parse meta: %s", err)
 	}
 
-	if meta.Graphs["memory"].Prefix != "memory" ||
-		meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" {
+	if g.Meta.Graphs["memory"].Prefix != "memory" ||
+		g.Meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" {
 
-		t.Errorf("loading meta failed got: %+v", meta)
+		t.Errorf("loading meta failed got: %+v", g.Meta)
 	}
 
 	generatorWithoutConf := &PluginGenerator{Config: config.PluginConfig{
@@ -112,7 +112,7 @@ label = "Bar-2"
 	},
 	}
 
-	_, err = generatorWithoutConf.loadPluginMeta()
+	err = generatorWithoutConf.loadPluginMeta()
 	if err == nil {
 		t.Error("should raise error")
 	}
@@ -122,7 +122,7 @@ label = "Bar-2"
 	},
 	}
 
-	_, err = generatorWithBadVersion.loadPluginMeta()
+	err = generatorWithBadVersion.loadPluginMeta()
 	if err == nil {
 		t.Error("should raise error")
 	}

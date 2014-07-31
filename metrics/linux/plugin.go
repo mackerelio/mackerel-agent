@@ -58,8 +58,7 @@ func (g *PluginGenerator) Generate() (metrics.Values, error) {
 }
 
 func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
-	var err error
-	g.Meta, err = g.loadPluginMeta()
+	err := g.loadPluginMeta()
 	if err != nil {
 		return err
 	}
@@ -83,7 +82,7 @@ func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 //
 // The output should start with a line beginning with '#', which contains
 // meta-info of the configuration. (eg. plugin schema version)
-func (g *PluginGenerator) loadPluginMeta() (*pluginMeta, error) {
+func (g *PluginGenerator) loadPluginMeta() error {
 	command := g.Config.Command
 	pluginLogger.Debugf("Obtaining plugin configuration: %q", command)
 
@@ -100,14 +99,14 @@ func (g *PluginGenerator) loadPluginMeta() (*pluginMeta, error) {
 
 	err := cmd.Run()
 	if err != nil {
-		return nil, fmt.Errorf("running %q failed: %s, stderr=%q", command, err, string(errBuffer.Bytes()))
+		return fmt.Errorf("running %q failed: %s, stderr=%q", command, err, string(errBuffer.Bytes()))
 	}
 
 	// Read the plugin configuration meta (version etc)
 
 	headerLine, err := outBuffer.ReadString('\n')
 	if err != nil {
-		return nil, fmt.Errorf("while reading the first line of command %q: %s", command, err)
+		return fmt.Errorf("while reading the first line of command %q: %s", command, err)
 	}
 
 	// Parse the header line of format:
@@ -117,7 +116,7 @@ func (g *PluginGenerator) loadPluginMeta() (*pluginMeta, error) {
 	re := regexp.MustCompile(`^#\s*mackerel-agent-plugin\b(.*)`)
 	m := re.FindStringSubmatch(headerLine)
 	if m == nil {
-		return nil, fmt.Errorf("bad format of first line: %q", headerLine)
+		return fmt.Errorf("bad format of first line: %q", headerLine)
 	}
 
 	for _, field := range strings.Fields(m[1]) {
@@ -138,17 +137,19 @@ func (g *PluginGenerator) loadPluginMeta() (*pluginMeta, error) {
 	}
 
 	if version != "1" {
-		return nil, fmt.Errorf("unsupported plugin meta version: %q", version)
+		return fmt.Errorf("unsupported plugin meta version: %q", version)
 	}
 
 	conf := &pluginMeta{}
 	_, err = toml.DecodeReader(&outBuffer, conf)
 
 	if err != nil {
-		return nil, fmt.Errorf("while reading plugin configuration: %s", err)
+		return fmt.Errorf("while reading plugin configuration: %s", err)
 	}
 
-	return conf, nil
+	g.Meta = conf
+
+	return nil
 }
 
 func (g *PluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDefsPayload {
