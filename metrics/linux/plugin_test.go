@@ -74,8 +74,9 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 }
 
 func TestPluginObtainConfiguration(t *testing.T) {
-	g := &PluginGenerator{Config: config.PluginConfig{
-		Command: `echo '# mackerel-agent-plugin version=1
+	g := &PluginGenerator{
+		Config: config.PluginConfig{
+			Command: `echo '# mackerel-agent-plugin version=1
 [graphs.query]
 prefix = "query"
 label = "MySQL query"
@@ -93,7 +94,7 @@ label = "Bar-1"
 label = "Bar-2"
 '
 `,
-	},
+		},
 	}
 
 	err := g.loadPluginMeta()
@@ -107,9 +108,10 @@ label = "Bar-2"
 		t.Errorf("loading meta failed got: %+v", g.Meta)
 	}
 
-	generatorWithoutConf := &PluginGenerator{Config: config.PluginConfig{
-		Command: "echo \"just.echo.1\t1\t1397822016\"",
-	},
+	generatorWithoutConf := &PluginGenerator{
+		Config: config.PluginConfig{
+			Command: "echo \"just.echo.1\t1\t1397822016\"",
+		},
 	}
 
 	err = generatorWithoutConf.loadPluginMeta()
@@ -117,9 +119,10 @@ label = "Bar-2"
 		t.Error("should raise error")
 	}
 
-	generatorWithBadVersion := &PluginGenerator{Config: config.PluginConfig{
-		Command: `echo "# mackerel-agent-plugin version=666"`,
-	},
+	generatorWithBadVersion := &PluginGenerator{
+		Config: config.PluginConfig{
+			Command: `echo "# mackerel-agent-plugin version=666"`,
+		},
 	}
 
 	err = generatorWithBadVersion.loadPluginMeta()
