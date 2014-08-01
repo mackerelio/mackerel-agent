@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/mackerelio/mackerel-agent/config"
+	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
@@ -168,24 +169,35 @@ func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 		},
 	}
 
-	payload := g.makeCreateGraphDefsPayload()
+	payloads := g.makeCreateGraphDefsPayload()
 
-	if len(payload) != 2 {
-		t.Errorf("Bad payload created: %+v", payload)
+	if len(payloads) != 2 {
+		t.Errorf("Bad payload created: %+v", payloads)
 	}
 
-	if payload[0].Name != "custom.one" ||
-		payload[0].DisplayName != "My Graph One" ||
-		len(payload[0].Metrics) != 2 {
-
-		t.Errorf("Bad payload created: %+v", payload[0])
+	var payloadOne *mackerel.CreateGraphDefsPayload
+	for _, payload := range payloads {
+		if payload.Name == "custom.one" {
+			payloadOne = &payload
+			break
+		}
 	}
 
-	if payload[0].Unit != "float" {
-		t.Errorf("Default unit should be float: %+v", payload[0])
+	if payloadOne == nil {
+		t.Errorf("Payload with name custom.one not found: %+v", payloads)
 	}
 
-	metrics := payload[0].Metrics
+	if payloadOne.DisplayName != "My Graph One" ||
+		len(payloadOne.Metrics) != 2 {
+
+		t.Errorf("Bad payload created: %+v", payloadOne)
+	}
+
+	if payloadOne.Unit != "float" {
+		t.Errorf("Default unit should be float: %+v", payloadOne)
+	}
+
+	metrics := payloadOne.Metrics
 	if metrics[0].Name != "custom.one.foo1" ||
 		metrics[0].DisplayName != "Foo(1)" ||
 		metrics[0].IsStacked != true {
