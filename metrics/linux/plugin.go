@@ -76,11 +76,28 @@ func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 // mackerel-agent runs the command with MACKEREL_AGENT_PLUGIN_META
 // environment variable set.  The command is supposed to output like below:
 //
-//	# mackerel-agent-plugin
-//	TBD
+// 	# mackerel-agent-plugin
+// 	[graphs.GRAPH_NAME]
+// 	label = GRAPH_LABEL
+// 	[graphs.GRAPH_NAME.metrics.METRIC_NAME]
+// 	label = METRIC_LABEL
+// 	unit = UNIT_TYPE
+// 	stacked = BOOLEAN
 //
 // The output should start with a line beginning with '#', which contains
 // meta-info of the configuration. (eg. plugin schema version)
+//
+// A working example is like below:
+//
+// 	[graphs.dice]
+// 	label = "My Dice"
+// 	[graphs.dice.metrics.d6]
+// 	label = "Dice(d6)"
+// 	unit = "int"
+// 	[graphs.dice.metrics.d20]
+// 	label = "Dice(d20)"
+// 	unit = "int"
+
 func (g *PluginGenerator) loadPluginMeta() error {
 	command := g.Config.Command
 	pluginLogger.Debugf("Obtaining plugin configuration: %q", command)
@@ -204,7 +221,7 @@ func (g *PluginGenerator) collectValues() (metrics.Values, error) {
 	results := make(map[string]float64, 0)
 	for _, line := range strings.Split(string(outBuffer.Bytes()), "\n") {
 		// Key, value, timestamp
-		// ex.) localhost.localdomain.tcp.CLOSING 0 1397031808
+		// ex.) tcp.CLOSING 0 1397031808
 		items := strings.Split(line, "\t")
 		if len(items) != 3 {
 			continue

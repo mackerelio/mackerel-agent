@@ -78,7 +78,6 @@ func TestPluginObtainConfiguration(t *testing.T) {
 		Config: config.PluginConfig{
 			Command: `echo '# mackerel-agent-plugin version=1
 [graphs.query]
-prefix = "query"
 label = "MySQL query"
 [graphs.query.metrics.foo1]
 label = "Foo-1"
@@ -86,7 +85,6 @@ label = "Foo-1"
 label = "Foo-2"
 
 [graphs.memory]
-prefix = "memory"
 label = "MySQL memory"
 [graphs.memory.metrics.bar1]
 label = "Bar-1"
@@ -102,9 +100,7 @@ label = "Bar-2"
 		t.Errorf("should parse meta: %s", err)
 	}
 
-	if g.Meta.Graphs["memory"].Prefix != "memory" ||
-		g.Meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" {
-
+	if g.Meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" {
 		t.Errorf("loading meta failed got: %+v", g.Meta)
 	}
 
