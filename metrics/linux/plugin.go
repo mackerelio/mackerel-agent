@@ -38,7 +38,6 @@ type customGraphDef struct {
 }
 
 type customGraphMetricDef struct {
-	Name    string
 	Label   string
 	Stacked bool
 }

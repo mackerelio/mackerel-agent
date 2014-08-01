@@ -73,19 +73,22 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 	}
 }
 
-func TestPluginObtainConfiguration(t *testing.T) {
+func TestPluginLoadPluginMeta(t *testing.T) {
 	g := &PluginGenerator{
 		Config: config.PluginConfig{
 			Command: `echo '# mackerel-agent-plugin version=1
 [graphs.query]
 label = "MySQL query"
+unit = "int"
 [graphs.query.metrics.foo1]
 label = "Foo-1"
 [graphs.query.metrics.foo2]
 label = "Foo-2"
+stacked = true
 
 [graphs.memory]
 label = "MySQL memory"
+unit = "float"
 [graphs.memory.metrics.bar1]
 label = "Bar-1"
 [graphs.memory.metrics.bar2]
@@ -100,7 +103,14 @@ label = "Bar-2"
 		t.Errorf("should parse meta: %s", err)
 	}
 
-	if g.Meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" {
+	if g.Meta.Graphs["query"].Label != "MySQL query" ||
+		g.Meta.Graphs["query"].Metrics["foo1"].Label != "Foo-1" ||
+		g.Meta.Graphs["query"].Unit != "int" ||
+		g.Meta.Graphs["query"].Metrics["foo2"].Label != "Foo-2" ||
+		g.Meta.Graphs["query"].Metrics["foo2"].Stacked != true ||
+		g.Meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" ||
+		g.Meta.Graphs["memory"].Unit != "float" {
+
 		t.Errorf("loading meta failed got: %+v", g.Meta)
 	}
 
@@ -124,5 +134,62 @@ label = "Bar-2"
 	err = generatorWithBadVersion.loadPluginMeta()
 	if err == nil {
 		t.Error("should raise error")
+	}
+}
+
+func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
+	// this plugin emits "one.foo1", "one.foo2" and "two.bar1" metrics
+	g := &PluginGenerator{
+		Meta: &pluginMeta{
+			Graphs: map[string]customGraphDef{
+				"one": {
+					Label: "My Graph One",
+					Metrics: map[string]customGraphMetricDef{
+						"foo1": {
+							Label:   "Foo(1)",
+							Stacked: true,
+						},
+						"foo2": {
+							Label:   "Foo(2)",
+							Stacked: true,
+						},
+					},
+				},
+				"two": {
+					Label: "My Graph Two",
+					Unit:  "int",
+					Metrics: map[string]customGraphMetricDef{
+						"bar1": {
+							Label: "Bar(1)",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	payload := g.makeCreateGraphDefsPayload()
+
+	if len(payload) != 2 {
+		t.Errorf("Bad payload created: %+v", payload)
+	}
+
+	if payload[0].Name != "custom.one" ||
+		payload[0].DisplayName != "My Graph One" ||
+		len(payload[0].Metrics) != 2 {
+
+		t.Errorf("Bad payload created: %+v", payload[0])
+	}
+
+	if payload[0].Unit != "float" {
+		t.Errorf("Default unit should be float: %+v", payload[0])
+	}
+
+	metrics := payload[0].Metrics
+	if metrics[0].Name != "custom.one.foo1" ||
+		metrics[0].DisplayName != "Foo(1)" ||
+		metrics[0].IsStacked != true {
+
+		t.Errorf("Bat metric payload created: %+v", metrics[0])
 	}
 }
