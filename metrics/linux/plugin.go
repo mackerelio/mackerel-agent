@@ -32,7 +32,6 @@ type pluginMeta struct {
 }
 
 type customGraphDef struct {
-	Prefix  string
 	Label   string
 	Unit    string
 	Metrics map[string]customGraphMetricDef
