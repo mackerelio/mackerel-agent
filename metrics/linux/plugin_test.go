@@ -197,11 +197,20 @@ func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 		t.Errorf("Default unit should be float: %+v", payloadOne)
 	}
 
-	metrics := payloadOne.Metrics
-	if metrics[0].Name != "custom.one.foo1" ||
-		metrics[0].DisplayName != "Foo(1)" ||
-		metrics[0].IsStacked != true {
+	var metricOneFoo1 *mackerel.CreateGraphDefsPayloadMetric
+	for _, metric := range payloadOne.Metrics {
+		if metric.Name == "custom.one.foo1" {
+			metricOneFoo1 = &metric
+			break
+		}
+	}
+	if metricOneFoo1 == nil {
+		t.Errorf("Metric payload with name custom.one.foo1 not fonud: %+v", payloadOne)
+	}
 
-		t.Errorf("Bat metric payload created: %+v", metrics[0])
+	if metricOneFoo1.DisplayName != "Foo(1)" ||
+		metricOneFoo1.IsStacked != true {
+
+		t.Errorf("Bat metric payload created: %+v", metricOneFoo1)
 	}
 }
