@@ -53,3 +53,8 @@ func metricsGenerators(conf config.Config) []metrics.Generator {
 
 	return generators
 }
+
+func pluginGenerators(conf config.Config) []metrics.PluginGenerator {
+	// XXX to be implemented
+	return []metrics.PluginGenerator{}
+}

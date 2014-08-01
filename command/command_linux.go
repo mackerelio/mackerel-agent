@@ -31,8 +31,15 @@ func metricsGenerators(conf config.Config) []metrics.Generator {
 		&metricsLinux.InterfaceGenerator{Interval: 60},
 		&metricsLinux.DiskGenerator{Interval: 60},
 	}
+
+	return generators
+}
+
+func pluginGenerators(conf config.Config) []metrics.PluginGenerator {
+	generators := []metrics.PluginGenerator{}
+
 	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, &metricsLinux.PluginGenerator{pluginConfig})
+		generators = append(generators, &metricsLinux.PluginGenerator{Config: pluginConfig})
 	}
 
 	return generators
