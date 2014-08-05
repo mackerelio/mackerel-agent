@@ -36,9 +36,10 @@ func TestPluginGenerate(t *testing.T) {
 }
 
 func TestPluginCollectValues(t *testing.T) {
-	g := &PluginGenerator{Config: config.PluginConfig{
-		Command: "ruby ../../example/metrics-plugins/dice.rb",
-	},
+	g := &PluginGenerator{
+		Config: config.PluginConfig{
+			Command: "ruby ../../example/metrics-plugins/dice.rb",
+		},
 	}
 	values, err := g.collectValues()
 	if err != nil {
@@ -137,6 +138,28 @@ label = "Bar-2"
 	err = generatorWithBadVersion.loadPluginMeta()
 	if err == nil {
 		t.Error("should raise error")
+	}
+}
+
+func TestPluginLoadPluginMeta_2(t *testing.T) {
+	g := &PluginGenerator{
+		Config: config.PluginConfig{
+			Command: "ruby ../../example/metrics-plugins/dice.rb",
+		},
+	}
+	err := g.loadPluginMeta()
+	if err != nil {
+		t.Error(err)
+	}
+
+	values, err := g.collectValues()
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, ok := values["custom.foo.bar.example.dice"]
+	if !ok {
+		t.Errorf("plugin should emit key: %q", "custom.foo.bar.example.dice")
 	}
 }
 
