@@ -251,6 +251,8 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 		return err
 	}
 
+	logger.Debugf("Create grpah defs request: %s", string(requestJSON))
+
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := api.Do(req)
 	if err != nil {

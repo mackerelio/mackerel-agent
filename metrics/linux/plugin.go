@@ -78,10 +78,12 @@ func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 // 	# mackerel-agent-plugin
 // 	[graphs.GRAPH_NAME]
 // 	label = GRAPH_LABEL
+// 	unit = UNIT_TYPE
 // 	[graphs.GRAPH_NAME.metrics.METRIC_NAME]
 // 	label = METRIC_LABEL
-// 	unit = UNIT_TYPE
 // 	stacked = BOOLEAN
+//
+// Valid UNIT_TYPEs are: "float", "integer", "percentage", "bytes", "bytes/sec", "iops"
 //
 // The output should start with a line beginning with '#', which contains
 // meta-info of the configuration. (eg. plugin schema version)
@@ -90,12 +92,11 @@ func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 //
 // 	[graphs.dice]
 // 	label = "My Dice"
+// 	unit = "integer"
 // 	[graphs.dice.metrics.d6]
 // 	label = "Dice(d6)"
-// 	unit = "int"
 // 	[graphs.dice.metrics.d20]
 // 	label = "Dice(d20)"
-// 	unit = "int"
 
 func (g *PluginGenerator) loadPluginMeta() error {
 	command := g.Config.Command
@@ -107,7 +108,6 @@ func (g *PluginGenerator) loadPluginMeta() error {
 
 	var outBuffer, errBuffer bytes.Buffer
 
-	os.Setenv(pluginConfigurationEnvName, "")
 	cmd := exec.Command("/bin/sh", "-c", command)
 	cmd.Stdout = &outBuffer
 	cmd.Stderr = &errBuffer
