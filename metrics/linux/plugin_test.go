@@ -36,9 +36,10 @@ func TestPluginGenerate(t *testing.T) {
 }
 
 func TestPluginCollectValues(t *testing.T) {
-	g := &PluginGenerator{Config: config.PluginConfig{
-		Command: "ruby ../../example/metrics-plugins/dice.rb",
-	},
+	g := &PluginGenerator{
+		Config: config.PluginConfig{
+			Command: "ruby ../../example/metrics-plugins/dice.rb",
+		},
 	}
 	values, err := g.collectValues()
 	if err != nil {
@@ -78,6 +79,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 	g := &PluginGenerator{
 		Config: config.PluginConfig{
 			Command: `echo '# mackerel-agent-plugin version=1
+prefix = "my-custom.plugin"
 [graphs.query]
 label = "MySQL query"
 unit = "integer"
@@ -104,7 +106,8 @@ label = "Bar-2"
 		t.Errorf("should parse meta: %s", err)
 	}
 
-	if g.Meta.Graphs["query"].Label != "MySQL query" ||
+	if g.Meta.Prefix != "my-custom.plugin" ||
+		g.Meta.Graphs["query"].Label != "MySQL query" ||
 		g.Meta.Graphs["query"].Metrics["foo1"].Label != "Foo-1" ||
 		g.Meta.Graphs["query"].Unit != "integer" ||
 		g.Meta.Graphs["query"].Metrics["foo2"].Label != "Foo-2" ||
@@ -135,6 +138,28 @@ label = "Bar-2"
 	err = generatorWithBadVersion.loadPluginMeta()
 	if err == nil {
 		t.Error("should raise error")
+	}
+}
+
+func TestPluginLoadPluginMeta_2(t *testing.T) {
+	g := &PluginGenerator{
+		Config: config.PluginConfig{
+			Command: "ruby ../../example/metrics-plugins/dice.rb",
+		},
+	}
+	err := g.loadPluginMeta()
+	if err != nil {
+		t.Error(err)
+	}
+
+	values, err := g.collectValues()
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, ok := values["custom.foo.bar.example.dice"]
+	if !ok {
+		t.Errorf("plugin should emit key: %q", "custom.foo.bar.example.dice")
 	}
 }
 
