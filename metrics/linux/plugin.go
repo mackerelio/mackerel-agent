@@ -28,6 +28,7 @@ type PluginGenerator struct {
 
 // pluginMeta is generated from plugin command. (not the configuration file)
 type pluginMeta struct {
+	Prefix string
 	Graphs map[string]customGraphDef
 }
 
@@ -76,6 +77,7 @@ func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 // environment variable set.  The command is supposed to output like below:
 //
 // 	# mackerel-agent-plugin
+// 	prefix = PREFIX
 // 	[graphs.GRAPH_NAME]
 // 	label = GRAPH_LABEL
 // 	unit = UNIT_TYPE
@@ -232,6 +234,12 @@ func (g *PluginGenerator) collectValues() (metrics.Values, error) {
 		}
 
 		key := items[0]
+		if g.Meta != nil && g.Meta.Prefix != "" {
+			if !strings.HasSuffix(g.Meta.Prefix, ".") {
+				key = "." + key
+			}
+			key = g.Meta.Prefix + key
+		}
 
 		results[PLUGIN_PREFIX+key] = value
 	}

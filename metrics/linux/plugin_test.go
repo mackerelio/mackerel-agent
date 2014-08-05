@@ -78,6 +78,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 	g := &PluginGenerator{
 		Config: config.PluginConfig{
 			Command: `echo '# mackerel-agent-plugin version=1
+prefix = "my-custom.plugin"
 [graphs.query]
 label = "MySQL query"
 unit = "integer"
@@ -104,7 +105,8 @@ label = "Bar-2"
 		t.Errorf("should parse meta: %s", err)
 	}
 
-	if g.Meta.Graphs["query"].Label != "MySQL query" ||
+	if g.Meta.Prefix != "my-custom.plugin" ||
+		g.Meta.Graphs["query"].Label != "MySQL query" ||
 		g.Meta.Graphs["query"].Metrics["foo1"].Label != "Foo-1" ||
 		g.Meta.Graphs["query"].Unit != "integer" ||
 		g.Meta.Graphs["query"].Metrics["foo2"].Label != "Foo-2" ||
