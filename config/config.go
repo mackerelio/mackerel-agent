@@ -1,6 +1,9 @@
 package config
 
 import (
+	"fmt"
+	"path/filepath"
+
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/mackerel-agent/logging"
 )
@@ -18,6 +21,7 @@ type Config struct {
 	Connection      ConnectionConfig
 	Plugin          map[string]PluginConfigs
 	DeprecatedSensu map[string]PluginConfigs `toml:"sensu"` // DEPRECATED this is for backward compatibility
+	Include         string
 }
 
 type PluginConfigs map[string]PluginConfig
@@ -71,6 +75,12 @@ func LoadConfigFile(file string) (Config, error) {
 		return config, err
 	}
 
+	if config.Include != "" {
+		if err := includeConfigFile(&config, config.Include); err != nil {
+			return config, err
+		}
+	}
+
 	// for backward compatibility
 	// merges sensu configs to plugin configs
 	if _, ok := config.DeprecatedSensu["checks"]; ok {
@@ -88,4 +98,44 @@ func LoadConfigFile(file string) (Config, error) {
 	}
 
 	return config, nil
+}
+
+func includeConfigFile(config *Config, include string) error {
+	files, err := filepath.Glob(include)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		rolesSaved := config.Roles
+
+		pluginSaved := map[string]PluginConfigs{}
+		for kind, plugins := range config.Plugin {
+			pluginSaved[kind] = plugins
+		}
+
+		config.Roles = nil
+
+		meta, err := toml.DecodeFile(file, &config)
+		if err != nil {
+			return fmt.Errorf("while loading included config file %s: %s", file, err)
+		}
+
+		if meta.IsDefined("roles") == false {
+			config.Roles = rolesSaved
+		}
+
+		for kind, plugins := range config.Plugin {
+			for key, conf := range plugins {
+				if pluginSaved[kind] == nil {
+					pluginSaved[kind] = PluginConfigs{}
+				}
+				pluginSaved[kind][key] = conf
+			}
+		}
+
+		config.Plugin = pluginSaved
+	}
+
+	return nil
 }
