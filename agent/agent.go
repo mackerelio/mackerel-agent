@@ -69,6 +69,9 @@ func (agent *Agent) Watch() chan *MetricsResult {
 
 func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
 	for _, g := range agent.PluginGenerators {
-		g.InitWithAPI(api)
+		err := g.InitWithAPI(api)
+		if err != nil {
+			logger.Errorf("Error while initializing plugin %s: %s", g, err)
+		}
 	}
 }
