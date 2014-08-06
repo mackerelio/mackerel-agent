@@ -116,7 +116,7 @@ func TestLoadConfigFileInclude(t *testing.T) {
 
 	configContent := fmt.Sprintf(`
 apikey = "not overwritten"
-roles = [ "to be overwritten" ]
+roles = [ "roles", "to be overwritten" ]
 
 include = "%s/*.conf"
 
@@ -146,6 +146,7 @@ command = "foo2"
 	assertNoError(t, err)
 
 	assert(t, config.Apikey == "not overwritten", "apikey should not be overwritten")
+	assert(t, len(config.Roles) == 1, "roles should be overwritten")
 	assert(t, config.Roles[0] == "Service:role", "roles should be overwritten")
 	assert(t, config.Plugin["metrics"]["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
 	assert(t, config.Plugin["metrics"]["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")

@@ -108,13 +108,12 @@ func includeConfigFile(config *Config, include string) error {
 
 	for _, file := range files {
 		rolesSaved := config.Roles
+		config.Roles = nil
 
 		pluginSaved := map[string]PluginConfigs{}
 		for kind, plugins := range config.Plugin {
 			pluginSaved[kind] = plugins
 		}
-
-		config.Roles = nil
 
 		meta, err := toml.DecodeFile(file, &config)
 		if err != nil {
