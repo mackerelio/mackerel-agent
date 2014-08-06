@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -89,4 +91,70 @@ func TestLoadConfigFile(t *testing.T) {
 	if sensu.Command != "ruby ../sensu/plugins/system/memory-metrics.rb" {
 		t.Error("sensu command should be 'ruby ../sensu/plugins/system/memory-metrics.rb'")
 	}
+}
+
+func assertNoError(t *testing.T, err error) {
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func assert(t *testing.T, ok bool, msg string) {
+	if !ok {
+		t.Error(msg)
+	}
+}
+
+func TestLoadConfigFileInclude(t *testing.T) {
+	configDir, err := ioutil.TempDir("", "mackerel-config-test")
+	assertNoError(t, err)
+
+	configFile, err := ioutil.TempFile("", "mackerel-config-test")
+	assertNoError(t, err)
+
+	includedFile, err := os.Create(filepath.Join(configDir, "sub1.conf"))
+
+	configContent := fmt.Sprintf(`
+apikey = "not overwritten"
+roles = [ "roles", "to be overwritten" ]
+
+include = "%s/*.conf"
+
+[plugin.metrics.foo1]
+command = "foo1"
+
+[plugin.metrics.bar]
+command = "this wille be overwritten"
+`, configDir)
+
+	includedContent := `
+roles = [ "Service:role" ]
+
+[plugin.metrics.foo2]
+command = "foo2"
+
+[plugin.metrics.bar]
+command = "bar"
+`
+
+	_, err = configFile.WriteString(configContent)
+	assertNoError(t, err)
+
+	_, err = includedFile.WriteString(includedContent)
+	assertNoError(t, err)
+
+	configFile.Close()
+	includedFile.Close()
+	defer os.Remove(configFile.Name())
+	defer os.Remove(includedFile.Name())
+
+	config, err := LoadConfigFile(configFile.Name())
+	assertNoError(t, err)
+
+	assert(t, config.Apikey == "not overwritten", "apikey should not be overwritten")
+	assert(t, len(config.Roles) == 1, "roles should be overwritten")
+	assert(t, config.Roles[0] == "Service:role", "roles should be overwritten")
+	assert(t, config.Plugin["metrics"]["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
+	assert(t, config.Plugin["metrics"]["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
+	assert(t, config.Plugin["metrics"]["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
 }
