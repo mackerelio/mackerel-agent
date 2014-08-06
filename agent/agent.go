@@ -71,7 +71,7 @@ func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
 	for _, g := range agent.PluginGenerators {
 		err := g.InitWithAPI(api)
 		if err != nil {
-			logger.Debugf("Failed to fetch meta information from plugin %s (non critical); seems that this plugin did not have meta information: %s", g, err)
+			logger.Debugf("Failed to fetch meta information from plugin %s (non critical); seems that this plugin does not have meta information: %s", g, err)
 		}
 	}
 }
