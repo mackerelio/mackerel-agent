@@ -107,9 +107,13 @@ func includeConfigFile(config *Config, include string) error {
 	}
 
 	for _, file := range files {
+		// Save current "roles" value and reset it
+		// because toml.DecodeFile()-ing on a fulfilled struct
+		// produces bizarre array values.
 		rolesSaved := config.Roles
 		config.Roles = nil
 
+		// Also, save plugin values for later merging
 		pluginSaved := map[string]PluginConfigs{}
 		for kind, plugins := range config.Plugin {
 			pluginSaved[kind] = plugins
@@ -120,6 +124,8 @@ func includeConfigFile(config *Config, include string) error {
 			return fmt.Errorf("while loading included config file %s: %s", file, err)
 		}
 
+		// If included config does not have "roles" key,
+		// use the previous roles configuration value.
 		if meta.IsDefined("roles") == false {
 			config.Roles = rolesSaved
 		}
