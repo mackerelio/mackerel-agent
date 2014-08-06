@@ -122,6 +122,9 @@ include = "%s/*.conf"
 
 [plugin.metrics.foo1]
 command = "foo1"
+
+[plugin.metrics.bar]
+command = "this wille be overwritten"
 `, configDir)
 
 	includedContent := `
@@ -129,6 +132,9 @@ roles = [ "Service:role" ]
 
 [plugin.metrics.foo2]
 command = "foo2"
+
+[plugin.metrics.bar]
+command = "bar"
 `
 
 	_, err = configFile.WriteString(configContent)
@@ -150,4 +156,5 @@ command = "foo2"
 	assert(t, config.Roles[0] == "Service:role", "roles should be overwritten")
 	assert(t, config.Plugin["metrics"]["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
 	assert(t, config.Plugin["metrics"]["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
+	assert(t, config.Plugin["metrics"]["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
 }
