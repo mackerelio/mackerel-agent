@@ -30,6 +30,7 @@ func metricsGenerators(conf config.Config) []metrics.Generator {
 		&metricsLinux.UptimeGenerator{},
 		&metricsLinux.InterfaceGenerator{Interval: 60},
 		&metricsLinux.DiskGenerator{Interval: 60},
+		&metricsLinux.FilesystemGenerator{},
 	}
 
 	return generators
