@@ -17,17 +17,13 @@ func (g *FilesystemGenerator) Key() string {
 var logger = logging.GetLogger("spec.filesystem")
 
 var dfColumnSpecs = []utilLinux.DfColumnSpec{
-	utilLinux.DfColumnSpec{"kb_size", true},
-	utilLinux.DfColumnSpec{"kb_used", true},
-	utilLinux.DfColumnSpec{"kb_available", true},
-	utilLinux.DfColumnSpec{"percent_used", false},
-	utilLinux.DfColumnSpec{"mount", false},
+	utilLinux.DfColumnSpec{Name: "kb_size", IsInt: true},
+	utilLinux.DfColumnSpec{Name: "kb_used", IsInt: true},
+	utilLinux.DfColumnSpec{Name: "kb_available", IsInt: true},
+	utilLinux.DfColumnSpec{Name: "percent_used", IsInt: false},
+	utilLinux.DfColumnSpec{Name: "mount", IsInt: false},
 }
 
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
-	filesystems, err := utilLinux.CollectDfValues(dfColumnSpecs)
-	if err != nil {
-		return nil, err
-	}
-	return filesystems, nil
+	return utilLinux.CollectDfValues(dfColumnSpecs)
 }

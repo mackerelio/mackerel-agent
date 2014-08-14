@@ -16,8 +16,8 @@ type FilesystemGenerator struct {
 var logger = logging.GetLogger("metrics.filesystem")
 
 var dfColumnSpecs = []utilLinux.DfColumnSpec{
-	utilLinux.DfColumnSpec{"size", true},
-	utilLinux.DfColumnSpec{"used", true},
+	utilLinux.DfColumnSpec{Name: "size", IsInt: true},
+	utilLinux.DfColumnSpec{Name: "used", IsInt: true},
 }
 
 func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
