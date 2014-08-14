@@ -1,31 +1,24 @@
 // +build linux
 
-package linux
+package util
 
 import (
 	"reflect"
 	"testing"
 )
 
-func TestFilesystemGenerator(t *testing.T) {
-	g := &FilesystemGenerator{}
-
-	if g.Key() != "filesystem" {
-		t.Error("key should be 'filesystem'")
+func TestCollectDfValues(t *testing.T) {
+	dfColumnSpecs := []DfColumnSpec{
+		DfColumnSpec{"kb_size", true},
+		DfColumnSpec{"kb_used", true},
+		DfColumnSpec{"kb_available", true},
+		DfColumnSpec{"percent_used", false},
+		DfColumnSpec{"mount", false},
 	}
-}
 
-func TestFilesystemGenerate(t *testing.T) {
-	g := &FilesystemGenerator{}
-
-	result, err := g.Generate()
+	filesystems, err := CollectDfValues(dfColumnSpecs)
 	if err != nil {
-		t.Skipf("Generate() failed: %s", err)
-	}
-
-	filesystems, resultTypeOk := result.(map[string]map[string]interface{})
-	if !resultTypeOk {
-		t.Errorf("Return type of Generate() shuold be map[string]map[string]interface{}")
+		t.Skipf("collectValues() failed: %s", err)
 	}
 
 	// tmpfs may be exists
