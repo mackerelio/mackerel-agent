@@ -115,6 +115,12 @@ label = "Bar-2"
 		t.Errorf("loading meta failed got: %+v", g.Meta)
 	}
 
+	if g.Meta.Graphs["query"].Metrics["foo1"].Order != 1 ||
+		g.Meta.Graphs["query"].Metrics["foo2"].Order != 2 {
+
+		t.Errorf("orders should be filled by the appearance order: %+v", g.Meta)
+	}
+
 	generatorWithoutConf := &PluginGenerator{
 		Config: config.PluginConfig{
 			Command: "echo \"just.echo.1\t1\t1397822016\"",
@@ -142,24 +148,26 @@ func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 	// this plugin emits "one.foo1", "one.foo2" and "two.bar1" metrics
 	g := &PluginGenerator{
 		Meta: &pluginMeta{
-			Graphs: map[string]customGraphDef{
+			Graphs: map[string]*customGraphDef{
 				"one": {
 					Label: "My Graph One",
 					Unit:  "integer",
-					Metrics: map[string]customGraphMetricDef{
+					Metrics: map[string]*customGraphMetricDef{
 						"foo1": {
 							Label:   "Foo(1)",
 							Stacked: true,
+							Order:   1,
 						},
 						"foo2": {
 							Label:   "Foo(2)",
 							Stacked: true,
+							Order:   2,
 						},
 					},
 				},
 				"two": {
 					Label: "My Graph Two",
-					Metrics: map[string]customGraphMetricDef{
+					Metrics: map[string]*customGraphMetricDef{
 						"bar1": {
 							Label: "Bar(1)",
 						},
@@ -191,6 +199,12 @@ func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 		len(payloadOne.Metrics) != 2 ||
 		payloadOne.Unit != "integer" {
 		t.Errorf("Bad payload created: %+v", payloadOne)
+	}
+
+	if payloadOne.Metrics[0].Name != "custom.one.foo1" ||
+		payloadOne.Metrics[1].Name != "custom.one.foo2" {
+
+		t.Errorf("Metrics should be sorted: %+v", payloadOne)
 	}
 
 	var metricOneFoo1 *mackerel.CreateGraphDefsPayloadMetric

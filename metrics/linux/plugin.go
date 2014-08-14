@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -28,18 +29,20 @@ type PluginGenerator struct {
 
 // pluginMeta is generated from plugin command. (not the configuration file)
 type pluginMeta struct {
-	Graphs map[string]customGraphDef
+	Graphs map[string]*customGraphDef
 }
 
 type customGraphDef struct {
 	Label   string
 	Unit    string
-	Metrics map[string]customGraphMetricDef
+	Metrics map[string]*customGraphMetricDef
 }
 
 type customGraphMetricDef struct {
+	Name    string
 	Label   string
 	Stacked bool
+	Order   int
 }
 
 var pluginLogger = logging.GetLogger("metrics.plugin")
@@ -156,16 +159,48 @@ func (g *PluginGenerator) loadPluginMeta() error {
 	}
 
 	conf := &pluginMeta{}
-	_, err = toml.DecodeReader(&outBuffer, conf)
+	tomlMeta, err := toml.DecodeReader(&outBuffer, conf)
 
 	if err != nil {
 		return fmt.Errorf("while reading plugin configuration: %s", err)
+	}
+
+	// Fill in metric.order for the order of appearance
+	for graphName, graph := range conf.Graphs {
+		i := 1
+		for _, k := range tomlMeta.Keys() {
+			key := k.String()
+
+			metricKeyPrefix := "graphs." + graphName + ".metrics."
+
+			// "graphs.foo.metrics.bar" -> "bar"
+			metricName := strings.TrimPrefix(key, metricKeyPrefix)
+			if strings.Index(metricName, ".") != -1 {
+				continue
+			}
+
+			metric, ok := graph.Metrics[metricName]
+			if !ok {
+				continue
+			}
+
+			if metric.Order == 0 {
+				metric.Order = i
+				i++
+			}
+		}
 	}
 
 	g.Meta = conf
 
 	return nil
 }
+
+type byMetricDefOrder []*customGraphMetricDef
+
+func (o byMetricDefOrder) Len() int           { return len(o) }
+func (o byMetricDefOrder) Swap(i, j int)      { o[i], o[j] = o[j], o[i] }
+func (o byMetricDefOrder) Less(i, j int) bool { return o[i].Order < o[j].Order }
 
 func (g *PluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDefsPayload {
 	if g.Meta == nil {
@@ -174,9 +209,9 @@ func (g *PluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 
 	payloads := []mackerel.CreateGraphDefsPayload{}
 
-	for key, graph := range g.Meta.Graphs {
+	for graphName, graph := range g.Meta.Graphs {
 		payload := mackerel.CreateGraphDefsPayload{
-			Name:        PLUGIN_PREFIX + key,
+			Name:        PLUGIN_PREFIX + graphName,
 			DisplayName: graph.Label,
 			Unit:        graph.Unit,
 		}
@@ -184,9 +219,19 @@ func (g *PluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 			payload.Unit = "float"
 		}
 
+		metrics := []*customGraphMetricDef{}
 		for metricKey, metric := range graph.Metrics {
+			if metric.Name == "" {
+				metric.Name = metricKey
+			}
+			metrics = append(metrics, metric)
+		}
+
+		sort.Sort(byMetricDefOrder(metrics))
+
+		for _, metric := range metrics {
 			metricPayload := mackerel.CreateGraphDefsPayloadMetric{
-				Name:        PLUGIN_PREFIX + key + "." + metricKey,
+				Name:        PLUGIN_PREFIX + graphName + "." + metric.Name,
 				DisplayName: metric.Label,
 				IsStacked:   metric.Stacked,
 			}
