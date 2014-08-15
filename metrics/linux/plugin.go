@@ -4,6 +4,7 @@ package linux
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -15,8 +16,6 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
-
-	"github.com/BurntSushi/toml"
 )
 
 // PluginGenerator collects user-defined metrics.
@@ -34,10 +33,11 @@ type pluginMeta struct {
 type customGraphDef struct {
 	Label   string
 	Unit    string
-	Metrics map[string]customGraphMetricDef
+	Metrics []customGraphMetricDef
 }
 
 type customGraphMetricDef struct {
+	Name    string
 	Label   string
 	Stacked bool
 }
@@ -97,7 +97,6 @@ func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 // 	label = "Dice(d6)"
 // 	[graphs.dice.metrics.d20]
 // 	label = "Dice(d20)"
-
 func (g *PluginGenerator) loadPluginMeta() error {
 	command := g.Config.Command
 	pluginLogger.Debugf("Obtaining plugin configuration: %q", command)
@@ -156,7 +155,7 @@ func (g *PluginGenerator) loadPluginMeta() error {
 	}
 
 	conf := &pluginMeta{}
-	_, err = toml.DecodeReader(&outBuffer, conf)
+	err = json.NewDecoder(&outBuffer).Decode(conf)
 
 	if err != nil {
 		return fmt.Errorf("while reading plugin configuration: %s", err)
@@ -184,9 +183,9 @@ func (g *PluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 			payload.Unit = "float"
 		}
 
-		for metricKey, metric := range graph.Metrics {
+		for _, metric := range graph.Metrics {
 			metricPayload := mackerel.CreateGraphDefsPayloadMetric{
-				Name:        PLUGIN_PREFIX + key + "." + metricKey,
+				Name:        PLUGIN_PREFIX + key + "." + metric.Name,
 				DisplayName: metric.Label,
 				IsStacked:   metric.Stacked,
 			}
