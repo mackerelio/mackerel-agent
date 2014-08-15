@@ -76,27 +76,48 @@ func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 // environment variable set.  The command is supposed to output like below:
 //
 // 	# mackerel-agent-plugin
-// 	[graphs.GRAPH_NAME]
-// 	label = GRAPH_LABEL
-// 	unit = UNIT_TYPE
-// 	[graphs.GRAPH_NAME.metrics.METRIC_NAME]
-// 	label = METRIC_LABEL
-// 	stacked = BOOLEAN
+// 	{
+// 	  "graphs": {
+// 	    GRAPH_NAME: {
+// 	      "label": GRAPH_LABEL,
+// 	      "unit": UNIT_TYPE
+// 	      "metrics": [
+// 	        {
+// 	          "name": METRIC_NAME,
+// 	          "label": METRIC_LABEL
+// 	        },
+// 	        ...
+// 	      ]
+// 	    },
+// 	    GRAPH_NAME: ...
+// 	  }
+// 	}
 //
 // Valid UNIT_TYPEs are: "float", "integer", "percentage", "bytes", "bytes/sec", "iops"
 //
 // The output should start with a line beginning with '#', which contains
 // meta-info of the configuration. (eg. plugin schema version)
 //
-// A working example is like below:
+// Below is a working example where the plugin emits metrics named "dice.d6" and "dice.d20":
 //
-// 	[graphs.dice]
-// 	label = "My Dice"
-// 	unit = "integer"
-// 	[graphs.dice.metrics.d6]
-// 	label = "Dice(d6)"
-// 	[graphs.dice.metrics.d20]
-// 	label = "Dice(d20)"
+// 	{
+// 	  "graphs": {
+// 	    "dice": {
+// 	      "metrics": [
+// 	        {
+// 	          "name": "d6",
+// 	          "label": "Die (d6)"
+// 	        },
+// 	        {
+// 	          "name": "d20",
+// 	          "label": "Die (d20)"
+// 	        }
+// 	      ],
+// 	      "unit": "integer",
+// 	      "label": "My Dice"
+// 	    }
+// 	  }
+// 	}
 func (g *PluginGenerator) loadPluginMeta() error {
 	command := g.Config.Command
 	pluginLogger.Debugf("Obtaining plugin configuration: %q", command)
