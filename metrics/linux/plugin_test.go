@@ -78,24 +78,40 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 	g := &PluginGenerator{
 		Config: config.PluginConfig{
 			Command: `echo '# mackerel-agent-plugin version=1
-[graphs.query]
-label = "MySQL query"
-unit = "integer"
-[graphs.query.metrics.foo1]
-label = "Foo-1"
-[graphs.query.metrics.foo2]
-label = "Foo-2"
-stacked = true
-
-[graphs.memory]
-label = "MySQL memory"
-unit = "float"
-[graphs.memory.metrics.bar1]
-label = "Bar-1"
-[graphs.memory.metrics.bar2]
-label = "Bar-2"
-'
-`,
+{
+  "graphs": {
+    "query": {
+      "label": "MySQL query",
+      "unit": "integer",
+      "metrics": [
+        {
+          "name": "foo1",
+          "label": "Foo-1"
+        },
+        {
+          "name": "foo2",
+          "label": "Foo-2",
+          "stacked": true
+        }
+      ]
+    },
+    "memory": {
+      "label": "MySQL memory",
+      "unit": "float",
+      "metrics": [
+        {
+          "name": "bar1",
+          "label": "Bar-1"
+        },
+        {
+          "name": "bar2",
+          "label": "Bar-2"
+        }
+      ]
+    }
+  }
+}
+'`,
 		},
 	}
 
@@ -105,11 +121,11 @@ label = "Bar-2"
 	}
 
 	if g.Meta.Graphs["query"].Label != "MySQL query" ||
-		g.Meta.Graphs["query"].Metrics["foo1"].Label != "Foo-1" ||
+		g.Meta.Graphs["query"].Metrics[0].Label != "Foo-1" ||
 		g.Meta.Graphs["query"].Unit != "integer" ||
-		g.Meta.Graphs["query"].Metrics["foo2"].Label != "Foo-2" ||
-		g.Meta.Graphs["query"].Metrics["foo2"].Stacked != true ||
-		g.Meta.Graphs["memory"].Metrics["bar1"].Label != "Bar-1" ||
+		g.Meta.Graphs["query"].Metrics[1].Label != "Foo-2" ||
+		g.Meta.Graphs["query"].Metrics[1].Stacked != true ||
+		g.Meta.Graphs["memory"].Metrics[0].Label != "Bar-1" ||
 		g.Meta.Graphs["memory"].Unit != "float" {
 
 		t.Errorf("loading meta failed got: %+v", g.Meta)
@@ -146,12 +162,14 @@ func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 				"one": {
 					Label: "My Graph One",
 					Unit:  "integer",
-					Metrics: map[string]customGraphMetricDef{
-						"foo1": {
+					Metrics: []customGraphMetricDef{
+						{
+							Name:    "foo1",
 							Label:   "Foo(1)",
 							Stacked: true,
 						},
-						"foo2": {
+						{
+							Name:    "foo2",
 							Label:   "Foo(2)",
 							Stacked: true,
 						},
@@ -159,8 +177,9 @@ func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 				},
 				"two": {
 					Label: "My Graph Two",
-					Metrics: map[string]customGraphMetricDef{
-						"bar1": {
+					Metrics: []customGraphMetricDef{
+						{
+							Name:  "bar1",
 							Label: "Bar(1)",
 						},
 					},
