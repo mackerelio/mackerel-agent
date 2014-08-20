@@ -32,7 +32,7 @@ type PluginConfig struct {
 
 type ConnectionConfig struct {
 	Post_Metrics_Dequeue_Delay_Seconds int // delay for dequeuing from buffer queue
-	Post_Metrics_Retry_Delay_Seconds   int // delay for retring a request that causes errors
+	Post_Metrics_Retry_Delay_Seconds   int // delay for retrying a request that caused errors
 	Post_Metrics_Retry_Max             int // max numbers of retries for a request that causes errors
 	Post_Metrics_Buffer_Size           int // max numbers of requests stored in buffer queue.
 }
