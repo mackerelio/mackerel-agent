@@ -12,6 +12,7 @@ var sampleConfig = `
 apikey = "abcde"
 
 [connection]
+post_metrics_retry_delay_seconds = 600
 post_metrics_retry_max = 5
 
 [plugin.metrics.mysql]
@@ -46,6 +47,10 @@ func TestLoadConfig(t *testing.T) {
 
 	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds != 30 {
 		t.Error("should be 30 (default value should be used)")
+	}
+
+	if config.Connection.Post_Metrics_Retry_Delay_Seconds != 180 {
+		t.Error("should be 180 (max retry delay seconds is 180)")
 	}
 
 	if config.Connection.Post_Metrics_Retry_Max != 5 {
