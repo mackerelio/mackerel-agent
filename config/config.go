@@ -30,6 +30,9 @@ type PluginConfig struct {
 	Command string
 }
 
+const POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX = 59   // max delay seconds for dequeuing from buffer queue
+const POST_METRICS_RETRY_DELAY_SECONDS_MAX = 3 * 60 // max delay seconds for retrying a request that caused errors
+
 type ConnectionConfig struct {
 	Post_Metrics_Dequeue_Delay_Seconds int // delay for dequeuing from buffer queue
 	Post_Metrics_Retry_Delay_Seconds   int // delay for retrying a request that caused errors
@@ -56,8 +59,16 @@ func LoadConfig(conffile string) (Config, error) {
 	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds == 0 {
 		config.Connection.Post_Metrics_Dequeue_Delay_Seconds = DefaultConfig.Connection.Post_Metrics_Dequeue_Delay_Seconds
 	}
+	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds > POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX {
+		configLogger.Warningf("'post_metrics_dequese_delay_seconds' is set to %d (Maximum Value).", POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX)
+		config.Connection.Post_Metrics_Dequeue_Delay_Seconds = POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX
+	}
 	if config.Connection.Post_Metrics_Retry_Delay_Seconds == 0 {
 		config.Connection.Post_Metrics_Retry_Delay_Seconds = DefaultConfig.Connection.Post_Metrics_Retry_Delay_Seconds
+	}
+	if config.Connection.Post_Metrics_Retry_Delay_Seconds > POST_METRICS_RETRY_DELAY_SECONDS_MAX {
+		configLogger.Warningf("'post_metrics_retry_delay_seconds' is set to %d (Maximum Value).", POST_METRICS_RETRY_DELAY_SECONDS_MAX)
+		config.Connection.Post_Metrics_Retry_Delay_Seconds = POST_METRICS_RETRY_DELAY_SECONDS_MAX
 	}
 	if config.Connection.Post_Metrics_Retry_Max == 0 {
 		config.Connection.Post_Metrics_Retry_Max = DefaultConfig.Connection.Post_Metrics_Retry_Max
