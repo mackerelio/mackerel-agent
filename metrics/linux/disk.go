@@ -92,6 +92,11 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 		device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(cols[2], "_")
 		values := cols[3:]
 
+		if len(values) != len(diskMetricsNames) {
+			diskLogger.Warningf("Failed to parse disk metrics: %s", device)
+			break
+		}
+
 		deviceResult := make(map[string]float64)
 		hasNonZeroValue := false
 		for i, _ := range diskMetricsNames {
