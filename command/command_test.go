@@ -110,3 +110,19 @@ func TestPrepare(t *testing.T) {
 		t.Error("Host name mismatch", host)
 	}
 }
+
+func TestCollectHostSpecs(t *testing.T) {
+	hostname, meta, _ /*interfaces*/, err := collectHostSpecs()
+
+	if err != nil {
+		t.Errorf("collectHostSpecs should not fail: %s", err)
+	}
+
+	if hostname == "" {
+		t.Error("hostname should not be empty")
+	}
+
+	if _, ok := meta["cpu"]; !ok {
+		t.Error("meta.cpu should exist")
+	}
+}

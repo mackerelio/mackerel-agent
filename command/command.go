@@ -58,11 +58,9 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
 
-	meta, interfaces := collectHostSpecs()
-
-	hostname, err := os.Hostname()
+	hostname, meta, interfaces, err := collectHostSpecs()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to obtain hostname: %s", err.Error())
+		return nil, fmt.Errorf("error while collecting host specs: %s", err.Error())
 	}
 
 	var result *mackerel.Host
@@ -171,26 +169,36 @@ func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel
 	}
 }
 
-// collectHostSpecs collects host specs ("meta" and "interfaces" field in API v0)
-func collectHostSpecs() (map[string]interface{}, []map[string]interface{}) {
+// collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
+func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{}, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "", nil, nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
+	}
+
 	meta := spec.Collect(specGenerators())
 
 	interfacesSpec, err := interfaceGenerator().Generate()
 	if err != nil {
-		logger.Errorf("Failed to collect interfaces spec: %s", err.Error())
+		return "", nil, nil, fmt.Errorf("failed to collect interfaces: %s", err.Error())
 	}
+
 	interfaces, _ := interfacesSpec.([]map[string]interface{})
 
-	return meta, interfaces
+	return hostname, meta, interfaces, nil
 }
 
 // UpdateHostSpecs updates the host information that is already registered on Mackerel.
 func UpdateHostSpecs(conf config.Config, api *mackerel.API, host *mackerel.Host) {
 	logger.Debugf("Updating host specs...")
 
-	meta, interfaces := collectHostSpecs()
+	hostname, meta, interfaces, err := collectHostSpecs()
+	if err != nil {
+		logger.Errorf("While collecting host specs: %s", err)
+		return
+	}
 
-	err := api.UpdateHost(host.Id, host.Name, meta, interfaces, conf.Roles)
+	err = api.UpdateHost(host.Id, hostname, meta, interfaces, conf.Roles)
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
 	} else {
