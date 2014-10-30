@@ -96,7 +96,7 @@ func TestPrepare(t *testing.T) {
 		}
 	}
 
-	api, host, _ := Prepare(conf)
+	api, host, _ := Prepare(&conf)
 
 	if api.BaseUrl.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseUrl, ts.URL)

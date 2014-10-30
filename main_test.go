@@ -26,7 +26,7 @@ apikey="DUMMYAPIKEY"
 	// Overrides Args from go test command
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
 
-	mergedConfig := resolveConfig()
+	mergedConfig, _ := resolveConfig()
 
 	t.Logf("      apibase: %v", mergedConfig.Apibase)
 	t.Logf("       apikey: %v", mergedConfig.Apikey)
@@ -45,5 +45,20 @@ apikey="DUMMYAPIKEY"
 
 	if mergedConfig.Verbose != true {
 		t.Error("Verbose(overwritten by command line option) shoud be true")
+	}
+}
+
+func TestParseFlagsPrintVersion(t *testing.T) {
+	os.Args = []string{"mackerel-agent", "-version"}
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
+
+	config, printVersion := resolveConfig()
+
+	if config != nil {
+		t.Error("with -version args, config should be null")
+	}
+
+	if printVersion == false {
+		t.Error("with -version args, printVersion should be true")
 	}
 }

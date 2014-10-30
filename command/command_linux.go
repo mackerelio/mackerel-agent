@@ -22,7 +22,7 @@ func interfaceGenerator() spec.Generator {
 	return &specLinux.InterfaceGenerator{}
 }
 
-func metricsGenerators(conf config.Config) []metrics.Generator {
+func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsLinux.Loadavg5Generator{},
 		&metricsLinux.CpuusageGenerator{Interval: 60},
@@ -36,7 +36,7 @@ func metricsGenerators(conf config.Config) []metrics.Generator {
 	return generators
 }
 
-func pluginGenerators(conf config.Config) []metrics.PluginGenerator {
+func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
 	generators := []metrics.PluginGenerator{}
 
 	for _, pluginConfig := range conf.Plugin["metrics"] {

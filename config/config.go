@@ -40,7 +40,7 @@ type ConnectionConfig struct {
 	Post_Metrics_Buffer_Size           int // max numbers of requests stored in buffer queue.
 }
 
-func LoadConfig(conffile string) (Config, error) {
+func LoadConfig(conffile string) (*Config, error) {
 	config, err := LoadConfigFile(conffile)
 
 	// set default values if config does not have values
@@ -80,14 +80,14 @@ func LoadConfig(conffile string) (Config, error) {
 	return config, err
 }
 
-func LoadConfigFile(file string) (Config, error) {
-	var config Config
-	if _, err := toml.DecodeFile(file, &config); err != nil {
+func LoadConfigFile(file string) (*Config, error) {
+	config := &Config{}
+	if _, err := toml.DecodeFile(file, config); err != nil {
 		return config, err
 	}
 
 	if config.Include != "" {
-		if err := includeConfigFile(&config, config.Include); err != nil {
+		if err := includeConfigFile(config, config.Include); err != nil {
 			return config, err
 		}
 	}
