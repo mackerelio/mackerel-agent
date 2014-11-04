@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"sort"
 	"testing"
 
 	"github.com/mackerelio/mackerel-agent/agent"
@@ -144,7 +145,17 @@ func (g *counterGenerator) Generate() (metrics.Values, error) {
 	return map[string]float64{"dummy.a": float64(g.counter)}, nil
 }
 
+type byTime []mackerel.CreatingMetricsValue
+
+func (b byTime) Len() int           { return len(b) }
+func (b byTime) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
+func (b byTime) Less(i, j int) bool { return b[i].Time < b[j].Time }
+
 func TestLoop(t *testing.T) {
+	if testing.Short() {
+		t.Skip("TestLoop takes several minutes to run")
+	}
+
 	if testing.Verbose() {
 		logging.ConfigureLoggers("DEBUG")
 	}
@@ -152,31 +163,50 @@ func TestLoop(t *testing.T) {
 	conf, mockHandlers, ts := newMockAPIServer(t)
 	defer ts.Close()
 
+	/// Simulate the situation that mackerel.io is down for 3 min
 	// Strategy:
 	// counterGenerator generates values 1,2,3,4,...
 	// when we got value 3, the server will start responding 503 for three times (inclusive)
-	// so that the agent should queue the generated values and retry sending
+	// so the agent should queue the generated values and retry sending.
+	//
+	//  status: o . o . x . x . x . o o o o o
+	//    send: 1 . 2 . 3 . 3 . 3 . 3 4 5 6 7
+	// collect: 1 . 2 . 3 . 4 . 5 . 6 . 7 . 8
+	//           ^
+	//           30s
+	const totalFailures = 3
 	failureCount := 0
+	receivedDataPoints := []mackerel.CreatingMetricsValue{}
+	done := make(chan struct{})
+
 	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
 		payload := []mackerel.CreatingMetricsValue{}
 		json.NewDecoder(req.Body).Decode(&payload)
 
 		for _, p := range payload {
-			if p.Value.(float64) == 3 {
+			value := p.Value.(float64)
+			if value == 3 {
 				failureCount++
-				if failureCount < 4 {
+				if failureCount <= totalFailures {
 					return 503, jsonObject{
-						"failure": failureCount,
+						"failure": failureCount, // just for DEBUG logging
 					}
 				}
 			}
+
+			if value == 7 {
+				defer func() { done <- struct{}{} }()
+			}
 		}
+
+		receivedDataPoints = append(receivedDataPoints, payload...)
 
 		return 200, jsonObject{
 			"success": true,
 		}
 	}
 
+	// Prepare required objects...
 	ag := &agent.Agent{
 		MetricsGenerators: []metrics.Generator{
 			&counterGenerator{},
@@ -185,9 +215,27 @@ func TestLoop(t *testing.T) {
 
 	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, true)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
+
 	host := &mackerel.Host{Id: "xyzabc12345"}
 
-	loop(ag, conf, api, host)
+	// Start looping!
+	go loop(ag, conf, api, host)
+
+	<-done
+
+	// Verify results
+	if len(receivedDataPoints) != 7 {
+		t.Errorf("the agent should have sent 7 datapoints, got: %+v", receivedDataPoints)
+	}
+
+	sort.Sort(byTime(receivedDataPoints))
+
+	for i := 0; i < 7; i++ {
+		value := receivedDataPoints[i].Value.(float64)
+		if value != float64(i+1) {
+			t.Errorf("the %dth datapoint should have value %d, got: %+v", i, i+1, receivedDataPoints)
+		}
+	}
 }
