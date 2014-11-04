@@ -99,7 +99,7 @@ var specsUpdateInterval = 1 * time.Hour
 
 func delayByHost(host *mackerel.Host) time.Duration {
 	s := sha1.Sum([]byte(host.Id))
-	return time.Duration(int(s[len(s)-1])%60) * time.Second
+	return time.Duration(int(s[len(s)-1])%int(config.PostMetricsInterval.Seconds())) * time.Second
 }
 
 func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel.Host) {

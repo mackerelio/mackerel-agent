@@ -3,6 +3,7 @@ package agent
 import (
 	"time"
 
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
@@ -42,7 +43,7 @@ func (agent *Agent) Watch() chan *MetricsResult {
 			// Fire an event at 0 second per minute.
 			// Because ticks may not be accurate,
 			// fire an event if t - last is more than 1 minute
-			if t.Second() == 0 || t.After(last.Add(1*time.Minute)) {
+			if t.Second()%int(config.PostMetricsInterval.Seconds()) == 0 || t.After(last.Add(config.PostMetricsInterval)) {
 				last = t
 				ticker <- t
 			}

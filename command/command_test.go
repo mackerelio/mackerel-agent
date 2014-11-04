@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"sort"
 	"testing"
+	"time"
 
 	"github.com/mackerelio/mackerel-agent/agent"
 	"github.com/mackerelio/mackerel-agent/config"
@@ -152,16 +153,29 @@ func (b byTime) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
 func (b byTime) Less(i, j int) bool { return b[i].Time < b[j].Time }
 
 func TestLoop(t *testing.T) {
-	if testing.Short() {
-		t.Skip("TestLoop takes several minutes to run")
-	}
-
 	if testing.Verbose() {
 		logging.ConfigureLoggers("DEBUG")
 	}
 
 	conf, mockHandlers, ts := newMockAPIServer(t)
 	defer ts.Close()
+
+	if testing.Short() {
+		// Shrink time scale
+		originalPostMetricsInterval := config.PostMetricsInterval
+
+		config.PostMetricsInterval = 10 * time.Second
+		ratio := config.PostMetricsInterval.Seconds() / originalPostMetricsInterval.Seconds()
+
+		conf.Connection.Post_Metrics_Dequeue_Delay_Seconds =
+			int(float64(config.DefaultConfig.Connection.Post_Metrics_Retry_Delay_Seconds) * ratio)
+		conf.Connection.Post_Metrics_Retry_Delay_Seconds =
+			int(float64(config.DefaultConfig.Connection.Post_Metrics_Retry_Delay_Seconds) * ratio)
+
+		defer func() {
+			config.PostMetricsInterval = originalPostMetricsInterval
+		}()
+	}
 
 	/// Simulate the situation that mackerel.io is down for 3 min
 	// Strategy:
