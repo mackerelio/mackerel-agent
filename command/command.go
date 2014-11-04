@@ -109,6 +109,12 @@ func loop(ag *agent.Agent, conf config.Config, api *mackerel.API, host *mackerel
 
 	go func() {
 		for values := range postQueue {
+			if len(postQueue) > 0 {
+				logger.Debugf("Merging datapoints with next queued ones")
+				nextValues := <-postQueue
+				values = append(values, nextValues...)
+			}
+
 			tries := conf.Connection.Post_Metrics_Retry_Max
 			for {
 				err := api.PostMetricsValues(values)

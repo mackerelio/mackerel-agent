@@ -188,7 +188,10 @@ func TestLoop(t *testing.T) {
 	// collect: 1 . 2 . 3 . 4 . 5 . 6 . 7 . 8
 	//           ^
 	//           30s
-	const totalFailures = 3
+	const (
+		totalFailures = 3
+		totalPosts    = 7
+	)
 	failureCount := 0
 	receivedDataPoints := []mackerel.CreatingMetricsValue{}
 	done := make(chan struct{})
@@ -208,7 +211,7 @@ func TestLoop(t *testing.T) {
 				}
 			}
 
-			if value == 7 {
+			if value == totalPosts {
 				defer func() { done <- struct{}{} }()
 			}
 		}
@@ -240,13 +243,13 @@ func TestLoop(t *testing.T) {
 	<-done
 
 	// Verify results
-	if len(receivedDataPoints) != 7 {
-		t.Errorf("the agent should have sent 7 datapoints, got: %+v", receivedDataPoints)
+	if len(receivedDataPoints) != totalPosts {
+		t.Errorf("the agent should have sent %d datapoints, got: %+v", totalPosts, receivedDataPoints)
 	}
 
 	sort.Sort(byTime(receivedDataPoints))
 
-	for i := 0; i < 7; i++ {
+	for i := 0; i < totalPosts; i++ {
 		value := receivedDataPoints[i].Value.(float64)
 		if value != float64(i+1) {
 			t.Errorf("the %dth datapoint should have value %d, got: %+v", i, i+1, receivedDataPoints)
