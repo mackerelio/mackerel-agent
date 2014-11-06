@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"path/filepath"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -32,6 +33,8 @@ type PluginConfig struct {
 
 const POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX = 59   // max delay seconds for dequeuing from buffer queue
 const POST_METRICS_RETRY_DELAY_SECONDS_MAX = 3 * 60 // max delay seconds for retrying a request that caused errors
+
+var PostMetricsInterval = 1 * time.Minute
 
 type ConnectionConfig struct {
 	Post_Metrics_Dequeue_Delay_Seconds int // delay for dequeuing from buffer queue

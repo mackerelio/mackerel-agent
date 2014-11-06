@@ -4,7 +4,7 @@ ARGS = "-conf=mackerel-agent.conf"
 all: clean build test
 
 test: deps
-	go test github.com/mackerelio/mackerel-agent/...
+	go test $(TESTFLAGS) github.com/mackerelio/mackerel-agent/...
 
 build: deps
 	go build \
