@@ -40,7 +40,7 @@ func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
 	generators := []metrics.PluginGenerator{}
 
 	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, &metricsLinux.PluginGenerator{Config: pluginConfig})
+		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
 	}
 
 	return generators

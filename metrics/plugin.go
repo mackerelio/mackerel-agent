@@ -44,6 +44,10 @@ var PLUGIN_PREFIX = "custom."
 
 var pluginConfigurationEnvName = "MACKEREL_AGENT_PLUGIN_META"
 
+func NewPluginGenerator(conf config.PluginConfig) PluginGenerator {
+	return &pluginGenerator{Config: conf}
+}
+
 func (g *pluginGenerator) Generate() (Values, error) {
 	results, err := g.collectValues()
 	if err != nil {

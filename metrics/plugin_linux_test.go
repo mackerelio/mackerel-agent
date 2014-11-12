@@ -1,6 +1,6 @@
 // +build linux
 
-package linux
+package metrics
 
 import (
 	"regexp"
@@ -8,10 +8,9 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
-	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
-func containsKeyRegexp(values metrics.Values, reg string) bool {
+func containsKeyRegexp(values Values, reg string) bool {
 	for name, _ := range values {
 		if matches := regexp.MustCompile(reg).FindStringSubmatch(name); matches != nil {
 			return true
@@ -22,9 +21,9 @@ func containsKeyRegexp(values metrics.Values, reg string) bool {
 
 func TestPluginGenerate(t *testing.T) {
 	conf := config.PluginConfig{
-		Command: "ruby ../../example/metrics-plugins/dice.rb",
+		Command: "ruby ../example/metrics-plugins/dice.rb",
 	}
-	g := &PluginGenerator{Config: conf}
+	g := &pluginGenerator{Config: conf}
 	values, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
@@ -36,8 +35,8 @@ func TestPluginGenerate(t *testing.T) {
 }
 
 func TestPluginCollectValues(t *testing.T) {
-	g := &PluginGenerator{Config: config.PluginConfig{
-		Command: "ruby ../../example/metrics-plugins/dice.rb",
+	g := &pluginGenerator{Config: config.PluginConfig{
+		Command: "ruby ../example/metrics-plugins/dice.rb",
 	},
 	}
 	values, err := g.collectValues()
@@ -50,7 +49,7 @@ func TestPluginCollectValues(t *testing.T) {
 }
 
 func TestPluginCollectValuesCommand(t *testing.T) {
-	g := &PluginGenerator{Config: config.PluginConfig{
+	g := &pluginGenerator{Config: config.PluginConfig{
 		Command: "echo \"just.echo.1\t1\t1397822016\"",
 	},
 	}
@@ -75,7 +74,7 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 }
 
 func TestPluginLoadPluginMeta(t *testing.T) {
-	g := &PluginGenerator{
+	g := &pluginGenerator{
 		Config: config.PluginConfig{
 			Command: `echo '# mackerel-agent-plugin version=1
 {
@@ -131,7 +130,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 		t.Errorf("loading meta failed got: %+v", g.Meta)
 	}
 
-	generatorWithoutConf := &PluginGenerator{
+	generatorWithoutConf := &pluginGenerator{
 		Config: config.PluginConfig{
 			Command: "echo \"just.echo.1\t1\t1397822016\"",
 		},
@@ -142,7 +141,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 		t.Error("should raise error")
 	}
 
-	generatorWithBadVersion := &PluginGenerator{
+	generatorWithBadVersion := &pluginGenerator{
 		Config: config.PluginConfig{
 			Command: `echo "# mackerel-agent-plugin version=666"`,
 		},
@@ -156,7 +155,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 
 func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 	// this plugin emits "one.foo1", "one.foo2" and "two.bar1" metrics
-	g := &PluginGenerator{
+	g := &pluginGenerator{
 		Meta: &pluginMeta{
 			Graphs: map[string]customGraphDef{
 				"one": {
