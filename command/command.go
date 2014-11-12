@@ -12,6 +12,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/spec"
 )
 
@@ -239,4 +240,14 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
 	ag.InitPluginGenerators(api)
 
 	loop(ag, conf, api, host)
+}
+
+func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
+	generators := []metrics.PluginGenerator{}
+
+	for _, pluginConfig := range conf.Plugin["metrics"] {
+		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
+	}
+
+	return generators
 }

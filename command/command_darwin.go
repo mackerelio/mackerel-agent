@@ -28,8 +28,3 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 
 	return generators
 }
-
-func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
-	// TODO
-	return nil
-}
