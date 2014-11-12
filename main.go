@@ -43,7 +43,12 @@ func (r *roleFullnamesFlag) Set(input string) error {
 var logger = logging.GetLogger("main")
 
 func main() {
-	conf := resolveConfig()
+	conf, printVersion := resolveConfig()
+
+	if printVersion {
+		fmt.Printf("mackerel-agent version %s (rev %s)\n", version.VERSION, version.GITCOMMIT)
+		exitWithoutPidfileCleaning(0)
+	}
 
 	if conf.Verbose {
 		logging.ConfigureLoggers("DEBUG")
@@ -63,12 +68,21 @@ func main() {
 	}
 }
 
-func resolveConfig() (conf config.Config) {
-	conffile := flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-	apibase := flag.String("apibase", config.DefaultConfig.Apibase, "API base")
-	pidfile := flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
-	root := flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-	apikey := flag.String("apikey", "", "API key from mackerel.io web site")
+// resolveConfig parses command line arguments and loads config file to
+// return config.Config information.
+// As a special case, if `-version` flag is given it stops processing
+// and return true for the second return value.
+func resolveConfig() (*config.Config, bool) {
+	conf := &config.Config{}
+
+	var (
+		conffile     = flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase      = flag.String("apibase", config.DefaultConfig.Apibase, "API base")
+		pidfile      = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
+		root         = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey       = flag.String("apikey", "", "API key from mackerel.io web site")
+		printVersion = flag.Bool("version", false, "Prints version and exit")
+	)
 
 	var verbose bool
 	flag.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
@@ -80,6 +94,10 @@ func resolveConfig() (conf config.Config) {
 	flag.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
 
 	flag.Parse()
+
+	if *printVersion {
+		return nil, true
+	}
 
 	conf, confErr := config.LoadConfig(*conffile)
 	if confErr != nil {
@@ -105,7 +123,7 @@ func resolveConfig() (conf config.Config) {
 		}
 	})
 
-	return
+	return conf, false
 }
 
 func createPidFile(pidfile string) error {
@@ -138,7 +156,7 @@ func removePidFile(pidfile string) {
 	}
 }
 
-func exit(exitCode int, conf config.Config) {
+func exit(exitCode int, conf *config.Config) {
 	removePidFile(conf.Pidfile)
 	exitWithoutPidfileCleaning(exitCode)
 }
@@ -147,7 +165,7 @@ func exitWithoutPidfileCleaning(exitCode int) {
 	os.Exit(exitCode)
 }
 
-func start(conf config.Config) error {
+func start(conf *config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
 	}
