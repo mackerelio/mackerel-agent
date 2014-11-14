@@ -29,8 +29,8 @@ func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 	// $ iostat -n0 -c2
 	//         cpu     load average
 	//    us sy id   1m   5m   15m
-  //    13  7 81  1.93 2.23 2.65
-  //    13  7 81  1.93 2.23 2.65
+	//    13  7 81  1.93 2.23 2.65
+	//    13  7 81  1.93 2.23 2.65
 	iostatBytes, err := exec.Command("iostat", "-n0", "-c2").Output()
 	if err != nil {
 		cpuusageLogger.Errorf("Failed to invoke iostat: %s", err)
