@@ -1,4 +1,9 @@
 # Dockerfile for development to emulate Linux environment
+#
+# $ docker build -t mackerelio/mackerel-agent-test .
+# $ docker run --rm  mackerelio/mackerel-agent-test
+#
+# $ docker run --rm -e TESTFLAGS="-v -short" mackerelio/mackerel-agent-test
 
 FROM debian:wheezy
 
