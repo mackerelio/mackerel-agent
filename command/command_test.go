@@ -46,7 +46,7 @@ type jsonObject map[string]interface{}
 // newMockAPIServer makes a dummy root directry, a mock API server, a conf.Config to using them
 // and returns the Config, mock handlers map and the server.
 // The mock handlers map is "<method> <path>"-to-jsonObject-generator map.
-func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Request) (int, jsonObject), *httptest.Server) {
+func newMockAPIServer(t *testing.T) (*config.Config, map[string]func(*http.Request) (int, jsonObject), *httptest.Server) {
 	mockHandlers := map[string]func(*http.Request) (int, jsonObject){}
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -76,7 +76,7 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 		t.Fatal(err)
 	}
 
-	conf := config.Config{
+	conf := &config.Config{
 		Apibase:    ts.URL,
 		Root:       root,
 		Connection: config.DefaultConfig.Connection,
@@ -106,7 +106,7 @@ func TestPrepare(t *testing.T) {
 		}
 	}
 
-	api, host, _ := Prepare(&conf)
+	api, host, _ := Prepare(conf)
 
 	if api.BaseUrl.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseUrl, ts.URL)
