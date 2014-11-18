@@ -1,13 +1,10 @@
-// +build linux
-
-package linux
+package metrics
 
 import (
-	"bytes"
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -15,12 +12,12 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
-	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
-// PluginGenerator collects user-defined metrics.
+// pluginGenerator collects user-defined metrics.
 // mackerel-agent runs specified command and parses the result for the metric names and values.
-type PluginGenerator struct {
+type pluginGenerator struct {
 	Config config.PluginConfig
 	Meta   *pluginMeta
 }
@@ -47,7 +44,11 @@ var PLUGIN_PREFIX = "custom."
 
 var pluginConfigurationEnvName = "MACKEREL_AGENT_PLUGIN_META"
 
-func (g *PluginGenerator) Generate() (metrics.Values, error) {
+func NewPluginGenerator(conf config.PluginConfig) PluginGenerator {
+	return &pluginGenerator{Config: conf}
+}
+
+func (g *pluginGenerator) Generate() (Values, error) {
 	results, err := g.collectValues()
 	if err != nil {
 		return nil, err
@@ -55,7 +56,7 @@ func (g *PluginGenerator) Generate() (metrics.Values, error) {
 	return results, nil
 }
 
-func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
+func (g *pluginGenerator) InitWithAPI(api *mackerel.API) error {
 	err := g.loadPluginMeta()
 	if err != nil {
 		return err
@@ -118,7 +119,7 @@ func (g *PluginGenerator) InitWithAPI(api *mackerel.API) error {
 // 	    }
 // 	  }
 // 	}
-func (g *PluginGenerator) loadPluginMeta() error {
+func (g *pluginGenerator) loadPluginMeta() error {
 	command := g.Config.Command
 	pluginLogger.Debugf("Obtaining plugin configuration: %q", command)
 
@@ -126,17 +127,12 @@ func (g *PluginGenerator) loadPluginMeta() error {
 	os.Setenv(pluginConfigurationEnvName, "1")
 	defer os.Setenv(pluginConfigurationEnvName, "")
 
-	var outBuffer, errBuffer bytes.Buffer
-
-	cmd := exec.Command("/bin/sh", "-c", command)
-	cmd.Stdout = &outBuffer
-	cmd.Stderr = &errBuffer
-
-	err := cmd.Run()
+	stdout, stderr, err := util.RunCommand(command)
 	if err != nil {
-		return fmt.Errorf("running %q failed: %s, stderr=%q", command, err, string(errBuffer.Bytes()))
+		return fmt.Errorf("running %q failed: %s, stderr=%q", command, err, stderr)
 	}
 
+	outBuffer := bufio.NewReader(strings.NewReader(stdout))
 	// Read the plugin configuration meta (version etc)
 
 	headerLine, err := outBuffer.ReadString('\n')
@@ -176,7 +172,7 @@ func (g *PluginGenerator) loadPluginMeta() error {
 	}
 
 	conf := &pluginMeta{}
-	err = json.NewDecoder(&outBuffer).Decode(conf)
+	err = json.NewDecoder(outBuffer).Decode(conf)
 
 	if err != nil {
 		return fmt.Errorf("while reading plugin configuration: %s", err)
@@ -187,7 +183,7 @@ func (g *PluginGenerator) loadPluginMeta() error {
 	return nil
 }
 
-func (g *PluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDefsPayload {
+func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDefsPayload {
 	if g.Meta == nil {
 		return nil
 	}
@@ -219,26 +215,20 @@ func (g *PluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 	return payloads
 }
 
-func (g *PluginGenerator) collectValues() (metrics.Values, error) {
+func (g *pluginGenerator) collectValues() (Values, error) {
 	command := g.Config.Command
 	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
 
-	var outBuffer bytes.Buffer
-	var errBuffer bytes.Buffer
-
 	os.Setenv(pluginConfigurationEnvName, "")
-	cmd := exec.Command("/bin/sh", "-c", command)
-	cmd.Stdout = &outBuffer
-	cmd.Stderr = &errBuffer
+	stdout, stderr, err := util.RunCommand(command)
 
-	err := cmd.Run()
 	if err != nil {
-		pluginLogger.Errorf("Failed to execute command \"%s\" (skip these metrics):\n%s", command, string(errBuffer.Bytes()))
+		pluginLogger.Errorf("Failed to execute command \"%s\" (skip these metrics):\n%s", command, stderr)
 		return nil, err
 	}
 
 	results := make(map[string]float64, 0)
-	for _, line := range strings.Split(string(outBuffer.Bytes()), "\n") {
+	for _, line := range strings.Split(stdout, "\n") {
 		// Key, value, timestamp
 		// ex.) tcp.CLOSING 0 1397031808
 		items := strings.Split(line, "\t")
