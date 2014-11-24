@@ -238,7 +238,8 @@ func TestLoop(t *testing.T) {
 	host := &mackerel.Host{Id: "xyzabc12345"}
 
 	// Start looping!
-	go loop(ag, &conf, api, host, make(chan chan bool))
+	termChan := make(chan chan bool)
+	go loop(ag, &conf, api, host, termChan)
 
 	<-done
 
@@ -255,4 +256,12 @@ func TestLoop(t *testing.T) {
 			t.Errorf("the %dth datapoint should have value %d, got: %+v", i, i+1, receivedDataPoints)
 		}
 	}
+
+	ch := make(chan bool)
+	termChan <- ch
+	f := <-ch
+	if f {
+		t.Errorf("terminate flag should be returned and a false")
+	}
+
 }
