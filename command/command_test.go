@@ -238,7 +238,7 @@ func TestLoop(t *testing.T) {
 	host := &mackerel.Host{Id: "xyzabc12345"}
 
 	// Start looping!
-	termChan := make(chan chan bool)
+	termChan := make(chan chan int)
 	go loop(ag, &conf, api, host, termChan)
 
 	<-done
@@ -257,11 +257,10 @@ func TestLoop(t *testing.T) {
 		}
 	}
 
-	ch := make(chan bool)
+	ch := make(chan int)
 	termChan <- ch
-	f := <-ch
-	if f {
-		t.Errorf("terminate flag should be returned and a false")
+	exitCode := <-ch
+	if exitCode != 0 {
+		t.Errorf("exit code should be 0, got: %d", exitCode)
 	}
-
 }
