@@ -103,13 +103,22 @@ func delayByHost(host *mackerel.Host) time.Duration {
 	return time.Duration(int(s[len(s)-1])%int(config.PostMetricsInterval.Seconds())) * time.Second
 }
 
-func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host) {
+func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host, termChan chan chan bool) {
 	metricsResult := ag.Watch()
 
 	postQueue := make(chan []*mackerel.CreatingMetricsValue, conf.Connection.Post_Metrics_Buffer_Size)
 
 	go func() {
-		for values := range postQueue {
+		ch := make(chan bool)
+		terminated := false
+		select {
+		case ch = <-termChan:
+			if len(postQueue) <= 0 {
+				ch <- false
+			} else {
+				terminated = true
+			}
+		case values := <-postQueue:
 			if len(postQueue) > 0 {
 				logger.Debugf("Merging datapoints with next queued ones")
 				nextValues := <-postQueue
@@ -136,6 +145,9 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 			}
 
 			time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
+			if terminated {
+				ch <- false
+			}
 		}
 	}()
 
@@ -230,7 +242,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 }
 
 // Run starts the main metric collecting logic and this function will never return.
-func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
+func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termChan chan chan bool) {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
 	ag := &agent.Agent{
@@ -239,7 +251,7 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
 	}
 	ag.InitPluginGenerators(api)
 
-	loop(ag, conf, api, host)
+	loop(ag, conf, api, host, termChan)
 }
 
 func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {

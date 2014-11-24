@@ -177,6 +177,7 @@ func start(conf *config.Config) error {
 	}
 
 	c := make(chan os.Signal, 1)
+	termChan := make(chan chan bool)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go func() {
 		for sig := range c {
@@ -187,12 +188,15 @@ func start(conf *config.Config) error {
 				command.UpdateHostSpecs(conf, api, host)
 			} else {
 				logger.Infof("Received signal '%v', exiting", sig)
+				ch := make(chan bool)
+				termChan <- ch
+				_ = <-ch
 				exit(0, conf)
 			}
 		}
 	}()
 
-	command.Run(conf, api, host)
+	command.Run(conf, api, host, termChan)
 
 	return nil
 }

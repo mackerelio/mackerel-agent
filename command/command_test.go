@@ -238,7 +238,7 @@ func TestLoop(t *testing.T) {
 	host := &mackerel.Host{Id: "xyzabc12345"}
 
 	// Start looping!
-	go loop(ag, &conf, api, host)
+	go loop(ag, &conf, api, host, make(chan chan bool))
 
 	<-done
 
