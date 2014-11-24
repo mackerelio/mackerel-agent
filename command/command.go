@@ -111,42 +111,44 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 	go func() {
 		ch := make(chan bool)
 		terminated := false
-		select {
-		case ch = <-termChan:
-			if len(postQueue) <= 0 {
-				ch <- false
-			} else {
-				terminated = true
-			}
-		case values := <-postQueue:
-			if len(postQueue) > 0 {
-				logger.Debugf("Merging datapoints with next queued ones")
-				nextValues := <-postQueue
-				values = append(values, nextValues...)
-			}
-
-			tries := conf.Connection.Post_Metrics_Retry_Max
-			for {
-				err := api.PostMetricsValues(values)
-				if err == nil {
-					logger.Debugf("Posting metrics succeeded.")
-					break
+		for {
+			select {
+			case ch = <-termChan:
+				if len(postQueue) <= 0 {
+					ch <- false
+				} else {
+					terminated = true
 				}
-				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
-
-				tries -= 1
-				if tries <= 0 {
-					logger.Errorf("Give up retrying to post metrics.")
-					break
+			case values := <-postQueue:
+				if len(postQueue) > 0 {
+					logger.Debugf("Merging datapoints with next queued ones")
+					nextValues := <-postQueue
+					values = append(values, nextValues...)
 				}
 
-				logger.Debugf("Retrying to post metrics...")
-				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
-			}
+				tries := conf.Connection.Post_Metrics_Retry_Max
+				for {
+					err := api.PostMetricsValues(values)
+					if err == nil {
+						logger.Debugf("Posting metrics succeeded.")
+						break
+					}
+					logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
 
-			time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
-			if terminated {
-				ch <- false
+					tries -= 1
+					if tries <= 0 {
+						logger.Errorf("Give up retrying to post metrics.")
+						break
+					}
+
+					logger.Debugf("Retrying to post metrics...")
+					time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
+				}
+
+				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
+				if terminated {
+					ch <- false
+				}
 			}
 		}
 	}()
