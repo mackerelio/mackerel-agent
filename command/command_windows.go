@@ -22,7 +22,7 @@ func interfaceGenerator() spec.Generator {
 	return &specWindows.InterfaceGenerator{}
 }
 
-func metricsGenerators(conf config.Config) []metrics.Generator {
+func metricsGenerators(conf *config.Config) []metrics.Generator {
 	var g metrics.Generator
 	var err error
 
@@ -54,7 +54,7 @@ func metricsGenerators(conf config.Config) []metrics.Generator {
 	return generators
 }
 
-func pluginGenerators(conf config.Config) []metrics.PluginGenerator {
+func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
 	// XXX to be implemented
 	return []metrics.PluginGenerator{}
 }

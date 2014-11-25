@@ -40,6 +40,10 @@ go build -o build/mackerel-agent \
 ./build/mackerel-agent -conf=mackerel-agent.conf
 ```
 
+Build on Windows, please use ```build.bat```
+
+Run on Windows, please use ```run.bat```
+
 
 Test
 ----------
