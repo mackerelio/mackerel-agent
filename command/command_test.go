@@ -238,7 +238,8 @@ func TestLoop(t *testing.T) {
 	host := &mackerel.Host{Id: "xyzabc12345"}
 
 	// Start looping!
-	go loop(ag, &conf, api, host)
+	termChan := make(chan chan int)
+	go loop(ag, &conf, api, host, termChan)
 
 	<-done
 
@@ -254,5 +255,12 @@ func TestLoop(t *testing.T) {
 		if value != float64(i+1) {
 			t.Errorf("the %dth datapoint should have value %d, got: %+v", i, i+1, receivedDataPoints)
 		}
+	}
+
+	ch := make(chan int)
+	termChan <- ch
+	exitCode := <-ch
+	if exitCode != 0 {
+		t.Errorf("exit code should be 0, got: %d", exitCode)
 	}
 }

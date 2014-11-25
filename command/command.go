@@ -102,39 +102,53 @@ func delayByHost(host *mackerel.Host) time.Duration {
 	return time.Duration(int(s[len(s)-1])%int(config.PostMetricsInterval.Seconds())) * time.Second
 }
 
-func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host) {
+func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host, termChan chan chan int) {
 	metricsResult := ag.Watch()
 
 	postQueue := make(chan []*mackerel.CreatingMetricsValue, conf.Connection.Post_Metrics_Buffer_Size)
 
 	go func() {
-		for values := range postQueue {
-			if len(postQueue) > 0 {
-				logger.Debugf("Merging datapoints with next queued ones")
-				nextValues := <-postQueue
-				values = append(values, nextValues...)
-			}
-
-			tries := conf.Connection.Post_Metrics_Retry_Max
-			for {
-				err := api.PostMetricsValues(values)
-				if err == nil {
-					logger.Debugf("Posting metrics succeeded.")
-					break
+		exitChan := make(chan int)
+		terminated := false
+		for {
+			select {
+			case exitChan = <-termChan:
+				if len(postQueue) <= 0 {
+					exitChan <- 0
+				} else {
+					terminated = true
 				}
-				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
-
-				tries -= 1
-				if tries <= 0 {
-					logger.Errorf("Give up retrying to post metrics.")
-					break
+			case values := <-postQueue:
+				if len(postQueue) > 0 {
+					logger.Debugf("Merging datapoints with next queued ones")
+					nextValues := <-postQueue
+					values = append(values, nextValues...)
 				}
 
-				logger.Debugf("Retrying to post metrics...")
-				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
-			}
+				tries := conf.Connection.Post_Metrics_Retry_Max
+				for {
+					err := api.PostMetricsValues(values)
+					if err == nil {
+						logger.Debugf("Posting metrics succeeded.")
+						break
+					}
+					logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
 
-			time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
+					tries -= 1
+					if tries <= 0 {
+						logger.Errorf("Give up retrying to post metrics.")
+						break
+					}
+
+					logger.Debugf("Retrying to post metrics...")
+					time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
+				}
+
+				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
+				if terminated {
+					exitChan <- 0
+				}
+			}
 		}
 	}()
 
@@ -229,7 +243,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 }
 
 // Run starts the main metric collecting logic and this function will never return.
-func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
+func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termChan chan chan int) {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
 	ag := &agent.Agent{
@@ -238,6 +252,6 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
 	}
 	ag.InitPluginGenerators(api)
 
-	loop(ag, conf, api, host)
+	loop(ag, conf, api, host, termChan)
 }
 

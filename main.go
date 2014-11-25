@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
@@ -165,6 +166,8 @@ func exitWithoutPidfileCleaning(exitCode int) {
 	os.Exit(exitCode)
 }
 
+const MAX_TERMINATING_INTERVAL = 30 // wait up to 30 seconds for termination
+
 func start(conf *config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
@@ -177,6 +180,7 @@ func start(conf *config.Config) error {
 	}
 
 	c := make(chan os.Signal, 1)
+	termChan := make(chan chan int)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go func() {
 		for sig := range c {
@@ -187,12 +191,20 @@ func start(conf *config.Config) error {
 				command.UpdateHostSpecs(conf, api, host)
 			} else {
 				logger.Infof("Received signal '%v', exiting", sig)
-				exit(0, conf)
+				exitChan := make(chan int)
+				termChan <- exitChan
+
+				go func() {
+					time.Sleep(MAX_TERMINATING_INTERVAL * time.Second)
+					exitChan <- 1
+				}()
+				exitCode := <-exitChan
+				exit(exitCode, conf)
 			}
 		}
 	}()
 
-	command.Run(conf, api, host)
+	command.Run(conf, api, host, termChan)
 
 	return nil
 }
