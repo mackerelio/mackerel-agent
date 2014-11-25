@@ -107,10 +107,26 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 	metricsResult := ag.Watch()
 
 	postQueue := make(chan []*mackerel.CreatingMetricsValue, conf.Connection.Post_Metrics_Buffer_Size)
-
+	postDelay := delayByHost(host)
+	isFirstTime := true
 	go func() {
+		queued := false
 		for values := range postQueue {
+			switch {
+			case isFirstTime: // request immediately to create graph defs of host
+				isFirstTime = false
+			case queued:
+				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
+			default:
+				// Sending data at every 0 second from all hosts causes request flooding.
+				// To prevent flooding, this loop sleeps for some seconds
+				// which is specific to the ID of the host running agent on.
+				// The sleep second is up to 60s.
+				time.Sleep(postDelay)
+			}
+
 			if len(postQueue) > 0 {
+				// Bulk posting. However at most "two" metrics are to be posted, so postQueue isn't always empty yet.
 				logger.Debugf("Merging datapoints with next queued ones")
 				nextValues := <-postQueue
 				values = append(values, nextValues...)
@@ -135,7 +151,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
 			}
 
-			time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
+			queued = len(postQueue) > 0
 		}
 	}()
 
@@ -147,8 +163,6 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 		}
 	}()
 
-	postDelay := delayByHost(host)
-	isFirstTime := true
 	for {
 		select {
 		case result := <-metricsResult:
@@ -159,16 +173,6 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 					creatingValues,
 					&mackerel.CreatingMetricsValue{host.Id, name, created, value},
 				)
-			}
-			if isFirstTime { // request immediately to create graph defs of host
-				isFirstTime = false
-			} else {
-				// Sending data at every 0 second from all hosts causes request flooding.
-				// To prevent flooding, this loop sleeps for some seconds
-				// which is specific to the ID of the host running agent on.
-				// The sleep second is up to 60s.
-				logger.Debugf("Sleeping %v to enqueue post request...", postDelay)
-				time.Sleep(postDelay)
 			}
 			logger.Debugf("Enqueuing task to post metrics.")
 			postQueue <- creatingValues
