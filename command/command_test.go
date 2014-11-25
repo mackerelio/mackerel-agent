@@ -18,19 +18,19 @@ import (
 )
 
 func TestDelayByHost(t *testing.T) {
-	delay1 := delayByHost(&mackerel.Host{
+	delay1 := time.Duration(delayByHost(&mackerel.Host{
 		Id:     "246PUVUngPo",
 		Name:   "hogehoge2.host.h",
 		Type:   "unknown",
 		Status: "working",
-	})
+	})) * time.Second
 
-	delay2 := delayByHost(&mackerel.Host{
+	delay2 := time.Duration(delayByHost(&mackerel.Host{
 		Id:     "21GZjCE5Etb",
 		Name:   "hogehoge2.host.h",
 		Type:   "unknown",
 		Status: "working",
-	})
+	})) * time.Second
 
 	if !(0 <= delay1.Seconds() && delay1.Seconds() < 60) {
 		t.Errorf("delay shoud be between 0 and 60 but %v", delay1)
