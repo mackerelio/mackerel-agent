@@ -103,19 +103,27 @@ func delayByHost(host *mackerel.Host) time.Duration {
 	return time.Duration(int(s[len(s)-1])%int(config.PostMetricsInterval.Seconds())) * time.Second
 }
 
+type queueState int
+
+const (
+	queueStateFirst queueState = iota
+	queueStateDefault
+	queueStateQueued
+)
+
 func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host) {
 	metricsResult := ag.Watch()
 
 	postQueue := make(chan []*mackerel.CreatingMetricsValue, conf.Connection.Post_Metrics_Buffer_Size)
 	postDelay := delayByHost(host)
-	isFirstTime := true
+
+	qState := queueStateFirst
 	go func() {
-		queued := false
 		for values := range postQueue {
-			switch {
-			case isFirstTime: // request immediately to create graph defs of host
-				isFirstTime = false
-			case queued:
+			switch qState {
+			case queueStateFirst: // request immediately to create graph defs of host
+				// nop
+			case queueStateQueued:
 				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Dequeue_Delay_Seconds) * time.Second)
 			default:
 				// Sending data at every 0 second from all hosts causes request flooding.
@@ -124,6 +132,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				// The sleep second is up to 60s.
 				time.Sleep(postDelay)
 			}
+			qState = queueStateDefault
 
 			if len(postQueue) > 0 {
 				// Bulk posting. However at most "two" metrics are to be posted, so postQueue isn't always empty yet.
@@ -151,7 +160,9 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
 			}
 
-			queued = len(postQueue) > 0
+			if len(postQueue) > 0 {
+				qState = queueStateQueued
+			}
 		}
 	}()
 
