@@ -41,6 +41,9 @@ go build -o build/mackerel-agent \
 
 詳しくは[mackerel-agent仕様](http://help-ja.mackerel.io/entry/spec/agent)をご覧ください。
 
+Windowsのビルドの場合は```build.bat```を実行してください。
+
+Windowsのエージェントの実行には```run.bat```を実行してください。
 
 Test
 ------
