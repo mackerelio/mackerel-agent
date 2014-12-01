@@ -109,6 +109,7 @@ const (
 	queueStateFirst queueState = iota
 	queueStateDefault
 	queueStateQueued
+	queueStateRetrying
 )
 
 func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host) {
@@ -119,11 +120,16 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 		postDelaySeconds := delayByHost(host)
 		qState := queueStateFirst
 		for values := range postQueue {
+			orgPostValues := [][](*mackerel.CreatingMetricsValue){values}
 			if len(postQueue) > 0 {
 				// Bulk posting. However at most "two" metrics are to be posted, so postQueue isn't always empty yet.
 				logger.Debugf("Merging datapoints with next queued ones")
 				nextValues := <-postQueue
-				values = append(values, nextValues...)
+				orgPostValues = append(orgPostValues, nextValues)
+			}
+			postValues := [](*mackerel.CreatingMetricsValue){}
+			for _, v := range orgPostValues {
+				postValues = append(postValues, v...)
 			}
 
 			delaySeconds := 0
@@ -132,12 +138,14 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				// nop
 			case queueStateQueued:
 				delaySeconds = conf.Connection.Post_Metrics_Dequeue_Delay_Seconds
+			case queueStateRetrying:
+				delaySeconds = conf.Connection.Post_Metrics_Retry_Delay_Seconds
 			default:
 				// Sending data at every 0 second from all hosts causes request flooding.
 				// To prevent flooding, this loop sleeps for some seconds
 				// which is specific to the ID of the host running agent on.
 				// The sleep second is up to 60s.
-				elapsedSeconds := time.Now().Second() % int(config.PostMetricsInterval.Seconds())
+				elapsedSeconds := int(time.Now().Unix() % int64(config.PostMetricsInterval.Seconds()))
 				if postDelaySeconds > elapsedSeconds {
 					delaySeconds = postDelaySeconds - elapsedSeconds
 				}
@@ -152,24 +160,19 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 
 			time.Sleep(time.Duration(delaySeconds) * time.Second)
 
-			tries := conf.Connection.Post_Metrics_Retry_Max
-			for {
-				err := api.PostMetricsValues(values)
-				if err == nil {
-					logger.Debugf("Posting metrics succeeded.")
-					break
-				}
+			err := api.PostMetricsValues(postValues)
+			if err != nil {
+				// XXX care client error or server error
 				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
-
-				tries -= 1
-				if tries <= 0 {
-					logger.Errorf("Give up retrying to post metrics.")
-					break
-				}
-
-				logger.Debugf("Retrying to post metrics...")
-				time.Sleep(time.Duration(conf.Connection.Post_Metrics_Retry_Delay_Seconds) * time.Second)
+				qState = queueStateRetrying
+				go func() {
+					for _, v := range orgPostValues {
+						postQueue <- v
+					}
+				}()
+				continue
 			}
+			logger.Debugf("Posting metrics succeeded.")
 		}
 	}()
 
