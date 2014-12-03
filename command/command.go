@@ -162,12 +162,14 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 			}
 			err := api.PostMetricsValues(postValues)
 			if err != nil {
-				// XXX care client error or server error
 				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
 				qState = queueStateRetrying
 				go func() {
 					for _, v := range origPostValues {
-						postQueue <- v
+						v.retryCnt++
+						if v.retryCnt <= conf.Connection.Post_Metrics_Retry_Max {
+							postQueue <- v
+						}
 					}
 				}()
 				continue
@@ -203,7 +205,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 
 type postValue struct {
 	values   []*mackerel.CreatingMetricsValue
-	retryCnt uint
+	retryCnt int
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
