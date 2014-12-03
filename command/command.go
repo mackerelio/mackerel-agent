@@ -111,7 +111,7 @@ const (
 	loopStateHadError
 )
 
-func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host) {
+func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan bool) int {
 	metricsResult := ag.Watch()
 
 	postQueue := make(chan *postValue, conf.Connection.Post_Metrics_Buffer_Size)
@@ -187,8 +187,11 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 		}
 	}()
 
+mainLoop:
 	for {
 		select {
+		case <-termCh:
+			break mainLoop
 		case result := <-metricsResult:
 			created := float64(result.Created.Unix())
 			creatingValues := [](*mackerel.CreatingMetricsValue){}
@@ -202,6 +205,8 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 			postQueue <- &postValue{creatingValues, 0}
 		}
 	}
+
+	return 0
 }
 
 type postValue struct {
@@ -263,7 +268,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 }
 
 // Run starts the main metric collecting logic and this function will never return.
-func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
+func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan bool) int {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
 	ag := &agent.Agent{
@@ -272,6 +277,5 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
 	}
 	ag.InitPluginGenerators(api)
 
-	loop(ag, conf, api, host)
+	return loop(ag, conf, api, host, termCh)
 }
-
