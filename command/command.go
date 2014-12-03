@@ -120,16 +120,12 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 		postDelaySeconds := delayByHost(host)
 		qState := queueStateFirst
 		for values := range postQueue {
-			orgPostValues := [][](*mackerel.CreatingMetricsValue){values}
+			origPostValues := [][](*mackerel.CreatingMetricsValue){values}
 			if len(postQueue) > 0 {
 				// Bulk posting. However at most "two" metrics are to be posted, so postQueue isn't always empty yet.
 				logger.Debugf("Merging datapoints with next queued ones")
 				nextValues := <-postQueue
-				orgPostValues = append(orgPostValues, nextValues)
-			}
-			postValues := [](*mackerel.CreatingMetricsValue){}
-			for _, v := range orgPostValues {
-				postValues = append(postValues, v...)
+				origPostValues = append(origPostValues, nextValues)
 			}
 
 			delaySeconds := 0
@@ -160,13 +156,17 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 
 			time.Sleep(time.Duration(delaySeconds) * time.Second)
 
+			postValues := [](*mackerel.CreatingMetricsValue){}
+			for _, v := range origPostValues {
+				postValues = append(postValues, v...)
+			}
 			err := api.PostMetricsValues(postValues)
 			if err != nil {
 				// XXX care client error or server error
 				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
 				qState = queueStateRetrying
 				go func() {
-					for _, v := range orgPostValues {
+					for _, v := range origPostValues {
 						postQueue <- v
 					}
 				}()
