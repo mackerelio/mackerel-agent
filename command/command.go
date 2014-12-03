@@ -147,7 +147,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				}
 			}
 
-			// update loopState before sleeping
+			// determin next loopState before sleeping
 			if len(postQueue) > 0 {
 				lState = loopStateQueued
 			} else {
@@ -167,6 +167,8 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				go func() {
 					for _, v := range origPostValues {
 						v.retryCnt++
+						// It is difficult to distinguish the error is server error or data error.
+						// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
 						if v.retryCnt <= conf.Connection.Post_Metrics_Retry_Max {
 							postQueue <- v
 						}
