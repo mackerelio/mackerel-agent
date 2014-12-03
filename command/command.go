@@ -115,12 +115,12 @@ const (
 func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host) {
 	metricsResult := ag.Watch()
 
-	postQueue := make(chan []*mackerel.CreatingMetricsValue, conf.Connection.Post_Metrics_Buffer_Size)
+	postQueue := make(chan *postValue, conf.Connection.Post_Metrics_Buffer_Size)
 	go func() {
 		postDelaySeconds := delayByHost(host)
 		qState := queueStateFirst
-		for values := range postQueue {
-			origPostValues := [][](*mackerel.CreatingMetricsValue){values}
+		for v := range postQueue {
+			origPostValues := [](*postValue){v}
 			if len(postQueue) > 0 {
 				// Bulk posting. However at most "two" metrics are to be posted, so postQueue isn't always empty yet.
 				logger.Debugf("Merging datapoints with next queued ones")
@@ -140,7 +140,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				// Sending data at every 0 second from all hosts causes request flooding.
 				// To prevent flooding, this loop sleeps for some seconds
 				// which is specific to the ID of the host running agent on.
-				// The sleep second is up to 60s.
+				// The sleep second is up to 60s (to be exact up to `config.Postmetricsinterval.Seconds()`.
 				elapsedSeconds := int(time.Now().Unix() % int64(config.PostMetricsInterval.Seconds()))
 				if postDelaySeconds > elapsedSeconds {
 					delaySeconds = postDelaySeconds - elapsedSeconds
@@ -158,7 +158,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 
 			postValues := [](*mackerel.CreatingMetricsValue){}
 			for _, v := range origPostValues {
-				postValues = append(postValues, v...)
+				postValues = append(postValues, v.values...)
 			}
 			err := api.PostMetricsValues(postValues)
 			if err != nil {
@@ -196,9 +196,14 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				)
 			}
 			logger.Debugf("Enqueuing task to post metrics.")
-			postQueue <- creatingValues
+			postQueue <- &postValue{creatingValues, 0}
 		}
 	}
+}
+
+type postValue struct {
+	values   []*mackerel.CreatingMetricsValue
+	retryCnt uint
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
