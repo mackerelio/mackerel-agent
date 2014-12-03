@@ -103,13 +103,13 @@ func delayByHost(host *mackerel.Host) int {
 	return int(s[len(s)-1]) % int(config.PostMetricsInterval.Seconds())
 }
 
-type queueState int
+type loopState uint8
 
 const (
-	queueStateFirst queueState = iota
-	queueStateDefault
-	queueStateQueued
-	queueStateRetrying
+	loopStateFirst loopState = iota
+	loopStateDefault
+	loopStateQueued
+	loopStateHadError
 )
 
 func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host) {
@@ -118,7 +118,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 	postQueue := make(chan *postValue, conf.Connection.Post_Metrics_Buffer_Size)
 	go func() {
 		postDelaySeconds := delayByHost(host)
-		qState := queueStateFirst
+		lState := loopStateFirst
 		for v := range postQueue {
 			origPostValues := [](*postValue){v}
 			if len(postQueue) > 0 {
@@ -129,12 +129,12 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 			}
 
 			delaySeconds := 0
-			switch qState {
-			case queueStateFirst: // request immediately to create graph defs of host
+			switch lState {
+			case loopStateFirst: // request immediately to create graph defs of host
 				// nop
-			case queueStateQueued:
+			case loopStateQueued:
 				delaySeconds = conf.Connection.Post_Metrics_Dequeue_Delay_Seconds
-			case queueStateRetrying:
+			case loopStateHadError:
 				delaySeconds = conf.Connection.Post_Metrics_Retry_Delay_Seconds
 			default:
 				// Sending data at every 0 second from all hosts causes request flooding.
@@ -147,11 +147,11 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				}
 			}
 
-			// update queueState before sleeping
+			// update loopState before sleeping
 			if len(postQueue) > 0 {
-				qState = queueStateQueued
+				lState = loopStateQueued
 			} else {
-				qState = queueStateDefault
+				lState = loopStateDefault
 			}
 
 			time.Sleep(time.Duration(delaySeconds) * time.Second)
@@ -163,7 +163,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 			err := api.PostMetricsValues(postValues)
 			if err != nil {
 				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
-				qState = queueStateRetrying
+				lState = loopStateHadError
 				go func() {
 					for _, v := range origPostValues {
 						v.retryCnt++
