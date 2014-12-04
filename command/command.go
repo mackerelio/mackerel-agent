@@ -213,20 +213,16 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				}
 
 				logger.Debugf("Sleep %d seconds before posting.", delaySeconds)
-			sleeping:
-				for {
-					select {
-					case <-time.After(time.Duration(delaySeconds) * time.Second):
-						break sleeping
-					case <-termCh:
-						if lState == loopStateTerminated {
-							exitCh <- 1
-							return
-						}
-						lState = loopStateTerminated
-						close(quit) // broadcast terminating
-						break sleeping
+				select {
+				case <-time.After(time.Duration(delaySeconds) * time.Second):
+					// nop
+				case <-termCh:
+					if lState == loopStateTerminated {
+						exitCh <- 1
+						return
 					}
+					lState = loopStateTerminated
+					close(quit) // broadcast terminating
 				}
 
 				postValues := [](*mackerel.CreatingMetricsValue){}
