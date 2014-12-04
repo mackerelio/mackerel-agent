@@ -2,6 +2,7 @@ package command
 
 import (
 	"crypto/sha1"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -241,9 +242,16 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 							v.retryCnt++
 							// It is difficult to distinguish the error is server error or data error.
 							// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
-							if v.retryCnt <= conf.Connection.Post_Metrics_Retry_Max {
-								postQueue <- v
+							if v.retryCnt > conf.Connection.Post_Metrics_Retry_Max {
+								json, err := json.Marshal(v.values)
+								if err != nil {
+									logger.Errorf("Something wrong with post values. marshaling failed.")
+								} else {
+									logger.Errorf("Post values may be invalid and abandoned: %s", string(json))
+								}
+								continue
 							}
+							postQueue <- v
 						}
 					}()
 					continue
