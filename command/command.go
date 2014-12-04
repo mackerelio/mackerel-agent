@@ -191,6 +191,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				case loopStateQueued:
 					delaySeconds = conf.Connection.Post_Metrics_Dequeue_Delay_Seconds
 				case loopStateHadError:
+					// TODO: better interval calculation. exponential backoff or so.
 					delaySeconds = conf.Connection.Post_Metrics_Retry_Delay_Seconds
 				case loopStateTerminated:
 					delaySeconds = 1
