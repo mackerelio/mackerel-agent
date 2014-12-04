@@ -164,12 +164,13 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 			select {
 			case <-termCh:
 				if lState == loopStateTerminated {
+					close(quit) // broadcast terminating
 					exitCh <- 1
 					return
 				}
-				close(quit) // broadcast terminating
 				lState = loopStateTerminated
 				if len(postQueue) <= 0 {
+					close(quit) // broadcast terminating
 					exitCh <- 0
 					return
 				}
@@ -218,11 +219,11 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 					// nop
 				case <-termCh:
 					if lState == loopStateTerminated {
+						close(quit) // broadcast terminating
 						exitCh <- 1
 						return
 					}
 					lState = loopStateTerminated
-					close(quit) // broadcast terminating
 				}
 
 				postValues := [](*mackerel.CreatingMetricsValue){}
@@ -250,6 +251,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				logger.Debugf("Posting metrics succeeded.")
 
 				if lState == loopStateTerminated && len(postQueue) <= 0 {
+					close(quit) // broadcast terminating
 					exitCh <- 0
 					return
 				}
