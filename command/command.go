@@ -194,6 +194,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 					// TODO: better interval calculation. exponential backoff or so.
 					delaySeconds = conf.Connection.Post_Metrics_Retry_Delay_Seconds
 				case loopStateTerminated:
+					// dequeue and post every one second when terminating.
 					delaySeconds = 1
 				default:
 					// Sending data at every 0 second from all hosts causes request flooding.
