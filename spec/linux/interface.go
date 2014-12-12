@@ -42,7 +42,7 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 		if iface["encap"] == nil || iface["encap"] == "Loopback" {
 			continue
 		}
-		if iface["ipAddress"] == nil || iface["macAddress"] == nil {
+		if iface["ipAddress"] == nil && iface["ipv6Address"] == nil {
 			continue
 		}
 		iface["name"] = key
