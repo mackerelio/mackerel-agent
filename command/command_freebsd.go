@@ -13,6 +13,7 @@ func specGenerators() []spec.Generator {
 		&specFreebsd.KernelGenerator{},
 		&specFreebsd.MemoryGenerator{},
 		&specFreebsd.CPUGenerator{},
+		&specFreebsd.FilesystemGenerator{},
 	}
 }
 
@@ -24,6 +25,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsFreebsd.Loadavg5Generator{},
 		&metricsFreebsd.CpuusageGenerator{},
+		&metricsFreebsd.FilesystemGenerator{},
 	}
 
 	return generators
