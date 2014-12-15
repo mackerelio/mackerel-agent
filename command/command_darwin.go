@@ -13,6 +13,7 @@ func specGenerators() []spec.Generator {
 		&specDarwin.KernelGenerator{},
 		&specDarwin.MemoryGenerator{},
 		&specDarwin.CPUGenerator{},
+		&specDarwin.FilesystemGenerator{},
 	}
 }
 
@@ -24,6 +25,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsDarwin.Loadavg5Generator{},
 		&metricsDarwin.CpuusageGenerator{},
+		&metricsDarwin.FilesystemGenerator{},
 	}
 
 	return generators
