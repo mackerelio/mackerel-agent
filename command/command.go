@@ -115,7 +115,7 @@ const (
 	loopStateDefault
 	loopStateQueued
 	loopStateHadError
-	loopStateTerminated
+	loopStateTerminating
 )
 
 func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan bool) int {
@@ -163,11 +163,11 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 		for {
 			select {
 			case <-termCh:
-				if lState == loopStateTerminated {
+				if lState == loopStateTerminating {
 					close(quit) // broadcast terminating
 					return 1
 				}
-				lState = loopStateTerminated
+				lState = loopStateTerminating
 				if len(postQueue) <= 0 {
 					close(quit) // broadcast terminating
 					return 0
@@ -190,7 +190,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				case loopStateHadError:
 					// TODO: better interval calculation. exponential backoff or so.
 					delaySeconds = conf.Connection.Post_Metrics_Retry_Delay_Seconds
-				case loopStateTerminated:
+				case loopStateTerminating:
 					// dequeue and post every one second when terminating.
 					delaySeconds = 1
 				default:
@@ -205,7 +205,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				}
 
 				// determin next loopState before sleeping
-				if lState != loopStateTerminated {
+				if lState != loopStateTerminating {
 					if len(postQueue) > 0 {
 						lState = loopStateQueued
 					} else {
@@ -218,11 +218,11 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				case <-time.After(time.Duration(delaySeconds) * time.Second):
 					// nop
 				case <-termCh:
-					if lState == loopStateTerminated {
+					if lState == loopStateTerminating {
 						close(quit) // broadcast terminating
 						return 1
 					}
-					lState = loopStateTerminated
+					lState = loopStateTerminating
 				}
 
 				postValues := [](*mackerel.CreatingMetricsValue){}
@@ -232,7 +232,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				err := api.PostMetricsValues(postValues)
 				if err != nil {
 					logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
-					if lState != loopStateTerminated {
+					if lState != loopStateTerminating {
 						lState = loopStateHadError
 					}
 					go func() {
@@ -256,7 +256,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				}
 				logger.Debugf("Posting metrics succeeded.")
 
-				if lState == loopStateTerminated && len(postQueue) <= 0 {
+				if lState == loopStateTerminating && len(postQueue) <= 0 {
 					close(quit) // broadcast terminating
 					return 0
 				}
