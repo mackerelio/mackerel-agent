@@ -162,18 +162,17 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 	}()
 
 	return func() int {
+		defer close(quit) // broadcast terminating
 		postDelaySeconds := delayByHost(host)
 		lState := loopStateFirst
 		for {
 			select {
 			case <-termCh:
 				if lState == loopStateTerminating {
-					close(quit) // broadcast terminating
 					return 1
 				}
 				lState = loopStateTerminating
 				if len(postQueue) <= 0 {
-					close(quit) // broadcast terminating
 					return 0
 				}
 			case v := <-postQueue:
@@ -223,7 +222,6 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 					// nop
 				case <-termCh:
 					if lState == loopStateTerminating {
-						close(quit) // broadcast terminating
 						return 1
 					}
 					lState = loopStateTerminating
@@ -261,7 +259,6 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				logger.Debugf("Posting metrics succeeded.")
 
 				if lState == loopStateTerminating && len(postQueue) <= 0 {
-					close(quit) // broadcast terminating
 					return 0
 				}
 			}
