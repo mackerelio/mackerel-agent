@@ -108,6 +108,10 @@ type postValue struct {
 	retryCnt int
 }
 
+func NewPostValue(values []*mackerel.CreatingMetricsValue) *postValue {
+	return &postValue{values, 0}
+}
+
 type loopState uint8
 
 const (
@@ -152,7 +156,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 					)
 				}
 				logger.Debugf("Enqueuing task to post metrics.")
-				postQueue <- &postValue{creatingValues, 0}
+				postQueue <- NewPostValue(creatingValues)
 			}
 		}
 	}()
