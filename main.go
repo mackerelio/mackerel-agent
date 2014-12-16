@@ -179,7 +179,7 @@ func start(conf *config.Config) error {
 		exit(1, conf)
 	}
 
-	termCh := make(chan bool)
+	termCh := make(chan struct{})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go func() {
@@ -200,11 +200,11 @@ func start(conf *config.Config) error {
 				} else {
 					logger.Infof("Received signal '%v' again, force shutdown.", sig)
 				}
-				termCh <- false
+				termCh <- struct{}{}
 				go func() {
 					time.Sleep(MAX_TERMINATING_INTERVAL * time.Second)
 					logger.Infof("Timed out. force shutdown.")
-					termCh <- false
+					termCh <- struct{}{}
 				}()
 			}
 		}

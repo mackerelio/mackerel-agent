@@ -237,7 +237,7 @@ func TestLoop(t *testing.T) {
 
 	host := &mackerel.Host{Id: "xyzabc12345"}
 
-	termCh := make(chan bool)
+	termCh := make(chan struct{})
 	exitCh := make(chan int)
 	// Start looping!
 	go func() {
@@ -260,7 +260,7 @@ func TestLoop(t *testing.T) {
 		}
 	}
 
-	termCh <- false
+	termCh <- struct{}{}
 	exitCode := <-exitCh
 	if exitCode != 0 {
 		t.Errorf("exit code should be 0, got: %d", exitCode)

@@ -108,7 +108,7 @@ type postValue struct {
 	retryCnt int
 }
 
-func NewPostValue(values []*mackerel.CreatingMetricsValue) *postValue {
+func newPostValue(values []*mackerel.CreatingMetricsValue) *postValue {
 	return &postValue{values, 0}
 }
 
@@ -122,8 +122,8 @@ const (
 	loopStateTerminating
 )
 
-func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan bool) int {
-	quit := make(chan bool)
+func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
+	quit := make(chan struct{})
 
 	// Periodically update host specs.
 	go func() {
@@ -156,7 +156,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 					)
 				}
 				logger.Debugf("Enqueuing task to post metrics.")
-				postQueue <- NewPostValue(creatingValues)
+				postQueue <- newPostValue(creatingValues)
 			}
 		}
 	}()
@@ -320,7 +320,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 }
 
 // Run starts the main metric collecting logic and this function will never return.
-func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan bool) int {
+func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
 
 	ag := &agent.Agent{
