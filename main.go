@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
@@ -165,6 +166,8 @@ func exitWithoutPidfileCleaning(exitCode int) {
 	os.Exit(exitCode)
 }
 
+const MAX_TERMINATING_INTERVAL = 30
+
 func start(conf *config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
@@ -176,9 +179,11 @@ func start(conf *config.Config) error {
 		exit(1, conf)
 	}
 
+	termCh := make(chan struct{})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go func() {
+		received := false
 		for sig := range c {
 			if sig == syscall.SIGHUP {
 				logger.Debugf("Received signal '%v'", sig)
@@ -186,13 +191,27 @@ func start(conf *config.Config) error {
 
 				command.UpdateHostSpecs(conf, api, host)
 			} else {
-				logger.Infof("Received signal '%v', exiting", sig)
-				exit(0, conf)
+				if !received {
+					received = true
+					logger.Infof(
+						"Received signal '%v', try graceful shutdown up to %d seconds. If you want force shutdown immediately, send a signal again.",
+						sig,
+						MAX_TERMINATING_INTERVAL)
+				} else {
+					logger.Infof("Received signal '%v' again, force shutdown.", sig)
+				}
+				termCh <- struct{}{}
+				go func() {
+					time.Sleep(MAX_TERMINATING_INTERVAL * time.Second)
+					logger.Infof("Timed out. force shutdown.")
+					termCh <- struct{}{}
+				}()
 			}
 		}
 	}()
 
-	command.Run(conf, api, host)
+	exitCode := command.Run(conf, api, host, termCh)
+	exit(exitCode, conf)
 
 	return nil
 }
