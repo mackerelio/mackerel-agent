@@ -157,8 +157,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 		}
 	}()
 
-	exitCh := make(chan int)
-	go func() {
+	return func() int {
 		postDelaySeconds := delayByHost(host)
 		lState := loopStateFirst
 		for {
@@ -166,14 +165,12 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 			case <-termCh:
 				if lState == loopStateTerminated {
 					close(quit) // broadcast terminating
-					exitCh <- 1
-					return
+					return 1
 				}
 				lState = loopStateTerminated
 				if len(postQueue) <= 0 {
 					close(quit) // broadcast terminating
-					exitCh <- 0
-					return
+					return 0
 				}
 			case v := <-postQueue:
 				origPostValues := [](*postValue){v}
@@ -223,8 +220,7 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 				case <-termCh:
 					if lState == loopStateTerminated {
 						close(quit) // broadcast terminating
-						exitCh <- 1
-						return
+						return 1
 					}
 					lState = loopStateTerminated
 				}
@@ -262,14 +258,11 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 
 				if lState == loopStateTerminated && len(postQueue) <= 0 {
 					close(quit) // broadcast terminating
-					exitCh <- 0
-					return
+					return 0
 				}
 			}
 		}
 	}()
-
-	return <-exitCh
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
