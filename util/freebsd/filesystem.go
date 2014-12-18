@@ -35,7 +35,7 @@ var dfColumnsPattern = regexp.MustCompile(
 var logger = logging.GetLogger("util.filesystem")
 
 func CollectDfValues(dfColumnSpecs []DfColumnSpec) (map[string]map[string]interface{}, error) {
-	cmd := exec.Command("df", "-Pkt noprocfs,devfs,fdescfs,nfs,cd9660")
+	cmd := exec.Command("df", "-Pkt","noprocfs,devfs,fdescfs,nfs,cd9660")
 	cmd.Env = append(cmd.Env, "LANG=C")
 
 	// Ignores exit status in case that df returns exit status 1
