@@ -72,7 +72,7 @@ func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
 	payloads := []mackerel.CreateGraphDefsPayload{}
 
 	for _, g := range agent.PluginGenerators {
-		p, err := g.InitWithAPI(api)
+		p, err := g.InitGraphDefs(api)
 		if err != nil {
 			logger.Debugf("Failed to fetch meta information from plugin %s (non critical); seems that this plugin does not have meta information: %s", g, err)
 		}
