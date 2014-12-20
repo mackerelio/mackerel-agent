@@ -327,7 +327,15 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 		MetricsGenerators: metricsGenerators(conf),
 		PluginGenerators:  pluginGenerators(conf),
 	}
-	ag.InitPluginGenerators(api)
+
+	delay := delayByHost(host) / 2
+	logger.Debugf("wait %d seconds before initial posting.", delay)
+	select {
+	case <-termCh:
+		return 0
+	case <-time.After(time.Duration(delay) * time.Second):
+		ag.InitPluginGenerators(api)
+	}
 
 	return loop(ag, conf, api, host, termCh)
 }
