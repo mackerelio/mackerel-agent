@@ -16,5 +16,5 @@ type Generator interface {
 
 type PluginGenerator interface {
 	Generate() (Values, error)
-	InitWithAPI(api *mackerel.API) error
+	InitWithAPI(api *mackerel.API) ([]mackerel.CreateGraphDefsPayload, error)
 }
