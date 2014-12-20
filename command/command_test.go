@@ -239,9 +239,15 @@ func TestLoop(t *testing.T) {
 
 	termCh := make(chan struct{})
 	exitCh := make(chan int)
+	c := &context{
+		ag:   ag,
+		conf: &conf,
+		api:  api,
+		host: host,
+	}
 	// Start looping!
 	go func() {
-		exitCh <- loop(ag, &conf, api, host, termCh)
+		exitCh <- loop(c, termCh)
 	}()
 
 	<-done
