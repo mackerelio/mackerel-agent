@@ -127,11 +127,10 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 
 	// Periodically update host specs.
 	go func() {
-	updateHostLoop:
 		for {
 			select {
 			case <-quit:
-				break updateHostLoop
+				return
 			case <-time.After(specsUpdateInterval):
 				UpdateHostSpecs(conf, api, host)
 			}
@@ -141,11 +140,10 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 	metricsResult := ag.Watch()
 	postQueue := make(chan *postValue, conf.Connection.Post_Metrics_Buffer_Size)
 	go func() {
-	enqueueLoop:
 		for {
 			select {
 			case <-quit:
-				break enqueueLoop
+				return
 			case result := <-metricsResult:
 				created := float64(result.Created.Unix())
 				creatingValues := [](*mackerel.CreatingMetricsValue){}
@@ -160,6 +158,15 @@ func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackere
 			}
 		}
 	}()
+
+	delay := delayByHost(host) / 2
+	logger.Debugf("wait %d seconds before initial posting.", delay)
+	select {
+	case <-termCh:
+		return 0
+	case <-time.After(time.Duration(delay) * time.Second):
+		ag.InitPluginGenerators(api)
+	}
 
 	return func() int {
 		defer close(quit) // broadcast terminating
@@ -326,15 +333,6 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 	ag := &agent.Agent{
 		MetricsGenerators: metricsGenerators(conf),
 		PluginGenerators:  pluginGenerators(conf),
-	}
-
-	delay := delayByHost(host) / 2
-	logger.Debugf("wait %d seconds before initial posting.", delay)
-	select {
-	case <-termCh:
-		return 0
-	case <-time.After(time.Duration(delay) * time.Second):
-		ag.InitPluginGenerators(api)
 	}
 
 	return loop(ag, conf, api, host, termCh)
