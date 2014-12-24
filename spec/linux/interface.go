@@ -42,7 +42,7 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 		if iface["encap"] == nil || iface["encap"] == "Loopback" {
 			continue
 		}
-		if iface["ipAddress"] == nil || iface["macAddress"] == nil {
+		if iface["ipAddress"] == nil && iface["ipv6Address"] == nil {
 			continue
 		}
 		iface["name"] = key
@@ -82,12 +82,18 @@ func (g *InterfaceGenerator) generateByIpCommand() (map[string]map[string]interf
 				interfaces[name]["ipAddress"] = matches[1]
 				interfaces[name]["netmask"] = matches[3]
 			}
+
+			//inet6 fe80::44b3:b3ff:fe1c:d17c/64 scope link
+			if matches := regexp.MustCompile(`inet6 ([a-f0-9\:]+)\/(\d+) scope (\w+)`).FindStringSubmatch(line); matches != nil {
+				interfaces[name]["ipv6Address"] = matches[1]
+				interfaces[name]["v6netmask"] = matches[2]
+			}
 		}
 	}
 
-	{
+	for _, family := range []string{"inet", "inet6"} {
 		// ip -f inet route show
-		out, err := exec.Command("ip", "-f", "inet", "route", "show").Output()
+		out, err := exec.Command("ip", "-f", family, "route", "show").Output()
 		if err != nil {
 			interfaceLogger.Errorf("Failed to run ip command (skip this spec): %s", err)
 			return interfaces, err
@@ -95,6 +101,7 @@ func (g *InterfaceGenerator) generateByIpCommand() (map[string]map[string]interf
 
 		for _, line := range strings.Split(string(out), "\n") {
 			// ex.) 10.0.3.0/24 dev eth0  proto kernel  scope link  src 10.0.4.7
+			// ex.) fe80::/64 dev eth0  proto kernel  metric 256
 			if matches := regexp.MustCompile(`^([^\s]+)\s(.*)$`).FindStringSubmatch(line); matches != nil {
 				if matches := regexp.MustCompile(`\bdev\s+([^\s]+)\b`).FindStringSubmatch(matches[2]); matches != nil {
 					name = matches[1]
@@ -105,6 +112,11 @@ func (g *InterfaceGenerator) generateByIpCommand() (map[string]map[string]interf
 				// ex.) 10.0.3.0/24
 				if matches := regexp.MustCompile(`(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/(\d{1,2}))?`).FindStringSubmatch(matches[1]); matches != nil {
 					interfaces[name]["address"] = matches[1]
+				}
+
+				// ex.) fe80::/64
+				if matches := regexp.MustCompile(`([a-f0-9\:]+)\/(\d+)`).FindStringSubmatch(matches[1]); matches != nil {
+					interfaces[name]["v6address"] = matches[1]
 				}
 
 				// ex.) default via 10.0.3.1 dev eth0
@@ -151,6 +163,11 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 			// ex.) inet addr:10.0.4.7  Bcast:10.0.5.255  Mask:255.255.255.0
 			if matches := regexp.MustCompile(`inet addr:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`).FindStringSubmatch(line); matches != nil {
 				interfaces[name]["ipAddress"] = matches[1]
+			}
+			// ex.) inet6 addr: fe80::44b3:b3ff:fe1c:d17c/64 Scope:Link
+			if matches := regexp.MustCompile(`inet6 addr: ([a-f0-9\:]+)\/(\d+) Scope:(\w+)`).FindStringSubmatch(line); matches != nil {
+				interfaces[name]["ipv6Address"] = matches[1]
+				interfaces[name]["v6netmask"] = matches[2]
 			}
 			// ex.) inet addr:10.0.4.7  Bcast:10.0.5.255  Mask:255.255.255.0
 			if matches := regexp.MustCompile(`Mask:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`).FindStringSubmatch(line); matches != nil {
