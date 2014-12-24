@@ -56,19 +56,14 @@ func (g *pluginGenerator) Generate() (Values, error) {
 	return results, nil
 }
 
-func (g *pluginGenerator) InitWithAPI(api *mackerel.API) error {
+func (g *pluginGenerator) PrepareGraphDefs(api *mackerel.API) ([]mackerel.CreateGraphDefsPayload, error) {
 	err := g.loadPluginMeta()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	payload := g.makeCreateGraphDefsPayload()
-	if payload == nil {
-		// this plugin does not provide graph definitions
-		return nil
-	}
-
-	return api.CreateGraphDefs(payload)
+	return payload, nil
 }
 
 // loadPluginMeta obtains plugin information (e.g. graph visuals, metric
