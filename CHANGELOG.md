@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.0 (2014-12-25)
+
+* [improve] wait for termination until postQueue is empty up to 30 seconds.
+* [improve] wait up to 30 seconds before initial posting
+* [feature] work on Windows darwin FreeBSD (unofficial support)
+
 ## 0.8.0 (2014-06-26)
 
 * [improve] Using go 1.3
