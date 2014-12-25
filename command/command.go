@@ -103,6 +103,13 @@ func delayByHost(host *mackerel.Host) int {
 	return int(s[len(s)-1]) % int(config.PostMetricsInterval.Seconds())
 }
 
+type context struct {
+	ag   *agent.Agent
+	conf *config.Config
+	host *mackerel.Host
+	api  *mackerel.API
+}
+
 type postValue struct {
 	values   []*mackerel.CreatingMetricsValue
 	retryCnt int
@@ -122,155 +129,157 @@ const (
 	loopStateTerminating
 )
 
-func loop(ag *agent.Agent, conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
+func loop(c *context, termCh chan struct{}) int {
 	quit := make(chan struct{})
+	defer close(quit) // broadcast terminating
 
 	// Periodically update host specs.
-	go func() {
-		for {
-			select {
-			case <-quit:
-				return
-			case <-time.After(specsUpdateInterval):
-				UpdateHostSpecs(conf, api, host)
-			}
-		}
-	}()
+	go updateHostSpecsLoop(c, quit)
 
-	metricsResult := ag.Watch()
-	postQueue := make(chan *postValue, conf.Connection.Post_Metrics_Buffer_Size)
-	go func() {
-		for {
-			select {
-			case <-quit:
-				return
-			case result := <-metricsResult:
-				created := float64(result.Created.Unix())
-				creatingValues := [](*mackerel.CreatingMetricsValue){}
-				for name, value := range (map[string]float64)(result.Values) {
-					creatingValues = append(
-						creatingValues,
-						&mackerel.CreatingMetricsValue{host.Id, name, created, value},
-					)
-				}
-				logger.Debugf("Enqueuing task to post metrics.")
-				postQueue <- newPostValue(creatingValues)
-			}
-		}
-	}()
+	postQueue := make(chan *postValue, c.conf.Connection.Post_Metrics_Buffer_Size)
+	go enqueueLoop(c, postQueue, quit)
 
-	delay := delayByHost(host) / 2
-	logger.Debugf("wait %d seconds before initial posting.", delay)
+	postDelaySeconds := delayByHost(c.host)
+	initialDelay := postDelaySeconds / 2
+	logger.Debugf("wait %d seconds before initial posting.", initialDelay)
 	select {
 	case <-termCh:
 		return 0
-	case <-time.After(time.Duration(delay) * time.Second):
-		ag.InitPluginGenerators(api)
+	case <-time.After(time.Duration(initialDelay) * time.Second):
+		c.ag.InitPluginGenerators(c.api)
 	}
 
-	return func() int {
-		defer close(quit) // broadcast terminating
-		postDelaySeconds := delayByHost(host)
-		lState := loopStateFirst
-		for {
+	lState := loopStateFirst
+	for {
+		select {
+		case <-termCh:
+			if lState == loopStateTerminating {
+				return 1
+			}
+			lState = loopStateTerminating
+			if len(postQueue) <= 0 {
+				return 0
+			}
+		case v := <-postQueue:
+			origPostValues := [](*postValue){v}
+			if len(postQueue) > 0 {
+				// Bulk posting. However at most "two" metrics are to be posted, so postQueue isn't always empty yet.
+				logger.Debugf("Merging datapoints with next queued ones")
+				nextValues := <-postQueue
+				origPostValues = append(origPostValues, nextValues)
+			}
+
+			delaySeconds := 0
+			switch lState {
+			case loopStateFirst: // request immediately to create graph defs of host
+				// nop
+			case loopStateQueued:
+				delaySeconds = c.conf.Connection.Post_Metrics_Dequeue_Delay_Seconds
+			case loopStateHadError:
+				// TODO: better interval calculation. exponential backoff or so.
+				delaySeconds = c.conf.Connection.Post_Metrics_Retry_Delay_Seconds
+			case loopStateTerminating:
+				// dequeue and post every one second when terminating.
+				delaySeconds = 1
+			default:
+				// Sending data at every 0 second from all hosts causes request flooding.
+				// To prevent flooding, this loop sleeps for some seconds
+				// which is specific to the ID of the host running agent on.
+				// The sleep second is up to 60s (to be exact up to `config.Postmetricsinterval.Seconds()`.
+				elapsedSeconds := int(time.Now().Unix() % int64(config.PostMetricsInterval.Seconds()))
+				if postDelaySeconds > elapsedSeconds {
+					delaySeconds = postDelaySeconds - elapsedSeconds
+				}
+			}
+
+			// determin next loopState before sleeping
+			if lState != loopStateTerminating {
+				if len(postQueue) > 0 {
+					lState = loopStateQueued
+				} else {
+					lState = loopStateDefault
+				}
+			}
+
+			logger.Debugf("Sleep %d seconds before posting.", delaySeconds)
 			select {
+			case <-time.After(time.Duration(delaySeconds) * time.Second):
+				// nop
 			case <-termCh:
 				if lState == loopStateTerminating {
 					return 1
 				}
 				lState = loopStateTerminating
-				if len(postQueue) <= 0 {
-					return 0
-				}
-			case v := <-postQueue:
-				origPostValues := [](*postValue){v}
-				if len(postQueue) > 0 {
-					// Bulk posting. However at most "two" metrics are to be posted, so postQueue isn't always empty yet.
-					logger.Debugf("Merging datapoints with next queued ones")
-					nextValues := <-postQueue
-					origPostValues = append(origPostValues, nextValues)
-				}
+			}
 
-				delaySeconds := 0
-				switch lState {
-				case loopStateFirst: // request immediately to create graph defs of host
-					// nop
-				case loopStateQueued:
-					delaySeconds = conf.Connection.Post_Metrics_Dequeue_Delay_Seconds
-				case loopStateHadError:
-					// TODO: better interval calculation. exponential backoff or so.
-					delaySeconds = conf.Connection.Post_Metrics_Retry_Delay_Seconds
-				case loopStateTerminating:
-					// dequeue and post every one second when terminating.
-					delaySeconds = 1
-				default:
-					// Sending data at every 0 second from all hosts causes request flooding.
-					// To prevent flooding, this loop sleeps for some seconds
-					// which is specific to the ID of the host running agent on.
-					// The sleep second is up to 60s (to be exact up to `config.Postmetricsinterval.Seconds()`.
-					elapsedSeconds := int(time.Now().Unix() % int64(config.PostMetricsInterval.Seconds()))
-					if postDelaySeconds > elapsedSeconds {
-						delaySeconds = postDelaySeconds - elapsedSeconds
-					}
-				}
-
-				// determin next loopState before sleeping
+			postValues := [](*mackerel.CreatingMetricsValue){}
+			for _, v := range origPostValues {
+				postValues = append(postValues, v.values...)
+			}
+			err := c.api.PostMetricsValues(postValues)
+			if err != nil {
+				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
 				if lState != loopStateTerminating {
-					if len(postQueue) > 0 {
-						lState = loopStateQueued
-					} else {
-						lState = loopStateDefault
-					}
+					lState = loopStateHadError
 				}
-
-				logger.Debugf("Sleep %d seconds before posting.", delaySeconds)
-				select {
-				case <-time.After(time.Duration(delaySeconds) * time.Second):
-					// nop
-				case <-termCh:
-					if lState == loopStateTerminating {
-						return 1
-					}
-					lState = loopStateTerminating
-				}
-
-				postValues := [](*mackerel.CreatingMetricsValue){}
-				for _, v := range origPostValues {
-					postValues = append(postValues, v.values...)
-				}
-				err := api.PostMetricsValues(postValues)
-				if err != nil {
-					logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
-					if lState != loopStateTerminating {
-						lState = loopStateHadError
-					}
-					go func() {
-						for _, v := range origPostValues {
-							v.retryCnt++
-							// It is difficult to distinguish the error is server error or data error.
-							// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
-							if v.retryCnt > conf.Connection.Post_Metrics_Retry_Max {
-								json, err := json.Marshal(v.values)
-								if err != nil {
-									logger.Errorf("Something wrong with post values. marshaling failed.")
-								} else {
-									logger.Errorf("Post values may be invalid and abandoned: %s", string(json))
-								}
-								continue
+				go func() {
+					for _, v := range origPostValues {
+						v.retryCnt++
+						// It is difficult to distinguish the error is server error or data error.
+						// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
+						if v.retryCnt > c.conf.Connection.Post_Metrics_Retry_Max {
+							json, err := json.Marshal(v.values)
+							if err != nil {
+								logger.Errorf("Something wrong with post values. marshaling failed.")
+							} else {
+								logger.Errorf("Post values may be invalid and abandoned: %s", string(json))
 							}
-							postQueue <- v
+							continue
 						}
-					}()
-					continue
-				}
-				logger.Debugf("Posting metrics succeeded.")
+						postQueue <- v
+					}
+				}()
+				continue
+			}
+			logger.Debugf("Posting metrics succeeded.")
 
-				if lState == loopStateTerminating && len(postQueue) <= 0 {
-					return 0
-				}
+			if lState == loopStateTerminating && len(postQueue) <= 0 {
+				return 0
 			}
 		}
-	}()
+	}
+}
+
+func updateHostSpecsLoop(c *context, quit chan struct{}) {
+	for {
+		select {
+		case <-quit:
+			return
+		case <-time.After(specsUpdateInterval):
+			UpdateHostSpecs(c.conf, c.api, c.host)
+		}
+	}
+}
+
+func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
+	metricsResult := c.ag.Watch()
+	for {
+		select {
+		case <-quit:
+			return
+		case result := <-metricsResult:
+			created := float64(result.Created.Unix())
+			creatingValues := [](*mackerel.CreatingMetricsValue){}
+			for name, value := range (map[string]float64)(result.Values) {
+				creatingValues = append(
+					creatingValues,
+					&mackerel.CreatingMetricsValue{c.host.Id, name, created, value},
+				)
+			}
+			logger.Debugf("Enqueuing task to post metrics.")
+			postQueue <- newPostValue(creatingValues)
+		}
+	}
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
@@ -335,5 +344,12 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 		PluginGenerators:  pluginGenerators(conf),
 	}
 
-	return loop(ag, conf, api, host, termCh)
+	c := &context{
+		ag:   ag,
+		conf: conf,
+		host: host,
+		api:  api,
+	}
+
+	return loop(c, termCh)
 }
