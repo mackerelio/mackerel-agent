@@ -5,7 +5,7 @@ BUILD_FLAGS = "\
 	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT `git rev-parse --short HEAD` \
 	  -X github.com/mackerelio/mackerel-agent/version.VERSION   `git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/\+.*$$//'` "
 
-all: clean test build crossbuild
+all: clean test build
 
 test: deps
 	go test $(TESTFLAGS) ./...

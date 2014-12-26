@@ -7,7 +7,8 @@ env: PATH=/home/travis/gopath/bin:$PATH
 #- DEBIAN_FRONTEND=noninteractive sudo apt-get install -y rpm devscripts debhelper
 #- mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
-- make all
+  - make all
+  - make crossbuild
 deploy:
   provider: releases
   api_key:
