@@ -23,7 +23,7 @@ deps:
 	go get github.com/laher/goxc
 
 crossbuild: deps
-	goxc -build-ldflags=$(BUILD_FLAGS) \
+	$(GOPATH)/goxc -build-ldflags=$(BUILD_FLAGS) \
 	    -os="linux darwin windows freebsd" -arch=386 -d . \
 	    -resources-include='README*' -n $(BIN)
 
