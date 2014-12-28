@@ -132,9 +132,8 @@ func createPidFile(pidfile string) error {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
 			if _, err := os.Stat(fmt.Sprintf("/proc/%d/", pid)); err == nil {
 				return fmt.Errorf("Pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
-			} else {
-				logger.Warningf("Pidfile found, but there seems no another process of mackerel-agent. Ignoring %s", pidfile)
 			}
+			logger.Warningf("Pidfile found, but there seems no another process of mackerel-agent. Ignoring %s", pidfile)
 		} else {
 			logger.Warningf("Malformed pidfile found. Ignoring %s", pidfile)
 		}
