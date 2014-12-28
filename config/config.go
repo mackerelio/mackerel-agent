@@ -11,6 +11,7 @@ import (
 
 var configLogger = logging.GetLogger("config")
 
+// Config XXX
 type Config struct {
 	Apibase         string
 	Apikey          string
@@ -25,17 +26,21 @@ type Config struct {
 	Include         string
 }
 
+// PluginConfigs XXX
 type PluginConfigs map[string]PluginConfig
 
+// PluginConfig XXX
 type PluginConfig struct {
 	Command string
 }
 
-const POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX = 59   // max delay seconds for dequeuing from buffer queue
-const POST_METRICS_RETRY_DELAY_SECONDS_MAX = 3 * 60 // max delay seconds for retrying a request that caused errors
+const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
+const postMetricsRetryDelaySecondsMax = 3 * 60 // max delay seconds for retrying a request that caused errors
 
+// PostMetricsInterval XXX
 var PostMetricsInterval = 1 * time.Minute
 
+// ConnectionConfig XXX
 type ConnectionConfig struct {
 	Post_Metrics_Dequeue_Delay_Seconds int // delay for dequeuing from buffer queue
 	Post_Metrics_Retry_Delay_Seconds   int // delay for retrying a request that caused errors
@@ -43,8 +48,9 @@ type ConnectionConfig struct {
 	Post_Metrics_Buffer_Size           int // max numbers of requests stored in buffer queue.
 }
 
+// LoadConfig XXX
 func LoadConfig(conffile string) (*Config, error) {
-	config, err := LoadConfigFile(conffile)
+	config, err := loadConfigFile(conffile)
 
 	// set default values if config does not have values
 	if config.Apibase == "" {
@@ -62,16 +68,16 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds == 0 {
 		config.Connection.Post_Metrics_Dequeue_Delay_Seconds = DefaultConfig.Connection.Post_Metrics_Dequeue_Delay_Seconds
 	}
-	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds > POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX {
-		configLogger.Warningf("'post_metrics_dequese_delay_seconds' is set to %d (Maximum Value).", POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX)
-		config.Connection.Post_Metrics_Dequeue_Delay_Seconds = POST_METRICS_DEQUEUE_DELAY_SECONDS_MAX
+	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds > postMetricsDequeueDelaySecondsMax {
+		configLogger.Warningf("'post_metrics_dequese_delay_seconds' is set to %d (Maximum Value).", postMetricsDequeueDelaySecondsMax)
+		config.Connection.Post_Metrics_Dequeue_Delay_Seconds = postMetricsDequeueDelaySecondsMax
 	}
 	if config.Connection.Post_Metrics_Retry_Delay_Seconds == 0 {
 		config.Connection.Post_Metrics_Retry_Delay_Seconds = DefaultConfig.Connection.Post_Metrics_Retry_Delay_Seconds
 	}
-	if config.Connection.Post_Metrics_Retry_Delay_Seconds > POST_METRICS_RETRY_DELAY_SECONDS_MAX {
-		configLogger.Warningf("'post_metrics_retry_delay_seconds' is set to %d (Maximum Value).", POST_METRICS_RETRY_DELAY_SECONDS_MAX)
-		config.Connection.Post_Metrics_Retry_Delay_Seconds = POST_METRICS_RETRY_DELAY_SECONDS_MAX
+	if config.Connection.Post_Metrics_Retry_Delay_Seconds > postMetricsRetryDelaySecondsMax {
+		configLogger.Warningf("'post_metrics_retry_delay_seconds' is set to %d (Maximum Value).", postMetricsRetryDelaySecondsMax)
+		config.Connection.Post_Metrics_Retry_Delay_Seconds = postMetricsRetryDelaySecondsMax
 	}
 	if config.Connection.Post_Metrics_Retry_Max == 0 {
 		config.Connection.Post_Metrics_Retry_Max = DefaultConfig.Connection.Post_Metrics_Retry_Max
@@ -83,7 +89,7 @@ func LoadConfig(conffile string) (*Config, error) {
 	return config, err
 }
 
-func LoadConfigFile(file string) (*Config, error) {
+func loadConfigFile(file string) (*Config, error) {
 	config := &Config{}
 	if _, err := toml.DecodeFile(file, config); err != nil {
 		return config, err

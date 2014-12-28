@@ -70,7 +70,7 @@ func TestLoadConfigFile(t *testing.T) {
 	tmpFile.Close()
 	defer os.Remove(tmpFile.Name())
 
-	config, err := LoadConfigFile(tmpFile.Name())
+	config, err := loadConfigFile(tmpFile.Name())
 	if err != nil {
 		t.Error("should not raise error")
 	}
@@ -153,7 +153,7 @@ command = "bar"
 	defer os.Remove(configFile.Name())
 	defer os.Remove(includedFile.Name())
 
-	config, err := LoadConfigFile(configFile.Name())
+	config, err := loadConfigFile(configFile.Name())
 	assertNoError(t, err)
 
 	assert(t, config.Apikey == "not overwritten", "apikey should not be overwritten")
