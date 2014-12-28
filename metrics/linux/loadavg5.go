@@ -23,6 +23,7 @@ type Loadavg5Generator struct {
 
 var loadavg5Logger = logging.GetLogger("metrics.loadavg5")
 
+// Generate XXX
 func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 	contentbytes, err := ioutil.ReadFile("/proc/loadavg")
 	if err != nil {

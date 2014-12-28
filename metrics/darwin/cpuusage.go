@@ -12,6 +12,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
+// CpuusageGenerator XXX
 type CpuusageGenerator struct {
 }
 
