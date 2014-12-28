@@ -87,7 +87,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 		}
 	}
 
-	err = saveHostID(root, result.Id)
+	err = saveHostID(root, result.ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to save host ID: %s", err.Error())
 	}
@@ -99,7 +99,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 var specsUpdateInterval = 1 * time.Hour
 
 func delayByHost(host *mackerel.Host) int {
-	s := sha1.Sum([]byte(host.Id))
+	s := sha1.Sum([]byte(host.ID))
 	return int(s[len(s)-1]) % int(config.PostMetricsInterval.Seconds())
 }
 
@@ -274,7 +274,7 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 				creatingValues = append(
 					creatingValues,
 					&mackerel.CreatingMetricsValue{
-						HostID: c.host.Id,
+						HostID: c.host.ID,
 						Name:   name,
 						Time:   created,
 						Value:  value,
@@ -316,7 +316,7 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 		return
 	}
 
-	err = api.UpdateHost(host.Id, hostname, meta, interfaces, conf.Roles)
+	err = api.UpdateHost(host.ID, hostname, meta, interfaces, conf.Roles)
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
 	} else {
@@ -342,7 +342,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 
 // Run starts the main metric collecting logic and this function will never return.
 func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
-	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", conf.Apibase, host.Name, host.Id)
+	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", conf.Apibase, host.Name, host.ID)
 
 	ag := &agent.Agent{
 		MetricsGenerators: metricsGenerators(conf),

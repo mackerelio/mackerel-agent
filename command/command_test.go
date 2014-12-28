@@ -19,14 +19,14 @@ import (
 
 func TestDelayByHost(t *testing.T) {
 	delay1 := time.Duration(delayByHost(&mackerel.Host{
-		Id:     "246PUVUngPo",
+		ID:     "246PUVUngPo",
 		Name:   "hogehoge2.host.h",
 		Type:   "unknown",
 		Status: "working",
 	})) * time.Second
 
 	delay2 := time.Duration(delayByHost(&mackerel.Host{
-		Id:     "21GZjCE5Etb",
+		ID:     "21GZjCE5Etb",
 		Name:   "hogehoge2.host.h",
 		Type:   "unknown",
 		Status: "working",
@@ -98,7 +98,7 @@ func TestPrepare(t *testing.T) {
 	mockHandlers["GET /api/v0/hosts/xxx1234567890"] = func(req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"host": mackerel.Host{
-				Id:     "xxx1234567890",
+				ID:     "xxx1234567890",
 				Name:   "host.example.com",
 				Type:   "unknown",
 				Status: "standby",
@@ -112,7 +112,7 @@ func TestPrepare(t *testing.T) {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
 	}
 
-	if host.Id != "xxx1234567890" {
+	if host.ID != "xxx1234567890" {
 		t.Error("Host ID mismatch", host)
 	}
 
@@ -235,7 +235,7 @@ func TestLoop(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	host := &mackerel.Host{Id: "xyzabc12345"}
+	host := &mackerel.Host{ID: "xyzabc12345"}
 
 	termCh := make(chan struct{})
 	exitCh := make(chan int)
