@@ -9,15 +9,18 @@ import (
 	. "github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// InterfaceGenerator XXX
 type InterfaceGenerator struct {
 }
 
+// Key XXX
 func (g *InterfaceGenerator) Key() string {
 	return "interface"
 }
 
 var interfaceLogger = logging.GetLogger("spec.interface")
 
+// Generate XXX
 func (g *InterfaceGenerator) Generate() (interface{}, error) {
 	results := make([]map[string]interface{}, 0)
 
