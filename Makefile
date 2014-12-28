@@ -12,8 +12,7 @@ test: deps
 
 build: deps
 	go build -ldflags=$(BUILD_FLAGS) \
-	-o build/$(BIN) \
-	github.com/mackerelio/mackerel-agent
+	-o build/$(BIN)
 
 run: build
 	./build/$(BIN) $(ARGS)
