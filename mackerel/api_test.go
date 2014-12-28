@@ -11,8 +11,8 @@ import (
 	"github.com/mackerelio/mackerel-agent/version"
 )
 
-func TestNewApi(t *testing.T) {
-	api, err := NewApi(
+func TestNewAPI(t *testing.T) {
+	api, err := NewAPI(
 		"http://example.com",
 		"dummy-key",
 		true,
@@ -22,11 +22,11 @@ func TestNewApi(t *testing.T) {
 		t.Error("should not raise error")
 	}
 
-	if api.BaseUrl.String() != "http://example.com" {
+	if api.BaseURL.String() != "http://example.com" {
 		t.Error("should return URL")
 	}
 
-	if api.ApiKey != "dummy-key" {
+	if api.APIKey != "dummy-key" {
 		t.Error("should return api key")
 	}
 
@@ -36,7 +36,7 @@ func TestNewApi(t *testing.T) {
 }
 
 func TestUrlFor(t *testing.T) {
-	api, _ := NewApi(
+	api, _ := NewAPI(
 		"http://example.com",
 		"dummy-key",
 		true,
@@ -80,14 +80,14 @@ func TestDo(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	api, _ := NewApi(
+	api, _ := NewAPI(
 		ts.URL,
 		"dummy-key",
 		false,
 	)
 
 	req, _ := http.NewRequest("GET", api.urlFor("/").String(), nil)
-	api.Do(req)
+	api.do(req)
 }
 
 func TestCreateHost(t *testing.T) {
@@ -148,7 +148,7 @@ func TestCreateHost(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	api, _ := NewApi(ts.URL, "dummy-key", false)
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	interfaces := make([]map[string]interface{}, 0)
 	interfaces = append(interfaces, map[string]interface{}{
@@ -210,7 +210,7 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	api, _ := NewApi(ts.URL, "dummy-key", false)
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	// with nil args
 	hostId, err := api.CreateHost("nilsome", nil, nil, nil)
@@ -274,7 +274,7 @@ func TestUpdateHost(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	api, _ := NewApi(ts.URL, "dummy-key", false)
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	interfaces := make([]map[string]interface{}, 0)
 	interfaces = append(interfaces, map[string]interface{}{

@@ -108,8 +108,8 @@ func TestPrepare(t *testing.T) {
 
 	api, host, _ := Prepare(&conf)
 
-	if api.BaseUrl.String() != ts.URL {
-		t.Errorf("Apibase mismatch: %s != %s", api.BaseUrl, ts.URL)
+	if api.BaseURL.String() != ts.URL {
+		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
 	}
 
 	if host.Id != "xxx1234567890" {
@@ -230,7 +230,7 @@ func TestLoop(t *testing.T) {
 		},
 	}
 
-	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, true)
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
 	if err != nil {
 		t.Fatal(err)
 	}

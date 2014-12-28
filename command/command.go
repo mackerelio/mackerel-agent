@@ -274,7 +274,7 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 				creatingValues = append(
 					creatingValues,
 					&mackerel.CreatingMetricsValue{
-						HostId: c.host.Id,
+						HostID: c.host.Id,
 						Name:   name,
 						Time:   created,
 						Value:  value,
@@ -327,7 +327,7 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 // Prepare sets up API and registers the host data to the Mackerel server.
 // Use returned values to call Run().
 func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
-	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, conf.Verbose)
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
