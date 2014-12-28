@@ -19,7 +19,13 @@ run: build
 
 deps:
 	go get -d -v -t ./...
+	go get github.com/golang/lint/golint
+	go get code.google.com/p/go.tools/cmd/vet
 	go get github.com/laher/goxc
+
+lint:
+	go vet ./...
+	golint ./...
 
 crossbuild: deps
 	$(GOPATH)/goxc -build-ldflags=$(BUILD_FLAGS) \
@@ -30,4 +36,4 @@ clean:
 	rm -f build/$(BIN)
 	go clean
 
-.PHONY: test build run deps clean crossbuild
+.PHONY: test build run deps clean lint crossbuild
