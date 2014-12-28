@@ -55,7 +55,7 @@ func TestDo(t *testing.T) {
 	version.VERSION = "1.0.0"
 	version.GITCOMMIT = "1234beaf"
 	handler := func(res http.ResponseWriter, req *http.Request) {
-		user_agent := "mackerel-agent/1.0.0 (Revision 1234beaf)"
+		userAgent := "mackerel-agent/1.0.0 (Revision 1234beaf)"
 		if req.Header.Get("X-Api-Key") != "dummy-key" {
 			t.Error("X-Api-Key header should contains passed key")
 		}
@@ -68,8 +68,8 @@ func TestDo(t *testing.T) {
 			t.Errorf("X-Revision shoud be %s but %s", version.GITCOMMIT, h)
 		}
 
-		if h := req.Header.Get("User-Agent"); h != user_agent {
-			t.Errorf("User-Agent shoud be '%s' but %s", user_agent, h)
+		if h := req.Header.Get("User-Agent"); h != userAgent {
+			t.Errorf("User-Agent shoud be '%s' but %s", userAgent, h)
 		}
 
 		version.GITCOMMIT = ""
@@ -139,25 +139,25 @@ func TestCreateHost(t *testing.T) {
 			t.Errorf("Wrong data for roleFullnames: %v", data.RoleFullnames)
 		}
 
-		respJson, _ := json.Marshal(map[string]interface{}{
+		respJSON, _ := json.Marshal(map[string]interface{}{
 			"id": "ABCD123",
 		})
 
 		res.Header()["Content-Type"] = []string{"application/json"}
-		fmt.Fprint(res, string(respJson))
+		fmt.Fprint(res, string(respJSON))
 	}))
 	defer ts.Close()
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
-	interfaces := make([]map[string]interface{}, 0)
+	var interfaces []map[string]interface{}
 	interfaces = append(interfaces, map[string]interface{}{
 		"name":       "eth0",
 		"ipAddress":  "10.0.4.7",
 		"macAddress": "01:23:45:67:89:ab",
 		"encap":      "Ethernet",
 	})
-	hostId, err := api.CreateHost("dummy", map[string]interface{}{
+	hostID, err := api.CreateHost("dummy", map[string]interface{}{
 		"memo": "hello",
 	}, interfaces, []string{"My-Service:app-default"})
 
@@ -169,8 +169,8 @@ func TestCreateHost(t *testing.T) {
 		t.Error("should http-request")
 	}
 
-	if hostId != "ABCD123" {
-		t.Error("should returns ABCD123 but:", hostId)
+	if hostID != "ABCD123" {
+		t.Error("should returns ABCD123 but:", hostID)
 	}
 }
 
@@ -201,25 +201,25 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 			t.Fatal("request content should be decoded as json", content)
 		}
 
-		respJson, _ := json.Marshal(map[string]interface{}{
+		respJSON, _ := json.Marshal(map[string]interface{}{
 			"id": "ABCD123",
 		})
 
 		res.Header()["Content-Type"] = []string{"application/json"}
-		fmt.Fprint(res, string(respJson))
+		fmt.Fprint(res, string(respJSON))
 	}))
 	defer ts.Close()
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	// with nil args
-	hostId, err := api.CreateHost("nilsome", nil, nil, nil)
+	hostID, err := api.CreateHost("nilsome", nil, nil, nil)
 	if err != nil {
 		t.Error("should not return error but got: ", err)
 	}
 
-	if hostId != "ABCD123" {
-		t.Error("should returns ABCD123 but:", hostId)
+	if hostID != "ABCD123" {
+		t.Error("should returns ABCD123 but:", hostID)
 	}
 }
 
@@ -276,7 +276,7 @@ func TestUpdateHost(t *testing.T) {
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
-	interfaces := make([]map[string]interface{}, 0)
+	var interfaces []map[string]interface{}
 	interfaces = append(interfaces, map[string]interface{}{
 		"name":       "eth0",
 		"ipAddress":  "10.0.4.7",
