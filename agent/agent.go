@@ -57,9 +57,10 @@ func (agent *Agent) Watch() chan *MetricsResult {
 		// so that it does not prevent runnnig next collectMetrics.
 		sem := make(chan uint, COLLECT_METRICS_WORKER_MAX)
 		for tickedTime := range ticker {
+			ti := tickedTime
 			sem <- 1
 			go func() {
-				metricsResult <- agent.collectMetrics(tickedTime)
+				metricsResult <- agent.collectMetrics(ti)
 				<-sem
 			}()
 		}

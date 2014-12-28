@@ -273,7 +273,12 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 			for name, value := range (map[string]float64)(result.Values) {
 				creatingValues = append(
 					creatingValues,
-					&mackerel.CreatingMetricsValue{c.host.Id, name, created, value},
+					&mackerel.CreatingMetricsValue{
+						HostId:  c.host.Id,
+						Name:    name,
+						Created: created,
+						Value:   value,
+					},
 				)
 			}
 			logger.Debugf("Enqueuing task to post metrics.")
