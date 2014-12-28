@@ -28,7 +28,7 @@ lint:
 	golint ./...
 
 crossbuild: deps
-	$(GOPATH)/goxc -build-ldflags=$(BUILD_FLAGS) \
+	goxc -build-ldflags=$(BUILD_FLAGS) \
 	    -os="linux darwin windows freebsd" -arch=386 -d . \
 	    -resources-include='README*' -n $(BIN)
 
