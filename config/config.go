@@ -42,10 +42,10 @@ var PostMetricsInterval = 1 * time.Minute
 
 // ConnectionConfig XXX
 type ConnectionConfig struct {
-	Post_Metrics_Dequeue_Delay_Seconds int // delay for dequeuing from buffer queue
-	Post_Metrics_Retry_Delay_Seconds   int // delay for retrying a request that caused errors
-	Post_Metrics_Retry_Max             int // max numbers of retries for a request that causes errors
-	Post_Metrics_Buffer_Size           int // max numbers of requests stored in buffer queue.
+	Post_Metrics_Dequeue_Delay_Seconds int `toml:"post_metrics_dequeue_delay_seconds"` // delay for dequeuing from buffer queue
+	Post_Metrics_Retry_Delay_Seconds   int `toml:"post_metrics_retry_delay_seconds"`   // delay for retrying a request that caused errors
+	Post_Metrics_Retry_Max             int `toml:"post_metrics_retry_max"`             // max numbers of retries for a request that causes errors
+	Post_Metrics_Buffer_Size           int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
 }
 
 // LoadConfig XXX
