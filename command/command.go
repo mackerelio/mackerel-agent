@@ -136,7 +136,7 @@ func loop(c *context, termCh chan struct{}) int {
 	// Periodically update host specs.
 	go updateHostSpecsLoop(c, quit)
 
-	postQueue := make(chan *postValue, c.conf.Connection.Post_Metrics_Buffer_Size)
+	postQueue := make(chan *postValue, c.conf.Connection.PostMetricsBufferSize)
 	go enqueueLoop(c, postQueue, quit)
 
 	postDelaySeconds := delayByHost(c.host)
@@ -174,10 +174,10 @@ func loop(c *context, termCh chan struct{}) int {
 			case loopStateFirst: // request immediately to create graph defs of host
 				// nop
 			case loopStateQueued:
-				delaySeconds = c.conf.Connection.Post_Metrics_Dequeue_Delay_Seconds
+				delaySeconds = c.conf.Connection.PostMetricsDequeueDelaySeconds
 			case loopStateHadError:
 				// TODO: better interval calculation. exponential backoff or so.
-				delaySeconds = c.conf.Connection.Post_Metrics_Retry_Delay_Seconds
+				delaySeconds = c.conf.Connection.PostMetricsRetryDelaySeconds
 			case loopStateTerminating:
 				// dequeue and post every one second when terminating.
 				delaySeconds = 1
@@ -227,7 +227,7 @@ func loop(c *context, termCh chan struct{}) int {
 						v.retryCnt++
 						// It is difficult to distinguish the error is server error or data error.
 						// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
-						if v.retryCnt > c.conf.Connection.Post_Metrics_Retry_Max {
+						if v.retryCnt > c.conf.Connection.PostMetricsRetryMax {
 							json, err := json.Marshal(v.values)
 							if err != nil {
 								logger.Errorf("Something wrong with post values. marshaling failed.")

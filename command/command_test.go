@@ -167,10 +167,10 @@ func TestLoop(t *testing.T) {
 		config.PostMetricsInterval = 10 * time.Second
 		ratio := config.PostMetricsInterval.Seconds() / originalPostMetricsInterval.Seconds()
 
-		conf.Connection.Post_Metrics_Dequeue_Delay_Seconds =
-			int(float64(config.DefaultConfig.Connection.Post_Metrics_Retry_Delay_Seconds) * ratio)
-		conf.Connection.Post_Metrics_Retry_Delay_Seconds =
-			int(float64(config.DefaultConfig.Connection.Post_Metrics_Retry_Delay_Seconds) * ratio)
+		conf.Connection.PostMetricsDequeueDelaySeconds =
+			int(float64(config.DefaultConfig.Connection.PostMetricsRetryDelaySeconds) * ratio)
+		conf.Connection.PostMetricsRetryDelaySeconds =
+			int(float64(config.DefaultConfig.Connection.PostMetricsRetryDelaySeconds) * ratio)
 
 		defer func() {
 			config.PostMetricsInterval = originalPostMetricsInterval

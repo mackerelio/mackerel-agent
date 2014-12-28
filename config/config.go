@@ -42,10 +42,10 @@ var PostMetricsInterval = 1 * time.Minute
 
 // ConnectionConfig XXX
 type ConnectionConfig struct {
-	Post_Metrics_Dequeue_Delay_Seconds int `toml:"post_metrics_dequeue_delay_seconds"` // delay for dequeuing from buffer queue
-	Post_Metrics_Retry_Delay_Seconds   int `toml:"post_metrics_retry_delay_seconds"`   // delay for retrying a request that caused errors
-	Post_Metrics_Retry_Max             int `toml:"post_metrics_retry_max"`             // max numbers of retries for a request that causes errors
-	Post_Metrics_Buffer_Size           int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
+	PostMetricsDequeueDelaySeconds int `toml:"post_metrics_dequeue_delay_seconds"` // delay for dequeuing from buffer queue
+	PostMetricsRetryDelaySeconds   int `toml:"post_metrics_retry_delay_seconds"`   // delay for retrying a request that caused errors
+	PostMetricsRetryMax            int `toml:"post_metrics_retry_max"`             // max numbers of retries for a request that causes errors
+	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
 }
 
 // LoadConfig XXX
@@ -65,25 +65,25 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Verbose == false {
 		config.Verbose = DefaultConfig.Verbose
 	}
-	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds == 0 {
-		config.Connection.Post_Metrics_Dequeue_Delay_Seconds = DefaultConfig.Connection.Post_Metrics_Dequeue_Delay_Seconds
+	if config.Connection.PostMetricsDequeueDelaySeconds == 0 {
+		config.Connection.PostMetricsDequeueDelaySeconds = DefaultConfig.Connection.PostMetricsDequeueDelaySeconds
 	}
-	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds > postMetricsDequeueDelaySecondsMax {
+	if config.Connection.PostMetricsDequeueDelaySeconds > postMetricsDequeueDelaySecondsMax {
 		configLogger.Warningf("'post_metrics_dequese_delay_seconds' is set to %d (Maximum Value).", postMetricsDequeueDelaySecondsMax)
-		config.Connection.Post_Metrics_Dequeue_Delay_Seconds = postMetricsDequeueDelaySecondsMax
+		config.Connection.PostMetricsDequeueDelaySeconds = postMetricsDequeueDelaySecondsMax
 	}
-	if config.Connection.Post_Metrics_Retry_Delay_Seconds == 0 {
-		config.Connection.Post_Metrics_Retry_Delay_Seconds = DefaultConfig.Connection.Post_Metrics_Retry_Delay_Seconds
+	if config.Connection.PostMetricsRetryDelaySeconds == 0 {
+		config.Connection.PostMetricsRetryDelaySeconds = DefaultConfig.Connection.PostMetricsRetryDelaySeconds
 	}
-	if config.Connection.Post_Metrics_Retry_Delay_Seconds > postMetricsRetryDelaySecondsMax {
+	if config.Connection.PostMetricsRetryDelaySeconds > postMetricsRetryDelaySecondsMax {
 		configLogger.Warningf("'post_metrics_retry_delay_seconds' is set to %d (Maximum Value).", postMetricsRetryDelaySecondsMax)
-		config.Connection.Post_Metrics_Retry_Delay_Seconds = postMetricsRetryDelaySecondsMax
+		config.Connection.PostMetricsRetryDelaySeconds = postMetricsRetryDelaySecondsMax
 	}
-	if config.Connection.Post_Metrics_Retry_Max == 0 {
-		config.Connection.Post_Metrics_Retry_Max = DefaultConfig.Connection.Post_Metrics_Retry_Max
+	if config.Connection.PostMetricsRetryMax == 0 {
+		config.Connection.PostMetricsRetryMax = DefaultConfig.Connection.PostMetricsRetryMax
 	}
-	if config.Connection.Post_Metrics_Buffer_Size == 0 {
-		config.Connection.Post_Metrics_Buffer_Size = DefaultConfig.Connection.Post_Metrics_Buffer_Size
+	if config.Connection.PostMetricsBufferSize == 0 {
+		config.Connection.PostMetricsBufferSize = DefaultConfig.Connection.PostMetricsBufferSize
 	}
 
 	return config, err

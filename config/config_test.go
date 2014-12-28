@@ -45,15 +45,15 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("should be abcde (config value should be used)")
 	}
 
-	if config.Connection.Post_Metrics_Dequeue_Delay_Seconds != 30 {
+	if config.Connection.PostMetricsDequeueDelaySeconds != 30 {
 		t.Error("should be 30 (default value should be used)")
 	}
 
-	if config.Connection.Post_Metrics_Retry_Delay_Seconds != 180 {
+	if config.Connection.PostMetricsRetryDelaySeconds != 180 {
 		t.Error("should be 180 (max retry delay seconds is 180)")
 	}
 
-	if config.Connection.Post_Metrics_Retry_Max != 5 {
+	if config.Connection.PostMetricsRetryMax != 5 {
 		t.Error("should be 5 (config value should be used)")
 	}
 }
@@ -79,8 +79,8 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("Apikey should be abcde")
 	}
 
-	if config.Connection.Post_Metrics_Retry_Max != 5 {
-		t.Error("Post_Metrics_Retry_Max should be 5")
+	if config.Connection.PostMetricsRetryMax != 5 {
+		t.Error("PostMetricsRetryMax should be 5")
 	}
 
 	if config.Plugin["metrics"] == nil {
