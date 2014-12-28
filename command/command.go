@@ -20,25 +20,25 @@ var logger = logging.GetLogger("command")
 
 const idFileName = "id"
 
-func IdFilePath(root string) string {
+func idFilePath(root string) string {
 	return filepath.Join(root, idFileName)
 }
 
-func LoadHostId(root string) (string, error) {
-	content, err := ioutil.ReadFile(IdFilePath(root))
+func loadHostID(root string) (string, error) {
+	content, err := ioutil.ReadFile(idFilePath(root))
 	if err != nil {
 		return "", err
 	}
 	return string(content), nil
 }
 
-func SaveHostId(root string, id string) error {
+func saveHostID(root string, id string) error {
 	err := os.MkdirAll(root, 0755)
 	if err != nil {
 		return err
 	}
 
-	file, err := os.Create(IdFilePath(root))
+	file, err := os.Create(idFilePath(root))
 	if err != nil {
 		return err
 	}
@@ -65,29 +65,29 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 	}
 
 	var result *mackerel.Host
-	if hostId, err := LoadHostId(root); err != nil { // create
+	if hostID, err := loadHostID(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
-		createdHostId, err := api.CreateHost(hostname, meta, interfaces, roleFullnames)
+		createdHostID, err := api.CreateHost(hostname, meta, interfaces, roleFullnames)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to register this host: %s", err.Error())
 		}
 
-		result, err = api.FindHost(createdHostId)
+		result, err = api.FindHost(createdHostID)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", err.Error())
 		}
 	} else { // update
-		result, err = api.FindHost(hostId)
+		result, err = api.FindHost(hostID)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", IdFilePath(root), err.Error())
+			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), err.Error())
 		}
-		err := api.UpdateHost(hostId, hostname, meta, interfaces, roleFullnames)
+		err := api.UpdateHost(hostID, hostname, meta, interfaces, roleFullnames)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
 		}
 	}
 
-	err = SaveHostId(root, result.Id)
+	err = saveHostID(root, result.Id)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to save host ID: %s", err.Error())
 	}
@@ -274,10 +274,10 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 				creatingValues = append(
 					creatingValues,
 					&mackerel.CreatingMetricsValue{
-						HostId:  c.host.Id,
-						Name:    name,
-						Created: created,
-						Value:   value,
+						HostId: c.host.Id,
+						Name:   name,
+						Time:   created,
+						Value:  value,
 					},
 				)
 			}
@@ -342,7 +342,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 
 // Run starts the main metric collecting logic and this function will never return.
 func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
-	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
+	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", conf.Apibase, host.Name, host.Id)
 
 	ag := &agent.Agent{
 		MetricsGenerators: metricsGenerators(conf),
