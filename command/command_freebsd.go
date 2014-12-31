@@ -26,6 +26,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsFreebsd.Loadavg5Generator{},
 		&metricsFreebsd.CpuusageGenerator{},
 		&metricsFreebsd.FilesystemGenerator{},
+		&metricsFreebsd.MemoryGenerator{},
 	}
 
 	return generators
