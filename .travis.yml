@@ -12,7 +12,7 @@ script:
 deploy:
   provider: releases
   api_key:
-    secure: CoXDoVrquAuZiSfqV07WAIOn+vc4WOkq2/Iur5bFW0hPEAhUQUvxi8VucyM3MgTGw1Np+T0LSZHLkJgLC/lwa0RY97o/kQ/EDdDZjQ78wDTNiN5Bb4g4ZmL9znndi6KJ3tNKRKt7iVrT7eb5fez6EdiTz=
+    secure: NtpNjquqjnwpeVQQM1GTHTTU7YOo8fEIyoBtMf3Vf1ayZjuWVZxwNfM77E596TG52a8pnZtpapXyHT0M4e1zms7F5KVCrOEfOB0OrA4IDzoATelVqdONnN3lbRJeVJVdSmK8/FNKwjI24tQZTaTQcIOioNqh7ZRcrEYlatGCuAw=
   file:
   # - /home/travis/rpmbuild/RPMS/noarch/mackerel-agent-plugins-0.14.0-1.noarch.rpm
   # - /home/travis/gopath/src/github.com/mackerelio/mackerel-agent/packaging/mackerel-agent_0.14.0-1_all.deb
