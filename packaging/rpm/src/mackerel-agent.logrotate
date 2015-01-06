@@ -1,0 +1,9 @@
+/var/log/mackerel-agent.log {
+  daily
+  rotate 7
+  missingok
+  sharedscripts
+  notifempty
+  compress
+  copytruncate
+}
