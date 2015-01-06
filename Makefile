@@ -20,6 +20,10 @@ run: build
 deps:
 	go get -d github.com/mackerelio/mackerel-agent
 
+rpm:
+	GOOS=linux GOARCH=386 go build
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm/src" --define "_builddir `pwd`" -ba packaging/rpm/mackerel-agent.spec
+
 clean:
 	rm -f build/$(BIN)
 	go clean
