@@ -15,6 +15,7 @@ import (
 type MemoryGenerator struct {
 }
 
+// Key XXX
 func (g *MemoryGenerator) Key() string {
 	return "memory"
 }

@@ -17,20 +17,23 @@ import (
 
 var logger = logging.GetLogger("api")
 
+// CreatingMetricsValue XXX
 type CreatingMetricsValue struct {
-	HostId string      `json:"hostId"`
+	HostID string      `json:"hostId"`
 	Name   string      `json:"name"`
 	Time   float64     `json:"time"`
 	Value  interface{} `json:"value"`
 }
 
+// API XXX
 type API struct {
-	BaseUrl *url.URL
-	ApiKey  string
+	BaseURL *url.URL
+	APIKey  string
 	Verbose bool
 }
 
-func NewApi(rawurl string, apiKey string, verbose bool) (*API, error) {
+// NewAPI XXX
+func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	u, err := url.Parse(rawurl)
 	if err != nil {
 		return nil, err
@@ -39,20 +42,20 @@ func NewApi(rawurl string, apiKey string, verbose bool) (*API, error) {
 }
 
 func (api *API) urlFor(path string) *url.URL {
-	newUrl, err := url.Parse(api.BaseUrl.String())
+	newURL, err := url.Parse(api.BaseURL.String())
 	if err != nil {
 		panic("invalid url passed")
 	}
 
-	newUrl.Path = path
+	newURL.Path = path
 
-	return newUrl
+	return newURL
 }
 
 var apiRequestTimeout = 30 * time.Second
 
-func (api *API) Do(req *http.Request) (resp *http.Response, err error) {
-	req.Header.Add("X-Api-Key", api.ApiKey)
+func (api *API) do(req *http.Request) (resp *http.Response, err error) {
+	req.Header.Add("X-Api-Key", api.APIKey)
 	req.Header.Add("X-Agent-Version", version.VERSION)
 	req.Header.Add("X-Revision", version.GITCOMMIT)
 	req.Header.Set("User-Agent", version.UserAgent())
@@ -79,12 +82,13 @@ func (api *API) Do(req *http.Request) (resp *http.Response, err error) {
 	return resp, nil
 }
 
+// FindHost XXX
 func (api *API) FindHost(id string) (*Host, error) {
 	req, err := http.NewRequest("GET", api.urlFor(fmt.Sprintf("/api/v0/hosts/%s", id)).String(), nil)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := api.Do(req)
+	resp, err := api.do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -111,8 +115,9 @@ func (api *API) FindHost(id string) (*Host, error) {
 	return data.Host, err
 }
 
+// CreateHost XXX
 func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string) (string, error) {
-	requestJson, err := json.Marshal(map[string]interface{}{
+	requestJSON, err := json.Marshal(map[string]interface{}{
 		"name":          name,
 		"type":          "unknown",
 		"status":        "working",
@@ -127,20 +132,20 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 	req, err := http.NewRequest(
 		"POST",
 		api.urlFor("/api/v0/hosts").String(),
-		bytes.NewReader(requestJson),
+		bytes.NewReader(requestJSON),
 	)
 	if err != nil {
 		return "", err
 	}
 	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.Do(req)
+	resp, err := api.do(req)
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return "", errors.New(fmt.Sprintf("API result failed: %s", resp.Status))
+		return "", fmt.Errorf("API result failed: %s", resp.Status)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -149,7 +154,7 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 	}
 
 	var data struct {
-		Id string `json:"id"`
+		ID string `json:"id"`
 	}
 
 	err = json.Unmarshal(body, &data)
@@ -157,14 +162,14 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 		return "", err
 	}
 
-	return data.Id, nil
+	return data.ID, nil
 }
 
 // UpdateHost updates the host information on Mackerel.
-func (api *API) UpdateHost(hostId string, name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string) error {
-	url := api.urlFor("/api/v0/hosts/" + hostId)
+func (api *API) UpdateHost(hostID string, name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string) error {
+	url := api.urlFor("/api/v0/hosts/" + hostID)
 
-	requestJson, err := json.Marshal(map[string]interface{}{
+	requestJSON, err := json.Marshal(map[string]interface{}{
 		"name":          name,
 		"meta":          meta,
 		"interfaces":    interfaces,
@@ -174,13 +179,13 @@ func (api *API) UpdateHost(hostId string, name string, meta map[string]interface
 		return err
 	}
 
-	req, err := http.NewRequest("PUT", url.String(), bytes.NewReader(requestJson))
+	req, err := http.NewRequest("PUT", url.String(), bytes.NewReader(requestJSON))
 	if err != nil {
 		return err
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.Do(req)
+	resp, err := api.do(req)
 	if err != nil {
 		return err
 	}
@@ -189,23 +194,24 @@ func (api *API) UpdateHost(hostId string, name string, meta map[string]interface
 	return nil
 }
 
+// PostMetricsValues XXX
 func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error {
-	requestJson, err := json.Marshal(metricsValues)
+	requestJSON, err := json.Marshal(metricsValues)
 	if err != nil {
 		return err
 	}
-	logger.Debugf("Metrics Post Request: %s", string(requestJson))
+	logger.Debugf("Metrics Post Request: %s", string(requestJSON))
 
 	req, err := http.NewRequest(
 		"POST",
 		api.urlFor("/api/v0/tsdb").String(),
-		bytes.NewReader(requestJson),
+		bytes.NewReader(requestJSON),
 	)
 	if err != nil {
 		return err
 	}
 	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.Do(req)
+	resp, err := api.do(req)
 	if err != nil {
 		return err
 	}
@@ -217,12 +223,13 @@ func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return errors.New(fmt.Sprintf("API result failed: %s", resp.Status))
+		return fmt.Errorf("API result failed: %s", resp.Status)
 	}
 
 	return nil
 }
 
+// CreateGraphDefsPayload XXX
 type CreateGraphDefsPayload struct {
 	Name        string                         `json:"name"`
 	DisplayName string                         `json:"displayName"`
@@ -230,12 +237,14 @@ type CreateGraphDefsPayload struct {
 	Metrics     []CreateGraphDefsPayloadMetric `json:"metrics"`
 }
 
+// CreateGraphDefsPayloadMetric XXX
 type CreateGraphDefsPayloadMetric struct {
 	Name        string `json:"name"`
 	DisplayName string `json:"displayName"`
 	IsStacked   bool   `json:"isStacked"`
 }
 
+// CreateGraphDefs XXX
 func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 	requestJSON, err := json.Marshal(payloads)
 	if err != nil {
@@ -254,7 +263,7 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 	logger.Debugf("Create grpah defs request: %s", string(requestJSON))
 
 	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.Do(req)
+	resp, err := api.do(req)
 	if err != nil {
 		return err
 	}

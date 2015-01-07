@@ -7,9 +7,11 @@ import (
 	utilDarwin "github.com/mackerelio/mackerel-agent/util/darwin"
 )
 
+// FilesystemGenerator XXX
 type FilesystemGenerator struct {
 }
 
+// Key XXX
 func (g *FilesystemGenerator) Key() string {
 	return "filesystem"
 }
@@ -24,6 +26,7 @@ var dfColumnSpecs = []utilDarwin.DfColumnSpec{
 	utilDarwin.DfColumnSpec{Name: "mount", IsInt: false},
 }
 
+// Generate XXX
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
 	return utilDarwin.CollectDfValues(dfColumnSpecs)
 }

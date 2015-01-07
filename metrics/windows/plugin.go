@@ -19,7 +19,6 @@ type PluginGenerator struct {
 }
 
 var pluginLogger = logging.GetLogger("metrics.plugin")
-var PLUGIN_PREFIX = "custom."
 
 func NewPluginGenerator(c config.PluginConfig) (*PluginGenerator, error) {
 	return &PluginGenerator{c}, nil
@@ -68,7 +67,7 @@ func (g *PluginGenerator) collectValues(command string) (metrics.Values, error) 
 			pluginLogger.Warningf("Failed to parse values: %s", err)
 			continue
 		}
-		results[PLUGIN_PREFIX+items[0]] = value
+		results[pluginPrefix+items[0]] = value
 	}
 
 	return results, nil

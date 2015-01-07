@@ -8,9 +8,9 @@ var DefaultConfig = &Config{
 	Roles:    []string{},
 	Verbose:  false,
 	Connection: ConnectionConfig{
-		Post_Metrics_Dequeue_Delay_Seconds: 30,
-		Post_Metrics_Retry_Delay_Seconds:   60,
-		Post_Metrics_Retry_Max:             10,
-		Post_Metrics_Buffer_Size:           30,
+		PostMetricsDequeueDelaySeconds: 30,
+		PostMetricsRetryDelaySeconds:   60,
+		PostMetricsRetryMax:            10,
+		PostMetricsBufferSize:          30,
 	},
 }

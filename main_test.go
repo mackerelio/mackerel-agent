@@ -36,7 +36,7 @@ apikey="DUMMYAPIKEY"
 	t.Logf("      verbose: %v", mergedConfig.Verbose)
 
 	if mergedConfig.Root != "/hoge/fuga" {
-		t.Error("Root(confing from file) should be /hoge/fuga but: %v", mergedConfig.Root)
+		t.Errorf("Root(confing from file) should be /hoge/fuga but: %v", mergedConfig.Root)
 	}
 
 	if len(mergedConfig.Roles) != 1 || mergedConfig.Roles[0] != "My-Service:default" {
