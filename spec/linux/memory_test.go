@@ -24,7 +24,7 @@ func TestMemoryGenerator(t *testing.T) {
 
 	memory, typeOk := value.(map[string]interface{})
 	if !typeOk {
-		t.Errorf("value should be map", value)
+		t.Errorf("value should be map. %+v", value)
 	}
 
 	if _, ok := memory["total"]; !ok {

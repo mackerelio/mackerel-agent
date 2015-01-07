@@ -23,7 +23,7 @@ func TestCPUGenerate(t *testing.T) {
 
 	cpu, typeOk := value.([]map[string]interface{})
 	if !typeOk {
-		t.Errorf("value should be slice of map", value)
+		t.Errorf("value should be slice of map. %+v", value)
 	}
 
 	if len(cpu) == 0 {

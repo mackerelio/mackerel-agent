@@ -23,7 +23,7 @@ func TestInterfaceGenerate(t *testing.T) {
 
 	interfaces, typeOk := value.([]map[string]interface{})
 	if !typeOk {
-		t.Errorf("value should be slice of map", value)
+		t.Errorf("value should be slice of map. %+v", value)
 	}
 	if len(interfaces) == 0 {
 		t.Error("should have at least 1 interface")

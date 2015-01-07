@@ -23,7 +23,7 @@ func TestKernelGenerate(t *testing.T) {
 
 	kernel, typeOk := value.(map[string]string)
 	if !typeOk {
-		t.Error("value should be map", value)
+		t.Error("value should be map. %+v", value)
 	}
 
 	if len(kernel["name"]) == 0 {
