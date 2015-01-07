@@ -51,7 +51,7 @@ func ConfigureLoggers(rootlogLevel string) {
 	logLevelConfigs["root"] = stringTologLevel(rootlogLevel)
 }
 
-func (logger *Logger) currentlogLevel() *logLevel {
+func (logger *Logger) currentLogLevel() *logLevel {
 	return logLevelConfigs["root"]
 }
 
@@ -60,7 +60,7 @@ func (logger *Logger) message(logLevel *logLevel, message string) string {
 }
 
 func (logger *Logger) log(logLevel *logLevel, message string, args ...interface{}) {
-	if logLevel.level >= logger.currentlogLevel().level {
+	if logLevel.level >= logger.currentLogLevel().level {
 		log.Printf(logger.message(logLevel, message), args...)
 	}
 }
