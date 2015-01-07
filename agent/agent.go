@@ -8,11 +8,13 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
+// Agent XXX
 type Agent struct {
 	MetricsGenerators []metrics.Generator
 	PluginGenerators  []metrics.PluginGenerator
 }
 
+// MetricsResult XXX
 type MetricsResult struct {
 	Created time.Time
 	Values  metrics.Values
@@ -28,6 +30,7 @@ func (agent *Agent) collectMetrics(collectedTime time.Time) *MetricsResult {
 	return &MetricsResult{Created: collectedTime, Values: values}
 }
 
+// Watch XXX
 func (agent *Agent) Watch() chan *MetricsResult {
 
 	metricsResult := make(chan *MetricsResult)
@@ -50,16 +53,17 @@ func (agent *Agent) Watch() chan *MetricsResult {
 		}
 	}()
 
-	const COLLECT_METRICS_WORKER_MAX = 3
+	const collectMetricsWorkerMax = 3
 
 	go func() {
 		// Start collectMetrics concurrently
 		// so that it does not prevent runnnig next collectMetrics.
-		sem := make(chan uint, COLLECT_METRICS_WORKER_MAX)
+		sem := make(chan uint, collectMetricsWorkerMax)
 		for tickedTime := range ticker {
+			ti := tickedTime
 			sem <- 1
 			go func() {
-				metricsResult <- agent.collectMetrics(tickedTime)
+				metricsResult <- agent.collectMetrics(ti)
 				<-sem
 			}()
 		}
@@ -68,6 +72,7 @@ func (agent *Agent) Watch() chan *MetricsResult {
 	return metricsResult
 }
 
+// InitPluginGenerators XXX
 func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
 	payloads := []mackerel.CreateGraphDefsPayload{}
 

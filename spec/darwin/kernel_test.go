@@ -24,6 +24,6 @@ func TestKernelGenerator_Generate(t *testing.T) {
 
 	_, releaseExists := kernel["release"]
 	if !releaseExists {
-		t.Error("'release' must exit: %v", kernel)
+		t.Errorf("'release' must exit: %v", kernel)
 	}
 }

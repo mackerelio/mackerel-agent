@@ -7,9 +7,11 @@ import (
 	utilFreebsd "github.com/mackerelio/mackerel-agent/util/freebsd"
 )
 
+// FilesystemGenerator XXX
 type FilesystemGenerator struct {
 }
 
+// Key XXX
 func (g *FilesystemGenerator) Key() string {
 	return "filesystem"
 }
@@ -24,6 +26,7 @@ var dfColumnSpecs = []utilFreebsd.DfColumnSpec{
 	utilFreebsd.DfColumnSpec{Name: "mount", IsInt: false},
 }
 
+// Generate XXX
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
 	return utilFreebsd.CollectDfValues(dfColumnSpecs)
 }

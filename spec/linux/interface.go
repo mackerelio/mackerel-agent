@@ -12,15 +12,18 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 )
 
+// InterfaceGenerator XXX
 type InterfaceGenerator struct {
 }
 
+// Key XXX
 func (g *InterfaceGenerator) Key() string {
 	return "interface"
 }
 
 var interfaceLogger = logging.GetLogger("spec.interface")
 
+// Generate XXX
 func (g *InterfaceGenerator) Generate() (interface{}, error) {
 	var interfaces map[string]map[string]interface{}
 	_, err := exec.LookPath("ip")

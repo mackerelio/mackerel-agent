@@ -9,15 +9,18 @@ import (
 	. "github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// KernelGenerator XXX
 type KernelGenerator struct {
 }
 
+// Key XXX
 func (g *KernelGenerator) Key() string {
 	return "kernel"
 }
 
 var kernelLogger = logging.GetLogger("spec.kernel")
 
+// Generate XXX
 func (g *KernelGenerator) Generate() (interface{}, error) {
 	results := make(map[string]string)
 

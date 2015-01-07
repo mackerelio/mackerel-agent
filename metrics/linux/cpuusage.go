@@ -51,6 +51,7 @@ var cpuNumberPattern = regexp.MustCompile(`^cpu\d+\s`)
 
 var cpuusageLogger = logging.GetLogger("metrics.cpuusage")
 
+// Generate XXX
 func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 	prevValues, prevTotal, _, err := g.collectProcStatValues()
 	if err != nil {

@@ -132,9 +132,8 @@ func createPidFile(pidfile string) error {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
 			if _, err := os.Stat(fmt.Sprintf("/proc/%d/", pid)); err == nil {
 				return fmt.Errorf("Pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
-			} else {
-				logger.Warningf("Pidfile found, but there seems no another process of mackerel-agent. Ignoring %s", pidfile)
 			}
+			logger.Warningf("Pidfile found, but there seems no another process of mackerel-agent. Ignoring %s", pidfile)
 		} else {
 			logger.Warningf("Malformed pidfile found. Ignoring %s", pidfile)
 		}
@@ -166,7 +165,7 @@ func exitWithoutPidfileCleaning(exitCode int) {
 	os.Exit(exitCode)
 }
 
-const MAX_TERMINATING_INTERVAL = 30
+const maxTerminatingInterval = 30
 
 func start(conf *config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
@@ -196,13 +195,13 @@ func start(conf *config.Config) error {
 					logger.Infof(
 						"Received signal '%v', try graceful shutdown up to %d seconds. If you want force shutdown immediately, send a signal again.",
 						sig,
-						MAX_TERMINATING_INTERVAL)
+						maxTerminatingInterval)
 				} else {
 					logger.Infof("Received signal '%v' again, force shutdown.", sig)
 				}
 				termCh <- struct{}{}
 				go func() {
-					time.Sleep(MAX_TERMINATING_INTERVAL * time.Second)
+					time.Sleep(maxTerminatingInterval * time.Second)
 					logger.Infof("Timed out. force shutdown.")
 					termCh <- struct{}{}
 				}()
