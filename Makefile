@@ -20,7 +20,7 @@ run: build
 deps:
 	go get -d -v -t ./...
 	go get github.com/golang/lint/golint
-	go get golang.org/x/tools/cmd/vet
+	if ! go get code.google.com/p/go.tools/cmd/vet; then go get golang.org/x/tools/cmd/vet; fi
 	go get github.com/laher/goxc
 
 lint: deps
