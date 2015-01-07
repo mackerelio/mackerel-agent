@@ -1,4 +1,7 @@
+.*
+!.gitignore
+!.goxc.json
+!.travis.yml
 /build
-
 /id
 /pid

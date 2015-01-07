@@ -7,7 +7,7 @@ BUILD_FLAGS = "\
 
 all: clean test build
 
-test: deps
+test: lint
 	go test $(TESTFLAGS) ./...
 
 build: deps
@@ -25,7 +25,8 @@ deps:
 
 lint: deps
 	go vet ./...
-	golint ./...
+	golint ./... | tee .golint.txt
+	test ! -s .golint.txt
 
 crossbuild: deps
 	goxc -build-ldflags=$(BUILD_FLAGS) \
