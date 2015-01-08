@@ -21,7 +21,7 @@ run: build
 deps:
 	go get -d -v -t ./...
 	go get github.com/golang/lint/golint
-	if ! go get code.google.com/p/go.tools/cmd/vet; then go get golang.org/x/tools/cmd/vet; fi
+	go get golang.org/x/tools/cmd/vet
 	go get github.com/laher/goxc
 
 LINT_RET = .golint.txt
@@ -37,7 +37,7 @@ lint: deps
 
 crossbuild: deps
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
-	    -os="$(BUILD_OS_TARGETS)" -arch=386 -d . \
+	    -os=$(BUILD_OS_TARGETS) -arch=386 -d . \
 	    -resources-include='README*' -n $(BIN)
 
 clean:

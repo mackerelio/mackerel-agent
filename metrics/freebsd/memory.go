@@ -86,7 +86,9 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 			}
 		}
 	}
-	if v, err := getTotalMem(); err != nil {
+
+	v, err := getTotalMem()
+	if err != nil {
 		return nil, err
 	}
 	ret["memory.total"] = v
