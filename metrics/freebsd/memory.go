@@ -13,11 +13,13 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
+// MemoryGenerator XXX
 type MemoryGenerator struct {
 }
 
 var memoryLogger = logging.GetLogger("metrics.memory")
 
+// Generate generate metrics values
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	var errRet error = nil
 	outBytes, err := exec.Command("top", "-bn", "1").Output()

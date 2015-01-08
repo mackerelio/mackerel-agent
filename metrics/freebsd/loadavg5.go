@@ -11,6 +11,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
+// Loadavg5Generator XXX
 type Loadavg5Generator struct {
 }
 

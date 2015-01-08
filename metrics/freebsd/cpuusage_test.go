@@ -4,8 +4,8 @@ package freebsd
 
 import "testing"
 
-func TestCpuusageGenerator_Generate(t *testing.T) {
-	g := &CpuusageGenerator{}
+func TestCPUUsageGenerator_Generate(t *testing.T) {
+	g := &CPUUsageGenerator{}
 	values, err := g.Generate()
 
 	if err != nil {

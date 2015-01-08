@@ -10,19 +10,20 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
-type CpuusageGenerator struct {
+// CPUUsageGenerator XXX
+type CPUUsageGenerator struct {
 	Interval time.Duration
 }
 
-var cpuusageLogger = logging.GetLogger("metrics.cpuusage")
+var cpuUsageLogger = logging.GetLogger("metrics.cpuUsage")
 
-func NewCpuusageGenerator(interval time.Duration) (*CpuusageGenerator, error) {
-	return &CpuusageGenerator{interval}, nil
+func NewCPUUsageGenerator(interval time.Duration) (*CPUUsageGenerator, error) {
+	return &CPUUsageGenerator{interval}, nil
 }
 
-func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
+func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 	if g == nil {
-		return nil, errors.New("CpuusageGenerator is not initialized")
+		return nil, errors.New("CPUUsageGenerator is not initialized")
 	}
 	time.Sleep(g.Interval * time.Second)
 

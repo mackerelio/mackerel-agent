@@ -30,7 +30,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	if g, err = metricsWindows.NewLoadavg5Generator(); err == nil {
 		generators = append(generators, g)
 	}
-	if g, err = metricsWindows.NewCpuusageGenerator(60); err == nil {
+	if g, err = metricsWindows.NewCPUUsageGenerator(60); err == nil {
 		generators = append(generators, g)
 	}
 	if g, err = metricsWindows.NewMemoryGenerator(); err == nil {

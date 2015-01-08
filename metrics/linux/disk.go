@@ -35,6 +35,8 @@ cat /proc/diskstats sample:
 	253     628 dm-628 3198 0 75410 1360 30802835 0 3942653176 1334317408 0 70948 1358596768
 253       2 dm-2 2022 0 42250 488 30822403 0 3942809696 1364721232 0 93348 1382989868
 */
+
+// DiskGenerator XXX
 type DiskGenerator struct {
 	Interval time.Duration
 }
@@ -50,6 +52,7 @@ var postDiskMetricsRegexp = regexp.MustCompile(`^disk\..+\.(reads|writes)$`)
 
 var diskLogger = logging.GetLogger("metrics.disk")
 
+// Generate
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	prevValues, err := g.collectDiskstatValues()
 	if err != nil {
@@ -99,7 +102,7 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 
 		deviceResult := make(map[string]float64)
 		hasNonZeroValue := false
-		for i, _ := range diskMetricsNames {
+		for i := range diskMetricsNames {
 			key := fmt.Sprintf("disk.%s.%s", device, diskMetricsNames[i])
 			value, err := strconv.ParseFloat(values[i], 64)
 			if err != nil {

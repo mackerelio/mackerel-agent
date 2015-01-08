@@ -59,7 +59,7 @@ func TestGenerateByIpCommand(t *testing.T) {
 	}
 
 	g := &InterfaceGenerator{}
-	interfaces, err := g.generateByIpCommand()
+	interfaces, err := g.generateByIPCommand()
 	if err != nil {
 		t.Error("should not raise error")
 	}

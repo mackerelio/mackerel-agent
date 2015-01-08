@@ -11,6 +11,7 @@ import (
 	. "github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// Loadavg5Generator XXX
 type Loadavg5Generator struct {
 	query    syscall.Handle
 	counters []*CounterInfo
