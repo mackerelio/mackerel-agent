@@ -1,5 +1,6 @@
 BIN = mackerel-agent
 ARGS = "-conf=mackerel-agent.conf"
+BUILD_OS_TARGETS = "linux darwin freebsd windows"
 
 BUILD_LDFLAGS = "\
 	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT `git rev-parse --short HEAD` \
@@ -23,14 +24,20 @@ deps:
 	if ! go get code.google.com/p/go.tools/cmd/vet; then go get golang.org/x/tools/cmd/vet; fi
 	go get github.com/laher/goxc
 
+LINT_RET = .golint.txt
 lint: deps
 	go vet ./...
-	golint ./... | tee .golint.txt
-	test ! -s .golint.txt
+	rm -f $(LINT_RET)
+	for os in "$(BUILD_OS_TARGETS)"; do \
+		if [ $$os != "windows" ]; then \
+			GOOS=$$os golint ./... | tee -a $(LINT_RET); \
+		fi \
+	done
+	test ! -s $(LINT_RET)
 
 crossbuild: deps
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
-	    -os="linux darwin windows freebsd" -arch=386 -d . \
+	    -os="$(BUILD_OS_TARGETS)" -arch=386 -d . \
 	    -resources-include='README*' -n $(BIN)
 
 clean:

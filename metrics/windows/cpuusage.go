@@ -17,10 +17,12 @@ type CPUUsageGenerator struct {
 
 var cpuUsageLogger = logging.GetLogger("metrics.cpuUsage")
 
+// NewCPUUsageGenerator XXX
 func NewCPUUsageGenerator(interval time.Duration) (*CPUUsageGenerator, error) {
 	return &CPUUsageGenerator{interval}, nil
 }
 
+// Generate XXX
 func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 	if g == nil {
 		return nil, errors.New("CPUUsageGenerator is not initialized")

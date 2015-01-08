@@ -52,7 +52,7 @@ var postDiskMetricsRegexp = regexp.MustCompile(`^disk\..+\.(reads|writes)$`)
 
 var diskLogger = logging.GetLogger("metrics.disk")
 
-// Generate
+// Generate XXX
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	prevValues, err := g.collectDiskstatValues()
 	if err != nil {

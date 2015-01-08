@@ -1,7 +1,9 @@
 package config
 
-import "path/filepath"
-import "os"
+import (
+	"os"
+	"path/filepath"
+)
 
 var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", "mackerel-agent")
 

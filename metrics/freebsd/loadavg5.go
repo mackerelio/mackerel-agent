@@ -17,9 +17,9 @@ type Loadavg5Generator struct {
 
 var loadavg5Logger = logging.GetLogger("metrics.loadavg5")
 
+// Generate generate metric values
 // % sysctl -n vm.loadavg
 // { 2.26 2.08 2.00 }
-
 func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 	outputBytes, err := exec.Command("sysctl", "-n", "vm.loadavg").Output()
 	if err != nil {
