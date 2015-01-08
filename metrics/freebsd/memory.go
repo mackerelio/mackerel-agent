@@ -13,13 +13,15 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
+// MemoryGenerator XXX
 type MemoryGenerator struct {
 }
 
 var memoryLogger = logging.GetLogger("metrics.memory")
 
+// Generate generate metrics values
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
-	var errRet error = nil
+	var errRet error
 	outBytes, err := exec.Command("top", "-bn", "1").Output()
 	if err != nil {
 		logger.Warningf("'top -bn 1' command exited with a non-zero status: '%s'", err)
@@ -84,16 +86,17 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 			}
 		}
 	}
-	if v, err := getTotalMem(); err != nil {
+
+	v, err := getTotalMem()
+	if err != nil {
 		return nil, err
-	} else {
-		ret["memory.total"] = v
 	}
+	ret["memory.total"] = v
+
 	if errRet == nil {
 		return metrics.Values(ret), nil
-	} else {
-		return nil, errRet
 	}
+	return nil, errRet
 }
 
 func getValue(strValue string) (float64, error) {

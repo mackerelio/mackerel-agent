@@ -4,12 +4,12 @@ package freebsd
 
 import "testing"
 
-func TestCpuusageGenerator_Generate(t *testing.T) {
-	g := &CpuusageGenerator{}
+func TestCPUUsageGenerator_Generate(t *testing.T) {
+	g := &CPUUsageGenerator{}
 	values, err := g.Generate()
 
 	if err != nil {
-		t.Error("error should not have occured: %s", err)
+		t.Errorf("error should not have occured: %s", err)
 	}
 
 	metricName := []string{"cpu.user.percentage", "cpu.system.percentage", "cpu.idle.percentage"}

@@ -12,10 +12,11 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
-type CpuusageGenerator struct {
+// CPUUsageGenerator XXX
+type CPUUsageGenerator struct {
 }
 
-var cpuusageLogger = logging.GetLogger("metrics.cpuusage")
+var cpuUsageLogger = logging.GetLogger("metrics.cpuUsage")
 
 var iostatFieldToMetricName = []string{"user", "nice", "system", "interrupt", "idle"}
 
@@ -24,7 +25,7 @@ var iostatFieldToMetricName = []string{"user", "nice", "system", "interrupt", "i
 // - cpu.user.percentage
 // - cpu.system.percentage
 // - cpu.idle.percentage
-func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
+func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 
 	// $ iostat -n0 -c2 -d -C
 	//            cpu
@@ -33,7 +34,7 @@ func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 	//  0  0  4  0 96
 	iostatBytes, err := exec.Command("iostat", "-n0", "-c2", "-d", "-C").Output()
 	if err != nil {
-		cpuusageLogger.Errorf("Failed to invoke iostat: %s", err)
+		cpuUsageLogger.Errorf("Failed to invoke iostat: %s", err)
 		return nil, err
 	}
 
@@ -48,7 +49,7 @@ func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 		return nil, fmt.Errorf("iostat result malformed: [%q]", iostat)
 	}
 
-	cpuusage := make(map[string]float64, len(iostatFieldToMetricName))
+	cpuUsage := make(map[string]float64, len(iostatFieldToMetricName))
 
 	for i, n := range iostatFieldToMetricName {
 		if i == 3 {
@@ -59,8 +60,8 @@ func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 			return nil, err
 		}
 
-		cpuusage["cpu."+n+".percentage"] = value
+		cpuUsage["cpu."+n+".percentage"] = value
 	}
 
-	return metrics.Values(cpuusage), nil
+	return metrics.Values(cpuUsage), nil
 }

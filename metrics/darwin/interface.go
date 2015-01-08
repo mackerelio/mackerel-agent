@@ -30,6 +30,8 @@ Name  Mtu   Network       Address            Ipkts Ierrs     Ibytes    Opkts Oer
 lo0   16384 <Link#1>                       4504403     0 3063793000  4504403     0 3063793000     0
 lo0   16384 localhost   ::1                4504403     - 3063793000  4504403     - 3063793000     -
 */
+
+// InterfaceGenerator XXX
 type InterfaceGenerator struct {
 	Interval time.Duration
 }
@@ -38,6 +40,7 @@ type InterfaceGenerator struct {
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
+// Generate XXX
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	prevValues, err := g.collectIntarfacesValues()
 	if err != nil {

@@ -37,22 +37,24 @@ cat /proc/stat sample: {{{
 	procs_blocked 0
 }}}
 */
-type CpuusageGenerator struct {
+
+// CPUUsageGenerator XXX
+type CPUUsageGenerator struct {
 	Interval time.Duration
 }
 
 // In additions these metrics, collect *.percentage metrics
-var cpuusageMetricNames = []string{
+var cpuUsageMetricNames = []string{
 	"cpu.user", "cpu.nice", "cpu.system", "cpu.idle", "cpu.iowait",
 	"cpu.irq", "cpu.softirq", "cpu.steal", "cpu.guest",
 }
 
 var cpuNumberPattern = regexp.MustCompile(`^cpu\d+\s`)
 
-var cpuusageLogger = logging.GetLogger("metrics.cpuusage")
+var cpuUsageLogger = logging.GetLogger("metrics.cpuUsage")
 
 // Generate XXX
-func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
+func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 	prevValues, prevTotal, _, err := g.collectProcStatValues()
 	if err != nil {
 		return nil, err
@@ -66,9 +68,9 @@ func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 	}
 
 	ret := make(map[string]float64)
-	for i, name := range cpuusageMetricNames {
+	for i, name := range cpuUsageMetricNames {
 		// Values in /proc/stat differ in Linux kernel versions.
-		// Not all metrics in cpuusageMetricNames can be retrieved.
+		// Not all metrics in cpuUsageMetricNames can be retrieved.
 		// ref: `man 5 proc`
 		if i >= len(currValues) || i >= len(prevValues) {
 			break
@@ -81,11 +83,11 @@ func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 	return metrics.Values(ret), nil
 }
 
-// returns values corresponding to cpuusageMetricNames, those total and the number of CPUs
-func (g *CpuusageGenerator) collectProcStatValues() ([]float64, float64, uint, error) {
+// returns values corresponding to cpuUsageMetricNames, those total and the number of CPUs
+func (g *CPUUsageGenerator) collectProcStatValues() ([]float64, float64, uint, error) {
 	file, err := os.Open("/proc/stat")
 	if err != nil {
-		cpuusageLogger.Errorf("Failed (skip these metrics): %s", err)
+		cpuUsageLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, 0, 0, err
 	}
 
@@ -93,7 +95,7 @@ func (g *CpuusageGenerator) collectProcStatValues() ([]float64, float64, uint, e
 
 	var cols []string
 	var cpuCount uint
-	var firstLine bool = true
+	firstLine := true
 
 	for lineScanner.Scan() {
 		line := lineScanner.Text()
@@ -104,7 +106,7 @@ func (g *CpuusageGenerator) collectProcStatValues() ([]float64, float64, uint, e
 			firstLine = false
 		} else if cpuNumberPattern.MatchString(line) {
 			// number of cores
-			cpuCount += 1
+			cpuCount++
 		} else {
 			break
 		}
@@ -116,7 +118,7 @@ func (g *CpuusageGenerator) collectProcStatValues() ([]float64, float64, uint, e
 	for i, strValue := range cols {
 		values[i], err = strconv.ParseFloat(strValue, 64)
 		if err != nil {
-			cpuusageLogger.Errorf("Failed to parse cpuusage metrics (skip these metrics): %s", err)
+			cpuUsageLogger.Errorf("Failed to parse cpuUsage metrics (skip these metrics): %s", err)
 			return nil, 0, 0, err
 		}
 		totalValues += values[i]

@@ -3,6 +3,7 @@
 package linux
 
 import (
+	"os"
 	"testing"
 )
 
@@ -44,8 +45,14 @@ func TestMemoryGenerator(t *testing.T) {
 		"swap_free",
 		"used",
 	} {
-		if _, ok := values["memory."+name]; !ok {
-			t.Errorf("memory should has %s", name)
+		if v, ok := values["memory."+name]; !ok {
+			if name == "swap_cached" && os.Getenv("TRAVIS") != "" {
+				t.Logf("memory '%s' is not collected in Travis", name)
+			} else {
+				t.Errorf("memory should has %s", name)
+			}
+		} else {
+			t.Logf("memory '%s' collected: %+v", name, v)
 		}
 	}
 }

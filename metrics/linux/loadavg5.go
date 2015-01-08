@@ -18,6 +18,8 @@ collect load average
 
 graph: `loadavg5`
 */
+
+// Loadavg5Generator XXX
 type Loadavg5Generator struct {
 }
 

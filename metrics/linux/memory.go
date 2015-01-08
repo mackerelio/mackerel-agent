@@ -44,8 +44,7 @@ var memItems = map[string]*regexp.Regexp{
 }
 
 /*
-collect memory usage
-
+MemoryGenerator collect memory usage
 
 `memory.{metric}`: using memory size[KiB] retrieved from /proc/meminfo
 
@@ -61,6 +60,7 @@ type MemoryGenerator struct {
 
 var memoryLogger = logging.GetLogger("metrics.memory")
 
+// Generate generate metrics values
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	file, err := os.Open("/proc/meminfo")
 	if err != nil {
@@ -71,7 +71,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	used := float64(0)
-	used_cnt := 0
+	usedCnt := 0
 	for scanner.Scan() {
 		line := scanner.Text()
 		for k, regexp := range memItems {
@@ -90,11 +90,11 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 				ret["memory."+k] = value * 1024
 				if k == "free" || k == "buffers" || k == "cached" {
 					used -= value
-					used_cnt++
+					usedCnt++
 				}
 				if k == "total" {
 					used += value
-					used_cnt++
+					usedCnt++
 				}
 				break
 			}
@@ -104,7 +104,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		memoryLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
-	if used_cnt == 4 { // 4 is free, buffers, cached and total
+	if usedCnt == 4 { // 4 is free, buffers, cached and total
 		ret["memory.used"] = used * 1024
 	}
 

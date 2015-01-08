@@ -20,6 +20,8 @@ type PluginGenerator struct {
 
 var pluginLogger = logging.GetLogger("metrics.plugin")
 
+const pluginPrefix = "custom."
+
 func NewPluginGenerator(c config.PluginConfig) (*PluginGenerator, error) {
 	return &PluginGenerator{c}, nil
 }

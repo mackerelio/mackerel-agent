@@ -1,5 +1,6 @@
 package config
 
+// The default configuration for windows
 var DefaultConfig = &Config{
 	Apibase:  "https://mackerel.io",
 	Root:     ".",

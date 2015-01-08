@@ -20,7 +20,7 @@ func (g *CPUGenerator) Key() string {
 var cpuLogger = logging.GetLogger("spec.cpu")
 
 func (g *CPUGenerator) Generate() (interface{}, error) {
-	results := make([]map[string]interface{}, 0)
+	var results []map[string]interface{}
 
 	var systemInfo SYSTEM_INFO
 	GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))

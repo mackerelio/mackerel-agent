@@ -31,7 +31,7 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 
 	scanner := bufio.NewScanner(file)
 
-	results := make([]map[string]interface{}, 0)
+	var results []map[string]interface{}
 	var cur map[string]interface{}
 	for scanner.Scan() {
 		line := scanner.Text()

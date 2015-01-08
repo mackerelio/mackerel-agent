@@ -18,15 +18,15 @@ func TestKernelGenerate(t *testing.T) {
 	g := &KernelGenerator{}
 	value, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error:", err)
+		t.Errorf("should not raise error: %s", err)
 	}
 
 	kernel, typeOk := value.(map[string]string)
 	if !typeOk {
-		t.Error("value should be map", value)
+		t.Errorf("value should be map. %+v", value)
 	}
 
 	if len(kernel["name"]) == 0 {
-		t.Error("kernel.name should be filled", kernel["name"])
+		t.Error("kernel.name should be filled")
 	}
 }
