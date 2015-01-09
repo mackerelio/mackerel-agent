@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"path/filepath"
 	"time"
@@ -271,6 +272,11 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 			created := float64(result.Created.Unix())
 			creatingValues := [](*mackerel.CreatingMetricsValue){}
 			for name, value := range (map[string]float64)(result.Values) {
+				if math.IsNaN(value) || math.IsInf(value, 0) {
+					logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", c.host.ID, name, value)
+					continue
+				}
+
 				creatingValues = append(
 					creatingValues,
 					&mackerel.CreatingMetricsValue{
