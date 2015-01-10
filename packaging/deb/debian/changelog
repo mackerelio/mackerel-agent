@@ -1,0 +1,224 @@
+mackerel-agent (0.14.0-1) precise; urgency=low
+
+  * [improve] wait for termination until postQueue is empty up to 30 seconds.
+  * [improve] wait up to 30 seconds before initial posting
+  * [feature] work on Windows darwin FreeBSD (unofficial support)
+
+ -- Songmu <Songmu@hatena.ne.jp>  Thu, 25 Dec 2014 12:23:39 +0900
+
+mackerel-agent (0.13.0-1) precise; urgency=low
+
+  * [feature] Support `-version` flag
+  * [improve] Do bulk posting metrics when retrying metrics sending
+  * [feature] Support darwin
+
+ -- y_uuki <y_uuki@hatena.ne.jp>  Tue, 18 Nov 2014 18:13:43 +0900
+
+mackerel-agent (0.12.3-1) precise; urgency=low
+
+  * [fix] Fixed index out of rage for diskstats
+  * [improve] Update hostname on updating host specs
+
+ -- skozawa <skozawa@hatena.ne.jp>  Wed, 1 Oct 2014 16:31:45 +0900
+
+mackerel-agent (0.12.2-2) precise; urgency=low
+
+  * [fix] Add a process name to killproc
+
+ -- skozawa <skozawa@hatena.ne.jp>  Mon, 8 Sep 2014 17:06:15 +0900
+
+mackerel-agent (0.12.2-1) precise; urgency=low
+
+  * [fix] change retry and dequeue delay time
+
+ -- skozawa <skozawa@hatena.ne.jp>  Fri, 5 Sep 2014 18:13:57 +0900
+
+mackerel-agent (0.12.1-1) precise; urgency=low
+
+  * Extended retry queue
+
+ -- motemen <motemen@hatena.ne.jp>  Thu, 21 Aug 2014 15:21:09 +0900
+
+mackerel-agent (0.12.0-1) precise; urgency=low
+
+  * [breaking] Changed custom metric plugins' meta information format to JSON instead of TOML
+  * [feature] Added filesystem metrics
+
+ -- motemen <motemen@hatena.ne.jp>  Tue, 19 Aug 2014 16:48:03 +0900
+
+mackerel-agent (0.11.1-1) precise; urgency=low
+
+  * [fix] Fixed non-critical log message when plugin meta loading
+
+ -- motemen <motemen@hatena.ne.jp>  Wed, 6 Aug 2014 17:25:52 +0900
+
+mackerel-agent (0.11.0-1) precise; urgency=low
+
+  * [feature] Including config files with 'include' key
+
+ -- motemen <motemen@hatena.ne.jp>  Wed, 6 Aug 2014 15:08:20 +0900
+
+mackerel-agent (0.10.1-1) precise; urgency=low
+
+  * [fix] Fixed issue that environment variable was not set
+
+ -- motemen <motemen@hatena.ne.jp>  Tue, 5 Aug 2014 16:42:34 +0900
+
+mackerel-agent (0.10.0-1) precise; urgency=low
+
+  * [feature] Added support for custom metric schemata
+
+ -- motemen <motemen@hatena.ne.jp>  Tue, 5 Aug 2014 12:07:29 +0900
+
+mackerel-agent (0.9.0-2) precise; urgency=low
+
+  * [fix] Removed unused metrics #20
+  * [feature] Add configurations for posting metrics #19
+  * [fix] Prevent exiting without cleaning pidfile #18
+
+ -- skozawa <skozawa@hatena.ne.jp>  Wed, 9 Jul 2014 14:34:50 +0900
+
+mackerel-agent (0.8.0-1) precise; urgency=low
+
+  * [improve] Using go 1.3
+  * [feature] Periodically update host specs #15
+  * [fix] Http request now have timeout #17
+
+ -- hakobe <hakobe@hatena.ne.jp>  Tue, 24 Jun 2014 18:55:41 +0900
+
+mackerel-agent (0.7.0-1) precise; urgency=low
+
+  * [fix] Replace invalid characters (e.g. '.') in disk and interface names with underscores
+  * [fix] Removed deprecated metrics
+
+ -- motemen <motemen@hatena.ne.jp>  Fri, 6 Jun 2014 14:49:02 +0900
+
+mackerel-agent (0.6.1-1) precise; urgency=low
+
+  * [breaking change] Automatically add 'custom.' prefix to the name of custom metrics
+  * [change] Change the key to configure custom metrics from "sensu.checks." to "plugin.metrics." in the config file
+  * [improve] More friendly and consistent error messages
+  * [fix] Change the permission of /var/lib/mackerel-agent directory to 755
+  * [fix] Change the permission of /etc/init.d/mackerel-agent to 755
+
+ -- hakobe <hakobe@hatena.ne.jp>  Fri, 23 May 2014 16:49:41 +0900
+
+mackerel-agent (0.5.1-3) precise; urgency=low
+
+  * [fix] Fixed init script not to use APIKEY if empty
+
+ -- motemen <motemen@hatena.ne.jp>  Wed, 14 May 2014 17:22:05 +0900
+
+mackerel-agent (0.5.1-2) precise; urgency=low
+
+  * Updated version string
+
+ -- motemen <motemen@hatena.ne.jp>  Tue, 13 May 2014 15:37:56 +0900
+
+mackerel-agent (0.5.1-1) precise; urgency=low
+
+  * [improve] Warn and exit on startup if no API key given
+  * [fix] Support parsing large disk sizes
+  * [fix] Trap SIGHUP not to die
+  * [fix] Continue running even if failed to collect host specs
+  * [fix] Use binaries under /sbin/ and /bin/ to generate specs/metrics
+
+ -- motemen <motemen@hatena.ne.jp>  Tue, 13 May 2014 14:56:12 +0900
+
+mackerel-agent (0.5.0-1) precise; urgency=low
+
+  * [improve] Verbose option now prints debug information
+  * [misc] Changed license from Test-use only to Commercial
+
+ -- hakobe <hakobe@hatena.ne.jp>  Thu, 8 May 2014 14:06:52 +0900
+
+mackerel-agent (0.4.3-1) precise; urgency=low
+
+  * [fix] Changed sleep time for buffered requests
+
+ -- hakobe <hakobe@hatena.ne.jp>  Wed, 7 May 2014 17:04:40 +0900
+
+mackerel-agent (0.4.2-1) precise; urgency=low
+
+  * [fix] Fixed a memory leak when metrics collection unexpectedly blocked
+
+ -- hakobe <hakobe@hatena.ne.jp>  Wed, 30 Apr 2014 10:28:30 +0900
+
+mackerel-agent (0.4.1-1) precise; urgency=low
+
+  * [fix] Fixed a crash when increasing or decreasing disks or interfaces
+
+ -- mechairoi <mechairoi@hatena.ne.jp>  Mon, 28 Apr 2014 19:40:12 +0900
+
+mackerel-agent (0.4.0-1) precise; urgency=low
+
+  * [improve] Change interval for disk, cpu and interface metrics
+
+ -- skozawa <skozawa@hatena.ne.jp>  Fri, 25 Apr 2014 17:08:21 +0900
+
+mackerel-agent (0.3.0-2) precise; urgency=low
+
+  * [fix] Remove an unncecessary setting sample
+
+ -- hakobe <hakobe@hatena.ne.jp>  Wed, 23 Apr 2014 16:20:13 +0900
+
+mackerel-agent (0.3.0-1) precise; urgency=low
+
+  * [improve] update interfaces information each start
+  * [improve] set nice 'User-Agent' header
+  * [improve] added 'memory.used' metrics
+  * [improve] execute sensu command through 'sh -c'
+  * [fix] fixed interval of collecting metrics
+  * [fix] fixed crashes when collecting disk usage
+
+ -- mechairoi <mechairoi@hatena.ne.jp>  Tue, 22 Apr 2014 15:17:59 +0900
+
+mackerel-agent (0.2.0-2) precise; urgency=low
+
+  * Fix config file comments
+
+ -- skozawa <skozawa@hatena.ne.jp>  Thu, 17 Apr 2014 14:50:03 +0900
+
+mackerel-agent (0.2.0-1) precise; urgency=low
+
+  * [feature] Add support for sensu plugins
+  * [feature] Buffer metric values in case of request error
+
+ -- motemen <motemen@hatena.ne.jp>  Wed, 16 Apr 2014 17:40:23 +0900
+
+mackerel-agent (0.1.1-2) precise; urgency=low
+
+  * Add mackerel-agent.conf
+  * Use 32-bit binary
+
+ -- motemen <motemen@hatena.ne.jp>  Wed, 9 Apr 2014 19:50:56 +0900
+
+mackerel-agent (0.1.1-1) precise; urgency=low
+
+  * New features
+
+ -- mechairoi <mechairoi@hatena.ne.jp>  Wed, 09 Apr 2014 15:15:03 +0900
+
+mackerel-agent (0.1.0-1) precise; urgency=low
+
+  * New features
+
+ -- hakobe932 <hakobe932@hatena.ne.jp>  Fri, 04 Apr 2014 02:58:42 +0000
+
+mackerel-agent (0.0.2-2) unstable; urgency=low
+
+  * Add logrotate
+
+ -- y_uuki <y_uuki@hatena.ne.jp>  Mon, 31 Mar 2014 17:03:20 +0900
+
+mackerel-agent (0.0.2-1) unstable; urgency=low
+
+  * New features
+
+ -- y_uuki <y_uuki@hatena.ne.jp>  Wed, 26 Mar 2014 05:26:58 +0900
+
+mackerel-agent (0.0.1-1) unstable; urgency=low
+
+  * Initial release
+
+ -- y_uuki <y_uuki@hatena.ne.jp>  Tue, 11 Mar 2014 11:27:51 +0900

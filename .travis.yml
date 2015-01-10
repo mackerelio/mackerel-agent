@@ -5,17 +5,16 @@ env: PATH=/home/travis/gopath/bin:$PATH
 install:
 - sudo apt-get update
 - DEBIAN_FRONTEND=noninteractive sudo apt-get install -y rpm devscripts debhelper
-#- mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+- mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
-- make all
-- make crossbuild
+- make all crossbuild rpm deb
 deploy:
   provider: releases
   api_key:
     secure: NtpNjquqjnwpeVQQM1GTHTTU7YOo8fEIyoBtMf3Vf1ayZjuWVZxwNfM77E596TG52a8pnZtpapXyHT0M4e1zms7F5KVCrOEfOB0OrA4IDzoATelVqdONnN3lbRJeVJVdSmK8/FNKwjI24tQZTaTQcIOioNqh7ZRcrEYlatGCuAw=
   file:
-  # - /home/travis/rpmbuild/RPMS/noarch/mackerel-agent-plugins-0.14.0-1.noarch.rpm
-  # - /home/travis/gopath/src/github.com/mackerelio/mackerel-agent/packaging/mackerel-agent_0.14.0-1_all.deb
+  - /home/travis/rpmbuild/RPMS/noarch/mackerel-agent-0.14.0-1.noarch.rpm
+  - packaging/mackerel-agent_0.14.0-1_all.deb
   - snapshot/mackerel-agent_darwin_386.zip
   - snapshot/mackerel-agent_darwin_amd64.zip
   - snapshot/mackerel-agent_freebsd_386.zip

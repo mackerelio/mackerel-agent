@@ -1,0 +1,12 @@
+Source: mackerel-agent
+Section: admin
+Priority: extra
+Maintainer: Hatena
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+Homepage: https://mackerel.io
+
+Package: mackerel-agent
+Architecture: all
+Description: macekrel.io agent
+
