@@ -17,9 +17,15 @@ deploy:
   # - /home/travis/rpmbuild/RPMS/noarch/mackerel-agent-plugins-0.14.0-1.noarch.rpm
   # - /home/travis/gopath/src/github.com/mackerelio/mackerel-agent/packaging/mackerel-agent_0.14.0-1_all.deb
   - snapshot/mackerel-agent_darwin_386.zip
+  - snapshot/mackerel-agent_darwin_amd64.zip
   - snapshot/mackerel-agent_freebsd_386.zip
+  - snapshot/mackerel-agent_freebsd_amd64.zip
+  - snapshot/mackerel-agent_freebsd_arm.zip
   - snapshot/mackerel-agent_linux_386.tar.gz
+  - snapshot/mackerel-agent_linux_amd64.tar.gz
+  - snapshot/mackerel-agent_linux_arm.tar.gz
   - snapshot/mackerel-agent_windows_386.zip
+  - snapshot/mackerel-agent_windows_amd64.zip
   skip_cleanup: true
   on:
     repo: mackerelio/mackerel-agent

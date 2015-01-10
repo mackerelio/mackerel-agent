@@ -37,7 +37,7 @@ lint: deps
 
 crossbuild: deps
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
-	    -os=$(BUILD_OS_TARGETS) -arch=386 -d . \
+	    -os=$(BUILD_OS_TARGETS) -arch="386 amd64 arm" -d . \
 	    -resources-include='README*,mackerel-agent.conf' -n $(BIN)
 
 clean:
