@@ -7,8 +7,11 @@ install:
 - DEBIAN_FRONTEND=noninteractive sudo apt-get install -y rpm devscripts debhelper
 #- mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
-- make all
+- make lint
+- make cover
 - make crossbuild
+after_script:
+- goveralls -coverprofile=.profile.cov
 deploy:
   provider: releases
   api_key:

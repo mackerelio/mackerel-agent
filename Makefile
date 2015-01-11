@@ -24,6 +24,7 @@ deps:
 	go get golang.org/x/tools/cmd/vet
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/laher/goxc
+	go get github.com/mattn/goveralls
 
 LINT_RET = .golint.txt
 lint: deps
@@ -41,7 +42,7 @@ crossbuild: deps
 	    -os=$(BUILD_OS_TARGETS) -arch="386 amd64 arm" -d . \
 	    -resources-include='README*,mackerel-agent.conf' -n $(BIN)
 
-cover: lint
+cover: deps
 	tool/cover.sh
 
 clean:
