@@ -22,6 +22,7 @@ deps:
 	go get -d -v -t ./...
 	go get github.com/golang/lint/golint
 	go get golang.org/x/tools/cmd/vet
+	go get golang.org/x/tools/cmd/cover
 	go get github.com/laher/goxc
 
 LINT_RET = .golint.txt
@@ -40,8 +41,11 @@ crossbuild: deps
 	    -os=$(BUILD_OS_TARGETS) -arch="386 amd64 arm" -d . \
 	    -resources-include='README*,mackerel-agent.conf' -n $(BIN)
 
+cover: lint
+	tool/cover.sh
+
 clean:
 	rm -f build/$(BIN)
 	go clean
 
-.PHONY: test build run deps clean lint crossbuild
+.PHONY: test build run deps clean lint crossbuild cover
