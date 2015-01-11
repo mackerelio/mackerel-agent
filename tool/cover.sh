@@ -1,4 +1,4 @@
-#/bin/sh
+#/bin/bash
 prof=${1:-".profile.cov"}
 echo "mode: count" > $prof
 
