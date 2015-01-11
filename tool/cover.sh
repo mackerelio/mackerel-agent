@@ -1,9 +1,11 @@
 #/bin/sh
+set -e
+
 prof=${1:-".profile.cov"}
 echo "mode: count" > $prof
 
 cleanup() {
-  if [ $tmpprof != "" && -f $tmpprof ]; then
+  if [ $tmpprof != "" ] && [ -f $tmpprof ]; then
     rm -f $tmpprof
   fi
   exit
