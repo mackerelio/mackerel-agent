@@ -18,13 +18,11 @@ trap cleanup INT QUIT TERM EXIT
 
 # cmd/cover doesn't support -coverprofile for multiple packages, so run tests in each dir.
 # ref. https://github.com/mattn/goveralls/issues/20
-for dir in $(find . -not -path '*/[._]*' -type d); do
-  if ls $dir/*.go > /dev/null 2>&1; then
-    tmpprof=$dir/profile.tmp
-    go test -covermode=count -coverprofile=$tmpprof $dir
-    if [ -f $tmpprof ]; then
-      cat $tmpprof | tail -n +2 >> $prof
-      rm $tmpprof
-    fi
+for pkg in $(go list ./...); do
+  tmpprof=$GOPATH/src/$pkg/profile.tmp
+  go test -covermode=count -coverprofile=$tmpprof $pkg
+  if [ -f $tmpprof ]; then
+    cat $tmpprof | tail -n +2 >> $prof
+    rm $tmpprof
   fi
 done
