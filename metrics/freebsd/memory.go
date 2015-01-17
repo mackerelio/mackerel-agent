@@ -79,7 +79,11 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 			} else {
 				errRet = err
 			}
-			if v, err := getValue(fields[5]); err == nil {
+			swapFreeIndex := 5
+			if len(fields) == 5 {
+			   swapFreeIndex =  3
+			}
+			if v, err := getValue(fields[swapFreeIndex]); err == nil {
 				ret["memory.swap_free"] = v
 			} else {
 				errRet = err
