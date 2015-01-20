@@ -9,7 +9,8 @@ import (
 	"unsafe"
 )
 
-type SYSTEM_INFO struct {
+// SystemInfo XXX
+type SystemInfo struct {
 	ProcessorArchitecture     uint16
 	PageSize                  uint32
 	MinimumApplicationAddress *byte
@@ -22,7 +23,8 @@ type SYSTEM_INFO struct {
 	ProcessorRevision         uint16
 }
 
-type MEMORYSTATUSEX struct {
+// MemoryStatusEx XXX
+type MemoryStatusEx struct {
 	Length               uint32
 	MemoryLoad           uint32
 	TotalPhys            uint64
@@ -34,25 +36,35 @@ type MEMORYSTATUSEX struct {
 	AvailExtendedVirtual uint64
 }
 
-type PDH_FMT_COUNTERVALUE_DOUBLE struct {
+// PdhFmtCountervalueDouble XXX
+type PdhFmtCountervalueDouble struct {
 	CStatus     uint32
 	DoubleValue float64
 }
 
-type PDH_FMT_COUNTERVALUE_ITEM_DOUBLE struct {
+// PdhFmtCountervalueItemDouble XXX
+type PdhFmtCountervalueItemDouble struct {
 	Name     *uint16
-	FmtValue PDH_FMT_COUNTERVALUE_DOUBLE
+	FmtValue PdhFmtCountervalueDouble
 }
 
 const (
-	ERROR_SUCCESS      = 0
-	DRIVE_REMOVABLE    = 2
-	DRIVE_FIXED        = 3
-	HKEY_LOCAL_MACHINE = 0x80000002
-	RRF_RT_REG_SZ      = 0x00000002
-	RRF_RT_REG_DWORD   = 0x00000010
-	PDH_FMT_DOUBLE     = 0x00000200
-	PDH_INVALID_DATA   = 0xc0000bc6
+	// ErrorSuccess XXX
+	ErrorSuccess      = 0
+	// DriveRemovable XXX
+	DriveRemovable    = 2
+	// DriveFixed XXX
+	DriveFixed        = 3
+	// HkeyLocalMachine XXX
+	HkeyLocalMachine = 0x80000002
+	// RrfRtRegSz XXX
+	RrfRtRegSz      = 0x00000002
+	// RrdRtRegDWord XXX
+	RrdRtRegDWord   = 0x00000010
+	// PdhFmtDouble XXX
+	PdhFmtDouble     = 0x00000200
+	// PdhInvalidData XXX
+	PdhInvalidData   = 0xc0000bc6
 )
 
 var (
@@ -60,22 +72,37 @@ var (
 	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
 	modpdh      = syscall.NewLazyDLL("pdh.dll")
 
+	// RegGetValue XXX
 	RegGetValue                 = modadvapi32.NewProc("RegGetValueW")
+	// GetSystemInfo XXX
 	GetSystemInfo               = modkernel32.NewProc("GetSystemInfo")
+	// GetTickCount XXX
 	GetTickCount                = modkernel32.NewProc("GetTickCount")
+	// GetDiskFreeSpaceEx XXX
 	GetDiskFreeSpaceEx          = modkernel32.NewProc("GetDiskFreeSpaceExW")
+	// GetLogicalDriveStrings XXX
 	GetLogicalDriveStrings      = modkernel32.NewProc("GetLogicalDriveStringsW")
+	// GetDriveType XXX
 	GetDriveType                = modkernel32.NewProc("GetDriveTypeW")
+	// QueryDosDevice XXX
 	QueryDosDevice              = modkernel32.NewProc("QueryDosDeviceW")
+	// GetVolumeInformationW XXX
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
+	// GlobalMemoryStatusEx XXX
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
+	// PdhOpenQuery XXX
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
+	// PdhAddCounter XXX
 	PdhAddCounter               = modpdh.NewProc("PdhAddCounterW")
+	// PdhCollectQueryData XXX
 	PdhCollectQueryData         = modpdh.NewProc("PdhCollectQueryData")
+	// PdhGetFormattedCounterValue XXX
 	PdhGetFormattedCounterValue = modpdh.NewProc("PdhGetFormattedCounterValue")
+	// PdhCloseQuery XXX
 	PdhCloseQuery               = modpdh.NewProc("PdhCloseQuery")
 )
 
+// RegGetInt XXX
 func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
 	var num, numlen uint32
 	numlen = 4
@@ -83,24 +110,25 @@ func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
-		uintptr(RRF_RT_REG_DWORD),
+		uintptr(RrdRtRegDWord),
 		0,
 		uintptr(unsafe.Pointer(&num)),
 		uintptr(unsafe.Pointer(&numlen)))
-	if ret != ERROR_SUCCESS {
+	if ret != ErrorSuccess {
 		return 0, err
 	}
 
 	return num, nil
 }
 
+// RegGetString XXX
 func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 	var bufLen uint32
 	RegGetValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
-		uintptr(RRF_RT_REG_SZ),
+		uintptr(RrfRtRegSz),
 		0,
 		0,
 		uintptr(unsafe.Pointer(&bufLen)))
@@ -113,23 +141,25 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
-		uintptr(RRF_RT_REG_SZ),
+		uintptr(RrfRtRegSz),
 		0,
 		uintptr(unsafe.Pointer(&buf[0])),
 		uintptr(unsafe.Pointer(&bufLen)))
-	if ret != ERROR_SUCCESS {
+	if ret != ErrorSuccess {
 		return "", err
 	}
 
 	return syscall.UTF16ToString(buf), nil
 }
 
+// CounterInfo XXX
 type CounterInfo struct {
 	PostName    string
 	CounterName string
 	Counter     syscall.Handle
 }
 
+// CreateQuery XXX
 func CreateQuery() (syscall.Handle, error) {
 	var query syscall.Handle
 	r, _, err := PdhOpenQuery.Call(0, 0, uintptr(unsafe.Pointer(&query)))
@@ -139,6 +169,7 @@ func CreateQuery() (syscall.Handle, error) {
 	return query, nil
 }
 
+// CreateCounter XXX
 func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 	var counter syscall.Handle
 	r, _, err := PdhAddCounter.Call(
@@ -156,6 +187,7 @@ func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 	}, nil
 }
 
+// GetAdapterList XXX
 func GetAdapterList() (*syscall.IpAdapterInfo, error) {
 	b := make([]byte, 1000)
 	l := uint32(len(b))
@@ -172,6 +204,7 @@ func GetAdapterList() (*syscall.IpAdapterInfo, error) {
 	return a, nil
 }
 
+// BytePtrToString XXX
 func BytePtrToString(p *uint8) string {
 	a := (*[10000]uint8)(unsafe.Pointer(p))
 	i := 0

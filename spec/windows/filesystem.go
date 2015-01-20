@@ -9,23 +9,26 @@ import (
 	"unsafe"
 
 	"github.com/mackerelio/mackerel-agent/logging"
-	. "github.com/mackerelio/mackerel-agent/util/windows"
+	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// FilesystemGenerator XXX
 type FilesystemGenerator struct {
 }
 
+// Key XX
 func (g *FilesystemGenerator) Key() string {
 	return "filesystem"
 }
 
 var filesystemLogger = logging.GetLogger("spec.filesystem")
 
+// Generate XXX
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
 	filesystems := make(map[string]map[string]interface{})
 
 	drivebuf := make([]byte, 256)
-	_, r, err := GetLogicalDriveStrings.Call(
+	_, r, err := windows.GetLogicalDriveStrings.Call(
 		uintptr(len(drivebuf)),
 		uintptr(unsafe.Pointer(&drivebuf[0])))
 	if r != 0 {
@@ -36,8 +39,8 @@ func (g *FilesystemGenerator) Generate() (interface{}, error) {
 	for _, v := range drivebuf {
 		if v >= 65 && v <= 90 {
 			drive := string(v)
-			r, _, err = GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
-			if r != DRIVE_FIXED {
+			r, _, err = windows.GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
+			if r != windows.DriveFixed {
 				continue
 			}
 			drives = append(drives, drive+":")
@@ -46,7 +49,7 @@ func (g *FilesystemGenerator) Generate() (interface{}, error) {
 
 	for _, drive := range drives {
 		drivebuf := make([]uint16, 256)
-		r, _, err := QueryDosDevice.Call(
+		r, _, err := windows.QueryDosDevice.Call(
 			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
 			uintptr(unsafe.Pointer(&drivebuf[0])),
 			uintptr(len(drivebuf)))
@@ -55,7 +58,7 @@ func (g *FilesystemGenerator) Generate() (interface{}, error) {
 		}
 		volumebuf := make([]uint16, 256)
 		fsnamebuf := make([]uint16, 256)
-		r, _, err = GetVolumeInformationW.Call(
+		r, _, err = windows.GetVolumeInformationW.Call(
 			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive+`\`))),
 			uintptr(unsafe.Pointer(&volumebuf[0])),
 			uintptr(len(volumebuf)),
@@ -69,7 +72,7 @@ func (g *FilesystemGenerator) Generate() (interface{}, error) {
 		}
 		freeBytesAvailable := int64(0)
 		totalNumberOfBytes := int64(0)
-		r, _, err = GetDiskFreeSpaceEx.Call(
+		r, _, err = windows.GetDiskFreeSpaceEx.Call(
 			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
 			uintptr(unsafe.Pointer(&freeBytesAvailable)),
 			uintptr(unsafe.Pointer(&totalNumberOfBytes)),

@@ -11,20 +11,23 @@ import (
 	"strconv"
 )
 
-type CpuusageGenerator struct {
+// CPUUsageGenerator XXX
+type CPUUsageGenerator struct {
 }
 
-var cpuusageLogger = logging.GetLogger("metrics.cpuusage")
+var cpuUsageLogger = logging.GetLogger("metrics.cpuusage")
 
-func NewCPUUsageGenerator() (*CpuusageGenerator, error) {
-	return &CpuusageGenerator{}, nil
+// NewCPUUsageGenerator XXX
+func NewCPUUsageGenerator() (*CPUUsageGenerator, error) {
+	return &CPUUsageGenerator{}, nil
 }
 
-func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
+// Generate XXX
+func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 
 	cpuGet, err := exec.Command("wmic", "cpu", "get", "loadpercentage").Output()
 	if err != nil {
-		cpuusageLogger.Errorf("Failed to invoke 'wmic': %s", err)
+		cpuUsageLogger.Errorf("Failed to invoke 'wmic': %s", err)
 		return nil, err
 	}
 
@@ -45,6 +48,6 @@ func (g *CpuusageGenerator) Generate() (metrics.Values, error) {
 
 	cpuusage["cpu.user.percentage"] = value
 	cpuusage["cpu.idle.percentage"] = 100 - value
-	cpuusageLogger.Debugf("cpuusage : %s", cpuusage)
+	cpuUsageLogger.Debugf("cpuusage : %s", cpuusage)
 	return metrics.Values(cpuusage), nil
 }

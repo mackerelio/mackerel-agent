@@ -14,6 +14,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
+// PluginGenerator XXX
 type PluginGenerator struct {
 	Config config.PluginConfig
 }
@@ -22,10 +23,12 @@ var pluginLogger = logging.GetLogger("metrics.plugin")
 
 const pluginPrefix = "custom."
 
+// NewPluginGenerator XXX
 func NewPluginGenerator(c config.PluginConfig) (*PluginGenerator, error) {
 	return &PluginGenerator{c}, nil
 }
 
+// Generate XXX
 func (g *PluginGenerator) Generate() (metrics.Values, error) {
 	if g == nil {
 		err := errors.New("PluginGenerator is not initialized")

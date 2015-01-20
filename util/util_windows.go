@@ -5,6 +5,7 @@ import (
 	"os/exec"
 )
 
+// RunCommand XXX
 func RunCommand(command string) (string, string, error) {
 	var outBuffer, errBuffer bytes.Buffer
 
