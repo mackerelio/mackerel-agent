@@ -40,9 +40,9 @@ func TestMemoryGenerator(t *testing.T) {
 		// "vmalloc_used",
 		// "vmalloc_chunk",
 		//"swap_cached",
-		//"swap_total",
-		//"swap_free",
-		//"used",
+		"swap_total",
+		"swap_free",
+		"used",
 	} {
 		if _, ok := values["memory."+name]; !ok {
 			t.Errorf("memory should has %s", name)

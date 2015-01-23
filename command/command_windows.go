@@ -27,12 +27,12 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	var err error
 
 	generators := []metrics.Generator{}
-	/*
-
-		if g, err = metricsWindows.NewLoadavg5Generator(); err == nil {
-			generators = append(generators, g)
-		}
-	*/
+	if g, err = metricsWindows.NewLoadavg5Generator(); err == nil {
+		generators = append(generators, g)
+	}
+	if g, err = metricsWindows.NewFilesystemGenerator(); err == nil {
+		generators = append(generators, g)
+	}
 	if g, err = metricsWindows.NewCPUUsageGenerator(); err == nil {
 		generators = append(generators, g)
 	}

@@ -83,6 +83,9 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 
 // Generate XXX
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
+
+	diskLogger.Debugf("------ disk")
+
 	interval := g.Interval * time.Second
 	time.Sleep(interval)
 
@@ -100,5 +103,8 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 		}
 		results[v.PostName] = value.FmtValue.DoubleValue
 	}
+
+	diskLogger.Debugf("------ %q", results)
+
 	return results, nil
 }

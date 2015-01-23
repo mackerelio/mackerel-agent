@@ -6,10 +6,10 @@ import "math"
 import "testing"
 
 var cpuUsageMetricNames = []string{
-//"cpu.user",
+	"cpu.user",
 //"cpu.nice",
 //"cpu.system",
-//"cpu.idle",
+	"cpu.idle",
 //"cpu.iowait",
 //"cpu.irq",
 //"cpu.softirq",

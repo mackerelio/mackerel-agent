@@ -30,7 +30,7 @@ func NewLoadavg5Generator() (*Loadavg5Generator, error) {
 		return nil, err
 	}
 
-	counter, err :=windows. CreateCounter(g.query, "loadavg5", `\Processor(_Total)\% Processor Time`)
+	counter, err := windows.CreateCounter(g.query, "loadavg5", `\Processor(_Total)\% Processor Time`)
 	if err != nil {
 		loadavg5Logger.Criticalf(err.Error())
 		return nil, err
@@ -55,5 +55,8 @@ func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 		}
 		results[v.PostName] = value.FmtValue.DoubleValue
 	}
+
+	loadavg5Logger.Debugf("loadavg5: %q", results)
+
 	return results, nil
 }

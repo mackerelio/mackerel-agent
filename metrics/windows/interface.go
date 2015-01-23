@@ -88,6 +88,9 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 
 // Generate XXX
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
+
+	interfaceLogger.Debugf("-------interface start")
+
 	interval := g.Interval * time.Second
 	time.Sleep(interval)
 
@@ -105,5 +108,8 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 		}
 		results[v.PostName] = value.FmtValue.DoubleValue
 	}
+
+	interfaceLogger.Debugf("-------interface %q", results)
+
 	return results, nil
 }

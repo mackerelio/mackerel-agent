@@ -3,11 +3,10 @@
 package windows
 
 import (
-	"unsafe"
-
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/util/windows"
+	"unsafe"
 )
 
 // MemoryGenerator XXX
@@ -32,10 +31,14 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	ret["memory.total"] = float64(memoryStatusEx.TotalPhys) / 1024
-	ret["memory.free"] = float64(memoryStatusEx.AvailPhys) / 1024
-	ret["memory.swap_free"] = 0
-	ret["memory.swap_total"] = 0
+	free := float64(memoryStatusEx.AvailPhys) / 1024 * 1000
+	total := float64(memoryStatusEx.TotalPhys) / 1024 * 1000
+	ret["memory.free"] = free
+	ret["memory.total"] = total
+	ret["memory.used"] = total - free
+	ret["memory.swap_total"] = float64(memoryStatusEx.TotalVirtual) / 1024
+	ret["memory.swap_free"] = float64(memoryStatusEx.AvailVirtual) / 1024
 
+	memoryLogger.Debugf("memory : %s", ret)
 	return metrics.Values(ret), nil
 }
