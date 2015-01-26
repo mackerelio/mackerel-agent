@@ -9,10 +9,12 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/util/windows"
+	"time"
 )
 
 // Loadavg5Generator XXX
 type Loadavg5Generator struct {
+	Interval time.Duration
 	query    syscall.Handle
 	counters []*windows.CounterInfo
 }
@@ -20,8 +22,8 @@ type Loadavg5Generator struct {
 var loadavg5Logger = logging.GetLogger("metrics.loadavg5")
 
 // NewLoadavg5Generator XXX
-func NewLoadavg5Generator() (*Loadavg5Generator, error) {
-	g := &Loadavg5Generator{0, nil}
+func NewLoadavg5Generator(interval time.Duration) (*Loadavg5Generator, error) {
+	g := &Loadavg5Generator{interval, 0, nil}
 
 	var err error
 	g.query, err = windows.CreateQuery()
@@ -41,15 +43,16 @@ func NewLoadavg5Generator() (*Loadavg5Generator, error) {
 
 // Generate XXX
 func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
-	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
-	if r != 0 {
-		return nil, err
-	}
+	interval := g.Interval * time.Second
+
+	windows.PdhCollectQueryData.Call(uintptr(g.query))
+	time.Sleep(interval)
+	windows.PdhCollectQueryData.Call(uintptr(g.query))
 
 	results := make(map[string]float64)
 	for _, v := range g.counters {
 		var value windows.PdhFmtCountervalueItemDouble
-		r, _, err = windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PdhFmtDouble, uintptr(0), uintptr(unsafe.Pointer(&value)))
+		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PdhFmtDouble, uintptr(0), uintptr(unsafe.Pointer(&value)))
 		if r != 0 && r != windows.PdhInvalidData {
 			return nil, err
 		}

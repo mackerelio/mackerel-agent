@@ -37,10 +37,10 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 	_, r, err := windows.GetLogicalDriveStrings.Call(
 		uintptr(len(drivebuf)),
 		uintptr(unsafe.Pointer(&drivebuf[0])))
-	if r != 0 {
+/*	if r != 0 {
 		diskLogger.Criticalf(err.Error())
 		return nil, err
-	}
+	}*/
 
 	for _, v := range drivebuf {
 		if v >= 65 && v <= 90 {
@@ -73,38 +73,27 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 		}
 	}
 
-	r, _, err = windows.PdhCollectQueryData.Call(uintptr(g.query))
-	if r != 0 && err != nil {
-		diskLogger.Criticalf(err.Error())
-		return nil, err
-	}
 	return g, nil
 }
 
 // Generate XXX
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
-
-	diskLogger.Debugf("------ disk")
-
 	interval := g.Interval * time.Second
-	time.Sleep(interval)
 
-	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
-	if r != 0 {
-		return nil, err
-	}
+	windows.PdhCollectQueryData.Call(uintptr(g.query))
+	time.Sleep(interval)
+	windows.PdhCollectQueryData.Call(uintptr(g.query))
 
 	results := make(map[string]float64)
 	for _, v := range g.counters {
 		var value windows.PdhFmtCountervalueItemDouble
-		r, _, err = windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PdhFmtDouble, uintptr(0), uintptr(unsafe.Pointer(&value)))
+		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PdhFmtDouble, uintptr(0), uintptr(unsafe.Pointer(&value)))
 		if r != 0 && r != windows.PdhInvalidData {
 			return nil, err
 		}
 		results[v.PostName] = value.FmtValue.DoubleValue
 	}
 
-	diskLogger.Debugf("------ %q", results)
-
+	diskLogger.Debugf("%q", results)
 	return results, nil
 }

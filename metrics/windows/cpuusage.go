@@ -25,7 +25,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 
 	cpuusageValue, err := util.GetWmicToFloat("cpu", "loadpercentage")
 	if err != nil {
-		return nil, err
+		cpuusageValue = 0
 	}
 	cpuusage["cpu.user.percentage"] = cpuusageValue
 	cpuusage["cpu.idle.percentage"] = 100 - cpuusageValue

@@ -77,11 +77,7 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 		}
 	}
 
-	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
-	if r != 0 && err != nil {
-		interfaceLogger.Criticalf(err.Error())
-		return nil, err
-	}
+	windows.PdhCollectQueryData.Call(uintptr(g.query))
 
 	return g, nil
 }
@@ -89,27 +85,24 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 // Generate XXX
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 
-	interfaceLogger.Debugf("-------interface start")
-
 	interval := g.Interval * time.Second
 	time.Sleep(interval)
 
-	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
-	if r != 0 {
-		return nil, err
-	}
+	windows.PdhCollectQueryData.Call(uintptr(g.query))
+	time.Sleep(interval)
+	windows.PdhCollectQueryData.Call(uintptr(g.query))
 
 	results := make(map[string]float64)
 	for _, v := range g.counters {
 		var value windows.PdhFmtCountervalueItemDouble
-		r, _, err = windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PdhFmtDouble, uintptr(0), uintptr(unsafe.Pointer(&value)))
+		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PdhFmtDouble, uintptr(0), uintptr(unsafe.Pointer(&value)))
 		if r != 0 && r != windows.PdhInvalidData {
 			return nil, err
 		}
 		results[v.PostName] = value.FmtValue.DoubleValue
 	}
 
-	interfaceLogger.Debugf("-------interface %q", results)
+	interfaceLogger.Debugf("%q", results)
 
 	return results, nil
 }
