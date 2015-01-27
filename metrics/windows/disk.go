@@ -37,10 +37,11 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 	_, r, err := windows.GetLogicalDriveStrings.Call(
 		uintptr(len(drivebuf)),
 		uintptr(unsafe.Pointer(&drivebuf[0])))
-/*	if r != 0 {
+
+	if r < 0 {
 		diskLogger.Criticalf(err.Error())
 		return nil, err
-	}*/
+	}
 
 	for _, v := range drivebuf {
 		if v >= 65 && v <= 90 {

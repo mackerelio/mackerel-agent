@@ -16,15 +16,19 @@ func CollectDfValues() (map[string]map[string]interface{}, error) {
 	filesystems := make(map[string]map[string]interface{})
 
 	drivebuf := make([]byte, 256)
-	GetLogicalDriveStrings.Call(
+	_, r, err := GetLogicalDriveStrings.Call(
 		uintptr(len(drivebuf)),
 		uintptr(unsafe.Pointer(&drivebuf[0])))
+	if r < 0 {
+		windowsLogger.Debugf("do not get drivebuf [%q] [%q]", drivebuf, r)
+		return nil, err
+	}
 
 	drives := []string{}
 	for _, v := range drivebuf {
 		if v >= 65 && v <= 90 {
 			drive := string(v)
-			r, _, _ := GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
+			r, _, err = GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
 			if r != DriveFixed {
 				continue
 			}
@@ -38,7 +42,7 @@ func CollectDfValues() (map[string]map[string]interface{}, error) {
 			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
 			uintptr(unsafe.Pointer(&drivebuf[0])),
 			uintptr(len(drivebuf)))
-		if r == 0 {
+		if r < 0 {
 			windowsLogger.Debugf("do not get DosDevice [%q]", drivebuf)
 			return nil, err
 		}
@@ -53,7 +57,7 @@ func CollectDfValues() (map[string]map[string]interface{}, error) {
 			0,
 			uintptr(unsafe.Pointer(&fsnamebuf[0])),
 			uintptr(len(fsnamebuf)))
-		if r == 0 {
+		if r < 0 {
 			windowsLogger.Debugf("do not get volume [%q] or fsname [%q]", volumebuf, fsnamebuf)
 			return nil, err
 		}
@@ -64,7 +68,7 @@ func CollectDfValues() (map[string]map[string]interface{}, error) {
 			uintptr(unsafe.Pointer(&freeBytesAvailable)),
 			uintptr(unsafe.Pointer(&totalNumberOfBytes)),
 			0)
-		if r == 0 {
+		if r < 0 {
 			continue
 		}
 		filesystems[drive] = map[string]interface{}{
