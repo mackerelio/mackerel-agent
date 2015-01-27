@@ -58,4 +58,4 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 
 	return results, nil
 }
-edit the error handling to block_device and filesystem. for windows metric.
+
