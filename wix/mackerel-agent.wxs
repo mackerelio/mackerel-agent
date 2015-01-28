@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+
+  <Product Name='mackerel-agent' Id='*' UpgradeCode='1EF11651-A09E-47A3-BFE3-5877E22F7D26'
+    Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Hatena'>
+
+    <Package Id='*' Keywords='Installer' Description="Mackerel Agent Installer"
+      Comments='Mackerel Agent sends metrics to https://mackerel.io' Manufacturer='Hatena'
+      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
+    <Media Id="1" Cabinet="MackerelAgent.cab" EmbedCab="yes" CompressionLevel="high"/>
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder' Name='PFiles'>
+        <Directory Id='Mackerel' Name='Mackerel'>
+          <Directory Id='INSTALLDIR' Name='mackerel-agent'>
+            <Component Id='ServiceWrapperExe'>
+              <File Id='MackerelAgentServiceExe' Name='wrapper.exe' DiskId='1' Source='..\build\wrapper.exe' KeyPath='yes' />
+              <ServiceInstall
+                Id='ServiceInstaller' Type='ownProcess' Name='mackerel-agent' Description='Send metrics to https://mackerel.io'
+                Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]"
+                Start='auto' ErrorControl='normal' Vital='yes' Interactive='no' />
+              <ServiceControl Id="StartService" Start='install' Stop="both" Remove="uninstall" Name="mackerel-agent" Wait="yes" />
+            </Component>
+            <Component Id='AgentExe'>
+              <File Id='MackerelAgentExe' Name='mackerel-agent.exe' DiskId='1' Source='..\build\mackerel-agent.exe' KeyPath='yes' />
+            </Component>
+            <Component Id='Conf'>
+              <File Id='MackerelAgentConf' Name='mackerel-agent.conf' DiskId='1' Source='mackerel-agent.conf' KeyPath='yes' />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Binary Id="ReplaceExe" SourceFile="..\build\replace.exe" />
+    <CustomAction Id="FillApiKey" BinaryKey="ReplaceExe"
+      ExeCommand='"[INSTALLDIR]\mackerel-agent.conf" "# apikey = ""YOUR_API_KEY""" "apikey = ""[APIKEY]"""'
+      Execute="deferred" Return="check" Impersonate="no" />
+
+    <Feature Id='Complete' Level='1'>
+      <ComponentRef Id='ServiceWrapperExe' />
+      <ComponentRef Id='AgentExe' />
+      <ComponentRef Id='Conf' />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="FillApiKey" Before="StartServices" />
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
