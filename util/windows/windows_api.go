@@ -90,6 +90,8 @@ var (
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
 	// GlobalMemoryStatusEx XXX
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
+	// GetLastError XXX
+	GetLastError				= modkernel32.NewProc("GetLastError")
 	// PdhOpenQuery XXX
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
 	// PdhAddCounter XXX

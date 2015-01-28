@@ -26,11 +26,12 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 	results := make(map[string]map[string]interface{})
 
 	drivebuf := make([]byte, 256)
-	_, r, err := windows.GetLogicalDriveStrings.Call(
+	r, _, err := windows.GetLogicalDriveStrings.Call(
 		uintptr(len(drivebuf)),
 		uintptr(unsafe.Pointer(&drivebuf[0])))
-	if r < 0 {
-		blockDeviceLogger.Debugf("do not get drivebuf [%q]", drivebuf)
+	if r == 0 {
+		e := windows.GetLastError.Call
+		blockDeviceLogger.Errorf("error code is  [%s]", e)
 		return nil, err
 	}
 
