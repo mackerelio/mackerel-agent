@@ -43,7 +43,7 @@
     </Feature>
 
     <InstallExecuteSequence>
-      <Custom Action="FillApiKey" Before="StartServices" />
+      <Custom Action="FillApiKey" Before="StartServices">Not Installed</Custom>
     </InstallExecuteSequence>
 
   </Product>
