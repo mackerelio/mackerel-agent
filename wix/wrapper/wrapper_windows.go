@@ -8,6 +8,7 @@ import (
 	"log"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"syscall"
 	"unsafe"
 )
@@ -47,8 +48,25 @@ func (h *handler) start() error {
 	scanner := bufio.NewScanner(r)
 	scanner.Split(bufio.ScanLines) // default
 	go func() {
+		// pipe stderr to windows event log
+		re := regexp.MustCompile("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} (\\w+) ")
 		for scanner.Scan() {
-			h.elog.Error(defaultEid, scanner.Text()) // Warning or Info or Error
+			line := scanner.Text()
+			if match := re.FindStringSubmatch(line); match != nil {
+				level := match[1]
+				switch level {
+				case "TRACE", "DEBUG", "INFO":
+					h.elog.Info(defaultEid, line)
+				case "WARNING":
+					h.elog.Warning(defaultEid, line)
+				case "ERROR", "CRITICAL":
+					h.elog.Error(defaultEid, line)
+				default:
+					h.elog.Error(defaultEid, line)
+				}
+			} else {
+				h.elog.Error(defaultEid, line)
+			}
 		}
 		if err := scanner.Err(); err != nil {
 			h.elog.Error(loggerEid, err.Error())
