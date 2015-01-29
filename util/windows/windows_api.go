@@ -59,8 +59,8 @@ const (
 	HKEY_LOCAL_MACHINE = 0x80000002
 	// RRF_RT_REG_SZ XXX
 	RRF_RT_REG_SZ      = 0x00000002
-	// RRD_RT_REG_DWORD XXX
-	RRD_RT_REG_DWORD   = 0x00000010
+	// RRF_RT_REG_DWORD XXX
+	RRF_RT_REG_DWORD   = 0x00000010
 	// PDH_FMT_DOUBLE XXX
 	PDH_FMT_DOUBLE     = 0x00000200
 	// PDH_INVALID_DATA XXX
@@ -112,7 +112,7 @@ func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
-		uintptr(RRD_RT_REG_DWORD),
+		uintptr(RRF_RT_REG_DWORD),
 		0,
 		uintptr(unsafe.Pointer(&num)),
 		uintptr(unsafe.Pointer(&numlen)))
