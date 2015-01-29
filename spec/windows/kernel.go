@@ -51,7 +51,7 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 	results["version"] = version
 	results["release"] = release
 
-	var systemInfo windows.SystemInfo
+	var systemInfo windows.SYSTEM_INFO
 	windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
 	switch systemInfo.ProcessorArchitecture {
 	case 0:

@@ -24,7 +24,7 @@ func NewMemoryGenerator() (*MemoryGenerator, error) {
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	ret := make(map[string]float64)
 
-	var memoryStatusEx windows.MemoryStatusEx
+	var memoryStatusEx windows.MEMORY_STATUS_EX
 	memoryStatusEx.Length = uint32(unsafe.Sizeof(memoryStatusEx))
 	r, _, err := windows.GlobalMemoryStatusEx.Call(uintptr(unsafe.Pointer(&memoryStatusEx)))
 	if r == 0 {

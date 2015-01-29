@@ -25,7 +25,7 @@ var cpuLogger = logging.GetLogger("spec.cpu")
 func (g *CPUGenerator) Generate() (interface{}, error) {
 	var results []map[string]interface{}
 
-	var systemInfo windows.SystemInfo
+	var systemInfo windows.SYSTEM_INFO
 	windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
 
 	for i := uint32(0); i < systemInfo.NumberOfProcessors; i++ {

@@ -9,8 +9,8 @@ import (
 	"unsafe"
 )
 
-// SystemInfo XXX
-type SystemInfo struct {
+// SYSTEM_INFO XXX
+type SYSTEM_INFO struct {
 	ProcessorArchitecture     uint16
 	PageSize                  uint32
 	MinimumApplicationAddress *byte
@@ -23,8 +23,8 @@ type SystemInfo struct {
 	ProcessorRevision         uint16
 }
 
-// MemoryStatusEx XXX
-type MemoryStatusEx struct {
+// MEMORY_STATUS_EX XXX
+type MEMORY_STATUS_EX struct {
 	Length               uint32
 	MemoryLoad           uint32
 	TotalPhys            uint64
@@ -36,16 +36,16 @@ type MemoryStatusEx struct {
 	AvailExtendedVirtual uint64
 }
 
-// PdhFmtCountervalueDouble XXX
-type PdhFmtCountervalueDouble struct {
+// PDH_FMT_COUNTERVALUE_DOUBLE XXX
+type PDH_FMT_COUNTERVALUE_DOUBLE struct {
 	CStatus     uint32
 	DoubleValue float64
 }
 
-// PdhFmtCountervalueItemDouble XXX
-type PdhFmtCountervalueItemDouble struct {
+// PDH_FMT_COUNTERVALUE_ITEM_DOUBLE XXX
+type PDH_FMT_COUNTERVALUE_ITEM_DOUBLE struct {
 	Name     *uint16
-	FmtValue PdhFmtCountervalueDouble
+	FmtValue PDH_FMT_COUNTERVALUE_DOUBLE
 }
 
 const (

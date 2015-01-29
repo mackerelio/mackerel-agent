@@ -25,7 +25,7 @@ var memoryLogger = logging.GetLogger("spec.memory")
 func (g *MemoryGenerator) Generate() (interface{}, error) {
 	result := make(map[string]interface{})
 
-	var memoryStatusEx windows.MemoryStatusEx
+	var memoryStatusEx windows.MEMORY_STATUS_EX
 	memoryStatusEx.Length = uint32(unsafe.Sizeof(memoryStatusEx))
 	r, _, err := windows.GlobalMemoryStatusEx.Call(uintptr(unsafe.Pointer(&memoryStatusEx)))
 	if r == 0 {
