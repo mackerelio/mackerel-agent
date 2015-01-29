@@ -52,8 +52,8 @@ func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 	results := make(map[string]float64)
 	for _, v := range g.counters {
 		var value windows.PdhFmtCountervalueItemDouble
-		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PdhFmtDouble, uintptr(0), uintptr(unsafe.Pointer(&value)))
-		if r != 0 && r != windows.PdhInvalidData {
+		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PDH_FMT_DOUBLE, uintptr(0), uintptr(unsafe.Pointer(&value)))
+		if r != 0 && r != windows.PDH_INVALID_DATA {
 			return nil, err
 		}
 		results[v.PostName] = value.FmtValue.DoubleValue

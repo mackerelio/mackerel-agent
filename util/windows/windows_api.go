@@ -49,22 +49,22 @@ type PdhFmtCountervalueItemDouble struct {
 }
 
 const (
-	// ErrorSuccess XXX
-	ErrorSuccess      = 0
-	// DriveRemovable XXX
-	DriveRemovable    = 2
-	// DriveFixed XXX
-	DriveFixed        = 3
-	// HkeyLocalMachine XXX
-	HkeyLocalMachine = 0x80000002
-	// RrfRtRegSz XXX
-	RrfRtRegSz      = 0x00000002
-	// RrdRtRegDWord XXX
-	RrdRtRegDWord   = 0x00000010
-	// PdhFmtDouble XXX
-	PdhFmtDouble     = 0x00000200
-	// PdhInvalidData XXX
-	PdhInvalidData   = 0xc0000bc6
+	// ERROR_SUCCESS XXX
+	ERROR_SUCCESS      = 0
+	// DRIVE_REMOVABLE XXX
+	DRIVE_REMOVABLE    = 2
+	// DRIVE_FIXED XXX
+	DRIVE_FIXED        = 3
+	// HKEY_LOCAL_MACHINE XXX
+	HKEY_LOCAL_MACHINE = 0x80000002
+	// RRF_RT_REG_SZ XXX
+	RRF_RT_REG_SZ      = 0x00000002
+	// RRD_RT_REG_DWORD XXX
+	RRD_RT_REG_DWORD   = 0x00000010
+	// PDH_FMT_DOUBLE XXX
+	PDH_FMT_DOUBLE     = 0x00000200
+	// PDH_INVALID_DATA XXX
+	PDH_INVALID_DATA   = 0xc0000bc6
 )
 
 var (
@@ -112,11 +112,11 @@ func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
-		uintptr(RrdRtRegDWord),
+		uintptr(RRD_RT_REG_DWORD),
 		0,
 		uintptr(unsafe.Pointer(&num)),
 		uintptr(unsafe.Pointer(&numlen)))
-	if ret != ErrorSuccess {
+	if ret != ERROR_SUCCESS {
 		return 0, err
 	}
 
@@ -130,7 +130,7 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
-		uintptr(RrfRtRegSz),
+		uintptr(RRF_RT_REG_SZ),
 		0,
 		0,
 		uintptr(unsafe.Pointer(&bufLen)))
@@ -143,11 +143,11 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
-		uintptr(RrfRtRegSz),
+		uintptr(RRF_RT_REG_SZ),
 		0,
 		uintptr(unsafe.Pointer(&buf[0])),
 		uintptr(unsafe.Pointer(&bufLen)))
-	if ret != ErrorSuccess {
+	if ret != ERROR_SUCCESS {
 		return "", err
 	}
 

@@ -47,7 +47,7 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 		if v >= 65 && v <= 90 {
 			drive := string(v)
 			r, _, err = windows.GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
-			if r != windows.DriveFixed {
+			if r != windows.DRIVE_FIXED {
 				continue
 			}
 			var counter *windows.CounterInfo
@@ -88,8 +88,8 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	results := make(map[string]float64)
 	for _, v := range g.counters {
 		var value windows.PdhFmtCountervalueItemDouble
-		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PdhFmtDouble, uintptr(0), uintptr(unsafe.Pointer(&value)))
-		if r != 0 && r != windows.PdhInvalidData {
+		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PDH_FMT_DOUBLE, uintptr(0), uintptr(unsafe.Pointer(&value)))
+		if r != 0 && r != windows.PDH_INVALID_DATA {
 			return nil, err
 		}
 		results[v.PostName] = value.FmtValue.DoubleValue

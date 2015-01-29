@@ -40,7 +40,7 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 			drive := string(v)
 			removable := false
 			r, _, err = windows.GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
-			if r == windows.DriveRemovable {
+			if r == windows.DRIVE_REMOVABLE {
 				removable = true
 			}
 			freeBytesAvailable := int64(0)

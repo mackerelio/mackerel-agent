@@ -30,21 +30,21 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 
 	for i := uint32(0); i < systemInfo.NumberOfProcessors; i++ {
 		processorName, err := windows.RegGetString(
-			windows.HkeyLocalMachine,
+			windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`ProcessorNameString`)
 		if err != nil {
 			return nil, err
 		}
 		processorMHz, err := windows.RegGetInt(
-			windows.HkeyLocalMachine,
+			windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`~MHz`)
 		if err != nil {
 			return nil, err
 		}
 		vendorIdentifier, err := windows.RegGetString(
-			windows.HkeyLocalMachine,
+			windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`VendorIdentifier`)
 		if err != nil {

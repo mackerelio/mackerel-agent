@@ -12,6 +12,7 @@ import (
 
 var windowsLogger = logging.GetLogger("windows")
 
+// CollectDfValues XXX
 func CollectDfValues() (map[string]map[string]interface{}, error) {
 	filesystems := make(map[string]map[string]interface{})
 
@@ -31,7 +32,7 @@ func CollectDfValues() (map[string]map[string]interface{}, error) {
 		if v >= 65 && v <= 90 {
 			drive := string(v)
 			r, _, err = GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
-			if r != DriveFixed {
+			if r != DRIVE_FIXED {
 				continue
 			}
 			drives = append(drives, drive+":")

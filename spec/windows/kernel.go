@@ -25,21 +25,21 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 	results := make(map[string]string)
 
 	name, err := windows.RegGetString(
-		windows.HkeyLocalMachine,
+		windows.HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`ProductName`)
 	if err != nil {
 		return nil, err
 	}
 	version, err := windows.RegGetString(
-		windows.HkeyLocalMachine,
+		windows.HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`CurrentVersion`)
 	if err != nil {
 		return nil, err
 	}
 	release, err := windows.RegGetString(
-		windows.HkeyLocalMachine,
+		windows.HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`CSDVersion`)
 	if err != nil {
