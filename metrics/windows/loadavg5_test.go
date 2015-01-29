@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestInterfaceGenerator(t *testing.T) {
-	g := &InterfaceGenerator{}
+func TestLoadavg5Generator(t *testing.T) {
+	g := &Loadavg5Generator{}
 
 	_, err := g.Generate()
 	if err != nil {

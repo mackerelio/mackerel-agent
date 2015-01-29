@@ -89,8 +89,6 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	time.Sleep(interval)
 
 	windows.PdhCollectQueryData.Call(uintptr(g.query))
-	time.Sleep(interval)
-	windows.PdhCollectQueryData.Call(uintptr(g.query))
 
 	results := make(map[string]float64)
 	for _, v := range g.counters {

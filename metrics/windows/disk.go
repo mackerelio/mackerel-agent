@@ -74,15 +74,16 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 		}
 	}
 
+	windows.PdhCollectQueryData.Call(uintptr(g.query))
+
 	return g, nil
 }
 
 // Generate XXX
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	interval := g.Interval * time.Second
-
-	windows.PdhCollectQueryData.Call(uintptr(g.query))
 	time.Sleep(interval)
+
 	windows.PdhCollectQueryData.Call(uintptr(g.query))
 
 	results := make(map[string]float64)
