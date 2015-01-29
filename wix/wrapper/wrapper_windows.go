@@ -69,9 +69,9 @@ func (h *handler) stop() error {
 // implement https://godoc.org/code.google.com/p/winsvc/svc#Handler
 func (h *handler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- svc.Status) (svcSpecificEC bool, exitCode uint32) {
 	s <- svc.Status{State: svc.StartPending}
-	defer func () {
+	defer func() {
 		s <- svc.Status{State: svc.Stopped}
-	} ()
+	}()
 
 	if err := h.start(); err != nil {
 		h.elog.Error(startEid, err.Error())
@@ -94,7 +94,7 @@ func (h *handler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- sv
 L:
 	for {
 		select {
-		case req := <- r:
+		case req := <-r:
 			switch req.Cmd {
 			case svc.Interrogate:
 				s <- req.CurrentStatus
@@ -105,7 +105,7 @@ L:
 					s <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
 				}
 			}
-		case <- exit:
+		case <-exit:
 			break L
 		}
 	}
