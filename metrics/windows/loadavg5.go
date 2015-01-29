@@ -30,7 +30,7 @@ func NewLoadavg5Generator() (*Loadavg5Generator, error) {
 		return nil, err
 	}
 
-	counter, err := windows.CreateCounter(g.query, "loadavg5", `\Processor(_Total)\% Processor Time`)
+	counter, err := windows.CreateCounter(g.query, "loadavg5", `\System\Processor Queue Length`)
 	if err != nil {
 		loadavg5Logger.Criticalf(err.Error())
 		return nil, err
