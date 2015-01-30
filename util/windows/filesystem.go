@@ -13,8 +13,8 @@ import (
 var windowsLogger = logging.GetLogger("windows")
 
 // CollectFilesystemValues XXX
-func CollectFilesystemValues() (map[string]map[string]interface{}, error) {
-	filesystems := make(map[string]map[string]interface{})
+func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
+	filesystems := make(map[string]FilesystemInfo)
 
 	drivebuf := make([]byte, 256)
 
@@ -74,15 +74,15 @@ func CollectFilesystemValues() (map[string]map[string]interface{}, error) {
 		if r == 0 {
 			continue
 		}
-		filesystems[drive] = map[string]interface{}{
-			"percent_used": fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
-			"kb_used":      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
-			"kb_size":      float64(totalNumberOfBytes / 1024),
-			"kb_available": float64(freeBytesAvailable / 1024),
-			"mount":        drive,
-			"label":        syscall.UTF16ToString(drivebuf),
-			"volume_name":  syscall.UTF16ToString(volumebuf),
-			"fs_type":      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
+		filesystems[drive] = FilesystemInfo{
+			Percent_used: fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
+			Kb_used:      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
+			Kb_size:      float64(totalNumberOfBytes / 1024),
+			Kb_available: float64(freeBytesAvailable / 1024),
+			Mount:        drive,
+			Label:        syscall.UTF16ToString(drivebuf),
+			Volume_name:  syscall.UTF16ToString(volumebuf),
+			Fs_type:      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
 		}
 	}
 

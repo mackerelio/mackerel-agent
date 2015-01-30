@@ -194,3 +194,15 @@ func BytePtrToString(p *uint8) string {
 	}
 	return string(a[:i])
 }
+
+// FilesystemInfo XXX
+type FilesystemInfo struct {
+	Percent_used string
+	Kb_used      float64
+	Kb_size      float64
+	Kb_available float64
+	Mount        string
+	Label        string
+	Volume_name  string
+	Fs_type      string
+}
