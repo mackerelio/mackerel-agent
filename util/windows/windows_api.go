@@ -60,40 +60,26 @@ const (
 	PDH_INVALID_DATA   = 0xc0000bc6
 )
 
+// windows procs
 var (
 	modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
 	modpdh      = syscall.NewLazyDLL("pdh.dll")
 
-	// RegGetValue XXX
 	RegGetValue                 = modadvapi32.NewProc("RegGetValueW")
-	// GetSystemInfo XXX
 	GetSystemInfo               = modkernel32.NewProc("GetSystemInfo")
-	// GetTickCount XXX
 	GetTickCount                = modkernel32.NewProc("GetTickCount")
-	// GetDiskFreeSpaceEx XXX
 	GetDiskFreeSpaceEx          = modkernel32.NewProc("GetDiskFreeSpaceExW")
-	// GetLogicalDriveStrings XXX
 	GetLogicalDriveStrings      = modkernel32.NewProc("GetLogicalDriveStringsW")
-	// GetDriveType XXX
 	GetDriveType                = modkernel32.NewProc("GetDriveTypeW")
-	// QueryDosDevice XXX
 	QueryDosDevice              = modkernel32.NewProc("QueryDosDeviceW")
-	// GetVolumeInformationW XXX
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
-	// GlobalMemoryStatusEx XXX
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
-	// GetLastError XXX
 	GetLastError				= modkernel32.NewProc("GetLastError")
-	// PdhOpenQuery XXX
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
-	// PdhAddCounter XXX
 	PdhAddCounter               = modpdh.NewProc("PdhAddCounterW")
-	// PdhCollectQueryData XXX
 	PdhCollectQueryData         = modpdh.NewProc("PdhCollectQueryData")
-	// PdhGetFormattedCounterValue XXX
 	PdhGetFormattedCounterValue = modpdh.NewProc("PdhGetFormattedCounterValue")
-	// PdhCloseQuery XXX
 	PdhCloseQuery               = modpdh.NewProc("PdhCloseQuery")
 )
 
