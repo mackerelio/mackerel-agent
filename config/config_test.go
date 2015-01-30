@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"strings"
 )
 
 var sampleConfig = `
@@ -24,7 +25,7 @@ type = "metric"
 `
 
 func TestLoadConfig(t *testing.T) {
-	tmpFile, error := ioutil.TempFile("/tmp", "")
+	tmpFile, error := ioutil.TempFile("", "")
 	if error != nil {
 		t.Error("should not raise error")
 	}
@@ -110,6 +111,14 @@ func assert(t *testing.T, ok bool, msg string) {
 	}
 }
 
+var tomlQuotedReplacer = strings.NewReplacer(
+	"\t", "\\t",
+	"\n", "\\n",
+	"\r", "\\r",
+	"\"", "\\\"",
+	"\\", "\\\\",
+)
+
 func TestLoadConfigFileInclude(t *testing.T) {
 	configDir, err := ioutil.TempDir("", "mackerel-config-test")
 	assertNoError(t, err)
@@ -130,7 +139,7 @@ command = "foo1"
 
 [plugin.metrics.bar]
 command = "this wille be overwritten"
-`, configDir)
+`, tomlQuotedReplacer.Replace(configDir))
 
 	includedContent := `
 roles = [ "Service:role" ]
