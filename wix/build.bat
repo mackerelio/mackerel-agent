@@ -1,3 +1,5 @@
+go get -d -v -t ./...
+
 pushd %0\..\..
 
 call build.bat
@@ -12,5 +14,3 @@ go build -o ..\build\replace.exe replace\replace_windows.go
 
 "%WIX%bin\candle.exe" mackerel-agent.wxs
 "%WIX%bin\light.exe" -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
-
-pause
