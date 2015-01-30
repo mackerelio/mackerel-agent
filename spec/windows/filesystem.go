@@ -20,5 +20,5 @@ var filesystemLogger = logging.GetLogger("spec.filesystem")
 
 // Generate XXX
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
-	return windows.CollectDfValues()
+	return windows.CollectFilesystemValues()
 }

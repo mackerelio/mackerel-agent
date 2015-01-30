@@ -22,7 +22,7 @@ var logger = logging.GetLogger("metrics.filesystem")
 
 // Generate XXX
 func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
-	filesystems, err := windows.CollectDfValues()
+	filesystems, err := windows.CollectFilesystemValues()
 	if err != nil {
 		return nil, err
 	}

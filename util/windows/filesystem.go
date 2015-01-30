@@ -12,8 +12,8 @@ import (
 
 var windowsLogger = logging.GetLogger("windows")
 
-// CollectDfValues XXX
-func CollectDfValues() (map[string]map[string]interface{}, error) {
+// CollectFilesystemValues XXX
+func CollectFilesystemValues() (map[string]map[string]interface{}, error) {
 	filesystems := make(map[string]map[string]interface{})
 
 	drivebuf := make([]byte, 256)
