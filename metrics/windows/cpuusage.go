@@ -21,7 +21,7 @@ func NewCPUUsageGenerator() (*CPUUsageGenerator, error) {
 
 // Generate XXX
 func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
-	cpuusage := make(map[string]float64, 1)
+	cpuusage := make(map[string]float64)
 
 	cpuusageValue, err := util.GetWmicToFloat("cpu", "loadpercentage")
 	if err != nil {
