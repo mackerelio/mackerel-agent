@@ -7,14 +7,14 @@ import "testing"
 
 var cpuUsageMetricNames = []string{
 	"cpu.user",
-//"cpu.nice",
-//"cpu.system",
+	//"cpu.nice",
+	//"cpu.system",
 	"cpu.idle",
-//"cpu.iowait",
-//"cpu.irq",
-//"cpu.softirq",
-//"cpu.steal",
-//"cpu.guest",
+	//"cpu.iowait",
+	//"cpu.irq",
+	//"cpu.softirq",
+	//"cpu.steal",
+	//"cpu.guest",
 }
 
 func TestCPUUsageGenerate(t *testing.T) {

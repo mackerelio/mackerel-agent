@@ -75,7 +75,7 @@ var (
 	QueryDosDevice              = modkernel32.NewProc("QueryDosDeviceW")
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
-	GetLastError				= modkernel32.NewProc("GetLastError")
+	GetLastError                = modkernel32.NewProc("GetLastError")
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
 	PdhAddCounter               = modpdh.NewProc("PdhAddCounterW")
 	PdhCollectQueryData         = modpdh.NewProc("PdhCollectQueryData")

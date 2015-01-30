@@ -37,10 +37,10 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 			for key, value := range values {
 				floatValue, valueTypeOk := value.(float64)
 				if valueTypeOk {
-					if(key == "kb_size") {
+					if key == "kb_size" {
 						// kilo bytes -> bytes
 						ret["filesystem."+device+".size"] = floatValue * 1024
-					} else if(key == "kb_used") {
+					} else if key == "kb_used" {
 						// kilo bytes -> bytes
 						ret["filesystem."+device+".used"] = floatValue * 1024
 					}

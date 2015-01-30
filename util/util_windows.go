@@ -2,10 +2,10 @@ package util
 
 import (
 	"bytes"
-	"os/exec"
-	"strings"
 	"fmt"
+	"os/exec"
 	"strconv"
+	"strings"
 )
 
 // RunCommand XXX
