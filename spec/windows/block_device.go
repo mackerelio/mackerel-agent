@@ -30,8 +30,6 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 		uintptr(len(drivebuf)),
 		uintptr(unsafe.Pointer(&drivebuf[0])))
 	if r == 0 {
-		e := windows.GetLastError.Call
-		blockDeviceLogger.Errorf("error code is  [%s]", e)
 		return nil, err
 	}
 
