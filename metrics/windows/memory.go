@@ -31,8 +31,8 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	free := float64(memoryStatusEx.AvailPhys) / 1024 * 1000
-	total := float64(memoryStatusEx.TotalPhys) / 1024 * 1000
+	free := float64(memoryStatusEx.AvailPhys) / 1024 * 1024
+	total := float64(memoryStatusEx.TotalPhys) / 1024 * 1024
 	ret["memory.free"] = free
 	ret["memory.total"] = total
 	ret["memory.used"] = total - free
