@@ -4,13 +4,13 @@ package windows
 
 import (
 	"errors"
-	"os"
-	"syscall"
-	"unsafe"
 	"fmt"
+	"os"
+	"os/exec"
 	"strconv"
 	"strings"
-	"os/exec"
+	"syscall"
+	"unsafe"
 )
 
 // SYSTEM_INFO XXX
