@@ -99,7 +99,6 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 			diskLogger.Infof("this metric has not data. ")
 			return nil, err
 		} else {
-			diskLogger.Criticalf(err.Error())
 			return nil, err
 		}
 	}

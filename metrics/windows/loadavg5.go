@@ -48,7 +48,6 @@ func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 			loadavg5Logger.Infof("this metric has not data. ")
 			return nil, err
 		} else {
-			loadavg5Logger.Criticalf(err.Error())
 			return nil, err
 		}
 	}

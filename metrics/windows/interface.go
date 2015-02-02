@@ -103,7 +103,6 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 			interfaceLogger.Infof("this metric has not data. ")
 			return nil, err
 		} else {
-			interfaceLogger.Criticalf(err.Error())
 			return nil, err
 		}
 	}
