@@ -5,7 +5,7 @@ package windows
 import (
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
-	"github.com/mackerelio/mackerel-agent/util"
+	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
 // CPUUsageGenerator XXX
@@ -23,7 +23,7 @@ func NewCPUUsageGenerator() (*CPUUsageGenerator, error) {
 func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 	cpuusage := make(map[string]float64)
 
-	cpuusageValue, err := util.GetWmicToFloat("cpu", "loadpercentage")
+	cpuusageValue, err := windows.GetWmicToFloat("cpu", "loadpercentage")
 	if err != nil {
 		cpuusageValue = 0
 	}
