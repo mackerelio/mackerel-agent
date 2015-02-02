@@ -24,25 +24,25 @@ var kernelLogger = logging.GetLogger("spec.kernel")
 func (g *KernelGenerator) Generate() (interface{}, error) {
 	results := make(map[string]string)
 
-	name, err := RegGetString(
+	name, _, err := RegGetString(
 		HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`ProductName`)
 	if err != nil {
 		return nil, err
 	}
-	version, err := RegGetString(
+	version, _, err := RegGetString(
 		HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`CurrentVersion`)
 	if err != nil {
 		return nil, err
 	}
-	release, err := RegGetString(
+	release, errno, err := RegGetString(
 		HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`CSDVersion`)
-	if err != nil {
+	if err != nil && errno != ERROR_FILE_NOT_FOUND { // CSDVersion is nullable
 		return nil, err
 	}
 

@@ -3,10 +3,11 @@
 package windows
 
 import (
-	"errors"
+	// "errors"
 	"os"
 	"syscall"
 	"unsafe"
+	// "fmt"
 )
 
 type SYSTEM_INFO struct {
@@ -45,14 +46,15 @@ type PDH_FMT_COUNTERVALUE_ITEM_DOUBLE struct {
 }
 
 const (
-	ERROR_SUCCESS      = 0
-	DRIVE_REMOVABLE    = 2
-	DRIVE_FIXED        = 3
-	HKEY_LOCAL_MACHINE = 0x80000002
-	RRF_RT_REG_SZ      = 0x00000002
-	RRF_RT_REG_DWORD   = 0x00000010
-	PDH_FMT_DOUBLE     = 0x00000200
-	PDH_INVALID_DATA   = 0xc0000bc6
+	ERROR_SUCCESS        = 0
+	ERROR_FILE_NOT_FOUND = 2
+	DRIVE_REMOVABLE      = 2
+	DRIVE_FIXED          = 3
+	HKEY_LOCAL_MACHINE   = 0x80000002
+	RRF_RT_REG_SZ        = 0x00000002
+	RRF_RT_REG_DWORD     = 0x00000010
+	PDH_FMT_DOUBLE       = 0x00000200
+	PDH_INVALID_DATA     = 0xc0000bc6
 )
 
 var (
@@ -76,7 +78,7 @@ var (
 	PdhCloseQuery               = modpdh.NewProc("PdhCloseQuery")
 )
 
-func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
+func RegGetInt(hKey uint32, subKey string, value string) (uint32, uintptr, error) {
 	var num, numlen uint32
 	numlen = 4
 	ret, _, err := RegGetValue.Call(
@@ -88,15 +90,15 @@ func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
 		uintptr(unsafe.Pointer(&num)),
 		uintptr(unsafe.Pointer(&numlen)))
 	if ret != ERROR_SUCCESS {
-		return 0, err
+		return 0, ret, err
 	}
 
-	return num, nil
+	return num, ret, nil
 }
 
-func RegGetString(hKey uint32, subKey string, value string) (string, error) {
+func RegGetString(hKey uint32, subKey string, value string) (string, uintptr, error) {
 	var bufLen uint32
-	RegGetValue.Call(
+	ret, _, err := RegGetValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
@@ -104,12 +106,15 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		0,
 		0,
 		uintptr(unsafe.Pointer(&bufLen)))
+	if ret != ERROR_SUCCESS {
+		return "", ret, err
+	}
 	if bufLen == 0 {
-		return "", errors.New("Can't get size of registry value")
+		return "", ret, nil
 	}
 
 	buf := make([]uint16, bufLen)
-	ret, _, err := RegGetValue.Call(
+	ret, _, err = RegGetValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
@@ -118,10 +123,10 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		uintptr(unsafe.Pointer(&buf[0])),
 		uintptr(unsafe.Pointer(&bufLen)))
 	if ret != ERROR_SUCCESS {
-		return "", err
+		return "", ret, err
 	}
 
-	return syscall.UTF16ToString(buf), nil
+	return syscall.UTF16ToString(buf), ret, nil
 }
 
 type CounterInfo struct {
