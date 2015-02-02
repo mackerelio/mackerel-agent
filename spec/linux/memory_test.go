@@ -19,7 +19,7 @@ func TestMemoryGenerator(t *testing.T) {
 	g := &MemoryGenerator{}
 	value, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	memory, typeOk := value.(map[string]interface{})

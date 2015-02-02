@@ -8,7 +8,7 @@ func TestInterfaceGenerator(t *testing.T) {
 	g := &InterfaceGenerator{1}
 	values, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	metrics := []string{
