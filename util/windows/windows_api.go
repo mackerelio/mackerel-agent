@@ -62,6 +62,8 @@ const (
 	RRF_RT_REG_DWORD   = 0x00000010
 	PDH_FMT_DOUBLE     = 0x00000200
 	PDH_INVALID_DATA   = 0xc0000bc6
+	PDH_INVALID_HANDLE = 0xC0000bbc
+	PDH_NO_DATA        = 0x800007d5
 )
 
 // windows procs

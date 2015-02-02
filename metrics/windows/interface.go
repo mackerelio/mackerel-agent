@@ -77,7 +77,16 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 		}
 	}
 
-	windows.PdhCollectQueryData.Call(uintptr(g.query))
+	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
+	if r != 0 && err != nil {
+		if r == windows.PDH_NO_DATA {
+			interfaceLogger.Infof("this metric has not data. ")
+			return nil, err
+		} else {
+			interfaceLogger.Criticalf(err.Error())
+			return nil, err
+		}
+	}
 
 	return g, nil
 }
@@ -88,7 +97,16 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	interval := g.Interval * time.Second
 	time.Sleep(interval)
 
-	windows.PdhCollectQueryData.Call(uintptr(g.query))
+	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
+	if r != 0 && err != nil {
+		if r == windows.PDH_NO_DATA {
+			interfaceLogger.Infof("this metric has not data. ")
+			return nil, err
+		} else {
+			interfaceLogger.Criticalf(err.Error())
+			return nil, err
+		}
+	}
 
 	results := make(map[string]float64)
 	for _, v := range g.counters {

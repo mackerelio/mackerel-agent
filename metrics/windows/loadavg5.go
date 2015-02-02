@@ -42,7 +42,16 @@ func NewLoadavg5Generator() (*Loadavg5Generator, error) {
 // Generate XXX
 func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 
-	windows.PdhCollectQueryData.Call(uintptr(g.query))
+	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
+	if r != 0 && err != nil {
+		if r == windows.PDH_NO_DATA {
+			loadavg5Logger.Infof("this metric has not data. ")
+			return nil, err
+		} else {
+			loadavg5Logger.Criticalf(err.Error())
+			return nil, err
+		}
+	}
 
 	results := make(map[string]float64)
 	for _, v := range g.counters {

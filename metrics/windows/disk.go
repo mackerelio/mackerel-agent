@@ -74,7 +74,16 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 		}
 	}
 
-	windows.PdhCollectQueryData.Call(uintptr(g.query))
+	r, _, err = windows.PdhCollectQueryData.Call(uintptr(g.query))
+	if r != 0 && err != nil {
+		if r == windows.PDH_NO_DATA {
+			diskLogger.Infof("this metric has not data. ")
+			return nil, err
+		} else {
+			diskLogger.Criticalf(err.Error())
+			return nil, err
+		}
+	}
 
 	return g, nil
 }
@@ -84,7 +93,16 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	interval := g.Interval * time.Second
 	time.Sleep(interval)
 
-	windows.PdhCollectQueryData.Call(uintptr(g.query))
+	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
+	if r != 0 && err != nil {
+		if r == windows.PDH_NO_DATA {
+			diskLogger.Infof("this metric has not data. ")
+			return nil, err
+		} else {
+			diskLogger.Criticalf(err.Error())
+			return nil, err
+		}
+	}
 
 	results := make(map[string]float64)
 	for _, v := range g.counters {
