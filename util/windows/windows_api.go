@@ -69,6 +69,7 @@ var (
 	QueryDosDevice              = modkernel32.NewProc("QueryDosDeviceW")
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
+	GetModuleFileName           = modkernel32.NewProc("GetModuleFileNameW")
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
 	PdhAddCounter               = modpdh.NewProc("PdhAddCounterW")
 	PdhCollectQueryData         = modpdh.NewProc("PdhCollectQueryData")
@@ -182,4 +183,13 @@ func BytePtrToString(p *uint8) string {
 		i++
 	}
 	return string(a[:i])
+}
+
+func ExecPath() (string, error) {
+	var wpath [syscall.MAX_PATH]uint16
+	r1, _, err := GetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
+	if r1 == 0 {
+		return "", err
+	}
+	return syscall.UTF16ToString(wpath[:]), nil
 }

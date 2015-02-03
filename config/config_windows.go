@@ -1,26 +1,20 @@
 package config
 
 import (
+	"github.com/mackerelio/mackerel-agent/util/windows"
 	"log"
 	"path/filepath"
-	"syscall"
-	"unsafe"
 )
 
 func execdirInit() string {
-	var (
-		kernel32              = syscall.NewLazyDLL("kernel32")
-		procGetModuleFileName = kernel32.NewProc("GetModuleFileNameW")
-	)
-	var wpath [syscall.MAX_PATH]uint16
-	r1, _, err := procGetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
-	if r1 == 0 {
+	path, err := windows.ExecPath()
+	if err != nil {
 		log.Fatal(err)
 	}
-	return syscall.UTF16ToString(wpath[:])
+	return filepath.Dir(path)
 }
 
-var execdir = filepath.Dir(execdirInit())
+var execdir = execdirInit()
 
 // The default configuration for windows
 var DefaultConfig = &Config{
