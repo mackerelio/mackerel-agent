@@ -56,7 +56,7 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 
 	values, err := g.collectValues()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	if len(values) != 1 {

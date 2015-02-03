@@ -10,7 +10,7 @@ func TestMemoryGenerator(t *testing.T) {
 	g := &MemoryGenerator{}
 	values, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	for _, name := range []string{

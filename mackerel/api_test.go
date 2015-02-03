@@ -19,7 +19,7 @@ func TestNewAPI(t *testing.T) {
 	)
 
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	if api.BaseURL.String() != "http://example.com" {
