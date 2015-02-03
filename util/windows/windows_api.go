@@ -3,11 +3,9 @@
 package windows
 
 import (
-	// "errors"
 	"os"
 	"syscall"
 	"unsafe"
-	// "fmt"
 )
 
 type SYSTEM_INFO struct {
