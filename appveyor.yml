@@ -1,0 +1,19 @@
+version: 0.14.{build}
+clone_folder: c:\gopath\src\github.com\mackerelio\mackerel-agent
+environment:
+  GOPATH: c:\gopath
+install:
+  - cmd: choco install ruby
+  - cmd: set PATH=c:\tools\ruby215\bin;%PATH%
+build: off
+test_script:
+- FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w
+- cd %CDUP%
+- go get -d -v -t ./...
+- go vet ./...
+- go test -short ./...
+notifications:
+  - provider: Slack
+    auth_token:
+      secure: g8kxcFTMRU9m64NhA1rzBZaPY72haF7+3t3T0NL/Mug00izQ4B1FjhoHbTQPUVGT
+    channel: mackerel

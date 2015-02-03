@@ -3,14 +3,19 @@
 package windows
 
 import (
+<<<<<<< HEAD
 	"errors"
 	"fmt"
+=======
+	// "errors"
+>>>>>>> master
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"syscall"
 	"unsafe"
+	// "fmt"
 )
 
 // SYSTEM_INFO XXX
@@ -55,6 +60,7 @@ type PDH_FMT_COUNTERVALUE_ITEM_DOUBLE struct {
 // windows system const
 const (
 	ERROR_SUCCESS      = 0
+	ERROR_FILE_NOT_FOUND = 2
 	DRIVE_REMOVABLE    = 2
 	DRIVE_FIXED        = 3
 	HKEY_LOCAL_MACHINE = 0x80000002
@@ -90,7 +96,7 @@ var (
 )
 
 // RegGetInt XXX
-func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
+func RegGetInt(hKey uint32, subKey string, value string) (uint32, uintptr, error) {
 	var num, numlen uint32
 	numlen = 4
 	ret, _, err := RegGetValue.Call(
@@ -102,16 +108,16 @@ func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
 		uintptr(unsafe.Pointer(&num)),
 		uintptr(unsafe.Pointer(&numlen)))
 	if ret != ERROR_SUCCESS {
-		return 0, err
+		return 0, ret, err
 	}
 
-	return num, nil
+	return num, ret, nil
 }
 
 // RegGetString XXX
-func RegGetString(hKey uint32, subKey string, value string) (string, error) {
+func RegGetString(hKey uint32, subKey string, value string) (string, uintptr, error) {
 	var bufLen uint32
-	RegGetValue.Call(
+	ret, _, err := RegGetValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
@@ -119,12 +125,15 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		0,
 		0,
 		uintptr(unsafe.Pointer(&bufLen)))
+	if ret != ERROR_SUCCESS {
+		return "", ret, err
+	}
 	if bufLen == 0 {
-		return "", errors.New("Can't get size of registry value")
+		return "", ret, nil
 	}
 
 	buf := make([]uint16, bufLen)
-	ret, _, err := RegGetValue.Call(
+	ret, _, err = RegGetValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
@@ -133,10 +142,10 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		uintptr(unsafe.Pointer(&buf[0])),
 		uintptr(unsafe.Pointer(&bufLen)))
 	if ret != ERROR_SUCCESS {
-		return "", err
+		return "", ret, err
 	}
 
-	return syscall.UTF16ToString(buf), nil
+	return syscall.UTF16ToString(buf), ret, nil
 }
 
 // CounterInfo XXX

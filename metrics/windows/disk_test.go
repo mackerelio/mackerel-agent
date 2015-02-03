@@ -7,10 +7,13 @@ import (
 )
 
 func TestDiskGenerator(t *testing.T) {
-	g := NewDiskGenerator(1)
+	g, err := NewDiskGenerator(1)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
 	values, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	metrics := []string{

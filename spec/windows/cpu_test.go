@@ -18,7 +18,7 @@ func TestCPUGenerate(t *testing.T) {
 	g := &CPUGenerator{}
 	value, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	cpu, typeOk := value.([]map[string]interface{})

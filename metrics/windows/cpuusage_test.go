@@ -18,7 +18,7 @@ var cpuUsageMetricNames = []string{
 }
 
 func TestCPUUsageGenerate(t *testing.T) {
-	g := &CPUUsageGenerator{1}
+	g := &CPUUsageGenerator{}
 	values, _ := g.Generate()
 
 	for _, metricName := range cpuUsageMetricNames {
