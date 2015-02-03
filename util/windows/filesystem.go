@@ -22,8 +22,6 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 		uintptr(len(drivebuf)),
 		uintptr(unsafe.Pointer(&drivebuf[0])))
 	if r == 0 {
-		e := GetLastError.Call
-		windowsLogger.Errorf("error code is  [%q]", e)
 		return nil, err
 	}
 
