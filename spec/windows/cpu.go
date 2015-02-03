@@ -29,21 +29,21 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 	windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
 
 	for i := uint32(0); i < systemInfo.NumberOfProcessors; i++ {
-		processorName, _, err := RegGetString(
+		processorName, _, err := windows.RegGetString(
 		windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`ProcessorNameString`)
 		if err != nil {
 			return nil, err
 		}
-		processorMHz, _, err := RegGetInt(
+		processorMHz, _, err := windows.RegGetInt(
 		windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`~MHz`)
 		if err != nil {
 			return nil, err
 		}
-		vendorIdentifier, _, err := RegGetString(
+		vendorIdentifier, _, err := windows.RegGetString(
 		windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`VendorIdentifier`)

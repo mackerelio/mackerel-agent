@@ -3,19 +3,13 @@
 package windows
 
 import (
-<<<<<<< HEAD
-	"errors"
 	"fmt"
-=======
-	// "errors"
->>>>>>> master
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"syscall"
 	"unsafe"
-	// "fmt"
 )
 
 // SYSTEM_INFO XXX
