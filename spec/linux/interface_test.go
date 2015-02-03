@@ -19,7 +19,7 @@ func TestInterfaceGenerate(t *testing.T) {
 	g := &InterfaceGenerator{}
 	value, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	interfaces, typeOk := value.([]map[string]interface{})
@@ -61,7 +61,7 @@ func TestGenerateByIpCommand(t *testing.T) {
 	g := &InterfaceGenerator{}
 	interfaces, err := g.generateByIPCommand()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	if os.Getenv("TRAVIS") != "" {

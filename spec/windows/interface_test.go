@@ -18,7 +18,7 @@ func TestInterfaceGenerate(t *testing.T) {
 	g := &InterfaceGenerator{}
 	value, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	interfaces, typeOk := value.([]map[string]interface{})

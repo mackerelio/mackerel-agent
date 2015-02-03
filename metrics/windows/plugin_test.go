@@ -21,7 +21,7 @@ func containsKeyRegexp(values metrics.Values, reg string) bool {
 
 func TestPluginGenerate(t *testing.T) {
 	conf := config.PluginConfig{
-		Command: "ruby ../example/metrics-plugins/dice.rb",
+		Command: "ruby ../../example/metrics-plugins/dice.rb",
 	}
 	g := &PluginGenerator{conf}
 	values, err := g.Generate()
@@ -52,7 +52,7 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 
 	values, err := g.collectValues(command)
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	if len(values) != 1 {
