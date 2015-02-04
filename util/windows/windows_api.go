@@ -3,11 +3,16 @@
 package windows
 
 import (
+	"fmt"
 	"os"
+	"os/exec"
+	"strconv"
+	"strings"
 	"syscall"
 	"unsafe"
 )
 
+// SYSTEM_INFO XXX
 type SYSTEM_INFO struct {
 	ProcessorArchitecture     uint16
 	PageSize                  uint32
@@ -21,7 +26,8 @@ type SYSTEM_INFO struct {
 	ProcessorRevision         uint16
 }
 
-type MEMORYSTATUSEX struct {
+// MEMORY_STATUS_EX XXX
+type MEMORY_STATUS_EX struct {
 	Length               uint32
 	MemoryLoad           uint32
 	TotalPhys            uint64
@@ -33,16 +39,19 @@ type MEMORYSTATUSEX struct {
 	AvailExtendedVirtual uint64
 }
 
+// PDH_FMT_COUNTERVALUE_DOUBLE XXX
 type PDH_FMT_COUNTERVALUE_DOUBLE struct {
 	CStatus     uint32
 	DoubleValue float64
 }
 
+// PDH_FMT_COUNTERVALUE_ITEM_DOUBLE XXX
 type PDH_FMT_COUNTERVALUE_ITEM_DOUBLE struct {
 	Name     *uint16
 	FmtValue PDH_FMT_COUNTERVALUE_DOUBLE
 }
 
+// windows system const
 const (
 	ERROR_SUCCESS        = 0
 	ERROR_FILE_NOT_FOUND = 2
@@ -53,8 +62,11 @@ const (
 	RRF_RT_REG_DWORD     = 0x00000010
 	PDH_FMT_DOUBLE       = 0x00000200
 	PDH_INVALID_DATA     = 0xc0000bc6
+	PDH_INVALID_HANDLE   = 0xC0000bbc
+	PDH_NO_DATA          = 0x800007d5
 )
 
+// windows procs
 var (
 	modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
@@ -70,6 +82,7 @@ var (
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
 	GetModuleFileName           = modkernel32.NewProc("GetModuleFileNameW")
+	GetLastError                = modkernel32.NewProc("GetLastError")
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
 	PdhAddCounter               = modpdh.NewProc("PdhAddCounterW")
 	PdhCollectQueryData         = modpdh.NewProc("PdhCollectQueryData")
@@ -77,6 +90,7 @@ var (
 	PdhCloseQuery               = modpdh.NewProc("PdhCloseQuery")
 )
 
+// RegGetInt XXX
 func RegGetInt(hKey uint32, subKey string, value string) (uint32, uintptr, error) {
 	var num, numlen uint32
 	numlen = 4
@@ -95,6 +109,7 @@ func RegGetInt(hKey uint32, subKey string, value string) (uint32, uintptr, error
 	return num, ret, nil
 }
 
+// RegGetString XXX
 func RegGetString(hKey uint32, subKey string, value string) (string, uintptr, error) {
 	var bufLen uint32
 	ret, _, err := RegGetValue.Call(
@@ -128,12 +143,14 @@ func RegGetString(hKey uint32, subKey string, value string) (string, uintptr, er
 	return syscall.UTF16ToString(buf), ret, nil
 }
 
+// CounterInfo XXX
 type CounterInfo struct {
 	PostName    string
 	CounterName string
 	Counter     syscall.Handle
 }
 
+// CreateQuery XXX
 func CreateQuery() (syscall.Handle, error) {
 	var query syscall.Handle
 	r, _, err := PdhOpenQuery.Call(0, 0, uintptr(unsafe.Pointer(&query)))
@@ -143,6 +160,7 @@ func CreateQuery() (syscall.Handle, error) {
 	return query, nil
 }
 
+// CreateCounter XXX
 func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 	var counter syscall.Handle
 	r, _, err := PdhAddCounter.Call(
@@ -160,6 +178,7 @@ func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 	}, nil
 }
 
+// GetAdapterList XXX
 func GetAdapterList() (*syscall.IpAdapterInfo, error) {
 	b := make([]byte, 1000)
 	l := uint32(len(b))
@@ -176,6 +195,7 @@ func GetAdapterList() (*syscall.IpAdapterInfo, error) {
 	return a, nil
 }
 
+// BytePtrToString XXX
 func BytePtrToString(p *uint8) string {
 	a := (*[10000]uint8)(unsafe.Pointer(p))
 	i := 0
@@ -185,6 +205,51 @@ func BytePtrToString(p *uint8) string {
 	return string(a[:i])
 }
 
+// FilesystemInfo XXX
+type FilesystemInfo struct {
+	Percent_used string
+	Kb_used      float64
+	Kb_size      float64
+	Kb_available float64
+	Mount        string
+	Label        string
+	Volume_name  string
+	Fs_type      string
+}
+
+// GetWmic XXX
+func GetWmic(target string, query string) (string, error) {
+	cpuGet, err := exec.Command("wmic", target, "get", query).Output()
+	if err != nil {
+		return "", err
+	}
+
+	percentages := string(cpuGet)
+
+	lines := strings.Split(percentages, "\r\r\n")
+
+	if len(lines) <= 2 {
+		return "", fmt.Errorf("wmic result malformed: [%q]", lines)
+	}
+
+	return strings.Trim(lines[1], " "), nil
+}
+
+// GetWmicToFloat XXX
+func GetWmicToFloat(target string, query string) (float64, error) {
+	value, err := GetWmic(target, query)
+	if err != nil {
+		return 0, err
+	}
+
+	ret, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return 0, err
+	}
+	return ret, nil
+}
+
+// ExecPath returns path of executable file (self).
 func ExecPath() (string, error) {
 	var wpath [syscall.MAX_PATH]uint16
 	r1, _, err := GetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
