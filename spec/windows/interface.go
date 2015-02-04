@@ -6,7 +6,7 @@ import (
 	"net"
 
 	"github.com/mackerelio/mackerel-agent/logging"
-	. "github.com/mackerelio/mackerel-agent/util/windows"
+	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
 // InterfaceGenerator XXX
@@ -29,7 +29,7 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 		return nil, err
 	}
 
-	ai, err := GetAdapterList()
+	ai, err := windows.GetAdapterList()
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 		name := ifi.Name
 		for ; ai != nil; ai = ai.Next {
 			if ifi.Index == int(ai.Index) {
-				name = BytePtrToString(&ai.Description[0])
+				name = windows.BytePtrToString(&ai.Description[0])
 			}
 		}
 

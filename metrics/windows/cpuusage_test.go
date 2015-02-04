@@ -6,15 +6,8 @@ import "math"
 import "testing"
 
 var cpuUsageMetricNames = []string{
-//"cpu.user",
-//"cpu.nice",
-//"cpu.system",
-//"cpu.idle",
-//"cpu.iowait",
-//"cpu.irq",
-//"cpu.softirq",
-//"cpu.steal",
-//"cpu.guest",
+	"cpu.user.percentage",
+	"cpu.idle.percentage",
 }
 
 func TestCPUUsageGenerate(t *testing.T) {
@@ -32,7 +25,6 @@ func TestCPUUsageGenerate(t *testing.T) {
 
 	sumPercentage := float64(0)
 	for _, metricName := range cpuUsageMetricNames {
-		metricName += ".percentage"
 		value, ok := values[metricName]
 		if !ok {
 			t.Errorf("CPUUsageGenerator should generate metric value for '%s'", metricName)

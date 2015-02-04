@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"testing"
 	"strings"
+	"testing"
 )
 
 var sampleConfig = `
