@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoadavg5Generator(t *testing.T) {
-	g := &Loadavg5Generator{}
+	g, _ := NewLoadavg5Generator()
 
 	_, err := g.Generate()
 	if err != nil {
