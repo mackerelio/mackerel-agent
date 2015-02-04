@@ -81,6 +81,7 @@ var (
 	QueryDosDevice              = modkernel32.NewProc("QueryDosDeviceW")
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
+	GetModuleFileName           = modkernel32.NewProc("GetModuleFileNameW")
 	GetLastError                = modkernel32.NewProc("GetLastError")
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
 	PdhAddCounter               = modpdh.NewProc("PdhAddCounterW")
@@ -246,4 +247,14 @@ func GetWmicToFloat(target string, query string) (float64, error) {
 		return 0, err
 	}
 	return ret, nil
+}
+
+// ExecPath returns path of executable file (self).
+func ExecPath() (string, error) {
+	var wpath [syscall.MAX_PATH]uint16
+	r1, _, err := GetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
+	if r1 == 0 {
+		return "", err
+	}
+	return syscall.UTF16ToString(wpath[:]), nil
 }
