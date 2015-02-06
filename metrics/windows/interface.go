@@ -53,6 +53,7 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 				name := windows.BytePtrToString(&ai.Description[0])
 				name = strings.Replace(name, "(", "[", -1)
 				name = strings.Replace(name, ")", "]", -1)
+				name = strings.Replace(name, "#", "_", -1)
 				var counter *windows.CounterInfo
 
 				counter, err = windows.CreateCounter(
@@ -110,7 +111,7 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	results := make(map[string]float64)
 	for _, v := range g.counters {
 		var value windows.PDH_FMT_COUNTERVALUE_ITEM_DOUBLE
-		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PDH_FMT_DOUBLE, uintptr(0), uintptr(unsafe.Pointer(&value)))
+		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PDH_FMT_DOUBLE, uintptr(0), uintptr(unsafe.Pointer(&value.FmtValue)))
 		if r != 0 && r != windows.PDH_INVALID_DATA {
 			return nil, err
 		}

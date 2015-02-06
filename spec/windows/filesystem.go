@@ -26,14 +26,14 @@ func (g *FilesystemGenerator) Generate() (interface{}, error) {
 	fileSystems, err := windows.CollectFilesystemValues()
 	for drive, f := range fileSystems {
 		ret[drive] = map[string]interface{}{
-			"percent_used": f.Percent_used,
-			"kb_used":      f.Kb_used,
-			"kb_size":      f.Kb_size,
-			"kb_available": f.Kb_available,
+			"percent_used": f.PercentUsed,
+			"kb_used":      f.KbUsed,
+			"kb_size":      f.KbSize,
+			"kb_available": f.KbAvailable,
 			"mount":        f.Mount,
 			"label":        f.Label,
-			"volume_name":  f.Volume_name,
-			"fs_type":      f.Fs_type,
+			"volume_name":  f.VolumeName,
+			"fs_type":      f.FsType,
 		}
 	}
 

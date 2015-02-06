@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"os"
 	"os/exec"
+	"strings"
+	"fmt"
+	"strconv"
 )
 
 // RunCommand XXX
@@ -25,4 +28,48 @@ func RunCommand(command string) (string, string, error) {
 	}
 
 	return string(outBuffer.Bytes()), string(errBuffer.Bytes()), nil
+}
+
+// FilesystemInfo XXX
+type FilesystemInfo struct {
+	PercentUsed string
+	KbUsed      float64
+	KbSize      float64
+	KbAvailable float64
+	Mount        string
+	Label        string
+	VolumeName  string
+	FsType      string
+}
+
+// GetWmic XXX
+func GetWmic(target string, query string) (string, error) {
+	cpuGet, err := exec.Command("wmic", target, "get", query).Output()
+	if err != nil {
+		return "", err
+	}
+
+	percentages := string(cpuGet)
+
+	lines := strings.Split(percentages, "\r\r\n")
+
+	if len(lines) <= 2 {
+		return "", fmt.Errorf("wmic result malformed: [%q]", lines)
+	}
+
+	return strings.Trim(lines[1], " "), nil
+}
+
+// GetWmicToFloat XXX
+func GetWmicToFloat(target string, query string) (float64, error) {
+	value, err := GetWmic(target, query)
+	if err != nil {
+		return 0, err
+	}
+
+	ret, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return 0, err
+	}
+	return ret, nil
 }
