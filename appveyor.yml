@@ -24,7 +24,7 @@ deploy:
   auth_token:
     secure: 2HLHAjVNhpeABGoWAe6iqAtEeq4fjawUVsGq4aBF4yOQsF67IOqBOh8NYHqq25yM
   artifact: mackerel-agent-msi
-  draft: false
+  draft: true
   prerelease: true
   appveyor_repo_tag: true
   on:
