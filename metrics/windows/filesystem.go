@@ -32,8 +32,8 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 		if matches := regexp.MustCompile(`^(.*):`).FindStringSubmatch(name); matches != nil {
 			device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(matches[1], "_")
 
-			ret["filesystem."+device+".size"] = values.Kb_size * 1024
-			ret["filesystem."+device+".used"] = values.Kb_used * 1024
+			ret["filesystem."+device+".size"] = values.KbSize * 1024
+			ret["filesystem."+device+".used"] = values.KbUsed * 1024
 		}
 	}
 

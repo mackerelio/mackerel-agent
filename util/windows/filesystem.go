@@ -8,13 +8,14 @@ import (
 	"strings"
 	"syscall"
 	"unsafe"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var windowsLogger = logging.GetLogger("windows")
 
 // CollectFilesystemValues XXX
-func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
-	filesystems := make(map[string]FilesystemInfo)
+func CollectFilesystemValues() (map[string]util.FilesystemInfo, error) {
+	filesystems := make(map[string]util.FilesystemInfo)
 
 	drivebuf := make([]byte, 256)
 
@@ -72,15 +73,15 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 		if r == 0 {
 			continue
 		}
-		filesystems[drive] = FilesystemInfo{
-			Percent_used: fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
-			Kb_used:      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
-			Kb_size:      float64(totalNumberOfBytes / 1024),
-			Kb_available: float64(freeBytesAvailable / 1024),
+		filesystems[drive] = util.FilesystemInfo{
+			PercentUsed: fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
+			KbUsed:      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
+			KbSize:      float64(totalNumberOfBytes / 1024),
+			KbAvailable: float64(freeBytesAvailable / 1024),
 			Mount:        drive,
 			Label:        syscall.UTF16ToString(drivebuf),
-			Volume_name:  syscall.UTF16ToString(volumebuf),
-			Fs_type:      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
+			VolumeName:  syscall.UTF16ToString(volumebuf),
+			FsType:      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
 		}
 	}
 
