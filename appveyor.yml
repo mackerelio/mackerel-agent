@@ -28,7 +28,6 @@ deploy:
   prerelease: true
   appveyor_repo_tag: true
   on:
-    branch: master
     appveyor_repo_tag: true
 artifacts:
   - path: build\mackerel-agent.msi
