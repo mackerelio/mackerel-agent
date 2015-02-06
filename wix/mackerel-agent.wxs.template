@@ -33,7 +33,7 @@
 
     <Binary Id="ReplaceExe" SourceFile="..\build\replace.exe" />
     <CustomAction Id="FillApiKey" BinaryKey="ReplaceExe"
-      ExeCommand='"[INSTALLDIR]\mackerel-agent.sample.conf" "[INSTALLDIR]\mackerel-agent.conf" "# apikey = ""YOUR_API_KEY""" "apikey = ""[APIKEY]"""'
+      ExeCommand='"[INSTALLDIR]\mackerel-agent.sample.conf" "[INSTALLDIR]\mackerel-agent.conf" "___YOUR_API_KEY___" "APIKEY]"'
       Execute="deferred" Return="check" Impersonate="no" />
 
     <Feature Id='Complete' Level='1'>
