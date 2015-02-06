@@ -44,6 +44,7 @@
 
     <InstallExecuteSequence>
       <Custom Action="FillApiKey" Before="StartServices">Not Installed</Custom>
+      <RemoveExistingProducts Before="InstallInitialize" />
     </InstallExecuteSequence>
 
   </Product>
