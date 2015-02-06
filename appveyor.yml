@@ -5,7 +5,8 @@ environment:
 install:
   - cmd: choco install ruby
   - cmd: set PATH=c:\tools\ruby215\bin;%PATH%
-build: off
+build_script:
+- call wix\build.bat
 test_script:
 - FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w
 - cd %CDUP%
@@ -17,3 +18,17 @@ notifications:
     auth_token:
       secure: g8kxcFTMRU9m64NhA1rzBZaPY72haF7+3t3T0NL/Mug00izQ4B1FjhoHbTQPUVGT
     channel: mackerel
+deploy:
+  release: $(appveyor_repo_tag_name)-msi
+  provider: GitHub
+  auth_token:
+    secure: 2HLHAjVNhpeABGoWAe6iqAtEeq4fjawUVsGq4aBF4yOQsF67IOqBOh8NYHqq25yM
+  artifact: mackerel-agent-msi
+  draft: true
+  prerelease: true
+  appveyor_repo_tag: true
+  on:
+    appveyor_repo_tag: true
+artifacts:
+  - path: build\mackerel-agent.msi
+    name: mackerel-agent-msi
