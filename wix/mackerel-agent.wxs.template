@@ -2,7 +2,7 @@
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
 
   <Product Name='mackerel-agent' Id='*' UpgradeCode='1EF11651-A09E-47A3-BFE3-5877E22F7D26'
-    Language='1033' Codepage='1252' Version='1.0.0' Manufacturer='Hatena'>
+    Language='1033' Codepage='1252' Version='___VERSION___' Manufacturer='Hatena'>
 
     <Package Id='*' Keywords='Installer' Description="Mackerel Agent Installer"
       Comments='Mackerel Agent sends metrics to https://mackerel.io' Manufacturer='Hatena'
