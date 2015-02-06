@@ -23,8 +23,8 @@
             <Component Id='AgentExe'>
               <File Id='MackerelAgentExe' Name='mackerel-agent.exe' DiskId='1' Source='..\build\mackerel-agent.exe' KeyPath='yes' />
             </Component>
-            <Component Id='Conf'>
-              <File Id='MackerelAgentConf' Name='mackerel-agent.conf' DiskId='1' Source='mackerel-agent.conf' KeyPath='yes' />
+            <Component Id='SampleConfig'>
+              <File Id='MackerelAgentSampleConfig' Name='mackerel-agent.sample.conf' DiskId='1' Source='mackerel-agent.sample.conf' KeyPath='yes' />
             </Component>
           </Directory>
         </Directory>
@@ -33,13 +33,13 @@
 
     <Binary Id="ReplaceExe" SourceFile="..\build\replace.exe" />
     <CustomAction Id="FillApiKey" BinaryKey="ReplaceExe"
-      ExeCommand='"[INSTALLDIR]\mackerel-agent.conf" "# apikey = ""YOUR_API_KEY""" "apikey = ""[APIKEY]"""'
+      ExeCommand='"[INSTALLDIR]\mackerel-agent.sample.conf" "# apikey = ""YOUR_API_KEY""" "apikey = ""[APIKEY]"""'
       Execute="deferred" Return="check" Impersonate="no" />
 
     <Feature Id='Complete' Level='1'>
       <ComponentRef Id='ServiceWrapperExe' />
       <ComponentRef Id='AgentExe' />
-      <ComponentRef Id='Conf' />
+      <ComponentRef Id='SampleConfig' />
     </Feature>
 
     <InstallExecuteSequence>
