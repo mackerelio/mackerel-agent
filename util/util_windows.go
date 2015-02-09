@@ -30,18 +30,6 @@ func RunCommand(command string) (string, string, error) {
 	return string(outBuffer.Bytes()), string(errBuffer.Bytes()), nil
 }
 
-// FilesystemInfo XXX
-type FilesystemInfo struct {
-	PercentUsed string
-	KbUsed      float64
-	KbSize      float64
-	KbAvailable float64
-	Mount        string
-	Label        string
-	VolumeName  string
-	FsType      string
-}
-
 // GetWmic XXX
 func GetWmic(target string, query string) (string, error) {
 	cpuGet, err := exec.Command("wmic", target, "get", query).Output()
