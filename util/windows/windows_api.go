@@ -41,12 +41,6 @@ type PDH_FMT_COUNTERVALUE_DOUBLE struct {
 	DoubleValue float64
 }
 
-// PDH_FMT_COUNTERVALUE_ITEM_DOUBLE XXX
-type PDH_FMT_COUNTERVALUE_ITEM_DOUBLE struct {
-	Name     *uint16
-	FmtValue PDH_FMT_COUNTERVALUE_DOUBLE
-}
-
 // windows system const
 const (
 	ERROR_SUCCESS        = 0

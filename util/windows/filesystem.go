@@ -8,14 +8,25 @@ import (
 	"strings"
 	"syscall"
 	"unsafe"
-	"github.com/mackerelio/mackerel-agent/util"
 )
+
+// FilesystemInfo XXX
+type FilesystemInfo struct {
+	PercentUsed string
+	KbUsed      float64
+	KbSize      float64
+	KbAvailable float64
+	Mount        string
+	Label        string
+	VolumeName  string
+	FsType      string
+}
 
 var windowsLogger = logging.GetLogger("windows")
 
 // CollectFilesystemValues XXX
-func CollectFilesystemValues() (map[string]util.FilesystemInfo, error) {
-	filesystems := make(map[string]util.FilesystemInfo)
+func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
+	filesystems := make(map[string]FilesystemInfo)
 
 	drivebuf := make([]byte, 256)
 
@@ -73,7 +84,7 @@ func CollectFilesystemValues() (map[string]util.FilesystemInfo, error) {
 		if r == 0 {
 			continue
 		}
-		filesystems[drive] = util.FilesystemInfo{
+		filesystems[drive] = FilesystemInfo{
 			PercentUsed: fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
 			KbUsed:      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
 			KbSize:      float64(totalNumberOfBytes / 1024),
