@@ -10,6 +10,18 @@ import (
 	"unsafe"
 )
 
+// FilesystemInfo XXX
+type FilesystemInfo struct {
+	PercentUsed string
+	KbUsed      float64
+	KbSize      float64
+	KbAvailable float64
+	Mount        string
+	Label        string
+	VolumeName  string
+	FsType      string
+}
+
 var windowsLogger = logging.GetLogger("windows")
 
 // CollectFilesystemValues XXX
@@ -73,14 +85,14 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 			continue
 		}
 		filesystems[drive] = FilesystemInfo{
-			Percent_used: fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
-			Kb_used:      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
-			Kb_size:      float64(totalNumberOfBytes / 1024),
-			Kb_available: float64(freeBytesAvailable / 1024),
+			PercentUsed: fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
+			KbUsed:      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
+			KbSize:      float64(totalNumberOfBytes / 1024),
+			KbAvailable: float64(freeBytesAvailable / 1024),
 			Mount:        drive,
 			Label:        syscall.UTF16ToString(drivebuf),
-			Volume_name:  syscall.UTF16ToString(volumebuf),
-			Fs_type:      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
+			VolumeName:  syscall.UTF16ToString(volumebuf),
+			FsType:      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
 		}
 	}
 
