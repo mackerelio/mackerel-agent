@@ -9,12 +9,14 @@ import (
 )
 
 func specGenerators() []spec.Generator {
+	instanceGenerator, _ := specLinux.NewInstanceGenerator("")
 	return []spec.Generator{
 		&specLinux.KernelGenerator{},
 		&specLinux.CPUGenerator{},
 		&specLinux.MemoryGenerator{},
 		&specLinux.BlockDeviceGenerator{},
 		&specLinux.FilesystemGenerator{},
+		instanceGenerator,
 	}
 }
 
