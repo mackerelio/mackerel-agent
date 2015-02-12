@@ -65,7 +65,6 @@ func (g *InstanceGenerator) Generate() (interface{}, error) {
 
 	for _, key := range metadataKeys {
 		resp, err := client.Get(g.BaseURL.String() + "/" + key)
-		instanceLogger.Infof("reading '%s/%s'", g.BaseURL.String(), key)
 		if err != nil {
 			instanceLogger.Infof("This host may not be running on EC2. Error while reading '%s'", key)
 			return nil, nil
@@ -81,6 +80,8 @@ func (g *InstanceGenerator) Generate() (interface{}, error) {
 			instanceLogger.Infof("results %s:%s", key, string(body))
 		}
 	}
+	// prefix '_' means that this key is added by mackerel-agent, not by cloud provider.
+	metadata["_provider"] = "ec2"
 
 	return metadata, nil
 }
