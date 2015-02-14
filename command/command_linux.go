@@ -20,7 +20,7 @@ func specGenerators() []spec.Generator {
 	if err != nil {
 		logger.Errorf("Failed to create instanceGenerator: %s", err.Error())
 	} else {
-		append(specs, instanceGenerator)
+		specs = append(specs, instanceGenerator)
 	}
 	return specs
 }
