@@ -9,15 +9,20 @@ import (
 )
 
 func specGenerators() []spec.Generator {
-	instanceGenerator, _ := specLinux.NewInstanceGenerator("")
-	return []spec.Generator{
+	specs := []spec.Generator{
 		&specLinux.KernelGenerator{},
 		&specLinux.CPUGenerator{},
 		&specLinux.MemoryGenerator{},
 		&specLinux.BlockDeviceGenerator{},
 		&specLinux.FilesystemGenerator{},
-		instanceGenerator,
 	}
+	instanceGenerator, err := specLinux.NewInstanceGenerator("")
+	if err != nil {
+		logger.Errorf("Failed to create instanceGenerator: %s", err.Error())
+	} else {
+		append(specs, instanceGenerator)
+	}
+	return specs
 }
 
 func interfaceGenerator() spec.Generator {
