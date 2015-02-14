@@ -18,7 +18,8 @@ func TestNewInstanceGenerator(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	if g.BaseURL.String() != "http://example.com" {
+
+	if g.baseURL.String() != "http://example.com" {
 		t.Error("should return URL")
 	}
 }
@@ -49,12 +50,22 @@ func TestInstanceGenerate(t *testing.T) {
 		t.Errorf("should not raise error: %s", err)
 	}
 
-	instance, typeOk := value.(map[string]string)
+	instance, typeOk := value.(map[string]interface{})
 	if !typeOk {
 		t.Errorf("value should be map. %+v", value)
 	}
 
-	if len(instance["instance-id"]) == 0 {
+	value, ok := instance["metadata"]
+	if !ok {
+		t.Error("results should have metadata.")
+	}
+
+	metadata, typeOk := value.(map[string]string)
+	if !typeOk {
+		t.Errorf("v should be map. %+v", value)
+	}
+
+	if len(metadata["instance-id"]) == 0 {
 		t.Error("instance-id should be filled")
 	}
 }

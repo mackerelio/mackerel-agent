@@ -16,7 +16,7 @@ import (
 
 // InstanceGenerator XXX
 type InstanceGenerator struct {
-	BaseURL *url.URL
+	baseURL *url.URL
 }
 
 // Key XXX
@@ -41,7 +41,7 @@ func NewInstanceGenerator(baseurl string) (*InstanceGenerator, error) {
 // Generate XXX
 func (g *InstanceGenerator) Generate() (interface{}, error) {
 
-	timeout := time.Duration(1 * time.Second)
+	timeout := time.Duration(100 * time.Millisecond)
 	client := http.Client{
 		Timeout: timeout,
 	}
@@ -64,7 +64,7 @@ func (g *InstanceGenerator) Generate() (interface{}, error) {
 	metadata := make(map[string]string)
 
 	for _, key := range metadataKeys {
-		resp, err := client.Get(g.BaseURL.String() + "/" + key)
+		resp, err := client.Get(g.baseURL.String() + "/" + key)
 		if err != nil {
 			instanceLogger.Infof("This host may not be running on EC2. Error while reading '%s'", key)
 			return nil, nil
@@ -81,7 +81,9 @@ func (g *InstanceGenerator) Generate() (interface{}, error) {
 		}
 	}
 	// prefix '_' means that this key is added by mackerel-agent, not by cloud provider.
-	metadata["_provider"] = "ec2"
+	results := make(map[string]interface{})
+	results["provider"] = "ec2"
+	results["metadata"] = metadata
 
-	return metadata, nil
+	return results, nil
 }
