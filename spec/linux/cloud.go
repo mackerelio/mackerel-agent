@@ -14,20 +14,20 @@ import (
 // GCE: https://developers.google.com/compute/docs/metadata
 // DigitalOcean: https://developers.digitalocean.com/metadata/
 
-// InstanceGenerator XXX
-type InstanceGenerator struct {
+// CloudGenerator XXX
+type CloudGenerator struct {
 	baseURL *url.URL
 }
 
 // Key XXX
-func (g *InstanceGenerator) Key() string {
-	return "instance"
+func (g *CloudGenerator) Key() string {
+	return "cloud"
 }
 
-var instanceLogger = logging.GetLogger("spec.instance")
+var cloudLogger = logging.GetLogger("spec.cloud")
 
-// NewInstanceGenerator XXX
-func NewInstanceGenerator(baseurl string) (*InstanceGenerator, error) {
+// NewCloudGenerator XXX
+func NewCloudGenerator(baseurl string) (*CloudGenerator, error) {
 	if baseurl == "" {
 		baseurl = "http://169.254.169.254/latest/meta-data"
 	}
@@ -35,11 +35,11 @@ func NewInstanceGenerator(baseurl string) (*InstanceGenerator, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &InstanceGenerator{u}, nil
+	return &CloudGenerator{u}, nil
 }
 
 // Generate XXX
-func (g *InstanceGenerator) Generate() (interface{}, error) {
+func (g *CloudGenerator) Generate() (interface{}, error) {
 
 	timeout := time.Duration(100 * time.Millisecond)
 	client := http.Client{
@@ -66,18 +66,18 @@ func (g *InstanceGenerator) Generate() (interface{}, error) {
 	for _, key := range metadataKeys {
 		resp, err := client.Get(g.baseURL.String() + "/" + key)
 		if err != nil {
-			instanceLogger.Infof("This host may not be running on EC2. Error while reading '%s'", key)
+			cloudLogger.Infof("This host may not be running on EC2. Error while reading '%s'", key)
 			return nil, nil
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode == 200 {
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				instanceLogger.Errorf("Results of requesting metadata cannot be read.")
+				cloudLogger.Errorf("Results of requesting metadata cannot be read.")
 				break
 			}
 			metadata[key] = string(body)
-			instanceLogger.Infof("results %s:%s", key, string(body))
+			cloudLogger.Debugf("results %s:%s", key, string(body))
 		}
 	}
 	// prefix '_' means that this key is added by mackerel-agent, not by cloud provider.

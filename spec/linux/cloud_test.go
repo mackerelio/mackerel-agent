@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 
-func TestNewInstanceGenerator(t *testing.T) {
-	g, err := NewInstanceGenerator(
+func TestNewCloudGenerator(t *testing.T) {
+	g, err := NewCloudGenerator(
 		"http://example.com",
 	)
 
@@ -18,21 +18,20 @@ func TestNewInstanceGenerator(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-
 	if g.baseURL.String() != "http://example.com" {
 		t.Error("should return URL")
 	}
 }
 
-func TestInstanceKey(t *testing.T) {
-	g := &InstanceGenerator{}
+func TestCloudKey(t *testing.T) {
+	g := &CloudGenerator{}
 
-	if g.Key() != "instance" {
-		t.Error("key should be instance")
+	if g.Key() != "cloud" {
+		t.Error("key should be cloud")
 	}
 }
 
-func TestInstanceGenerate(t *testing.T) {
+func TestCloudGenerate(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(res, "i-4f90d537")
 	}
@@ -41,7 +40,7 @@ func TestInstanceGenerate(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	g, err := NewInstanceGenerator(ts.URL)
+	g, err := NewCloudGenerator(ts.URL)
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
@@ -50,12 +49,12 @@ func TestInstanceGenerate(t *testing.T) {
 		t.Errorf("should not raise error: %s", err)
 	}
 
-	instance, typeOk := value.(map[string]interface{})
+	cloud, typeOk := value.(map[string]interface{})
 	if !typeOk {
 		t.Errorf("value should be map. %+v", value)
 	}
 
-	value, ok := instance["metadata"]
+	value, ok := cloud["metadata"]
 	if !ok {
 		t.Error("results should have metadata.")
 	}
