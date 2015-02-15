@@ -16,7 +16,7 @@ import (
 // GCE: https://developers.google.com/compute/docs/metadata
 // DigitalOcean: https://developers.digitalocean.com/metadata/
 
-// CloudGenerator
+// CloudGenerator definition
 type CloudGenerator struct {
 	baseURL *url.URL
 }
