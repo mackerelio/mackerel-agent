@@ -10,23 +10,25 @@ import (
 	"time"
 )
 
+// This Generator collects metadata about cloud instances.
+// Currently only EC2 is supported.
 // EC2: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html
 // GCE: https://developers.google.com/compute/docs/metadata
 // DigitalOcean: https://developers.digitalocean.com/metadata/
 
-// CloudGenerator XXX
+// CloudGenerator
 type CloudGenerator struct {
 	baseURL *url.URL
 }
 
-// Key XXX
+// Key is a root key for the generator.
 func (g *CloudGenerator) Key() string {
 	return "cloud"
 }
 
 var cloudLogger = logging.GetLogger("spec.cloud")
 
-// NewCloudGenerator XXX
+// NewCloudGenerator creates a Cloud Generator instance with specified baseurl.
 func NewCloudGenerator(baseurl string) (*CloudGenerator, error) {
 	if baseurl == "" {
 		baseurl = "http://169.254.169.254/latest/meta-data"
@@ -38,7 +40,7 @@ func NewCloudGenerator(baseurl string) (*CloudGenerator, error) {
 	return &CloudGenerator{u}, nil
 }
 
-// Generate XXX
+// Generate collects metadata from cloud platform.
 func (g *CloudGenerator) Generate() (interface{}, error) {
 
 	timeout := time.Duration(100 * time.Millisecond)
@@ -80,7 +82,7 @@ func (g *CloudGenerator) Generate() (interface{}, error) {
 			cloudLogger.Debugf("results %s:%s", key, string(body))
 		}
 	}
-	// prefix '_' means that this key is added by mackerel-agent, not by cloud provider.
+
 	results := make(map[string]interface{})
 	results["provider"] = "ec2"
 	results["metadata"] = metadata
