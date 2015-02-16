@@ -5,3 +5,5 @@
 /build
 /id
 /pid
+/wix/mackerel-agent.wxs
+/wix/mackerel-agent.wixobj
