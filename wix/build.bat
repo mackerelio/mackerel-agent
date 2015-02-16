@@ -21,4 +21,4 @@ del /F mackerel-agent.wxs
 ..\build\replace.exe mackerel-agent.wxs.template mackerel-agent.wxs "___VERSION___" "%VERSION%"
 
 "%WIX%bin\candle.exe" mackerel-agent.wxs
-"%WIX%bin\light.exe" -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
+"%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
