@@ -19,7 +19,7 @@ notifications:
       secure: g8kxcFTMRU9m64NhA1rzBZaPY72haF7+3t3T0NL/Mug00izQ4B1FjhoHbTQPUVGT
     channel: mackerel
 deploy:
-  release: $(appveyor_repo_tag_name)-msi
+  release: $(appveyor_repo_tag_name)
   provider: GitHub
   auth_token:
     secure: 2HLHAjVNhpeABGoWAe6iqAtEeq4fjawUVsGq4aBF4yOQsF67IOqBOh8NYHqq25yM
