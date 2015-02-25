@@ -83,10 +83,9 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 		if r == windows.PDH_NO_DATA {
 			interfaceLogger.Infof("this metric has not data. ")
 			return nil, err
-		} else {
-			interfaceLogger.Criticalf(err.Error())
-			return nil, err
 		}
+		interfaceLogger.Criticalf(err.Error())
+		return nil, err
 	}
 
 	return g, nil
@@ -103,9 +102,8 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 		if r == windows.PDH_NO_DATA {
 			interfaceLogger.Infof("this metric has not data. ")
 			return nil, err
-		} else {
-			return nil, err
 		}
+		return nil, err
 	}
 
 	results := make(map[string]float64)

@@ -47,9 +47,8 @@ func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 		if r == windows.PDH_NO_DATA {
 			loadavg5Logger.Infof("this metric has not data. ")
 			return nil, err
-		} else {
-			return nil, err
 		}
+		return nil, err
 	}
 
 	results := make(map[string]float64)
