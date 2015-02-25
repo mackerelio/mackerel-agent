@@ -75,11 +75,13 @@ func (g *CloudGenerator) Generate() (interface{}, error) {
 		if resp.StatusCode == 200 {
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				cloudLogger.Errorf("Results of requesting metadata cannot be read.")
+				cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
 				break
 			}
 			metadata[key] = string(body)
 			cloudLogger.Debugf("results %s:%s", key, string(body))
+		} else {
+			cloudLogger.Warningf("Status code of the result of requesting metadata is '%d'", resp.StatusCode)
 		}
 	}
 
