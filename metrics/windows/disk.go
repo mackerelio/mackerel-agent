@@ -79,10 +79,9 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 		if r == windows.PDH_NO_DATA {
 			diskLogger.Infof("this metric has not data. ")
 			return nil, err
-		} else {
-			diskLogger.Criticalf(err.Error())
-			return nil, err
 		}
+		diskLogger.Criticalf(err.Error())
+		return nil, err
 	}
 
 	return g, nil
@@ -98,9 +97,8 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 		if r == windows.PDH_NO_DATA {
 			diskLogger.Infof("this metric has not data. ")
 			return nil, err
-		} else {
-			return nil, err
 		}
+		return nil, err
 	}
 
 	results := make(map[string]float64)
