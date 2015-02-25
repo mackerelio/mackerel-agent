@@ -3,8 +3,15 @@ clone_folder: c:\gopath\src\github.com\mackerelio\mackerel-agent
 environment:
   GOPATH: c:\gopath
 install:
-  - cmd: choco install ruby
-  - cmd: set PATH=c:\tools\ruby215\bin;%PATH%
+  - set PATH=c:\go\bin;c:\tools\ruby215\bin;%PATH%
+  - echo %Path%
+  - choco install ruby
+  - rd c:\go /s /q
+  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.4.1.windows-amd64.zip
+  - 7z x go1.4.1.windows-amd64.zip -oC:\ >nul
+  - go version
+  - go env
+  - env
 build_script:
 - call wix\build.bat
 test_script:
