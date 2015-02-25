@@ -16,13 +16,13 @@ test_script:
 notifications:
   - provider: Slack
     auth_token:
-      secure: g8kxcFTMRU9m64NhA1rzBZaPY72haF7+3t3T0NL/Mug00izQ4B1FjhoHbTQPUVGT
+      secure: A7QmXiJAvb+wWfCyBXGCDmKpe7mEDywYI7Ai1LLEi8NNAssCJusGjCpHNv7KiRZz
     channel: mackerel
 deploy:
   release: $(appveyor_repo_tag_name)
   provider: GitHub
   auth_token:
-    secure: 2HLHAjVNhpeABGoWAe6iqAtEeq4fjawUVsGq4aBF4yOQsF67IOqBOh8NYHqq25yM
+    secure: nT6f+l3sILrBAyVGLE1il+wkv5BvrnEnVkiPGDZQegePa81MUC4AIDTNQ/gX8AWW
   artifact: mackerel-agent-msi
   draft: true
   prerelease: true
