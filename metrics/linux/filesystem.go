@@ -30,7 +30,8 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, values := range filesystems {
-		if regexp.MustCompile(`^/dev/mapper/`).FindStringSubmatch(name) != nil {
+		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
+		if regexp.MustCompile(`^/dev/mapper/docker-`).FindStringSubmatch(name) != nil {
 			continue;
 		}
 		if matches := regexp.MustCompile(`^/dev/(.*)$`).FindStringSubmatch(name); matches != nil {
