@@ -58,7 +58,7 @@ func (g *pluginGenerator) Generate() (Values, error) {
 	return results, nil
 }
 
-func (g *pluginGenerator) PrepareGraphDefs(api *mackerel.API) ([]mackerel.CreateGraphDefsPayload, error) {
+func (g *pluginGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error) {
 	err := g.loadPluginMeta()
 	if err != nil {
 		return nil, err

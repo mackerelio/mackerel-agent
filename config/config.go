@@ -20,6 +20,7 @@ type Config struct {
 	Conffile        string
 	Roles           []string
 	Verbose         bool
+  OutputOnce      bool
 	Connection      ConnectionConfig
 	Plugin          map[string]PluginConfigs
 	DeprecatedSensu map[string]PluginConfigs `toml:"sensu"` // DEPRECATED this is for backward compatibility

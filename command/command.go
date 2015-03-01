@@ -346,6 +346,25 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 	return api, host, nil
 }
 
+func RunOnce(conf *config.Config) {
+	hostname, meta, interfaces, err := collectHostSpecs()
+	if err != nil {
+		logger.Errorf("While collecting host specs: %s", err)
+		return
+	}
+	logger.Infof("%s, %s, %s", hostname, meta, interfaces)
+	logger.Infof("agent")
+	ag := &agent.Agent{
+		MetricsGenerators: metricsGenerators(conf),
+		PluginGenerators:  pluginGenerators(conf),
+	}
+	graphdefs := ag.CollectGraphDefsOfPlugins()
+	logger.Infof("%s", graphdefs)
+	logger.Infof("Collecting metrics may takes one minutes.")
+	metrics := ag.CollectMetrics(time.Now())
+	logger.Infof("%s", metrics)
+}
+
 // Run starts the main metric collecting logic and this function will never return.
 func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", conf.Apibase, host.Name, host.ID)

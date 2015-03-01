@@ -59,6 +59,11 @@ func main() {
 
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s", version.VERSION, version.GITCOMMIT)
 
+	if conf.OutputOnce {
+		command.RunOnce(conf)
+		exit(0, conf)
+	}
+
 	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
 		exit(1, conf)
@@ -82,6 +87,7 @@ func resolveConfig() (*config.Config, bool) {
 		pidfile      = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
 		root         = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey       = flag.String("apikey", "", "API key from mackerel.io web site")
+		outputOnce   = flag.Bool("once", false, "Show spec and metrics to stdout once")
 		printVersion = flag.Bool("version", false, "Prints version and exit")
 	)
 
@@ -106,6 +112,7 @@ func resolveConfig() (*config.Config, bool) {
 		exitWithoutPidfileCleaning(1)
 	}
 
+
 	// overwrite config from file by config from args
 	flag.Visit(func(f *flag.Flag) {
 		switch f.Name {
@@ -121,6 +128,8 @@ func resolveConfig() (*config.Config, bool) {
 			conf.Verbose = verbose
 		case "role":
 			conf.Roles = roleFullnames
+		case "once":
+			conf.OutputOnce = *outputOnce
 		}
 	})
 
