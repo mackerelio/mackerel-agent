@@ -20,6 +20,7 @@ type MetricsResult struct {
 	Values  metrics.Values
 }
 
+// CollectMetrics collects metrics with generators.
 func (agent *Agent) CollectMetrics(collectedTime time.Time) *MetricsResult {
 	generators := agent.MetricsGenerators
 	for _, g := range agent.PluginGenerators {
@@ -72,7 +73,7 @@ func (agent *Agent) Watch() chan *MetricsResult {
 	return metricsResult
 }
 
-// InitPluginGenerators XXX
+// CollectGraphDefsOfPlugins collects GraphDefs of Plugins
 func (agent *Agent) CollectGraphDefsOfPlugins() []mackerel.CreateGraphDefsPayload {
 	payloads := []mackerel.CreateGraphDefsPayload{}
 

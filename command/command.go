@@ -346,6 +346,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 	return api, host, nil
 }
 
+// RunOnce collects specs and metrics, then output them to stdout.
 func RunOnce(conf *config.Config) {
 	hostname, meta, interfaces, err := collectHostSpecs()
 	if err != nil {
