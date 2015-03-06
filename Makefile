@@ -1,24 +1,55 @@
 BIN = mackerel-agent
 ARGS = "-conf=mackerel-agent.conf"
+BUILD_OS_TARGETS = "linux darwin freebsd windows"
 
-all: clean build test
+BUILD_LDFLAGS = "\
+	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT `git rev-parse --short HEAD` \
+	  -X github.com/mackerelio/mackerel-agent/version.VERSION   `git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/\+.*$$//'` "
 
-test: deps
-	go test $(TESTFLAGS) github.com/mackerelio/mackerel-agent/...
+all: clean test build
+
+test: lint
+	go test $(TESTFLAGS) ./...
 
 build: deps
-	go build \
-	-ldflags="\
-	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT `git rev-parse --short HEAD` \
-	  -X github.com/mackerelio/mackerel-agent/version.VERSION   `git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/\+.*$$//'` " \
-	-o build/$(BIN) \
-	github.com/mackerelio/mackerel-agent
+	go build -ldflags=$(BUILD_LDFLAGS) \
+	-o build/$(BIN)
 
 run: build
 	./build/$(BIN) $(ARGS)
 
 deps:
-	go get -d github.com/mackerelio/mackerel-agent
+	go get -d -v -t ./...
+	go get github.com/golang/lint/golint
+	go get golang.org/x/tools/cmd/vet
+	go get github.com/laher/goxc
+
+LINT_RET = .golint.txt
+lint: deps
+	go vet ./...
+	rm -f $(LINT_RET)
+	for os in "$(BUILD_OS_TARGETS)"; do \
+		if [ $$os != "windows" ]; then \
+			GOOS=$$os golint ./... | tee -a $(LINT_RET); \
+		fi \
+	done
+	test ! -s $(LINT_RET)
+
+crossbuild: deps
+	goxc -build-ldflags=$(BUILD_LDFLAGS) \
+	    -os=$(BUILD_OS_TARGETS) -arch="386 amd64 arm" -d . \
+	    -resources-include='README*,mackerel-agent.conf' -n $(BIN)
+
+rpm:
+	GOOS=linux GOARCH=386 make build
+	cp mackerel-agent.conf packaging/rpm/src/mackerel-agent.conf
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm/src" --define "_builddir `pwd`/build" -ba packaging/rpm/mackerel-agent.spec
+
+deb:
+	GOOS=linux GOARCH=386 make build
+	cp build/$(BIN)        packaging/deb/debian/mackerel-agent.bin
+	cp mackerel-agent.conf packaging/deb/debian/mackerel-agent.conf
+	cd packaging/deb && debuild --no-tgz-check -rfakeroot -uc -us
 
 rpm:
 	GOOS=linux GOARCH=386 go build
@@ -28,4 +59,4 @@ clean:
 	rm -f build/$(BIN)
 	go clean
 
-.PHONY: test build run deps clean
+.PHONY: test build run deps clean lint crossbuild rpm deb

@@ -10,11 +10,13 @@ import (
 	. "github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// MemoryGenerator XXX
 type MemoryGenerator struct {
 }
 
 var memoryLogger = logging.GetLogger("metrics.memory")
 
+// NewMemoryGenerator XXX
 func NewMemoryGenerator() (*MemoryGenerator, error) {
 	return &MemoryGenerator{}, nil
 }

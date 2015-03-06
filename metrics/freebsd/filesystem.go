@@ -10,6 +10,7 @@ import (
 	utilFreebsd "github.com/mackerelio/mackerel-agent/util/freebsd"
 )
 
+// FilesystemGenerator XXX
 type FilesystemGenerator struct {
 }
 
@@ -20,6 +21,7 @@ var dfColumnSpecs = []utilFreebsd.DfColumnSpec{
 	utilFreebsd.DfColumnSpec{Name: "used", IsInt: true},
 }
 
+// Generate generate metric values
 func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 	filesystems, err := utilFreebsd.CollectDfValues(dfColumnSpecs)
 	if err != nil {

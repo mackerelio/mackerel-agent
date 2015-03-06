@@ -24,8 +24,9 @@ func interfaceGenerator() spec.Generator {
 func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsFreebsd.Loadavg5Generator{},
-		&metricsFreebsd.CpuusageGenerator{},
+		&metricsFreebsd.CPUUsageGenerator{},
 		&metricsFreebsd.FilesystemGenerator{},
+		&metricsFreebsd.MemoryGenerator{},
 	}
 
 	return generators

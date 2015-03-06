@@ -10,6 +10,7 @@ import (
 	utilDarwin "github.com/mackerelio/mackerel-agent/util/darwin"
 )
 
+// FilesystemGenerator XXX
 type FilesystemGenerator struct {
 }
 
@@ -20,6 +21,7 @@ var dfColumnSpecs = []utilDarwin.DfColumnSpec{
 	utilDarwin.DfColumnSpec{Name: "used", IsInt: true},
 }
 
+// Generate XXX
 func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 	filesystems, err := utilDarwin.CollectDfValues(dfColumnSpecs)
 	if err != nil {

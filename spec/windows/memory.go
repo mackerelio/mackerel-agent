@@ -10,15 +10,18 @@ import (
 	. "github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// MemoryGenerator collects the host's memory specs.
 type MemoryGenerator struct {
 }
 
+// Key XXX
 func (g *MemoryGenerator) Key() string {
 	return "memory"
 }
 
 var memoryLogger = logging.GetLogger("spec.memory")
 
+// Generate XXX
 func (g *MemoryGenerator) Generate() (interface{}, error) {
 	result := make(map[string]interface{})
 

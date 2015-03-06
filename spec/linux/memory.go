@@ -41,15 +41,18 @@ var memItems = map[string]*regexp.Regexp{
 	"swap_free":        regexp.MustCompile(`^SwapFree:\s+(\d+) (.+)$`),
 }
 
+// MemoryGenerator collects the host's memory specs.
 type MemoryGenerator struct {
 }
 
+// Key XXX
 func (g *MemoryGenerator) Key() string {
 	return "memory"
 }
 
 var memoryLogger = logging.GetLogger("spec.memory")
 
+// Generate XXX
 func (g *MemoryGenerator) Generate() (interface{}, error) {
 	file, err := os.Open("/proc/meminfo")
 	if err != nil {

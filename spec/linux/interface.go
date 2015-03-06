@@ -12,21 +12,24 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 )
 
+// InterfaceGenerator XXX
 type InterfaceGenerator struct {
 }
 
+// Key XXX
 func (g *InterfaceGenerator) Key() string {
 	return "interface"
 }
 
 var interfaceLogger = logging.GetLogger("spec.interface")
 
+// Generate XXX
 func (g *InterfaceGenerator) Generate() (interface{}, error) {
 	var interfaces map[string]map[string]interface{}
 	_, err := exec.LookPath("ip")
 	// has ip command
 	if err == nil {
-		interfaces, err = g.generateByIpCommand()
+		interfaces, err = g.generateByIPCommand()
 		if err != nil {
 			return nil, err
 		}
@@ -37,7 +40,7 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 		}
 	}
 
-	results := make([]map[string]interface{}, 0)
+	var results []map[string]interface{}
 	for key, iface := range interfaces {
 		if iface["encap"] == nil || iface["encap"] == "Loopback" {
 			continue
@@ -52,7 +55,7 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 	return results, nil
 }
 
-func (g *InterfaceGenerator) generateByIpCommand() (map[string]map[string]interface{}, error) {
+func (g *InterfaceGenerator) generateByIPCommand() (map[string]map[string]interface{}, error) {
 	interfaces := make(map[string]map[string]interface{})
 	name := ""
 

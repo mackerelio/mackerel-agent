@@ -10,15 +10,18 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 )
 
+// CPUGenerator Collects CPU specs
 type CPUGenerator struct {
 }
 
+// Key XXX
 func (g *CPUGenerator) Key() string {
 	return "cpu"
 }
 
 var cpuLogger = logging.GetLogger("spec.cpu")
 
+// Generate XXX
 func (g *CPUGenerator) Generate() (interface{}, error) {
 	file, err := os.Open("/proc/cpuinfo")
 	if err != nil {
@@ -28,7 +31,7 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 
 	scanner := bufio.NewScanner(file)
 
-	results := make([]map[string]interface{}, 0)
+	var results []map[string]interface{}
 	var cur map[string]interface{}
 	for scanner.Scan() {
 		line := scanner.Text()

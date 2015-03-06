@@ -3,10 +3,16 @@
 package linux
 
 import (
+	"os"
 	"testing"
 )
 
 func TestDiskGenerator(t *testing.T) {
+	if os.Getenv("TRAVIS") != "" {
+		// ref. https://github.com/travis-ci/travis-ci/issues/2627
+		t.Skipf("Skip: can't access `/proc/diskstats` in Travis environment.")
+	}
+
 	g := &DiskGenerator{1}
 	values, err := g.Generate()
 	if err != nil {

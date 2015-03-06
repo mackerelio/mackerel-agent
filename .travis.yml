@@ -1,0 +1,35 @@
+language: go
+go:
+- 1.4
+env: PATH=/home/travis/gopath/bin:$PATH
+install:
+- sudo apt-get update
+- DEBIAN_FRONTEND=noninteractive sudo apt-get install -y rpm devscripts debhelper
+- mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+script:
+- make all crossbuild rpm deb
+deploy:
+  provider: releases
+  api_key:
+    secure: NtpNjquqjnwpeVQQM1GTHTTU7YOo8fEIyoBtMf3Vf1ayZjuWVZxwNfM77E596TG52a8pnZtpapXyHT0M4e1zms7F5KVCrOEfOB0OrA4IDzoATelVqdONnN3lbRJeVJVdSmK8/FNKwjI24tQZTaTQcIOioNqh7ZRcrEYlatGCuAw=
+  file:
+  - /home/travis/rpmbuild/RPMS/noarch/mackerel-agent-0.14.0-1.noarch.rpm
+  - packaging/mackerel-agent_0.14.0-1_all.deb
+  - snapshot/mackerel-agent_darwin_386.zip
+  - snapshot/mackerel-agent_darwin_amd64.zip
+  - snapshot/mackerel-agent_freebsd_386.zip
+  - snapshot/mackerel-agent_freebsd_amd64.zip
+  - snapshot/mackerel-agent_freebsd_arm.zip
+  - snapshot/mackerel-agent_linux_386.tar.gz
+  - snapshot/mackerel-agent_linux_amd64.tar.gz
+  - snapshot/mackerel-agent_linux_arm.tar.gz
+  - snapshot/mackerel-agent_windows_386.zip
+  - snapshot/mackerel-agent_windows_amd64.zip
+  skip_cleanup: true
+  on:
+    repo: mackerelio/mackerel-agent
+    all_branches: true
+    tags: true
+notifications:
+  slack:
+    secure: n9Hs5rIlb6MuFVsRp46ykd+CptnE3boI7Q9mNLuHwz77IQ/2mpUmOyBRDeW3BA2EXa4WEYAXu8q7/b7zVV+c+RcPdz8/h9N9EBrHUVeIkCP/Nyp+aUA8GvLNjGuxYC7nov3L+9GHBFXKX8FaV2lZ1/Eeb1Ovbtv6Oi39xNkHqTQ=

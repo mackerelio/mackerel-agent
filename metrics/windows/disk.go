@@ -13,6 +13,7 @@ import (
 	. "github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// DiskGenerator XXX
 type DiskGenerator struct {
 	Interval time.Duration
 	query    syscall.Handle
@@ -21,6 +22,7 @@ type DiskGenerator struct {
 
 var diskLogger = logging.GetLogger("metrics.disk")
 
+// NewDiskGenerator XXX
 func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 	g := &DiskGenerator{interval, 0, nil}
 
@@ -79,6 +81,7 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 	return g, nil
 }
 
+// Generate XXX
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	interval := g.Interval * time.Second
 	time.Sleep(interval)

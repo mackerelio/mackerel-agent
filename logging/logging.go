@@ -4,23 +4,24 @@ import (
 	"log"
 )
 
+// Logger XXX
 type Logger struct {
 	tag string
 }
 
-type LogLevel struct {
+type logLevel struct {
 	name  string
 	level uint
 }
 
-var trace = &LogLevel{name: "TRACE", level: 1}
-var debug = &LogLevel{name: "DEBUG", level: 2}
-var info = &LogLevel{name: "INFO", level: 3}
-var warning = &LogLevel{name: "WARNING", level: 4}
-var error = &LogLevel{name: "ERROR", level: 5}
-var critical = &LogLevel{name: "CRITICAL", level: 6}
+var trace = &logLevel{name: "TRACE", level: 1}
+var debug = &logLevel{name: "DEBUG", level: 2}
+var info = &logLevel{name: "INFO", level: 3}
+var warning = &logLevel{name: "WARNING", level: 4}
+var error = &logLevel{name: "ERROR", level: 5}
+var critical = &logLevel{name: "CRITICAL", level: 6}
 
-func stringToLogLevel(name string) *LogLevel {
+func stringTologLevel(name string) *logLevel {
 	switch name {
 	case "TRACE":
 		return trace
@@ -33,55 +34,63 @@ func stringToLogLevel(name string) *LogLevel {
 	case "CRITICAL":
 		return critical
 	}
-	return &LogLevel{name: "unknown", level: 0}
+	return &logLevel{name: "unknown", level: 0}
 }
 
-var logLevelConfigs = map[string]*LogLevel{
+var logLevelConfigs = map[string]*logLevel{
 	"root": info,
 }
 
+// GetLogger XXX
 func GetLogger(tag string) *Logger {
 	return &Logger{tag: tag}
 }
 
-func ConfigureLoggers(rootLogLevel string) {
-	logLevelConfigs["root"] = stringToLogLevel(rootLogLevel)
+// ConfigureLoggers XXX
+func ConfigureLoggers(rootlogLevel string) {
+	logLevelConfigs["root"] = stringTologLevel(rootlogLevel)
 }
 
-func (logger *Logger) currentLogLevel() *LogLevel {
+func (logger *Logger) currentLogLevel() *logLevel {
 	return logLevelConfigs["root"]
 }
 
-func (logger *Logger) message(logLevel *LogLevel, message string) string {
+func (logger *Logger) message(logLevel *logLevel, message string) string {
 	return logLevel.name + " " + logger.tag + " " + message
 }
 
-func (logger *Logger) log(logLevel *LogLevel, message string, args ...interface{}) {
+func (logger *Logger) log(logLevel *logLevel, message string, args ...interface{}) {
 	if logLevel.level >= logger.currentLogLevel().level {
 		log.Printf(logger.message(logLevel, message), args...)
 	}
 }
 
+// Criticalf XXX
 func (logger *Logger) Criticalf(m string, args ...interface{}) {
 	logger.log(critical, m, args...)
 }
 
+// Errorf XXX
 func (logger *Logger) Errorf(m string, args ...interface{}) {
 	logger.log(error, m, args...)
 }
 
+// Warningf XXX
 func (logger *Logger) Warningf(m string, args ...interface{}) {
 	logger.log(warning, m, args...)
 }
 
+// Infof XXX
 func (logger *Logger) Infof(m string, args ...interface{}) {
 	logger.log(info, m, args...)
 }
 
+// Debugf XXX
 func (logger *Logger) Debugf(m string, args ...interface{}) {
 	logger.log(debug, m, args...)
 }
 
+// Tracef XXX
 func (logger *Logger) Tracef(m string, args ...interface{}) {
 	logger.log(trace, m, args...)
 }

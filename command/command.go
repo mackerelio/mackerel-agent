@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"path/filepath"
 	"time"
@@ -20,25 +21,25 @@ var logger = logging.GetLogger("command")
 
 const idFileName = "id"
 
-func IdFilePath(root string) string {
+func idFilePath(root string) string {
 	return filepath.Join(root, idFileName)
 }
 
-func LoadHostId(root string) (string, error) {
-	content, err := ioutil.ReadFile(IdFilePath(root))
+func loadHostID(root string) (string, error) {
+	content, err := ioutil.ReadFile(idFilePath(root))
 	if err != nil {
 		return "", err
 	}
 	return string(content), nil
 }
 
-func SaveHostId(root string, id string) error {
+func saveHostID(root string, id string) error {
 	err := os.MkdirAll(root, 0755)
 	if err != nil {
 		return err
 	}
 
-	file, err := os.Create(IdFilePath(root))
+	file, err := os.Create(idFilePath(root))
 	if err != nil {
 		return err
 	}
@@ -65,29 +66,29 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 	}
 
 	var result *mackerel.Host
-	if hostId, err := LoadHostId(root); err != nil { // create
+	if hostID, err := loadHostID(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
-		createdHostId, err := api.CreateHost(hostname, meta, interfaces, roleFullnames)
+		createdHostID, err := api.CreateHost(hostname, meta, interfaces, roleFullnames)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to register this host: %s", err.Error())
 		}
 
-		result, err = api.FindHost(createdHostId)
+		result, err = api.FindHost(createdHostID)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", err.Error())
 		}
 	} else { // update
-		result, err = api.FindHost(hostId)
+		result, err = api.FindHost(hostID)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", IdFilePath(root), err.Error())
+			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), err.Error())
 		}
-		err := api.UpdateHost(hostId, hostname, meta, interfaces, roleFullnames)
+		err := api.UpdateHost(hostID, hostname, meta, interfaces, roleFullnames)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
 		}
 	}
 
-	err = SaveHostId(root, result.Id)
+	err = saveHostID(root, result.ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to save host ID: %s", err.Error())
 	}
@@ -99,7 +100,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 var specsUpdateInterval = 1 * time.Hour
 
 func delayByHost(host *mackerel.Host) int {
-	s := sha1.Sum([]byte(host.Id))
+	s := sha1.Sum([]byte(host.ID))
 	return int(s[len(s)-1]) % int(config.PostMetricsInterval.Seconds())
 }
 
@@ -136,7 +137,7 @@ func loop(c *context, termCh chan struct{}) int {
 	// Periodically update host specs.
 	go updateHostSpecsLoop(c, quit)
 
-	postQueue := make(chan *postValue, c.conf.Connection.Post_Metrics_Buffer_Size)
+	postQueue := make(chan *postValue, c.conf.Connection.PostMetricsBufferSize)
 	go enqueueLoop(c, postQueue, quit)
 
 	postDelaySeconds := delayByHost(c.host)
@@ -174,10 +175,10 @@ func loop(c *context, termCh chan struct{}) int {
 			case loopStateFirst: // request immediately to create graph defs of host
 				// nop
 			case loopStateQueued:
-				delaySeconds = c.conf.Connection.Post_Metrics_Dequeue_Delay_Seconds
+				delaySeconds = c.conf.Connection.PostMetricsDequeueDelaySeconds
 			case loopStateHadError:
 				// TODO: better interval calculation. exponential backoff or so.
-				delaySeconds = c.conf.Connection.Post_Metrics_Retry_Delay_Seconds
+				delaySeconds = c.conf.Connection.PostMetricsRetryDelaySeconds
 			case loopStateTerminating:
 				// dequeue and post every one second when terminating.
 				delaySeconds = 1
@@ -227,7 +228,7 @@ func loop(c *context, termCh chan struct{}) int {
 						v.retryCnt++
 						// It is difficult to distinguish the error is server error or data error.
 						// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
-						if v.retryCnt > c.conf.Connection.Post_Metrics_Retry_Max {
+						if v.retryCnt > c.conf.Connection.PostMetricsRetryMax {
 							json, err := json.Marshal(v.values)
 							if err != nil {
 								logger.Errorf("Something wrong with post values. marshaling failed.")
@@ -271,9 +272,19 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 			created := float64(result.Created.Unix())
 			creatingValues := [](*mackerel.CreatingMetricsValue){}
 			for name, value := range (map[string]float64)(result.Values) {
+				if math.IsNaN(value) || math.IsInf(value, 0) {
+					logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", c.host.ID, name, value)
+					continue
+				}
+
 				creatingValues = append(
 					creatingValues,
-					&mackerel.CreatingMetricsValue{c.host.Id, name, created, value},
+					&mackerel.CreatingMetricsValue{
+						HostID: c.host.ID,
+						Name:   name,
+						Time:   created,
+						Value:  value,
+					},
 				)
 			}
 			logger.Debugf("Enqueuing task to post metrics.")
@@ -311,7 +322,7 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 		return
 	}
 
-	err = api.UpdateHost(host.Id, hostname, meta, interfaces, conf.Roles)
+	err = api.UpdateHost(host.ID, hostname, meta, interfaces, conf.Roles)
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
 	} else {
@@ -322,7 +333,7 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 // Prepare sets up API and registers the host data to the Mackerel server.
 // Use returned values to call Run().
 func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
-	api, err := mackerel.NewApi(conf.Apibase, conf.Apikey, conf.Verbose)
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
@@ -337,7 +348,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 
 // Run starts the main metric collecting logic and this function will never return.
 func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
-	logger.Infof("Start: apibase = %s, hostName = %s, hostId = %s", conf.Apibase, host.Name, host.Id)
+	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", conf.Apibase, host.Name, host.ID)
 
 	ag := &agent.Agent{
 		MetricsGenerators: metricsGenerators(conf),

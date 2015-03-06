@@ -8,10 +8,11 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 )
 
-// Collects CPU specs for darwin.
+// CPUGenerator Collects CPU specs
 type CPUGenerator struct {
 }
 
+// Key XXX
 func (g *CPUGenerator) Key() string {
 	return "cpu"
 }

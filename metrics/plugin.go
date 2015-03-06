@@ -40,10 +40,12 @@ type customGraphMetricDef struct {
 }
 
 var pluginLogger = logging.GetLogger("metrics.plugin")
-var PLUGIN_PREFIX = "custom."
+
+const pluginPrefix = "custom."
 
 var pluginConfigurationEnvName = "MACKEREL_AGENT_PLUGIN_META"
 
+// NewPluginGenerator XXX
 func NewPluginGenerator(conf config.PluginConfig) PluginGenerator {
 	return &pluginGenerator{Config: conf}
 }
@@ -187,7 +189,7 @@ func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 
 	for key, graph := range g.Meta.Graphs {
 		payload := mackerel.CreateGraphDefsPayload{
-			Name:        PLUGIN_PREFIX + key,
+			Name:        pluginPrefix + key,
 			DisplayName: graph.Label,
 			Unit:        graph.Unit,
 		}
@@ -197,7 +199,7 @@ func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 
 		for _, metric := range graph.Metrics {
 			metricPayload := mackerel.CreateGraphDefsPayloadMetric{
-				Name:        PLUGIN_PREFIX + key + "." + metric.Name,
+				Name:        pluginPrefix + key + "." + metric.Name,
 				DisplayName: metric.Label,
 				IsStacked:   metric.Stacked,
 			}
@@ -238,7 +240,7 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 
 		key := items[0]
 
-		results[PLUGIN_PREFIX+key] = value
+		results[pluginPrefix+key] = value
 	}
 
 	return results, nil

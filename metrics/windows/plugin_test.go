@@ -11,7 +11,7 @@ import (
 )
 
 func containsKeyRegexp(values metrics.Values, reg string) bool {
-	for name, _ := range values {
+	for name := range values {
 		if matches := regexp.MustCompile(reg).FindStringSubmatch(name); matches != nil {
 			return true
 		}

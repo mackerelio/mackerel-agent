@@ -12,7 +12,7 @@ import (
 )
 
 /*
-collect uptime
+UptimeGenerator collect uptime
 
 `uptime`: uptime[day] retrieved from /proc/uptime
 
@@ -23,6 +23,7 @@ type UptimeGenerator struct {
 
 var uptimeLogger = logging.GetLogger("metrics.uptime")
 
+// Generate generate metrics values
 func (g *UptimeGenerator) Generate() (metrics.Values, error) {
 	contentbytes, err := ioutil.ReadFile("/proc/uptime")
 	if err != nil {

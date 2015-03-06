@@ -2,21 +2,29 @@
 
 package linux
 
-import "math"
+import (
+	"math"
+	"os"
+)
 import "testing"
 
-func TestCpuusageGenerate(t *testing.T) {
-	g := &CpuusageGenerator{1}
+func TestCPUUsageGenerate(t *testing.T) {
+	g := &CPUUsageGenerator{1}
 	values, _ := g.Generate()
 
-	var sumPercentage float64 = 0
-	for _, metricName := range cpuusageMetricNames {
+	sumPercentage := float64(0)
+	for _, metricName := range cpuUsageMetricNames {
+		if metricName == "cpu.guest" && os.Getenv("TRAVIS") != "" {
+			t.Logf("XXX Kernel 2.6.23 or lower doesn't output 'cpu.guest', Travis is also.")
+			continue
+		}
+
 		metricName += ".percentage"
 		value, ok := values[metricName]
 		if !ok {
-			t.Errorf("CpuusageGenerator should generate metric value for '%s'", metricName)
+			t.Errorf("CPUUsageGenerator should generate metric value for '%s'", metricName)
 		} else {
-			t.Logf("Cpuusage '%s' collected: %+v", metricName, value)
+			t.Logf("CPUUsage '%s' collected: %+v", metricName, value)
 		}
 
 		sumPercentage += value
@@ -31,9 +39,9 @@ func TestCpuusageGenerate(t *testing.T) {
 	}
 
 	// Checks any errors will not occure
-	// when the number of retrieved values from /proc/spec is less than length of cpuusageMetricNames
-	cpuusageMetricNames = append(cpuusageMetricNames, "unimplemented-new-metric")
-	defer func() { cpuusageMetricNames = cpuusageMetricNames[0 : len(cpuusageMetricNames)-1] }()
+	// when the number of retrieved values from /proc/spec is less than length of cpuUsageMetricNames
+	cpuUsageMetricNames = append(cpuUsageMetricNames, "unimplemented-new-metric")
+	defer func() { cpuUsageMetricNames = cpuUsageMetricNames[0 : len(cpuUsageMetricNames)-1] }()
 
 	g.Generate()
 }

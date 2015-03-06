@@ -24,8 +24,9 @@ func interfaceGenerator() spec.Generator {
 func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsDarwin.Loadavg5Generator{},
-		&metricsDarwin.CpuusageGenerator{},
+		&metricsDarwin.CPUUsageGenerator{},
 		&metricsDarwin.FilesystemGenerator{},
+		&metricsDarwin.InterfaceGenerator{Interval: 60},
 	}
 
 	return generators

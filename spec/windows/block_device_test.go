@@ -31,12 +31,12 @@ func TestBlockDeviceGenerate(t *testing.T) {
 		t.Error("should not raise error")
 	}
 
-	block_device, typeOk := value.(map[string]map[string]interface{})
+	blockDevice, typeOk := value.(map[string]map[string]interface{})
 	if !typeOk {
-		t.Errorf("value should be slice of map", value)
+		t.Errorf("value should be slice of map. %+v", value)
 	}
 
-	sda, ok := block_device["sda"]
+	sda, ok := blockDevice["sda"]
 	if !ok {
 		t.Skip("should have map for sda")
 	}

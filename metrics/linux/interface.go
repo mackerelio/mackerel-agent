@@ -30,6 +30,8 @@ cat /proc/net/dev sample:
 	lo: 7779878638 1952628    0    0    0     0          0         0 7779878638 1952628    0    0    0     0       0          0
 	docker0: 250219988  333736    0    0    0     0          0         0 2024726607 1409929    0    0    0     0       0          0
 */
+
+// InterfaceGenerator XXX
 type InterfaceGenerator struct {
 	Interval time.Duration
 }
@@ -46,6 +48,7 @@ var postInterfaceMetricsRegexp = regexp.MustCompile(`^interface\..+\.(rxBytes|tx
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
+// Generate XXX
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	prevValues, err := g.collectIntarfacesValues()
 	if err != nil {
@@ -98,7 +101,7 @@ func (g *InterfaceGenerator) collectIntarfacesValues() (metrics.Values, error) {
 
 			interfaceResult := make(map[string]float64)
 			hasNonZeroValue := false
-			for i, _ := range interfaceMetrics {
+			for i := range interfaceMetrics {
 				key := fmt.Sprintf("interface.%s.%s", name, interfaceMetrics[i])
 				value, err := strconv.ParseFloat(cols[i], 64)
 				if err != nil {

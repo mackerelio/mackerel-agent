@@ -11,15 +11,18 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 )
 
+// BlockDeviceGenerator XXX
 type BlockDeviceGenerator struct {
 }
 
+// Key XXX
 func (g *BlockDeviceGenerator) Key() string {
 	return "block_device"
 }
 
 var blockDeviceLogger = logging.GetLogger("spec.block_device")
 
+// Generate generate metric values
 func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 	fileInfos, err := ioutil.ReadDir("/sys/block")
 	if err != nil {

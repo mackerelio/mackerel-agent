@@ -23,6 +23,7 @@ var dfHeaderPattern = regexp.MustCompile(
 	`^Filesystem\s+1024-block`,
 )
 
+// DfColumnSpec XXX
 type DfColumnSpec struct {
 	Name  string
 	IsInt bool // type of collected data  true: int64, false: string
@@ -34,6 +35,7 @@ var dfColumnsPattern = regexp.MustCompile(
 
 var logger = logging.GetLogger("util.filesystem")
 
+// CollectDfValues XXX
 func CollectDfValues(dfColumnSpecs []DfColumnSpec) (map[string]map[string]interface{}, error) {
 	cmd := exec.Command("df", "-Pkl")
 	cmd.Env = append(cmd.Env, "LANG=C")

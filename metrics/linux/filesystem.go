@@ -10,6 +10,7 @@ import (
 	utilLinux "github.com/mackerelio/mackerel-agent/util/linux"
 )
 
+// FilesystemGenerator XXX
 type FilesystemGenerator struct {
 }
 
@@ -20,6 +21,7 @@ var dfColumnSpecs = []utilLinux.DfColumnSpec{
 	utilLinux.DfColumnSpec{Name: "used", IsInt: true},
 }
 
+// Generate XXX
 func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 	filesystems, err := utilLinux.CollectDfValues(dfColumnSpecs)
 	if err != nil {
