@@ -340,7 +340,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 
 	host, err := prepareHost(conf.Root, api, conf.Roles)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Failed to preapre host: %s", err.Error())
+		return nil, nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
 	}
 
 	return api, host, nil
