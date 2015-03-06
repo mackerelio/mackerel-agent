@@ -1,10 +1,19 @@
+mackerel-agent (0.14.1-1) precise; urgency=low
+
+  * [fix] skip device mapper metrics
+  * [fix] filter invalid float values
+  * [enhancement] testing
+  * [enhancement] collect more metrics about darwin and freebsd
+
+ -- Songmu <songmu@hatena.ne.jp>  Tue, 20 Jan 2015 12:40:26 +0900
+
 mackerel-agent (0.14.0-1) precise; urgency=low
 
   * [improve] wait for termination until postQueue is empty up to 30 seconds.
   * [improve] wait up to 30 seconds before initial posting
   * [feature] work on Windows darwin FreeBSD (unofficial support)
 
- -- Songmu <Songmu@hatena.ne.jp>  Thu, 25 Dec 2014 12:23:39 +0900
+ -- Songmu <songmu@hatena.ne.jp>  Thu, 25 Dec 2014 12:23:39 +0900
 
 mackerel-agent (0.13.0-1) precise; urgency=low
 

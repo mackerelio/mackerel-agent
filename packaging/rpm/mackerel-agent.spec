@@ -1,10 +1,11 @@
 # sudo yum -y install rpmdevtools go && rpmdev-setuptree
+# rpmbuild -ba ~/rpmbuild/SPECS/mackerel-agent.spec
 
 %define _binaries_in_noarch_packages_terminate_build   0
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.14.0
+Version:   0.14.1
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -70,6 +71,11 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Tue Jan 20 2015 Songmu <songmu@hatena.ne.jp> 0.14.1-1
+- [fix] skip device mapper metrics
+- [fix] filter invalid float values
+- [enhancement] testing
+- [enhancement] collect more metrics about darwin and freebsd
 * Thu Dec 25 2014 Songmu <songmu@hatena.ne.jp> 0.14.0-1
 - [improve] wait for termination until postQueue is empty up to 30 seconds.
 - [improve] wait up to 30 seconds before initial posting
