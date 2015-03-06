@@ -50,18 +50,14 @@ cover: deps
 
 rpm:
 	GOOS=linux GOARCH=386 make build
-	cp mackerel-agent.conf packaging/rpm/src/mackerel-agent.conf
+	cp packaging/mackerel-agent.conf packaging/rpm/src/mackerel-agent.conf
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm/src" --define "_builddir `pwd`/build" -ba packaging/rpm/mackerel-agent.spec
 
 deb:
 	GOOS=linux GOARCH=386 make build
 	cp build/$(BIN)        packaging/deb/debian/mackerel-agent.bin
-	cp mackerel-agent.conf packaging/deb/debian/mackerel-agent.conf
+	cp packaging/mackerel-agent.conf packaging/deb/debian/mackerel-agent.conf
 	cd packaging/deb && debuild --no-tgz-check -rfakeroot -uc -us
-
-rpm:
-	GOOS=linux GOARCH=386 go build
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm/src" --define "_builddir `pwd`" -ba packaging/rpm/mackerel-agent.spec
 
 clean:
 	rm -f build/$(BIN)
