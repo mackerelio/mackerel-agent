@@ -33,7 +33,7 @@ func TestBlockDeviceGenerate(t *testing.T) {
 
 	value, err := g.Generate()
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	blockDevice, typeOk := value.(map[string]map[string]interface{})

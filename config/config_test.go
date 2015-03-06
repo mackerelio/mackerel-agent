@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -24,17 +25,17 @@ type = "metric"
 `
 
 func TestLoadConfig(t *testing.T) {
-	tmpFile, error := ioutil.TempFile("/tmp", "")
-	if error != nil {
-		t.Error("should not raise error")
+	tmpFile, err := ioutil.TempFile("", "")
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
 	}
-	if err := ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfig), 0644); err != nil {
-		t.Error("should not raise error")
+	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfig), 0644); err != nil {
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	if config.Apibase != "https://mackerel.io" {
@@ -59,9 +60,9 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestLoadConfigFile(t *testing.T) {
-	tmpFile, error := ioutil.TempFile("", "mackerel-config-test")
-	if error != nil {
-		t.Error("should not raise error")
+	tmpFile, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
 	}
 	if _, err := tmpFile.WriteString(sampleConfig); err != nil {
 		t.Fatal("should not raise error")
@@ -72,7 +73,7 @@ func TestLoadConfigFile(t *testing.T) {
 
 	config, err := loadConfigFile(tmpFile.Name())
 	if err != nil {
-		t.Error("should not raise error")
+		t.Errorf("should not raise error: %v", err)
 	}
 
 	if config.Apikey != "abcde" {
@@ -110,6 +111,14 @@ func assert(t *testing.T, ok bool, msg string) {
 	}
 }
 
+var tomlQuotedReplacer = strings.NewReplacer(
+	"\t", "\\t",
+	"\n", "\\n",
+	"\r", "\\r",
+	"\"", "\\\"",
+	"\\", "\\\\",
+)
+
 func TestLoadConfigFileInclude(t *testing.T) {
 	configDir, err := ioutil.TempDir("", "mackerel-config-test")
 	assertNoError(t, err)
@@ -130,7 +139,7 @@ command = "foo1"
 
 [plugin.metrics.bar]
 command = "this wille be overwritten"
-`, configDir)
+`, tomlQuotedReplacer.Replace(configDir))
 
 	includedContent := `
 roles = [ "Service:role" ]

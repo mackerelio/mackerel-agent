@@ -3,32 +3,32 @@
 package windows
 
 import (
-	"errors"
-	"time"
-
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 // CPUUsageGenerator XXX
 type CPUUsageGenerator struct {
-	Interval time.Duration
 }
 
-var cpuUsageLogger = logging.GetLogger("metrics.cpuUsage")
+var cpuUsageLogger = logging.GetLogger("metrics.cpuusage")
 
 // NewCPUUsageGenerator XXX
-func NewCPUUsageGenerator(interval time.Duration) (*CPUUsageGenerator, error) {
-	return &CPUUsageGenerator{interval}, nil
+func NewCPUUsageGenerator() (*CPUUsageGenerator, error) {
+	return &CPUUsageGenerator{}, nil
 }
 
 // Generate XXX
 func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
-	if g == nil {
-		return nil, errors.New("CPUUsageGenerator is not initialized")
-	}
-	time.Sleep(g.Interval * time.Second)
+	cpuusage := make(map[string]float64)
 
-	// TODO
-	return metrics.Values{}, nil
+	cpuusageValue, err := util.GetWmicToFloat("cpu", "loadpercentage")
+	if err != nil {
+		cpuusageValue = 0
+	}
+	cpuusage["cpu.user.percentage"] = cpuusageValue
+	cpuusage["cpu.idle.percentage"] = 100 - cpuusageValue
+	cpuUsageLogger.Debugf("cpuusage : %s", cpuusage)
+	return metrics.Values(cpuusage), nil
 }

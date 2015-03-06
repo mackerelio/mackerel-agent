@@ -3,12 +3,12 @@
 package windows
 
 import (
-	"errors"
 	"os"
 	"syscall"
 	"unsafe"
 )
 
+// SYSTEM_INFO XXX
 type SYSTEM_INFO struct {
 	ProcessorArchitecture     uint16
 	PageSize                  uint32
@@ -22,7 +22,8 @@ type SYSTEM_INFO struct {
 	ProcessorRevision         uint16
 }
 
-type MEMORYSTATUSEX struct {
+// MEMORY_STATUS_EX XXX
+type MEMORY_STATUS_EX struct {
 	Length               uint32
 	MemoryLoad           uint32
 	TotalPhys            uint64
@@ -34,27 +35,28 @@ type MEMORYSTATUSEX struct {
 	AvailExtendedVirtual uint64
 }
 
+// PDH_FMT_COUNTERVALUE_DOUBLE XXX
 type PDH_FMT_COUNTERVALUE_DOUBLE struct {
 	CStatus     uint32
 	DoubleValue float64
 }
 
-type PDH_FMT_COUNTERVALUE_ITEM_DOUBLE struct {
-	Name     *uint16
-	FmtValue PDH_FMT_COUNTERVALUE_DOUBLE
-}
-
+// windows system const
 const (
-	ERROR_SUCCESS      = 0
-	DRIVE_REMOVABLE    = 2
-	DRIVE_FIXED        = 3
-	HKEY_LOCAL_MACHINE = 0x80000002
-	RRF_RT_REG_SZ      = 0x00000002
-	RRF_RT_REG_DWORD   = 0x00000010
-	PDH_FMT_DOUBLE     = 0x00000200
-	PDH_INVALID_DATA   = 0xc0000bc6
+	ERROR_SUCCESS        = 0
+	ERROR_FILE_NOT_FOUND = 2
+	DRIVE_REMOVABLE      = 2
+	DRIVE_FIXED          = 3
+	HKEY_LOCAL_MACHINE   = 0x80000002
+	RRF_RT_REG_SZ        = 0x00000002
+	RRF_RT_REG_DWORD     = 0x00000010
+	PDH_FMT_DOUBLE       = 0x00000200
+	PDH_INVALID_DATA     = 0xc0000bc6
+	PDH_INVALID_HANDLE   = 0xC0000bbc
+	PDH_NO_DATA          = 0x800007d5
 )
 
+// windows procs
 var (
 	modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
@@ -69,6 +71,8 @@ var (
 	QueryDosDevice              = modkernel32.NewProc("QueryDosDeviceW")
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
+	GetModuleFileName           = modkernel32.NewProc("GetModuleFileNameW")
+	GetLastError                = modkernel32.NewProc("GetLastError")
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
 	PdhAddCounter               = modpdh.NewProc("PdhAddCounterW")
 	PdhCollectQueryData         = modpdh.NewProc("PdhCollectQueryData")
@@ -76,7 +80,8 @@ var (
 	PdhCloseQuery               = modpdh.NewProc("PdhCloseQuery")
 )
 
-func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
+// RegGetInt XXX
+func RegGetInt(hKey uint32, subKey string, value string) (uint32, uintptr, error) {
 	var num, numlen uint32
 	numlen = 4
 	ret, _, err := RegGetValue.Call(
@@ -88,15 +93,16 @@ func RegGetInt(hKey uint32, subKey string, value string) (uint32, error) {
 		uintptr(unsafe.Pointer(&num)),
 		uintptr(unsafe.Pointer(&numlen)))
 	if ret != ERROR_SUCCESS {
-		return 0, err
+		return 0, ret, err
 	}
 
-	return num, nil
+	return num, ret, nil
 }
 
-func RegGetString(hKey uint32, subKey string, value string) (string, error) {
+// RegGetString XXX
+func RegGetString(hKey uint32, subKey string, value string) (string, uintptr, error) {
 	var bufLen uint32
-	RegGetValue.Call(
+	ret, _, err := RegGetValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
@@ -104,12 +110,15 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		0,
 		0,
 		uintptr(unsafe.Pointer(&bufLen)))
+	if ret != ERROR_SUCCESS {
+		return "", ret, err
+	}
 	if bufLen == 0 {
-		return "", errors.New("Can't get size of registry value")
+		return "", ret, nil
 	}
 
 	buf := make([]uint16, bufLen)
-	ret, _, err := RegGetValue.Call(
+	ret, _, err = RegGetValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
@@ -118,18 +127,20 @@ func RegGetString(hKey uint32, subKey string, value string) (string, error) {
 		uintptr(unsafe.Pointer(&buf[0])),
 		uintptr(unsafe.Pointer(&bufLen)))
 	if ret != ERROR_SUCCESS {
-		return "", err
+		return "", ret, err
 	}
 
-	return syscall.UTF16ToString(buf), nil
+	return syscall.UTF16ToString(buf), ret, nil
 }
 
+// CounterInfo XXX
 type CounterInfo struct {
 	PostName    string
 	CounterName string
 	Counter     syscall.Handle
 }
 
+// CreateQuery XXX
 func CreateQuery() (syscall.Handle, error) {
 	var query syscall.Handle
 	r, _, err := PdhOpenQuery.Call(0, 0, uintptr(unsafe.Pointer(&query)))
@@ -139,6 +150,7 @@ func CreateQuery() (syscall.Handle, error) {
 	return query, nil
 }
 
+// CreateCounter XXX
 func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 	var counter syscall.Handle
 	r, _, err := PdhAddCounter.Call(
@@ -156,6 +168,7 @@ func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 	}, nil
 }
 
+// GetAdapterList XXX
 func GetAdapterList() (*syscall.IpAdapterInfo, error) {
 	b := make([]byte, 1000)
 	l := uint32(len(b))
@@ -172,6 +185,7 @@ func GetAdapterList() (*syscall.IpAdapterInfo, error) {
 	return a, nil
 }
 
+// BytePtrToString XXX
 func BytePtrToString(p *uint8) string {
 	a := (*[10000]uint8)(unsafe.Pointer(p))
 	i := 0
@@ -179,4 +193,14 @@ func BytePtrToString(p *uint8) string {
 		i++
 	}
 	return string(a[:i])
+}
+
+// ExecPath returns path of executable file (self).
+func ExecPath() (string, error) {
+	var wpath [syscall.MAX_PATH]uint16
+	r1, _, err := GetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
+	if r1 == 0 {
+		return "", err
+	}
+	return syscall.UTF16ToString(wpath[:]), nil
 }

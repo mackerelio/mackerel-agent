@@ -7,41 +7,44 @@ import (
 	"unsafe"
 
 	"github.com/mackerelio/mackerel-agent/logging"
-	. "github.com/mackerelio/mackerel-agent/util/windows"
+	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// CPUGenerator XXX
 type CPUGenerator struct {
 }
 
+// Key XXX
 func (g *CPUGenerator) Key() string {
 	return "cpu"
 }
 
 var cpuLogger = logging.GetLogger("spec.cpu")
 
+// Generate XXX
 func (g *CPUGenerator) Generate() (interface{}, error) {
 	var results []map[string]interface{}
 
-	var systemInfo SYSTEM_INFO
-	GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
+	var systemInfo windows.SYSTEM_INFO
+	windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
 
 	for i := uint32(0); i < systemInfo.NumberOfProcessors; i++ {
-		processorName, err := RegGetString(
-			HKEY_LOCAL_MACHINE,
+		processorName, _, err := windows.RegGetString(
+			windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`ProcessorNameString`)
 		if err != nil {
 			return nil, err
 		}
-		processorMHz, err := RegGetInt(
-			HKEY_LOCAL_MACHINE,
+		processorMHz, _, err := windows.RegGetInt(
+			windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`~MHz`)
 		if err != nil {
 			return nil, err
 		}
-		vendorIdentifier, err := RegGetString(
-			HKEY_LOCAL_MACHINE,
+		vendorIdentifier, _, err := windows.RegGetString(
+			windows.HKEY_LOCAL_MACHINE,
 			fmt.Sprintf(`HARDWARE\DESCRIPTION\System\CentralProcessor\%d`, i),
 			`VendorIdentifier`)
 		if err != nil {

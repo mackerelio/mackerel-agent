@@ -3,91 +3,39 @@
 package windows
 
 import (
-	"fmt"
-	"strings"
-	"syscall"
-	"unsafe"
-
 	"github.com/mackerelio/mackerel-agent/logging"
-	. "github.com/mackerelio/mackerel-agent/util/windows"
+	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+// FilesystemGenerator XXX
 type FilesystemGenerator struct {
 }
 
+// Key XX
 func (g *FilesystemGenerator) Key() string {
 	return "filesystem"
 }
 
 var filesystemLogger = logging.GetLogger("spec.filesystem")
 
+// Generate XXX
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
-	filesystems := make(map[string]map[string]interface{})
 
-	drivebuf := make([]byte, 256)
-	_, r, err := GetLogicalDriveStrings.Call(
-		uintptr(len(drivebuf)),
-		uintptr(unsafe.Pointer(&drivebuf[0])))
-	if r != 0 {
-		return nil, err
-	}
+	ret := make(map[string]map[string]interface{})
 
-	drives := []string{}
-	for _, v := range drivebuf {
-		if v >= 65 && v <= 90 {
-			drive := string(v)
-			r, _, err = GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
-			if r != DRIVE_FIXED {
-				continue
-			}
-			drives = append(drives, drive+":")
+	fileSystems, err := windows.CollectFilesystemValues()
+	for drive, f := range fileSystems {
+		ret[drive] = map[string]interface{}{
+			"percent_used": f.PercentUsed,
+			"kb_used":      f.KbUsed,
+			"kb_size":      f.KbSize,
+			"kb_available": f.KbAvailable,
+			"mount":        f.Mount,
+			"label":        f.Label,
+			"volume_name":  f.VolumeName,
+			"fs_type":      f.FsType,
 		}
 	}
 
-	for _, drive := range drives {
-		drivebuf := make([]uint16, 256)
-		r, _, err := QueryDosDevice.Call(
-			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
-			uintptr(unsafe.Pointer(&drivebuf[0])),
-			uintptr(len(drivebuf)))
-		if r == 0 {
-			return nil, err
-		}
-		volumebuf := make([]uint16, 256)
-		fsnamebuf := make([]uint16, 256)
-		r, _, err = GetVolumeInformationW.Call(
-			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive+`\`))),
-			uintptr(unsafe.Pointer(&volumebuf[0])),
-			uintptr(len(volumebuf)),
-			0,
-			0,
-			0,
-			uintptr(unsafe.Pointer(&fsnamebuf[0])),
-			uintptr(len(fsnamebuf)))
-		if r == 0 {
-			return nil, err
-		}
-		freeBytesAvailable := int64(0)
-		totalNumberOfBytes := int64(0)
-		r, _, err = GetDiskFreeSpaceEx.Call(
-			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
-			uintptr(unsafe.Pointer(&freeBytesAvailable)),
-			uintptr(unsafe.Pointer(&totalNumberOfBytes)),
-			0)
-		if r == 0 {
-			continue
-		}
-		filesystems[drive] = map[string]interface{}{
-			"percent_used": fmt.Sprintf("%d%%", 100*(totalNumberOfBytes-freeBytesAvailable)/totalNumberOfBytes),
-			"kb_used":      (totalNumberOfBytes - freeBytesAvailable) / 1024 / 1024,
-			"kb_size":      totalNumberOfBytes / 1024 / 1024,
-			"kb_available": freeBytesAvailable / 1024 / 1024,
-			"mount":        drive,
-			"label":        syscall.UTF16ToString(drivebuf),
-			"volume_name":  syscall.UTF16ToString(volumebuf),
-			"fs_type":      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
-		}
-	}
-
-	return filesystems, nil
+	return ret, err
 }

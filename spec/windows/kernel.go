@@ -6,7 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/mackerelio/mackerel-agent/logging"
-	. "github.com/mackerelio/mackerel-agent/util/windows"
+	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
 // KernelGenerator XXX
@@ -24,25 +24,25 @@ var kernelLogger = logging.GetLogger("spec.kernel")
 func (g *KernelGenerator) Generate() (interface{}, error) {
 	results := make(map[string]string)
 
-	name, err := RegGetString(
-		HKEY_LOCAL_MACHINE,
+	name, _, err := windows.RegGetString(
+		windows.HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`ProductName`)
 	if err != nil {
 		return nil, err
 	}
-	version, err := RegGetString(
-		HKEY_LOCAL_MACHINE,
+	version, _, err := windows.RegGetString(
+		windows.HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`CurrentVersion`)
 	if err != nil {
 		return nil, err
 	}
-	release, err := RegGetString(
-		HKEY_LOCAL_MACHINE,
+	release, errno, err := windows.RegGetString(
+		windows.HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`CSDVersion`)
-	if err != nil {
+	if err != nil && errno != windows.ERROR_FILE_NOT_FOUND { // CSDVersion is nullable
 		return nil, err
 	}
 
@@ -51,8 +51,8 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 	results["version"] = version
 	results["release"] = release
 
-	var systemInfo SYSTEM_INFO
-	GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
+	var systemInfo windows.SYSTEM_INFO
+	windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
 	switch systemInfo.ProcessorArchitecture {
 	case 0:
 		results["machine"] = "x86"

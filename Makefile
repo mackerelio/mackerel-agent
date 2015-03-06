@@ -22,7 +22,9 @@ deps:
 	go get -d -v -t ./...
 	go get github.com/golang/lint/golint
 	go get golang.org/x/tools/cmd/vet
+	go get golang.org/x/tools/cmd/cover
 	go get github.com/laher/goxc
+	go get github.com/mattn/goveralls
 
 LINT_RET = .golint.txt
 lint: deps
@@ -31,6 +33,8 @@ lint: deps
 	for os in "$(BUILD_OS_TARGETS)"; do \
 		if [ $$os != "windows" ]; then \
 			GOOS=$$os golint ./... | tee -a $(LINT_RET); \
+		else \
+			GOOS=$$os golint --min_confidence=0.9 ./... | tee -a $(LINT_RET); \
 		fi \
 	done
 	test ! -s $(LINT_RET)
@@ -38,7 +42,11 @@ lint: deps
 crossbuild: deps
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
 	    -os=$(BUILD_OS_TARGETS) -arch="386 amd64 arm" -d . \
-	    -resources-include='README*,mackerel-agent.conf' -n $(BIN)
+	    -resources-include='README*,mackerel-agent.conf' -n $(BIN) \
+	    -main-dirs-exclude ./wix
+
+cover: deps
+	tool/cover.sh
 
 rpm:
 	GOOS=linux GOARCH=386 make build
@@ -59,4 +67,4 @@ clean:
 	rm -f build/$(BIN)
 	go clean
 
-.PHONY: test build run deps clean lint crossbuild rpm deb
+.PHONY: test build run deps clean lint crossbuild cover rpm deb
