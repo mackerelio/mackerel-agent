@@ -61,7 +61,7 @@ func main() {
 
 	if conf.OutputOnce {
 		command.RunOnce(conf)
-		exit(0, conf)
+		exitWithoutPidfileCleaning(0)
 	}
 
 	if conf.Apikey == "" {
@@ -111,7 +111,6 @@ func resolveConfig() (*config.Config, bool) {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
 		exitWithoutPidfileCleaning(1)
 	}
-
 
 	// overwrite config from file by config from args
 	flag.Visit(func(f *flag.Flag) {

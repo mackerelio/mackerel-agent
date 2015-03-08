@@ -353,17 +353,28 @@ func RunOnce(conf *config.Config) {
 		logger.Errorf("While collecting host specs: %s", err)
 		return
 	}
-	logger.Infof("%s, %s, %s", hostname, meta, interfaces)
-	logger.Infof("agent")
 	ag := &agent.Agent{
 		MetricsGenerators: metricsGenerators(conf),
 		PluginGenerators:  pluginGenerators(conf),
 	}
 	graphdefs := ag.CollectGraphDefsOfPlugins()
-	logger.Infof("%s", graphdefs)
-	logger.Infof("Collecting metrics may takes one minutes.")
+	logger.Infof("Collecting metrics may take one minutes.")
 	metrics := ag.CollectMetrics(time.Now())
-	logger.Infof("%s", metrics)
+	payload := map[string]interface{}{
+		"host": map[string]interface{}{
+			"name":          hostname,
+			"meta":          meta,
+			"interfaces":    interfaces,
+			"roleFullnames": conf.Roles,
+		},
+		"metrics": metrics,
+	}
+	json, err := json.Marshal(payload)
+	if err != nil {
+		logger.Warningf("Error while marshaling graphdefs: graphdefs = %s.", graphdefs)
+	} else {
+		fmt.Println(string(json))
+	}
 }
 
 // Run starts the main metric collecting logic and this function will never return.
