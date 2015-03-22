@@ -3,23 +3,27 @@
 package util
 
 import (
-	"bytes"
+	"fmt"
 	"os/exec"
+	"time"
+
+	"github.com/Songmu/timeout"
 )
+
+var TimeoutDuration = 30 * time.Second
+var TimeoutKillAfter = 10 * time.Second
 
 // RunCommand runs command (in one string) and returns stdout, stderr strings.
 func RunCommand(command string) (string, string, error) {
-	var outBuffer, errBuffer bytes.Buffer
-
-	cmd := exec.Command("/bin/sh", "-c", command)
-	cmd.Stdout = &outBuffer
-	cmd.Stderr = &errBuffer
-
-	err := cmd.Run()
-
-	if err != nil {
-		return "", "", err
+	tio := &timeout.Timeout{
+		Cmd:       exec.Command("/bin/sh", "-c", command),
+		Duration:  TimeoutDuration,
+		KillAfter: TimeoutKillAfter,
 	}
+	exitStatus, stdout, stderr, err := tio.Run()
 
-	return string(outBuffer.Bytes()), string(errBuffer.Bytes()), nil
+	if err == nil && exitStatus.IsTimedOut() {
+		err = fmt.Errorf("command timed out")
+	}
+	return stdout, stderr, err
 }
