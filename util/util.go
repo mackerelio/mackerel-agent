@@ -10,7 +10,9 @@ import (
 	"github.com/Songmu/timeout"
 )
 
+// TimeoutDuration is option of `Runcommand()` set timeout limit of command execution.
 var TimeoutDuration = 30 * time.Second
+// TimeoutKillAfter is option of `RunCommand()` set waiting limit to `kill -kill` after terminating the command.
 var TimeoutKillAfter = 10 * time.Second
 
 // RunCommand runs command (in one string) and returns stdout, stderr strings.
