@@ -284,9 +284,16 @@ func TestUpdateHost(t *testing.T) {
 		"encap":      "Ethernet",
 	})
 
-	err := api.UpdateHost("ABCD123", "dummy", map[string]interface{}{
-		"memo": "hello",
-	}, interfaces, []string{"My-Service:app-default"})
+	hostSpec := map[string]interface{}{
+		"name": "dummy",
+		"meta": map[string]interface{}{
+			"memo": "hello",
+		},
+		"interfaces":    interfaces,
+		"roleFullnames": []string{"My-Service:app-default"},
+	}
+
+	err := api.UpdateHost("ABCD123", hostSpec)
 
 	if err != nil {
 		t.Error("should not raise error: ", err)

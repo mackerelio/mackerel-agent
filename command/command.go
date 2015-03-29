@@ -53,6 +53,17 @@ func saveHostID(root string, id string) error {
 	return nil
 }
 
+// buildHostSpec build data structure for Host specs
+func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string) map[string]interface{} {
+
+	return map[string]interface{}{
+		"name":          name,
+		"meta":          meta,
+		"interfaces":    interfaces,
+		"roleFullnames": roleFullnames,
+	}
+}
+
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
 func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*mackerel.Host, error) {
@@ -82,7 +93,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*macke
 		if err != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), err.Error())
 		}
-		err := api.UpdateHost(hostID, hostname, meta, interfaces, roleFullnames)
+		err := api.UpdateHost(hostID, buildHostSpec(hostname, meta, interfaces, roleFullnames))
 		if err != nil {
 			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
 		}
@@ -322,7 +333,7 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 		return
 	}
 
-	err = api.UpdateHost(host.ID, hostname, meta, interfaces, conf.Roles)
+	err = api.UpdateHost(host.ID, buildHostSpec(hostname, meta, interfaces, conf.Roles))
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
 	} else {
@@ -361,17 +372,12 @@ func RunOnce(conf *config.Config) {
 	logger.Infof("Collecting metrics may take one minutes.")
 	metrics := ag.CollectMetrics(time.Now())
 	payload := map[string]interface{}{
-		"host": map[string]interface{}{
-			"name":          hostname,
-			"meta":          meta,
-			"interfaces":    interfaces,
-			"roleFullnames": conf.Roles,
-		},
+		"host":    buildHostSpec(hostname, meta, interfaces, conf.Roles),
 		"metrics": metrics,
 	}
 	json, err := json.Marshal(payload)
 	if err != nil {
-		logger.Warningf("Error while marshaling graphdefs: graphdefs = %s.", graphdefs)
+		logger.Warningf("Error while marshaling graphdefs: err = %s, graphdefs = %s.", err.Error(), graphdefs)
 	} else {
 		fmt.Println(string(json))
 	}
