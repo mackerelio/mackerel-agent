@@ -54,8 +54,8 @@ func TestParseFlagsPrintVersion(t *testing.T) {
 
 	config, otherOptions := resolveConfig()
 
-	if config != nil {
-		t.Error("with -version args, config should be null")
+	if config.Verbose != false {
+		t.Error("with -version args, variables of config should have default values")
 	}
 
 	if otherOptions.PrintVersion == false {
@@ -69,8 +69,8 @@ func TestParseFlagsRunOnce(t *testing.T) {
 
 	config, otherOptions := resolveConfig()
 
-	if config != nil {
-		t.Error("with -once args, config should be null")
+	if config.Verbose != false {
+		t.Error("with -version args, variables of config should have default values")
 	}
 
 	if otherOptions.RunOnce == false {

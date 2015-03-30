@@ -110,12 +110,12 @@ func resolveConfig() (*config.Config, *otherOptions) {
 
 	if *printVersion {
 		otherOptions.PrintVersion = true
-		return nil, otherOptions
+		return conf, otherOptions
 	}
 
 	if *runOnce {
 		otherOptions.RunOnce = true
-		return nil, otherOptions
+		return conf, otherOptions
 	}
 
 	conf, confErr := config.LoadConfig(*conffile)
