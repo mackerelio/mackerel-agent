@@ -58,7 +58,7 @@ func TestParseFlagsPrintVersion(t *testing.T) {
 		t.Error("with -version args, variables of config should have default values")
 	}
 
-	if otherOptions.PrintVersion == false {
+	if otherOptions.printVersion == false {
 		t.Error("with -version args, printVersion should be true")
 	}
 }
@@ -73,7 +73,7 @@ func TestParseFlagsRunOnce(t *testing.T) {
 		t.Error("with -version args, variables of config should have default values")
 	}
 
-	if otherOptions.RunOnce == false {
+	if otherOptions.runOnce == false {
 		t.Error("with -once args, RunOnce should be true")
 	}
 }

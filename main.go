@@ -42,8 +42,8 @@ func (r *roleFullnamesFlag) Set(input string) error {
 }
 
 type otherOptions struct {
-	PrintVersion bool
-	RunOnce      bool
+	printVersion bool
+	runOnce      bool
 }
 
 var logger = logging.GetLogger("main")
@@ -51,7 +51,7 @@ var logger = logging.GetLogger("main")
 func main() {
 	conf, otherOptions := resolveConfig()
 
-	if otherOptions.PrintVersion {
+	if otherOptions.printVersion {
 		fmt.Printf("mackerel-agent version %s (rev %s)\n", version.VERSION, version.GITCOMMIT)
 		exitWithoutPidfileCleaning(0)
 	}
@@ -64,7 +64,7 @@ func main() {
 
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s", version.VERSION, version.GITCOMMIT)
 
-	if otherOptions.RunOnce {
+	if otherOptions.runOnce {
 		command.RunOnce(conf)
 		exitWithoutPidfileCleaning(0)
 	}
@@ -109,12 +109,12 @@ func resolveConfig() (*config.Config, *otherOptions) {
 	flag.Parse()
 
 	if *printVersion {
-		otherOptions.PrintVersion = true
+		otherOptions.printVersion = true
 		return conf, otherOptions
 	}
 
 	if *runOnce {
-		otherOptions.RunOnce = true
+		otherOptions.runOnce = true
 		return conf, otherOptions
 	}
 
