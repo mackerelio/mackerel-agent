@@ -9,7 +9,7 @@ var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", "mackerel-agent")
 
 // DefaultConfig The default configuration for freebsd
 var DefaultConfig = &Config{
-	Apibase:  "https://mackerel.io",
+	Apibase:  getApibase(),
 	Root:     mackerelRoot,
 	Pidfile:  filepath.Join(mackerelRoot, "pid"),
 	Conffile: filepath.Join(mackerelRoot, "mackerel-agent.conf"),

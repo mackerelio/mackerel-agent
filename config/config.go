@@ -11,6 +11,15 @@ import (
 
 var configLogger = logging.GetLogger("config")
 
+var apibase string
+
+func getApibase() string {
+	if apibase != "" {
+		return apibase
+	}
+	return "https://mackerel.io"
+}
+
 // Config XXX
 type Config struct {
 	Apibase         string
