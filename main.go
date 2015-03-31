@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -47,7 +48,8 @@ func main() {
 	conf, printVersion := resolveConfig()
 
 	if printVersion {
-		fmt.Printf("mackerel-agent version %s (rev %s)\n", version.VERSION, version.GITCOMMIT)
+		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
+			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
 		exitWithoutPidfileCleaning(0)
 	}
 
