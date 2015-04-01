@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/mackerelio/mackerel-agent/util/windows"
 	"log"
 	"path/filepath"
+
+	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
 func execdirInit() string {
@@ -18,7 +19,7 @@ var execdir = execdirInit()
 
 // The default configuration for windows
 var DefaultConfig = &Config{
-	Apibase:  "https://mackerel.io",
+	Apibase:  getApibase(),
 	Root:     execdir,
 	Pidfile:  filepath.Join(execdir, "mackerel-agent.pid"),
 	Conffile: filepath.Join(execdir, "mackerel-agent.conf"),
