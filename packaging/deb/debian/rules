@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+%:
+	dh $@
+
+package=mackerel-agent
+
+override_dh_auto_install:
+	dh_auto_install
+	install -d -m 755 debian/${package}/usr/local/bin/
+	install    -m 655 debian/${package}.bin  debian/${package}/usr/local/bin/${package}
+	install -d -m 755 debian/${package}/etc/init.d/
+	install    -m 755 debian/${package}.initd debian/${package}/etc/init.d/${package}
+	install -d -m 755 debian/${package}/etc/logrotate.d/
+	install    -m 644 debian/${package}.logrotate debian/${package}/etc/logrotate.d/${package}
+	install -d -m 755 debian/${package}/etc/default/
+	install    -m 644 debian/${package}.default debian/${package}/etc/default/${package}
+	install -d -m 755 debian/${package}/etc/mackerel-agent/
+	install    -m 644 debian/${package}.conf debian/${package}/etc/mackerel-agent/${package}.conf
+
+override_dh_usrlocal:
+
