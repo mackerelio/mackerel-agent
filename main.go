@@ -52,7 +52,7 @@ var logger = logging.GetLogger("main")
 func main() {
 	conf, otherOptions := resolveConfig()
 
-	if otherOptions.printVersion {
+	if otherOptions != nil && otherOptions.printVersion {
 		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
 			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
 		exitWithoutPidfileCleaning(0)
@@ -66,7 +66,7 @@ func main() {
 
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
 
-	if otherOptions.runOnce {
+	if otherOptions != nil && otherOptions.runOnce {
 		command.RunOnce(conf)
 		exitWithoutPidfileCleaning(0)
 	}
