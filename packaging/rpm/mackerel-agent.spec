@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.14.3
+Version:   0.15.0
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
