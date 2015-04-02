@@ -2,7 +2,7 @@ package config
 
 // DefaultConfig The default configuration for linux
 var DefaultConfig = &Config{
-	Apibase:  "https://mackerel.io",
+	Apibase:  getApibase(),
 	Root:     "/var/lib/mackerel-agent",
 	Pidfile:  "/var/run/mackerel-agent.pid",
 	Conffile: "/etc/mackerel-agent/mackerel-agent.conf",

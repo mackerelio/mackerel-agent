@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -52,7 +53,8 @@ func main() {
 	conf, otherOptions := resolveConfig()
 
 	if otherOptions.printVersion {
-		fmt.Printf("mackerel-agent version %s (rev %s)\n", version.VERSION, version.GITCOMMIT)
+		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
+			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
 		exitWithoutPidfileCleaning(0)
 	}
 
@@ -62,7 +64,7 @@ func main() {
 		logging.ConfigureLoggers("INFO")
 	}
 
-	logger.Infof("Starting mackerel-agent version:%s, rev:%s", version.VERSION, version.GITCOMMIT)
+	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
 
 	if otherOptions.runOnce {
 		command.RunOnce(conf)
