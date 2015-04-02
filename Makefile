@@ -60,6 +60,9 @@ deb:
 	cp packaging/mackerel-agent.conf packaging/deb/debian/mackerel-agent.conf
 	cd packaging/deb && debuild --no-tgz-check -rfakeroot -uc -us
 
+release:
+	tool/releng
+
 clean:
 	rm -f build/$(BIN)
 	go clean

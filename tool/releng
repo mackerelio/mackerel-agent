@@ -1,0 +1,321 @@
+#!/usr/bin/env perl
+
+=head DESCRIPTION
+
+releng script for mackerel-agent
+
+=head SYNOPSIS
+
+    % tool/releng
+
+=head DEPENDENCY
+
+`git` command and `hub` or `gh` command are required.
+
+=cut
+
+use 5.014;
+use strict;
+use warnings;
+use utf8;
+use Carp;
+
+use HTTP::Tiny;
+use JSON::PP;
+use ExtUtils::MakeMaker qw/prompt/;
+use Time::Piece;
+use POSIX qw(setlocale LC_TIME);
+use version;
+
+sub DEBUG() { $ENV{MC_RELENG_DEBUG} }
+
+sub command {say('+ '. join ' ', @_) if DEBUG; !system(@_) or croak $!}
+sub _git {
+     state $com = do {
+        chomp(my $c = `which git`);
+        die "git command is required\n" unless $c;
+        $c;
+    };
+}
+sub git {
+    unshift  @_, _git; goto \&command
+}
+
+sub _hub {
+    state $com = do {
+        chomp(my $c = `which hub`);
+        unless ($c) {
+            chomp($c = `which gh`);
+        }
+        die "hub or gh command is required\n" unless $c;
+        $c;
+    };
+}
+sub hub {
+    unshift @_, _hub; goto \&command;
+}
+
+# logger. steal from minilla
+use Term::ANSIColor qw(colored);
+use constant { LOG_DEBUG => 1, LOG_INFO => 2, LOG_WARN => 3, LOG_ERROR => 4 };
+
+my $Colors = {
+    LOG_DEBUG,   => 'green',
+    LOG_WARN,    => 'yellow',
+    LOG_INFO,    => 'cyan',
+    LOG_ERROR,   => 'red',
+};
+
+sub _printf {
+    my $type = pop;
+    return if $type == LOG_DEBUG && !DEBUG;
+    my ($temp, @args) = @_;
+    my $msg = sprintf($temp, map { defined($_) ? $_ : '-' } @args);
+    $msg = colored $msg, $Colors->{$type} if defined $type;
+    my $fh = $type && $type >= LOG_WARN ? *STDERR : *STDOUT;
+    print $fh $msg;
+}
+
+sub infof  {_printf(@_, LOG_INFO)}
+sub warnf  {_printf(@_, LOG_WARN)}
+sub debugf {_printf(@_, LOG_DEBUG)}
+sub errorf {
+    my(@msg) = @_;
+    _printf(@msg, LOG_ERROR);
+
+    my $fmt = shift @msg;
+    die sprintf($fmt, @msg);
+}
+
+# file utils
+sub slurp {
+    my $file = shift;
+    local $/;
+    open my $fh, '<:encoding(UTF-8)', $file or die $!;
+    <$fh>
+}
+sub spew {
+    my ($file, $data) = @_;
+    open my $fh, '>:encoding(UTF-8)', $file or die $!;
+    $data .= "\n" if $data !~ /\n\z/ms;
+    print $fh $data;
+}
+sub replace {
+    my ($file, $code) = @_;
+    my $content = $code->(slurp($file));
+    spew($file, $content);
+}
+
+# scope_guard
+package __g {
+    sub new {
+        my ($class, $code) = @_;
+        bless $code, $class;
+    }
+    sub DESTROY {
+        my $self = shift;
+        $self->();
+    }
+}
+sub scope_guard(&) {
+    my $code = shift;
+    __g->new($code);
+}
+
+###
+sub last_release {
+    my @out = `git tag`;
+
+    my ($tag) =
+        sort { version->parse($b) <=> version->parse($a) }
+        map {/^v([0-9]+(?:\.[0-9]+)+)$/; $1 || ()}
+        map {chomp; $_} @out;
+    $tag;
+}
+
+sub merged_prs {
+    my $current_tag = shift;
+    my @pull_nums = sort {$a <=> $b} map {m/Merge pull request #([0-9]+) /; $1 || ()  } `git log v$current_tag... --merges --oneline`;
+
+    my @releases;
+    my $ua = HTTP::Tiny->new;
+    for my $pull_num (@pull_nums) {
+        my $url = sprintf "https://api.github.com/repos/mackerelio/mackerel-agent/pulls/%d?state=closed", $pull_num;
+        my $res = $ua->get($url);
+        unless ($res->{success}) {
+            warnf "request to $url failed\n";
+            next;
+        }
+        my $data = eval { decode_json $res->{content} };
+        if ($@) {
+            warnf "parse json failed. url: $url\n";
+            next;
+        }
+
+        push @releases, {
+            num   => $pull_num,
+            title => $data->{title},
+            user  => $data->{user}{login},
+            url   => $data->{html_url},
+        };
+    }
+    @releases;
+}
+
+sub parse_version {
+    my $ver = shift;
+    my ($major, $minor, $patch) = $ver =~ /^([0-9]+)\.([0-9]+)\.([0-9]+)$/;
+    ($major, $minor, $patch)
+}
+
+sub suggest_next_version {
+    my $ver = shift;
+    my ($major, $minor, $patch) = parse_version($ver);
+    join '.', $major, ++$minor, 0;
+}
+
+sub is_valid_version {
+    my $ver = shift;
+    my ($major) = parse_version($ver);
+    defined $major;
+}
+
+sub decide_next_version {
+    my $current_version = shift;
+    my $next_version = suggest_next_version($current_version);
+    $next_version = prompt("next version", $next_version);
+
+    if (!is_valid_version($next_version)) {
+        die qq{"$next_version" is invalid version string\n};
+    }
+    if ($next_version lt $current_version) {
+        die qq{"$next_version" is smaller than current version "$current_version"\n};
+    }
+    $next_version;
+}
+
+sub update_versions {
+    my ($current_version, $next_version) = @_;
+
+    ### update versions
+    my $cur_ver_reg = quotemeta $current_version;
+    # update .travis.yml
+    replace '.travis.yml' => sub {
+        my $content = shift;
+        $content =~ s/$cur_ver_reg/$next_version/msg;
+        $content;
+    };
+
+    # update rpm spec
+    replace 'packaging/rpm/mackerel-agent.spec' => sub {
+        my $content = shift;
+        $content =~ s/^(Version:\s+)$cur_ver_reg/$1$next_version/ms;
+        $content;
+    };
+
+}
+
+sub update_changelog {
+    my ($next_version, @releases) = @_;
+
+    chomp(my $email = `git config user.email`);
+    chomp(my $name  = `git config user.name`);
+
+    my $old_locale = setlocale(LC_TIME);
+    setlocale(LC_TIME, "C");
+    my $g = scope_guard {
+        setlocale(LC_TIME, $old_locale);
+    };
+
+    my $now = localtime;
+
+    replace 'packaging/deb/debian/changelog' => sub {
+        my $content = shift;
+
+        my $update = "mackerel-agent ($next_version-1) stable; urgency=low\n\n";
+        for my $rel (@releases) {
+            $update .= sprintf "  * %s (by %s)\n    <%s>\n", $rel->{title}, $rel->{user}, $rel->{url};
+        }
+        $update .= sprintf "\n -- %s <%s>  %s\n\n", $name, $email, $now->strftime("%a, %d %b %Y %H:%M:%S %z");
+        $update . $content;
+    };
+
+    replace 'packaging/rpm/mackerel-agent.spec' => sub {
+        my $content = shift;
+
+        my $update = sprintf "* %s <%s> - %s-1\n", $now->strftime('%a %b %d %Y'), $email, $next_version;
+        for my $rel (@releases) {
+            $update .= sprintf "- %s (by %s)\n", $rel->{title}, $rel->{user};
+        }
+        $content =~ s/%changelog/%changelog\n$update/;
+        $content;
+    };
+}
+
+sub build_pull_request_body {
+    my ($next_version, @releases) = @_;
+    my $body = "Release version $next_version\n\n";
+    for my $rel (@releases) {
+        $body .= sprintf "- %s #%s\n", $rel->{title}, $rel->{num};
+    }
+    $body;
+}
+
+
+### main process
+if (!$ENV{HARNESS_ACTIVE}) {
+    main();
+} else {
+    # When called via `prove`, tests will run.
+    run_tests();
+}
+
+sub main {
+    # check command
+    _git;_hub;
+
+    git qw/checkout master/;
+    git qw/pull/;
+
+    my $current_version = last_release;
+    my $next_version    = decide_next_version($current_version);
+
+    my $branch_name = "bump-version-$next_version";
+    infof "checkout new releasing branch [$branch_name]\n";
+    git qw/checkout -b/, $branch_name;
+
+    infof "bump versions and update readme\n";
+    update_versions($current_version, $next_version);
+    git qw/commit -am/, "ready for next release. version: $next_version";
+
+    infof "update changelogs\n";
+    my @releases = merged_prs $current_version;
+    update_changelog($next_version, @releases);
+    git qw/commit -am/, "update changelogs";
+
+    if (prompt('push changes?', 'y') !~ /^y(?:es)?$/i ) {
+        warnf('releng is aborted. remove the branch [%s] before next releng', $branch_name);
+        return;
+    }
+
+    infof "push changes\n";
+    git qw/push --set-upstream origin/, $branch_name;
+    my $pr_body = build_pull_request_body($next_version, @releases);
+    hub qw/pull-request -m/, $pr_body;
+
+    infof "Releasing pull request is created. Review and merge it. You can update changelogs and commit more in this branch before merging.\n";
+}
+
+sub run_tests {
+    require Test::More;
+    Test::More->import;
+
+    my $version = '0.1.2';
+    my ($major, $minor, $patch) = parse_version($version);
+    is($major, 0);
+    is($minor, 1);
+    is($patch, 2);
+    is( suggest_next_version($version), '0.2.0' );
+
+    done_testing();
+}
