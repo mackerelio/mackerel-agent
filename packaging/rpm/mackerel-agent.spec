@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.14.1
+Version:   0.14.3
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -71,6 +71,8 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Mon Mar 23 2015 Songmu <songmu@hatena.ne.jp> 0.14.3-1
+- [enhancement] add collector for ec2 metadata (stanaka)
 * Tue Jan 20 2015 Songmu <songmu@hatena.ne.jp> 0.14.1-1
 - [fix] skip device mapper metrics
 - [fix] filter invalid float values
