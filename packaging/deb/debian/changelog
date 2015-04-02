@@ -1,3 +1,20 @@
+mackerel-agent (0.15.0-1) stable; urgency=low
+
+  * building packages (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/56>
+  * Only skip device mapper created by docker (Resolve #70) (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/71>
+  * Run once and output results to stdout (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/72>
+  * introduce Songmu/timeout for interrupting long time plugin execution (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/73>
+  * add config.apibase (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/74>
+  * output GOOS GOARCH runtime.Version() when -version option is specified (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/75>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 02 Apr 2015 18:09:28 +0900
+
 mackerel-agent (0.14.3-1) precise; urgency=low
 
   * [enhancement] add collector for ec2 metadata (stanaka)
