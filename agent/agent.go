@@ -20,7 +20,8 @@ type MetricsResult struct {
 	Values  metrics.Values
 }
 
-func (agent *Agent) collectMetrics(collectedTime time.Time) *MetricsResult {
+// CollectMetrics collects metrics with generators.
+func (agent *Agent) CollectMetrics(collectedTime time.Time) *MetricsResult {
 	generators := agent.MetricsGenerators
 	for _, g := range agent.PluginGenerators {
 		generators = append(generators, g)
@@ -63,7 +64,7 @@ func (agent *Agent) Watch() chan *MetricsResult {
 			ti := tickedTime
 			sem <- 1
 			go func() {
-				metricsResult <- agent.collectMetrics(ti)
+				metricsResult <- agent.CollectMetrics(ti)
 				<-sem
 			}()
 		}
@@ -72,12 +73,12 @@ func (agent *Agent) Watch() chan *MetricsResult {
 	return metricsResult
 }
 
-// InitPluginGenerators XXX
-func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
+// CollectGraphDefsOfPlugins collects GraphDefs of Plugins
+func (agent *Agent) CollectGraphDefsOfPlugins() []mackerel.CreateGraphDefsPayload {
 	payloads := []mackerel.CreateGraphDefsPayload{}
 
 	for _, g := range agent.PluginGenerators {
-		p, err := g.PrepareGraphDefs(api)
+		p, err := g.PrepareGraphDefs()
 		if err != nil {
 			logger.Debugf("Failed to fetch meta information from plugin %s (non critical); seems that this plugin does not have meta information: %s", g, err)
 		}
@@ -85,6 +86,13 @@ func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
 			payloads = append(payloads, p...)
 		}
 	}
+
+	return payloads
+}
+
+// InitPluginGenerators XXX
+func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
+	payloads := agent.CollectGraphDefsOfPlugins()
 
 	if len(payloads) > 0 {
 		err := api.CreateGraphDefs(payloads)

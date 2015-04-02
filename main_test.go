@@ -52,13 +52,28 @@ func TestParseFlagsPrintVersion(t *testing.T) {
 	os.Args = []string{"mackerel-agent", "-version"}
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
 
-	config, printVersion := resolveConfig()
+	config, otherOptions := resolveConfig()
 
-	if config != nil {
-		t.Error("with -version args, config should be null")
+	if config.Verbose != false {
+		t.Error("with -version args, variables of config should have default values")
 	}
 
-	if printVersion == false {
+	if otherOptions.printVersion == false {
 		t.Error("with -version args, printVersion should be true")
+	}
+}
+
+func TestParseFlagsRunOnce(t *testing.T) {
+	os.Args = []string{"mackerel-agent", "-once"}
+	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
+
+	config, otherOptions := resolveConfig()
+
+	if config.Verbose != false {
+		t.Error("with -version args, variables of config should have default values")
+	}
+
+	if otherOptions.runOnce == false {
+		t.Error("with -once args, RunOnce should be true")
 	}
 }

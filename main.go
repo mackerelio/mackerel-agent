@@ -42,12 +42,17 @@ func (r *roleFullnamesFlag) Set(input string) error {
 	return nil
 }
 
+type otherOptions struct {
+	printVersion bool
+	runOnce      bool
+}
+
 var logger = logging.GetLogger("main")
 
 func main() {
-	conf, printVersion := resolveConfig()
+	conf, otherOptions := resolveConfig()
 
-	if printVersion {
+	if otherOptions.printVersion {
 		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
 			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
 		exitWithoutPidfileCleaning(0)
@@ -60,6 +65,11 @@ func main() {
 	}
 
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
+
+	if otherOptions.runOnce {
+		command.RunOnce(conf)
+		exitWithoutPidfileCleaning(0)
+	}
 
 	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
@@ -75,8 +85,9 @@ func main() {
 // return config.Config information.
 // As a special case, if `-version` flag is given it stops processing
 // and return true for the second return value.
-func resolveConfig() (*config.Config, bool) {
+func resolveConfig() (*config.Config, *otherOptions) {
 	conf := &config.Config{}
+	otherOptions := &otherOptions{}
 
 	var (
 		conffile     = flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
@@ -84,6 +95,7 @@ func resolveConfig() (*config.Config, bool) {
 		pidfile      = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
 		root         = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey       = flag.String("apikey", "", "API key from mackerel.io web site")
+		runOnce      = flag.Bool("once", false, "Show spec and metrics to stdout once")
 		printVersion = flag.Bool("version", false, "Prints version and exit")
 	)
 
@@ -99,7 +111,13 @@ func resolveConfig() (*config.Config, bool) {
 	flag.Parse()
 
 	if *printVersion {
-		return nil, true
+		otherOptions.printVersion = true
+		return conf, otherOptions
+	}
+
+	if *runOnce {
+		otherOptions.runOnce = true
+		return conf, otherOptions
 	}
 
 	conf, confErr := config.LoadConfig(*conffile)
@@ -126,7 +144,7 @@ func resolveConfig() (*config.Config, bool) {
 		}
 	})
 
-	return conf, false
+	return conf, nil
 }
 
 func createPidFile(pidfile string) error {
