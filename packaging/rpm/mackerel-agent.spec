@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.14.3
+Version:   0.15.0
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -71,6 +71,13 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Apr 02 2015 <y.songmu@gmail.com> - 0.15.0-1
+- building packages (by Songmu)
+- Only skip device mapper created by docker (Resolve #70) (by mechairoi)
+- Run once and output results to stdout (by stanaka)
+- introduce Songmu/timeout for interrupting long time plugin execution (by Songmu)
+- add config.apibase (by Songmu)
+- output GOOS GOARCH runtime.Version() when -version option is specified (by Songmu)
 * Mon Mar 23 2015 Songmu <songmu@hatena.ne.jp> 0.14.3-1
 - [enhancement] add collector for ec2 metadata (stanaka)
 * Tue Jan 20 2015 Songmu <songmu@hatena.ne.jp> 0.14.1-1
