@@ -250,6 +250,17 @@ sub update_changelog {
         $content =~ s/%changelog/%changelog\n$update/;
         $content;
     };
+
+    replace 'CHANGELOG.md' => sub {
+        my $content = shift;
+
+        my $update = "\n\n## %s (%s)\n\n", $next_version, $now->strftime('%Y-%m-%d');
+        for my $rel (@releases) {
+            $update .= sprintf "* %s #%d (%s)\n", $rel->{title}, $rel->{num}, $rel->{user};
+        }
+        $content =~ s/\A# Changelog/# Changelog$update/;
+        $content;
+    };
 }
 
 sub build_pull_request_body {
