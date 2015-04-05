@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"sort"
 	"testing"
 	"time"
@@ -157,7 +158,8 @@ func TestPrepare(t *testing.T) {
 }
 
 func TestCollectHostSpecs(t *testing.T) {
-	hostname, meta, _ /*interfaces*/, err := collectHostSpecs()
+	conf := config.Config{}
+	hostname, meta, _ /*interfaces*/, err := collectHostSpecs(conf.Hostname)
 
 	if err != nil {
 		t.Errorf("collectHostSpecs should not fail: %s", err)
@@ -169,6 +171,23 @@ func TestCollectHostSpecs(t *testing.T) {
 
 	if _, ok := meta["cpu"]; !ok {
 		t.Error("meta.cpu should exist")
+	}
+
+	if osHostname, _ := os.Hostname(); hostname != osHostname {
+		t.Error("hostname should be OS's one when conf.Hostname is empty", err)
+	}
+}
+
+func TestCheckWhetherHostnameConfigurable(t *testing.T) {
+	expectedHostname := "mackerel.example.com"
+
+	conf := config.Config{
+		Hostname: expectedHostname,
+	}
+	hostname, _, _, err := collectHostSpecs(conf.Hostname)
+
+	if hostname != expectedHostname {
+		t.Error("hostname should be configurable", err)
 	}
 }
 
