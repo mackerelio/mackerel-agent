@@ -68,7 +68,7 @@ func (g *CloudGenerator) Generate() (interface{}, error) {
 	for _, key := range metadataKeys {
 		resp, err := client.Get(g.baseURL.String() + "/" + key)
 		if err != nil {
-			cloudLogger.Infof("This host may not be running on EC2. Error while reading '%s'", key)
+			cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", key)
 			return nil, nil
 		}
 		defer resp.Body.Close()
