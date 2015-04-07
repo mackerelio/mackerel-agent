@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/agent"
+	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
@@ -385,6 +386,7 @@ func NewAgent(conf *config.Config) *agent.Agent {
 	return &agent.Agent{
 		MetricsGenerators: metricsGenerators(conf),
 		PluginGenerators:  pluginGenerators(conf),
+		Checkers:          createCheckers(conf),
 	}
 }
 
@@ -402,4 +404,19 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 	}
 
 	return loop(c, termCh)
+}
+
+func createCheckers(conf *config.Config) []checks.Checker {
+	checkers := []checks.Checker{}
+
+	for name, pluginConfig := range conf.Plugin["checks"] {
+		checker := checks.Checker{
+			Name:   name,
+			Config: pluginConfig,
+		}
+		logger.Debugf("Checker created: %v", checker)
+		checkers = append(checkers, checker)
+	}
+
+	return checkers
 }
