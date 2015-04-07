@@ -1,4 +1,4 @@
-version: 0.14.{build}
+version: 0.15.{build}
 clone_folder: c:\gopath\src\github.com\mackerelio\mackerel-agent
 environment:
   GOPATH: c:\gopath
@@ -30,12 +30,12 @@ deploy:
   provider: GitHub
   auth_token:
     secure: nT6f+l3sILrBAyVGLE1il+wkv5BvrnEnVkiPGDZQegePa81MUC4AIDTNQ/gX8AWW
-  artifact: mackerel-agent-msi
+  artifact: mackerel-agent-k-msi
   draft: true
   prerelease: true
   appveyor_repo_tag: true
   on:
     appveyor_repo_tag: true
 artifacts:
-  - path: build\mackerel-agent.msi
-    name: mackerel-agent-msi
+  - path: build\mackerel-agent-k.msi
+    name: mackerel-agent-k-msi
