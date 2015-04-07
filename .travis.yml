@@ -12,6 +12,7 @@ script:
 - make crossbuild
 after_script:
 - goveralls -coverprofile=.profile.cov
+before_deploy:
 - make rpm deb
 deploy:
   provider: releases
