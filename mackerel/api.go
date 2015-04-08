@@ -320,6 +320,7 @@ func (api *API) postJSON(path string, payload interface{}, result interface{}) e
 // It is encoded as an epoch seconds integer in JSON.
 type Time time.Time
 
+// MarshalJSON implements json.Marshaler.
 func (t Time) MarshalJSON() ([]byte, error) {
 	return json.Marshal(time.Time(t).Unix())
 }

@@ -22,7 +22,7 @@ type monitorTargetHost struct {
 	HostID string
 }
 
-// implements json.Marshaler
+// MarshalJSON implements json.Marshaler.
 func (h monitorTargetHost) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]string{
 		"type":   "host",
@@ -30,6 +30,7 @@ func (h monitorTargetHost) MarshalJSON() ([]byte, error) {
 	})
 }
 
+// ReportCheckMonitors sends reports of checks.Checker() to Mackrel API server.
 func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) error {
 	payload := &monitoringChecksPayload{
 		Checks: make([]*checkReport, len(reports)),

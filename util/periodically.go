@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Periodically invokes function proc with specified interval. The precision is 1/100 of the interval.
 func Periodically(proc func(), interval time.Duration, cancel chan struct{}) {
 	checkInterval := interval / 100
 
