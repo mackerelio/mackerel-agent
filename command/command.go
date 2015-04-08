@@ -16,6 +16,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/spec"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var logger = logging.GetLogger("command")
@@ -56,7 +57,6 @@ func saveHostID(root string, id string) error {
 
 // buildHostSpec build data structure for Host specs
 func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string) map[string]interface{} {
-
 	return map[string]interface{}{
 		"name":          name,
 		"meta":          meta,
@@ -160,6 +160,72 @@ func loop(c *context, termCh chan struct{}) int {
 		return 0
 	case <-time.After(time.Duration(initialDelay) * time.Second):
 		c.ag.InitPluginGenerators(c.api)
+	}
+
+	// Run checkers
+	var (
+		checkReportCh          chan *checks.Report
+		reportCheckImmediateCh chan struct{}
+	)
+	for _, checker := range c.ag.Checkers {
+		if checkReportCh == nil {
+			checkReportCh = make(chan *checks.Report)
+			reportCheckImmediateCh = make(chan struct{})
+		}
+
+		go func(checker checks.Checker) {
+			util.Periodically(
+				func() {
+					report, err := checker.Check()
+					if err != nil {
+						logger.Errorf("checker %v: %s", checker, err)
+						return
+					}
+
+					// TODO if status has changed...
+
+					checkReportCh <- report
+				},
+				checker.Interval(),
+				nil,
+			)
+		}(checker)
+	}
+	if checkReportCh != nil {
+		go func() {
+			for {
+				select {
+				case <-time.After(10 * time.Second):
+				case <-reportCheckImmediateCh:
+				}
+
+				reports := []*checks.Report{}
+			DrainCheckReport:
+				for {
+					select {
+					case report := <-checkReportCh:
+						reports = append(reports, report)
+					default:
+						break DrainCheckReport
+					}
+				}
+
+				logger.Debugf("reports: %#v", reports)
+
+				if len(reports) == 0 {
+					continue
+				}
+
+				err := c.api.ReportCheckMonitors(c.host.ID, reports)
+				if err != nil {
+					logger.Errorf("ReportCheckMonitors: %s", err)
+
+					for _, report := range reports {
+						checkReportCh <- report
+					}
+				}
+			}
+		}()
 	}
 
 	lState := loopStateFirst
