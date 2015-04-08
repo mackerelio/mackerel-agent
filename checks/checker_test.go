@@ -20,28 +20,28 @@ func TestChecker_Check(t *testing.T) {
 	}
 
 	{
-		status, msg, err := checkerOK.Check()
+		report, err := checkerOK.Check()
 		if err != nil {
 			t.Errorf("err should be nil: %v", err)
 		}
-		if status != StatusOK {
-			t.Errorf("status should be OK: %v", status)
+		if report.Status != StatusOK {
+			t.Errorf("status should be OK: %v", report.Status)
 		}
-		if msg != "OK\n" {
-			t.Errorf("wrong message: %q", msg)
+		if report.Message != "OK\n" {
+			t.Errorf("wrong message: %q", report.Message)
 		}
 	}
 
 	{
-		status, msg, err := checkerWarning.Check()
+		report, err := checkerWarning.Check()
 		if err != nil {
 			t.Errorf("err should be nil: %v", err)
 		}
-		if status != StatusWarning {
-			t.Errorf("status should be WARNING: %v", status)
+		if report.Status != StatusWarning {
+			t.Errorf("status should be WARNING: %v", report.Status)
 		}
-		if msg != "something is going wrong\n" {
-			t.Errorf("wrong message: %q", msg)
+		if report.Message != "something is going wrong\n" {
+			t.Errorf("wrong message: %q", report.Message)
 		}
 	}
 }
