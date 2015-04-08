@@ -195,7 +195,7 @@ func loop(c *context, termCh chan struct{}) int {
 		go func() {
 			for {
 				select {
-				case <-time.After(10 * time.Second):
+				case <-time.After(1 * time.Minute):
 				case <-reportCheckImmediateCh:
 				}
 
