@@ -290,7 +290,7 @@ func (api *API) postJSON(path string, payload interface{}, result interface{}) e
 
 	req, err := http.NewRequest(
 		"POST",
-		api.urlFor("/api/v0/monitoring/checks").String(),
+		api.urlFor(path).String(),
 		&body,
 	)
 	if err != nil {

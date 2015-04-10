@@ -11,7 +11,7 @@ type monitoringChecksPayload struct {
 }
 
 type checkReport struct {
-	Target     monitorTargetHost `json:"target"`
+	Source     monitorTargetHost `json:"source"`
 	Name       string            `json:"name"`
 	Status     checks.Status     `json:"status"`
 	Message    string            `json:"message"`
@@ -37,12 +37,12 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 	}
 	for i, report := range reports {
 		payload.Checks[i] = &checkReport{
-			Target:     monitorTargetHost{HostID: hostID},
+			Source:     monitorTargetHost{HostID: hostID},
 			Name:       report.Name,
 			Status:     report.Status,
 			Message:    report.Message,
 			OccurredAt: Time(report.OccurredAt),
 		}
 	}
-	return api.postJSON("/api/v0/monitoring/checks", payload, nil)
+	return api.postJSON("/api/v0/monitoring/checks/report", payload, nil)
 }
