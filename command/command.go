@@ -231,7 +231,9 @@ func loop(c *context, termCh chan struct{}) int {
 					}
 				}
 
-				logger.Debugf("reports: %#v", reports)
+				for i, report := range reports {
+					logger.Debugf("reports[%d]: %#v", i, report)
+				}
 
 				if len(reports) == 0 {
 					continue
@@ -244,6 +246,7 @@ func loop(c *context, termCh chan struct{}) int {
 					// queue back the reports
 					go func() {
 						for _, report := range reports {
+							logger.Debugf("queue back report: %#v", report)
 							checkReportCh <- report
 						}
 					}()

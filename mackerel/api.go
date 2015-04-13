@@ -304,6 +304,11 @@ func (api *API) postJSON(path string, payload interface{}, result interface{}) e
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("request failed: [%s]", resp.Status)
+	}
+
 	if result != nil {
 		err := json.NewDecoder(resp.Body).Decode(result)
 		if err != nil {
