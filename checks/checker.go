@@ -61,7 +61,8 @@ func (c Checker) Check() (*Report, error) {
 
 	command := c.Config.Command
 	logger.Debugf("Checker %q executing command %q", c.Name, command)
-	stdout, _, exitCode, err := util.RunCommand(command)
+	// NOTE(motemen): Should we consider using stderr?
+	message, _, exitCode, err := util.RunCommand(command)
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +72,12 @@ func (c Checker) Check() (*Report, error) {
 		status = s
 	}
 
-	logger.Debugf("Checker %q status=%s", c.Name, status)
+	logger.Debugf("Checker %q status=%s message=%q", c.Name, status, message)
 
 	return &Report{
 		Name:       c.Name,
 		Status:     status,
-		Message:    stdout,
+		Message:    message,
 		OccurredAt: now,
 	}, nil
 }

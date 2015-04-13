@@ -182,7 +182,7 @@ func loop(c *context, termCh chan struct{}) int {
 						return
 					}
 
-					// TODO if status has changed...
+					// TODO if status has changed, send it immediately
 
 					checkReportCh <- report
 				},
@@ -220,9 +220,12 @@ func loop(c *context, termCh chan struct{}) int {
 				if err != nil {
 					logger.Errorf("ReportCheckMonitors: %s", err)
 
-					for _, report := range reports {
-						checkReportCh <- report
-					}
+					// queue back the reports
+					go func() {
+						for _, report := range reports {
+							checkReportCh <- report
+						}
+					}()
 				}
 			}
 		}()
