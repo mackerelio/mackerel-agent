@@ -174,6 +174,11 @@ func loop(c *context, termCh chan struct{}) int {
 		}
 
 		go func(checker checks.Checker) {
+			var (
+				lastStatus  = checks.StatusUndefined
+				lastMessage = ""
+			)
+
 			util.Periodically(
 				func() {
 					report, err := checker.Check()
@@ -182,9 +187,24 @@ func loop(c *context, termCh chan struct{}) int {
 						return
 					}
 
-					// TODO if status has changed, send it immediately
+					logger.Debugf("checker %q: report=%v", checker.Name, report)
+
+					if report.Status == lastStatus && report.Message == lastMessage {
+						// Do not report if nothing has changed
+						return
+					}
 
 					checkReportCh <- report
+
+					// If status has changed, send it immediately
+					// but if the status was OK and it's first invocation of a check, do not
+					if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
+						logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
+						reportCheckImmediateCh <- struct{}{}
+					}
+
+					lastStatus = report.Status
+					lastMessage = report.Message
 				},
 				checker.Interval(),
 				nil,
@@ -197,6 +217,7 @@ func loop(c *context, termCh chan struct{}) int {
 				select {
 				case <-time.After(1 * time.Minute):
 				case <-reportCheckImmediateCh:
+					logger.Debugf("received 'immediate' chan")
 				}
 
 				reports := []*checks.Report{}

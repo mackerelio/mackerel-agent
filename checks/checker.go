@@ -18,10 +18,11 @@ type Status string
 // Current possible statuses, which is taken from command's exit code.
 // the mapping is given as exitCodeToStatus.
 const (
-	StatusOK       Status = "OK"
-	StatusWarning  Status = "WARNING"
-	StatusCritical Status = "CRITICAL"
-	StatusUnknown  Status = "UNKNOWN"
+	StatusUndefined Status = ""
+	StatusOK        Status = "OK"
+	StatusWarning   Status = "WARNING"
+	StatusCritical  Status = "CRITICAL"
+	StatusUnknown   Status = "UNKNOWN"
 )
 
 var exitCodeToStatus = map[int]Status{
