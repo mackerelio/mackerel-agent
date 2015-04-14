@@ -15,7 +15,7 @@ func TestChecker_Check(t *testing.T) {
 
 	checkerWarning := Checker{
 		Config: config.PluginConfig{
-			Command: "go run testdata/exit.go -code 1 -message 'something is going wrong'",
+			Command: "go run testdata/exit.go -code 1 -message something_is_going_wrong",
 		},
 	}
 
@@ -40,7 +40,7 @@ func TestChecker_Check(t *testing.T) {
 		if report.Status != StatusWarning {
 			t.Errorf("status should be WARNING: %v", report.Status)
 		}
-		if report.Message != "something is going wrong\n" {
+		if report.Message != "something_is_going_wrong\n" {
 			t.Errorf("wrong message: %q", report.Message)
 		}
 	}
