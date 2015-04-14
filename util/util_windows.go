@@ -24,17 +24,20 @@ func RunCommand(command string) (string, string, int, error) {
 
 	err = cmd.Run()
 
+	stdout := outBuffer.String()
+	stderr := errBuffer.String()
+
 	if err != nil {
-		exitCode := -1
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			if waitStatus, ok := exitErr.Sys().(syscall.WaitStatus); ok {
-				exitCode = waitStatus.ExitStatus()
+				exitCode := waitStatus.ExitStatus()
+				return stdout, stderr, exitCode, nil
 			}
 		}
-		return "", "", exitCode, err
+		return stdout, stderr, -1, err
 	}
 
-	return string(outBuffer.Bytes()), string(errBuffer.Bytes()), 0, nil
+	return stdout, stderr, 0, nil
 }
 
 // GetWmic XXX
