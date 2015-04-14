@@ -7,7 +7,7 @@ import (
 )
 
 type monitoringChecksPayload struct {
-	Checks []*checkReport `json:"checks"`
+	Reports []*checkReport `json:"reports"`
 }
 
 type checkReport struct {
@@ -33,10 +33,10 @@ func (h monitorTargetHost) MarshalJSON() ([]byte, error) {
 // ReportCheckMonitors sends reports of checks.Checker() to Mackrel API server.
 func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) error {
 	payload := &monitoringChecksPayload{
-		Checks: make([]*checkReport, len(reports)),
+		Reports: make([]*checkReport, len(reports)),
 	}
 	for i, report := range reports {
-		payload.Checks[i] = &checkReport{
+		payload.Reports[i] = &checkReport{
 			Source:     monitorTargetHost{HostID: hostID},
 			Name:       report.Name,
 			Status:     report.Status,
