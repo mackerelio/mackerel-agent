@@ -162,12 +162,23 @@ func loop(c *context, termCh chan struct{}) int {
 		c.ag.InitPluginGenerators(c.api)
 	}
 
-	runCheckersLoop(c)
+	termCheckerCh := make(chan struct{})
+	termMetricsCh := make(chan struct{})
+
+	// fan-out termCh
+	go func() {
+		for range termCh {
+			termCheckerCh <- struct{}{}
+			termMetricsCh <- struct{}{}
+		}
+	}()
+
+	runCheckersLoop(c, termCheckerCh, quit)
 
 	lState := loopStateFirst
 	for {
 		select {
-		case <-termCh:
+		case <-termMetricsCh:
 			if lState == loopStateTerminating {
 				return 1
 			}
@@ -220,7 +231,7 @@ func loop(c *context, termCh chan struct{}) int {
 			select {
 			case <-time.After(time.Duration(delaySeconds) * time.Second):
 				// nop
-			case <-termCh:
+			case <-termMetricsCh:
 				if lState == loopStateTerminating {
 					return 1
 				}
@@ -310,7 +321,7 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 // runCheckersLoop generates "checker" goroutines
 // which run for each checker commands and one for HTTP POSTing
 // the reports to Mackerel API.
-func runCheckersLoop(c *context) {
+func runCheckersLoop(c *context, termCheckerCh chan struct{}, quit chan struct{}) {
 	var (
 		checkReportCh          chan *checks.Report
 		reportCheckImmediateCh chan struct{}
@@ -355,15 +366,19 @@ func runCheckersLoop(c *context) {
 					lastMessage = report.Message
 				},
 				checker.Interval(),
-				nil,
+				quit,
 			)
 		}(checker)
 	}
 	if checkReportCh != nil {
 		go func() {
-			for {
+			exit := false
+			for !exit {
 				select {
 				case <-time.After(1 * time.Minute):
+				case <-termCheckerCh:
+					logger.Debugf("received 'term' chan")
+					exit = true
 				case <-reportCheckImmediateCh:
 					logger.Debugf("received 'immediate' chan")
 				}
