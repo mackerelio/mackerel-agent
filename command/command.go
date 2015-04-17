@@ -416,6 +416,12 @@ func runCheckersLoop(c *context, termCheckerCh chan struct{}, quit chan struct{}
 				}
 			}
 		}()
+	} else {
+		// consume termCheckerCh
+		go func() {
+			for range termCheckerCh {
+			}
+		}()
 	}
 }
 
