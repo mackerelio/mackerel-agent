@@ -162,98 +162,7 @@ func loop(c *context, termCh chan struct{}) int {
 		c.ag.InitPluginGenerators(c.api)
 	}
 
-	// Run checkers
-	var (
-		checkReportCh          chan *checks.Report
-		reportCheckImmediateCh chan struct{}
-	)
-	for _, checker := range c.ag.Checkers {
-		if checkReportCh == nil {
-			checkReportCh = make(chan *checks.Report)
-			reportCheckImmediateCh = make(chan struct{})
-		}
-
-		go func(checker checks.Checker) {
-			var (
-				lastStatus  = checks.StatusUndefined
-				lastMessage = ""
-			)
-
-			util.Periodically(
-				func() {
-					report, err := checker.Check()
-					if err != nil {
-						logger.Errorf("checker %v: %s", checker, err)
-						return
-					}
-
-					logger.Debugf("checker %q: report=%v", checker.Name, report)
-
-					if report.Status == lastStatus && report.Message == lastMessage {
-						// Do not report if nothing has changed
-						return
-					}
-
-					checkReportCh <- report
-
-					// If status has changed, send it immediately
-					// but if the status was OK and it's first invocation of a check, do not
-					if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
-						logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
-						reportCheckImmediateCh <- struct{}{}
-					}
-
-					lastStatus = report.Status
-					lastMessage = report.Message
-				},
-				checker.Interval(),
-				nil,
-			)
-		}(checker)
-	}
-	if checkReportCh != nil {
-		go func() {
-			for {
-				select {
-				case <-time.After(1 * time.Minute):
-				case <-reportCheckImmediateCh:
-					logger.Debugf("received 'immediate' chan")
-				}
-
-				reports := []*checks.Report{}
-			DrainCheckReport:
-				for {
-					select {
-					case report := <-checkReportCh:
-						reports = append(reports, report)
-					default:
-						break DrainCheckReport
-					}
-				}
-
-				for i, report := range reports {
-					logger.Debugf("reports[%d]: %#v", i, report)
-				}
-
-				if len(reports) == 0 {
-					continue
-				}
-
-				err := c.api.ReportCheckMonitors(c.host.ID, reports)
-				if err != nil {
-					logger.Errorf("ReportCheckMonitors: %s", err)
-
-					// queue back the reports
-					go func() {
-						for _, report := range reports {
-							logger.Debugf("queue back report: %#v", report)
-							checkReportCh <- report
-						}
-					}()
-				}
-			}
-		}()
-	}
+	runCheckersLoop(c)
 
 	lState := loopStateFirst
 	for {
@@ -395,6 +304,103 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 			logger.Debugf("Enqueuing task to post metrics.")
 			postQueue <- newPostValue(creatingValues)
 		}
+	}
+}
+
+// runCheckersLoop generates "checker" goroutines
+// which run for each checker commands and one for HTTP POSTing
+// the reports to Mackerel API.
+func runCheckersLoop(c *context) {
+	var (
+		checkReportCh          chan *checks.Report
+		reportCheckImmediateCh chan struct{}
+	)
+	for _, checker := range c.ag.Checkers {
+		if checkReportCh == nil {
+			checkReportCh = make(chan *checks.Report)
+			reportCheckImmediateCh = make(chan struct{})
+		}
+
+		go func(checker checks.Checker) {
+			var (
+				lastStatus  = checks.StatusUndefined
+				lastMessage = ""
+			)
+
+			util.Periodically(
+				func() {
+					report, err := checker.Check()
+					if err != nil {
+						logger.Errorf("checker %v: %s", checker, err)
+						return
+					}
+
+					logger.Debugf("checker %q: report=%v", checker.Name, report)
+
+					if report.Status == lastStatus && report.Message == lastMessage {
+						// Do not report if nothing has changed
+						return
+					}
+
+					checkReportCh <- report
+
+					// If status has changed, send it immediately
+					// but if the status was OK and it's first invocation of a check, do not
+					if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
+						logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
+						reportCheckImmediateCh <- struct{}{}
+					}
+
+					lastStatus = report.Status
+					lastMessage = report.Message
+				},
+				checker.Interval(),
+				nil,
+			)
+		}(checker)
+	}
+	if checkReportCh != nil {
+		go func() {
+			for {
+				select {
+				case <-time.After(1 * time.Minute):
+				case <-reportCheckImmediateCh:
+					logger.Debugf("received 'immediate' chan")
+				}
+
+				reports := []*checks.Report{}
+			DrainCheckReport:
+				for {
+					select {
+					case report := <-checkReportCh:
+						reports = append(reports, report)
+					default:
+						break DrainCheckReport
+					}
+				}
+
+				for i, report := range reports {
+					logger.Debugf("reports[%d]: %#v", i, report)
+				}
+
+				if len(reports) == 0 {
+					continue
+				}
+
+				err := c.api.ReportCheckMonitors(c.host.ID, reports)
+				if err != nil {
+					logger.Errorf("ReportCheckMonitors: %s", err)
+
+					// queue back the reports
+					go func() {
+						for _, report := range reports {
+							logger.Debugf("queue back report: %#v", report)
+							checkReportCh <- report
+						}
+					}()
+				}
+			}
+		}()
 	}
 }
 
