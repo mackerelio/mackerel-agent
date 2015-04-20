@@ -11,28 +11,28 @@ import (
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
-// Loadavg5Generator XXX
-type Loadavg5Generator struct {
+// ProcessorQueueLengthGenerator is struct of windows api
+type ProcessorQueueLengthGenerator struct {
 	query    syscall.Handle
 	counters []*windows.CounterInfo
 }
 
-var loadavg5Logger = logging.GetLogger("metrics.loadavg5")
+var processorQueueLengthLogger = logging.GetLogger("metrics.processor_queue_length")
 
-// NewLoadavg5Generator XXX
-func NewLoadavg5Generator() (*Loadavg5Generator, error) {
-	g := &Loadavg5Generator{0, nil}
+// NewProcessorQueueLengthGenerator is set up windows api
+func NewProcessorQueueLengthGenerator() (*ProcessorQueueLengthGenerator, error) {
+	g := &ProcessorQueueLengthGenerator{0, nil}
 
 	var err error
 	g.query, err = windows.CreateQuery()
 	if err != nil {
-		loadavg5Logger.Criticalf(err.Error())
+		processorQueueLengthLogger.Criticalf(err.Error())
 		return nil, err
 	}
 
-	counter, err := windows.CreateCounter(g.query, "loadavg5", `\System\Processor Queue Length`)
+	counter, err := windows.CreateCounter(g.query, "processor_queue_length", `\System\Processor Queue Length`)
 	if err != nil {
-		loadavg5Logger.Criticalf(err.Error())
+		processorQueueLengthLogger.Criticalf(err.Error())
 		return nil, err
 	}
 	g.counters = append(g.counters, counter)
@@ -40,12 +40,12 @@ func NewLoadavg5Generator() (*Loadavg5Generator, error) {
 }
 
 // Generate XXX
-func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
+func (g *ProcessorQueueLengthGenerator) Generate() (metrics.Values, error) {
 
 	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
 	if r != 0 && err != nil {
 		if r == windows.PDH_NO_DATA {
-			loadavg5Logger.Infof("this metric has not data. ")
+			processorQueueLengthLogger.Infof("this metric has not data. ")
 			return nil, err
 		}
 		return nil, err
@@ -61,7 +61,7 @@ func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 		results[v.PostName] = fmtValue.DoubleValue
 	}
 
-	loadavg5Logger.Debugf("loadavg5: %q", results)
+	processorQueueLengthLogger.Debugf("loadavg5: %q", results)
 
 	return results, nil
 }
