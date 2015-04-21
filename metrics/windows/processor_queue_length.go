@@ -61,7 +61,7 @@ func (g *ProcessorQueueLengthGenerator) Generate() (metrics.Values, error) {
 		results[v.PostName] = fmtValue.DoubleValue
 	}
 
-	processorQueueLengthLogger.Debugf("loadavg5: %q", results)
+	processorQueueLengthLogger.Debugf("processor_queue_length: %q", results)
 
 	return results, nil
 }
