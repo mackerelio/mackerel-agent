@@ -321,7 +321,7 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 // runCheckersLoop generates "checker" goroutines
 // which run for each checker commands and one for HTTP POSTing
 // the reports to Mackerel API.
-func runCheckersLoop(c *context, termCheckerCh chan struct{}, quit chan struct{}) {
+func runCheckersLoop(c *context, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
 	var (
 		checkReportCh          chan *checks.Report
 		reportCheckImmediateCh chan struct{}
