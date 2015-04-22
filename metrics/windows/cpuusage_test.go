@@ -8,11 +8,18 @@ import "testing"
 var cpuUsageMetricNames = []string{
 	"cpu.user.percentage",
 	"cpu.idle.percentage",
+	"cpu.system.percentage",
 }
 
 func TestCPUUsageGenerate(t *testing.T) {
-	g := &CPUUsageGenerator{}
-	values, _ := g.Generate()
+	g, err := NewCPUUsageGenerator()
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	values, err := g.Generate()
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
 
 	for _, metricName := range cpuUsageMetricNames {
 		value, ok := values[metricName]

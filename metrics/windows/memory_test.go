@@ -16,8 +16,8 @@ func TestMemoryGenerator(t *testing.T) {
 	for _, name := range []string{
 		"total",
 		"free",
-		"swap_total",
-		"swap_free",
+		"pagefile_total",
+		"pagefile_free",
 		"used",
 	} {
 		if _, ok := values["memory."+name]; !ok {
