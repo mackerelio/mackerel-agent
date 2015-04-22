@@ -29,8 +29,23 @@ func NewCPUUsageGenerator() (*CPUUsageGenerator, error) {
 		cpuUsageLogger.Criticalf(err.Error())
 		return nil, err
 	}
+	var counter *windows.CounterInfo
 
-	counter, err := windows.CreateCounter(g.query, "cpu.user.percentage", `\Processor(_Total)\% User Time`)
+	counter, err = windows.CreateCounter(g.query, "cpu.user.percentage", `\Processor(_Total)\% User Time`)
+	if err != nil {
+		cpuUsageLogger.Criticalf(err.Error())
+		return nil, err
+	}
+	g.counters = append(g.counters, counter)
+
+	counter, err = windows.CreateCounter(g.query, "cpu.system.percentage", `\Processor(_Total)\% Privileged Time`)
+	if err != nil {
+		cpuUsageLogger.Criticalf(err.Error())
+		return nil, err
+	}
+	g.counters = append(g.counters, counter)
+
+	counter, err = windows.CreateCounter(g.query, "cpu.idle.percentage", `\Processor(_Total)\% Idle Time`)
 	if err != nil {
 		cpuUsageLogger.Criticalf(err.Error())
 		return nil, err
@@ -52,6 +67,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 	}
 
 	results := make(map[string]float64)
+	sumPercentage := float64(0)
 	for _, v := range g.counters {
 		var fmtValue windows.PDH_FMT_COUNTERVALUE_DOUBLE
 		r, _, err := windows.PdhGetFormattedCounterValue.Call(uintptr(v.Counter), windows.PDH_FMT_DOUBLE, uintptr(0), uintptr(unsafe.Pointer(&fmtValue)))
@@ -59,7 +75,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 			return nil, err
 		}
 		results[v.PostName] = fmtValue.DoubleValue
-		results["cpu.idle.percentage"] = 100 - fmtValue.DoubleValue
+		sumPercentage += fmtValue.DoubleValue
 	}
 
 	cpuUsageLogger.Debugf("cpuusage: %q", results)

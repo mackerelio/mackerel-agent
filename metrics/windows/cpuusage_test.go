@@ -8,6 +8,7 @@ import "testing"
 var cpuUsageMetricNames = []string{
 	"cpu.user.percentage",
 	"cpu.idle.percentage",
+	"cpu.system.percentage",
 }
 
 func TestCPUUsageGenerate(t *testing.T) {
