@@ -6,8 +6,8 @@ import (
 	"testing"
 )
 
-func TestLoadavg5Generator(t *testing.T) {
-	g, _ := NewLoadavg5Generator()
+func TestProcessorQueueLengthGenerator(t *testing.T) {
+	g, _ := NewProcessorQueueLengthGenerator()
 
 	_, err := g.Generate()
 	if err != nil {
