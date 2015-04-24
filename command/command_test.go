@@ -29,8 +29,9 @@ func TestBuildHostSpec(t *testing.T) {
 		"memo": "hello",
 	}
 	roleFullnames := []string{"My-Service:app-default"}
+	checks := []string{"heartbeat"}
 
-	hostSpec := buildHostSpec("Host123", meta, interfaces, roleFullnames)
+	hostSpec := buildHostSpec("Host123", meta, interfaces, roleFullnames, checks)
 
 	if hostSpec["name"] != "Host123" {
 		t.Error("name should 'Host123' but:", hostSpec["name"])
