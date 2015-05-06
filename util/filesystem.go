@@ -24,7 +24,8 @@ import (
 //  tmpfs                 517224        4  517220   1% /dev/shm
 
 var dfHeaderPattern = regexp.MustCompile(
-	`^Filesystem\s+1024-block`,
+	// 1024-blocks or 1k-blocks
+	`^Filesystem\s+(?:1024|1[Kk])-block`,
 )
 
 // DfColumnSpec XXX
