@@ -9,6 +9,7 @@ install:
 script:
 - make lint
 - make cover
+- goxc -t
 - make crossbuild
 after_script:
 - goveralls -coverprofile=.profile.cov
