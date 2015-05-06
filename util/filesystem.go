@@ -1,3 +1,5 @@
+// +build linux darwin freebsd
+
 package util
 
 // ref. https://github.com/opscode/ohai/blob/master/lib/ohai/plugins/linux/filesystem.rb
@@ -7,7 +9,9 @@ import (
 	"bytes"
 	"os/exec"
 	"regexp"
+	"runtime"
 	"strconv"
+	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
 )
@@ -35,16 +39,29 @@ var dfColumnsPattern = regexp.MustCompile(
 
 var logger = logging.GetLogger("util.filesystem")
 
+var dfOpt []string
+
+func init() {
+	switch runtime.GOOS {
+	case "darwin":
+		dfOpt = []string{"-Pkl"}
+	case "freebsd":
+		dfOpt = []string{"-Pkt", "noprocfs,devfs,fdescfs,nfs,cd9660"}
+	default:
+		dfOpt = []string{"-P"}
+	}
+}
+
 // CollectDfValues XXX
 func CollectDfValues(dfColumnSpecs []DfColumnSpec) (map[string]map[string]interface{}, error) {
-	cmd := exec.Command("df", "-Pkl")
+	cmd := exec.Command("df", dfOpt...)
 	cmd.Env = append(cmd.Env, "LANG=C")
 
 	// Ignores exit status in case that df returns exit status 1
 	// when the agent does not have permission to access file system info.
 	out, err := cmd.Output()
 	if err != nil {
-		logger.Warningf("'df -P' command exited with a non-zero status: '%s'", err)
+		logger.Warningf("'df %s' command exited with a non-zero status: '%s'", strings.Join(dfOpt, " "), err)
 	}
 
 	lineScanner := bufio.NewScanner(bytes.NewReader(out))

@@ -7,7 +7,7 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
-	utilFreebsd "github.com/mackerelio/mackerel-agent/util/freebsd"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 // FilesystemGenerator XXX
@@ -16,14 +16,14 @@ type FilesystemGenerator struct {
 
 var logger = logging.GetLogger("metrics.filesystem")
 
-var dfColumnSpecs = []utilFreebsd.DfColumnSpec{
-	utilFreebsd.DfColumnSpec{Name: "size", IsInt: true},
-	utilFreebsd.DfColumnSpec{Name: "used", IsInt: true},
+var dfColumnSpecs = []util.DfColumnSpec{
+	util.DfColumnSpec{Name: "size", IsInt: true},
+	util.DfColumnSpec{Name: "used", IsInt: true},
 }
 
 // Generate generate metric values
 func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
-	filesystems, err := utilFreebsd.CollectDfValues(dfColumnSpecs)
+	filesystems, err := util.CollectDfValues(dfColumnSpecs)
 	if err != nil {
 		return nil, err
 	}

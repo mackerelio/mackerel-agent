@@ -4,7 +4,7 @@ package darwin
 
 import (
 	"github.com/mackerelio/mackerel-agent/logging"
-	utilDarwin "github.com/mackerelio/mackerel-agent/util/darwin"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 // FilesystemGenerator XXX
@@ -18,15 +18,15 @@ func (g *FilesystemGenerator) Key() string {
 
 var logger = logging.GetLogger("spec.filesystem")
 
-var dfColumnSpecs = []utilDarwin.DfColumnSpec{
-	utilDarwin.DfColumnSpec{Name: "kb_size", IsInt: true},
-	utilDarwin.DfColumnSpec{Name: "kb_used", IsInt: true},
-	utilDarwin.DfColumnSpec{Name: "kb_available", IsInt: true},
-	utilDarwin.DfColumnSpec{Name: "percent_used", IsInt: false},
-	utilDarwin.DfColumnSpec{Name: "mount", IsInt: false},
+var dfColumnSpecs = []util.DfColumnSpec{
+	util.DfColumnSpec{Name: "kb_size", IsInt: true},
+	util.DfColumnSpec{Name: "kb_used", IsInt: true},
+	util.DfColumnSpec{Name: "kb_available", IsInt: true},
+	util.DfColumnSpec{Name: "percent_used", IsInt: false},
+	util.DfColumnSpec{Name: "mount", IsInt: false},
 }
 
 // Generate XXX
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
-	return utilDarwin.CollectDfValues(dfColumnSpecs)
+	return util.CollectDfValues(dfColumnSpecs)
 }

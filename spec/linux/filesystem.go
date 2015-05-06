@@ -4,7 +4,7 @@ package linux
 
 import (
 	"github.com/mackerelio/mackerel-agent/logging"
-	utilLinux "github.com/mackerelio/mackerel-agent/util/linux"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 // FilesystemGenerator XXX
@@ -18,15 +18,15 @@ func (g *FilesystemGenerator) Key() string {
 
 var logger = logging.GetLogger("spec.filesystem")
 
-var dfColumnSpecs = []utilLinux.DfColumnSpec{
-	utilLinux.DfColumnSpec{Name: "kb_size", IsInt: true},
-	utilLinux.DfColumnSpec{Name: "kb_used", IsInt: true},
-	utilLinux.DfColumnSpec{Name: "kb_available", IsInt: true},
-	utilLinux.DfColumnSpec{Name: "percent_used", IsInt: false},
-	utilLinux.DfColumnSpec{Name: "mount", IsInt: false},
+var dfColumnSpecs = []util.DfColumnSpec{
+	util.DfColumnSpec{Name: "kb_size", IsInt: true},
+	util.DfColumnSpec{Name: "kb_used", IsInt: true},
+	util.DfColumnSpec{Name: "kb_available", IsInt: true},
+	util.DfColumnSpec{Name: "percent_used", IsInt: false},
+	util.DfColumnSpec{Name: "mount", IsInt: false},
 }
 
 // Generate XXX
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
-	return utilLinux.CollectDfValues(dfColumnSpecs)
+	return util.CollectDfValues(dfColumnSpecs)
 }
