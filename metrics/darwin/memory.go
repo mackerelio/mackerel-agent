@@ -15,7 +15,7 @@ import (
 /*
 MemoryGenerator collect memory usage
 
-`memory.{metric}`: using memory size[KiB] retrieved from `vm_stat`
+`memory.{metric}`: using memory size retrieved from `vm_stat`
 
 metric = "total", "free", "used", "cached", "active", "inactive"
 
@@ -69,8 +69,8 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	for _, line := range lines {
 		if matches := statReg.FindStringSubmatch(line); matches != nil {
 			v, _ := strconv.ParseInt(matches[2], 0, 64)
-			// `vm_stat` returns the page sise of 4096 bytes and MemoryGenerator deal memory size[KiB]
-			stats[matches[1]] = v * 4
+			// `vm_stat` returns the page sise of 4096 bytes
+			stats[matches[1]] = v * 4096
 		}
 	}
 
