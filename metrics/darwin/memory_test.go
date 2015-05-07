@@ -18,6 +18,9 @@ func TestMemoryGenerator(t *testing.T) {
 		"active",
 		"inactive",
 		"used",
+		"swap_total",
+		"swap_used",
+		"swap_free",
 	} {
 		if v, ok := values["memory."+name]; !ok {
 			t.Errorf("memory should has %s", name)
