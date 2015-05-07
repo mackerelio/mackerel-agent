@@ -22,6 +22,9 @@ command = "ruby /path/to/your/plugin/mysql.rb"
 [sensu.checks.memory] # for backward compatibility
 command = "ruby ../sensu/plugins/system/memory-metrics.rb"
 type = "metric"
+
+[plugin.checks.heartbeat]
+command = "heartbeat.sh"
 `
 
 func TestLoadConfig(t *testing.T) {
@@ -96,6 +99,14 @@ func TestLoadConfigFile(t *testing.T) {
 	sensu := config.Plugin["metrics"]["DEPRECATED-sensu-memory"]
 	if sensu.Command != "ruby ../sensu/plugins/system/memory-metrics.rb" {
 		t.Error("sensu command should be 'ruby ../sensu/plugins/system/memory-metrics.rb'")
+	}
+
+	if config.Plugin["checks"] == nil {
+		t.Error("plugin should have checks")
+	}
+	checks := config.Plugin["checks"]["heartbeat"]
+	if checks.Command != "heartbeat.sh" {
+		t.Error("sensu command should be 'heartbeat.sh'")
 	}
 }
 

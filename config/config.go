@@ -62,6 +62,15 @@ type ConnectionConfig struct {
 	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
 }
 
+// CheckNames return list of plugin.checks._name_
+func (conf *Config)CheckNames ()([]string) {
+	checks := []string{}
+	for name := range conf.Plugin["checks"] {
+		checks = append(checks, name)
+	}
+	return checks
+}
+
 // LoadConfig XXX
 func LoadConfig(conffile string) (*Config, error) {
 	config, err := loadConfigFile(conffile)
