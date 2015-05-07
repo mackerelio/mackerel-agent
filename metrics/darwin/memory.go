@@ -104,10 +104,10 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	} else {
 		if matches := swapReg.FindStringSubmatch(string(outBytes)); matches != nil {
 			t, _ := strconv.ParseFloat(matches[1], 64)
-			u, _ := strconv.ParseFloat(matches[2], 64)
+			// swap_used are calculated at server, so don't send it
+			// u, _ := strconv.ParseFloat(matches[2], 64)
 			f, _ := strconv.ParseFloat(matches[3], 64)
 			ret["memory.swap_total"] = t * 1024 * 1024
-			ret["memory.swap_used"] = u * 1024 * 1024
 			ret["memory.swap_free"] = f * 1024 * 1024
 		}
 	}

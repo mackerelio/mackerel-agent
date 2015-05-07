@@ -19,7 +19,6 @@ func TestMemoryGenerator(t *testing.T) {
 		"inactive",
 		"used",
 		"swap_total",
-		"swap_used",
 		"swap_free",
 	} {
 		if v, ok := values["memory."+name]; !ok {
