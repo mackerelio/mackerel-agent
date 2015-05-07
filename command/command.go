@@ -66,12 +66,12 @@ func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[st
 
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
-func prepareHost(root string, api *mackerel.API, roleFullnames []string) (*mackerel.Host, error) {
+func prepareHost(root string, api *mackerel.API, roleFullnames []string, hostnameFromConfig string) (*mackerel.Host, error) {
 	// XXX this configuration should be moved to under spec/linux
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
 
-	hostname, meta, interfaces, err := collectHostSpecs()
+	hostname, meta, interfaces, err := collectHostSpecs(hostnameFromConfig)
 	if err != nil {
 		return nil, fmt.Errorf("error while collecting host specs: %s", err.Error())
 	}
@@ -305,10 +305,14 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
-func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{}, error) {
-	hostname, err := os.Hostname()
-	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
+func collectHostSpecs(hostnameFromConfig string) (string, map[string]interface{}, []map[string]interface{}, error) {
+	hostname := hostnameFromConfig
+	if hostname == "" {
+		var err error
+		hostname, err = os.Hostname()
+		if err != nil {
+			return "", nil, nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
+		}
 	}
 
 	meta := spec.Collect(specGenerators())
@@ -327,7 +331,7 @@ func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{
 func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
 	logger.Debugf("Updating host specs...")
 
-	hostname, meta, interfaces, err := collectHostSpecs()
+	hostname, meta, interfaces, err := collectHostSpecs(conf.Hostname)
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
 		return
@@ -349,7 +353,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 		return nil, nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
 
-	host, err := prepareHost(conf.Root, api, conf.Roles)
+	host, err := prepareHost(conf.Root, api, conf.Roles, conf.Hostname)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
 	}
@@ -359,7 +363,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 
 // RunOnce collects specs and metrics, then output them to stdout.
 func RunOnce(conf *config.Config) {
-	hostname, meta, interfaces, err := collectHostSpecs()
+	hostname, meta, interfaces, err := collectHostSpecs(conf.Hostname)
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
 		return

@@ -33,6 +33,7 @@ type Config struct {
 	Plugin          map[string]PluginConfigs
 	DeprecatedSensu map[string]PluginConfigs `toml:"sensu"` // DEPRECATED this is for backward compatibility
 	Include         string
+	Hostname        string // if this field is empty then hostname will be used OS's one
 }
 
 // PluginConfigs XXX
