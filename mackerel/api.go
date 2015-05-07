@@ -25,14 +25,14 @@ type CreatingMetricsValue struct {
 	Value  interface{} `json:"value"`
 }
 
-// API XXX
+// API is the main interface of Mackerel API.
 type API struct {
 	BaseURL *url.URL
 	APIKey  string
 	Verbose bool
 }
 
-// NewAPI XXX
+// NewAPI creates a new instance of API.
 func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	u, err := url.Parse(rawurl)
 	if err != nil {
@@ -276,4 +276,56 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 	}
 
 	return nil
+}
+
+func (api *API) postJSON(path string, payload interface{}, result interface{}) error {
+	var body bytes.Buffer
+
+	err := json.NewEncoder(&body).Encode(payload)
+	if err != nil {
+		return err
+	}
+
+	logger.Debugf("POST %s %s", path, body.String())
+
+	req, err := http.NewRequest(
+		"POST",
+		api.urlFor(path).String(),
+		&body,
+	)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := api.do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("request failed: [%s]", resp.Status)
+	}
+
+	if result != nil {
+		err := json.NewDecoder(resp.Body).Decode(result)
+		if err != nil {
+			return err
+		}
+	}
+
+	logger.Debugf("POST %s status=%q result=%v", path, resp.Status, result)
+
+	return nil
+}
+
+// Time is a type for sending time information to Mackerel API server.
+// It is encoded as an epoch seconds integer in JSON.
+type Time time.Time
+
+// MarshalJSON implements json.Marshaler.
+func (t Time) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Time(t).Unix())
 }

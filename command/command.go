@@ -11,10 +11,12 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/agent"
+	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/spec"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var logger = logging.GetLogger("command")
@@ -55,7 +57,6 @@ func saveHostID(root string, id string) error {
 
 // buildHostSpec build data structure for Host specs
 func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string) map[string]interface{} {
-
 	return map[string]interface{}{
 		"name":          name,
 		"meta":          meta,
@@ -161,10 +162,23 @@ func loop(c *context, termCh chan struct{}) int {
 		c.ag.InitPluginGenerators(c.api)
 	}
 
+	termCheckerCh := make(chan struct{})
+	termMetricsCh := make(chan struct{})
+
+	// fan-out termCh
+	go func() {
+		for range termCh {
+			termCheckerCh <- struct{}{}
+			termMetricsCh <- struct{}{}
+		}
+	}()
+
+	runCheckersLoop(c, termCheckerCh, quit)
+
 	lState := loopStateFirst
 	for {
 		select {
-		case <-termCh:
+		case <-termMetricsCh:
 			if lState == loopStateTerminating {
 				return 1
 			}
@@ -217,7 +231,7 @@ func loop(c *context, termCh chan struct{}) int {
 			select {
 			case <-time.After(time.Duration(delaySeconds) * time.Second):
 				// nop
-			case <-termCh:
+			case <-termMetricsCh:
 				if lState == loopStateTerminating {
 					return 1
 				}
@@ -304,6 +318,113 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 	}
 }
 
+// runCheckersLoop generates "checker" goroutines
+// which run for each checker commands and one for HTTP POSTing
+// the reports to Mackerel API.
+func runCheckersLoop(c *context, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
+	var (
+		checkReportCh          chan *checks.Report
+		reportCheckImmediateCh chan struct{}
+	)
+	for _, checker := range c.ag.Checkers {
+		if checkReportCh == nil {
+			checkReportCh = make(chan *checks.Report)
+			reportCheckImmediateCh = make(chan struct{})
+		}
+
+		go func(checker checks.Checker) {
+			var (
+				lastStatus  = checks.StatusUndefined
+				lastMessage = ""
+			)
+
+			util.Periodically(
+				func() {
+					report, err := checker.Check()
+					if err != nil {
+						logger.Errorf("checker %v: %s", checker, err)
+						return
+					}
+
+					logger.Debugf("checker %q: report=%v", checker.Name, report)
+
+					if report.Status == lastStatus && report.Message == lastMessage {
+						// Do not report if nothing has changed
+						return
+					}
+
+					checkReportCh <- report
+
+					// If status has changed, send it immediately
+					// but if the status was OK and it's first invocation of a check, do not
+					if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
+						logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
+						reportCheckImmediateCh <- struct{}{}
+					}
+
+					lastStatus = report.Status
+					lastMessage = report.Message
+				},
+				checker.Interval(),
+				quit,
+			)
+		}(checker)
+	}
+	if checkReportCh != nil {
+		go func() {
+			exit := false
+			for !exit {
+				select {
+				case <-time.After(1 * time.Minute):
+				case <-termCheckerCh:
+					logger.Debugf("received 'term' chan")
+					exit = true
+				case <-reportCheckImmediateCh:
+					logger.Debugf("received 'immediate' chan")
+				}
+
+				reports := []*checks.Report{}
+			DrainCheckReport:
+				for {
+					select {
+					case report := <-checkReportCh:
+						reports = append(reports, report)
+					default:
+						break DrainCheckReport
+					}
+				}
+
+				for i, report := range reports {
+					logger.Debugf("reports[%d]: %#v", i, report)
+				}
+
+				if len(reports) == 0 {
+					continue
+				}
+
+				err := c.api.ReportCheckMonitors(c.host.ID, reports)
+				if err != nil {
+					logger.Errorf("ReportCheckMonitors: %s", err)
+
+					// queue back the reports
+					go func() {
+						for _, report := range reports {
+							logger.Debugf("queue back report: %#v", report)
+							checkReportCh <- report
+						}
+					}()
+				}
+			}
+		}()
+	} else {
+		// consume termCheckerCh
+		go func() {
+			for range termCheckerCh {
+			}
+		}()
+	}
+}
+
 // collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
 func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{}, error) {
 	hostname, err := os.Hostname()
@@ -364,10 +485,7 @@ func RunOnce(conf *config.Config) {
 		logger.Errorf("While collecting host specs: %s", err)
 		return
 	}
-	ag := &agent.Agent{
-		MetricsGenerators: metricsGenerators(conf),
-		PluginGenerators:  pluginGenerators(conf),
-	}
+	ag := NewAgent(conf)
 	graphdefs := ag.CollectGraphDefsOfPlugins()
 	logger.Infof("Collecting metrics may take one minutes.")
 	metrics := ag.CollectMetrics(time.Now())
@@ -383,14 +501,20 @@ func RunOnce(conf *config.Config) {
 	}
 }
 
+// NewAgent creates a new instance of agent.Agent from its configuration conf.
+func NewAgent(conf *config.Config) *agent.Agent {
+	return &agent.Agent{
+		MetricsGenerators: metricsGenerators(conf),
+		PluginGenerators:  pluginGenerators(conf),
+		Checkers:          createCheckers(conf),
+	}
+}
+
 // Run starts the main metric collecting logic and this function will never return.
 func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", conf.Apibase, host.Name, host.ID)
 
-	ag := &agent.Agent{
-		MetricsGenerators: metricsGenerators(conf),
-		PluginGenerators:  pluginGenerators(conf),
-	}
+	ag := NewAgent(conf)
 
 	c := &context{
 		ag:   ag,
@@ -400,4 +524,19 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 	}
 
 	return loop(c, termCh)
+}
+
+func createCheckers(conf *config.Config) []checks.Checker {
+	checkers := []checks.Checker{}
+
+	for name, pluginConfig := range conf.Plugin["checks"] {
+		checker := checks.Checker{
+			Name:   name,
+			Config: pluginConfig,
+		}
+		logger.Debugf("Checker created: %v", checker)
+		checkers = append(checkers, checker)
+	}
+
+	return checkers
 }

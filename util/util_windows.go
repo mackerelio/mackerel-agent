@@ -2,20 +2,21 @@ package util
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
-	"strings"
-	"fmt"
 	"strconv"
+	"strings"
+	"syscall"
 )
 
 // RunCommand XXX
-func RunCommand(command string) (string, string, error) {
+func RunCommand(command string) (string, string, int, error) {
 	var outBuffer, errBuffer bytes.Buffer
 
 	wd, err := os.Getwd()
 	if err != nil {
-		return "", "", err
+		return "", "", -1, err
 	}
 	cmd := exec.Command("cmd", "/c", "pushd "+wd+" & "+command)
 	cmd.Stdout = &outBuffer
@@ -23,11 +24,20 @@ func RunCommand(command string) (string, string, error) {
 
 	err = cmd.Run()
 
+	stdout := outBuffer.String()
+	stderr := errBuffer.String()
+
 	if err != nil {
-		return "", "", err
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			if waitStatus, ok := exitErr.Sys().(syscall.WaitStatus); ok {
+				exitCode := waitStatus.ExitStatus()
+				return stdout, stderr, exitCode, nil
+			}
+		}
+		return stdout, stderr, -1, err
 	}
 
-	return string(outBuffer.Bytes()), string(errBuffer.Bytes()), nil
+	return stdout, stderr, 0, nil
 }
 
 // GetWmic XXX

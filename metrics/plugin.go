@@ -124,9 +124,9 @@ func (g *pluginGenerator) loadPluginMeta() error {
 	os.Setenv(pluginConfigurationEnvName, "1")
 	defer os.Setenv(pluginConfigurationEnvName, "")
 
-	stdout, stderr, err := util.RunCommand(command)
+	stdout, stderr, exitCode, err := util.RunCommand(command)
 	if err != nil {
-		return fmt.Errorf("running %q failed: %s, stderr=%q", command, err, stderr)
+		return fmt.Errorf("running %q failed: %s, exit=%d stderr=%q", command, err, exitCode, stderr)
 	}
 
 	outBuffer := bufio.NewReader(strings.NewReader(stdout))
@@ -217,7 +217,7 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
 
 	os.Setenv(pluginConfigurationEnvName, "")
-	stdout, stderr, err := util.RunCommand(command)
+	stdout, stderr, _, err := util.RunCommand(command)
 
 	if err != nil {
 		pluginLogger.Errorf("Failed to execute command \"%s\" (skip these metrics):\n%s", command, stderr)
