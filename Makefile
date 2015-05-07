@@ -3,6 +3,7 @@ ARGS = "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS = "linux darwin freebsd windows"
 
 BUILD_LDFLAGS = "\
+	  -s -w \
 	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT `git rev-parse --short HEAD` \
 	  -X github.com/mackerelio/mackerel-agent/version.VERSION   `git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/\+.*$$//'` \
 	  -X github.com/mackerelio/mackerel-agent/config.apibase \"$(MACKEREL_API_BASE)\""
