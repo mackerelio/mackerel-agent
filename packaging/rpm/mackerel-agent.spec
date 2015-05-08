@@ -71,6 +71,13 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Fri May 08 2015 <y.songmu@gmail.com> - 0.16.0-1
+- suppress logging (by stanaka)
+- "Check" functionality (by motemen)
+- update for windows (by daiksy)
+- collect memory metrics of osx (by Songmu)
+- Send plugin.check._name_s list on `updateHost` (by mechairoi)
+
 * Thu Apr 02 2015 <y.songmu@gmail.com> - 0.15.0-1
 - building packages (by Songmu)
 - Only skip device mapper created by docker (Resolve #70) (by mechairoi)

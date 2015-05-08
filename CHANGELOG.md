@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.16.0 (2015-05-08)
+
+* suppress logging #78 (stanaka)
+* "Check" functionality #80 (motemen)
+* update for windows #81 (daiksy)
+* collect memory metrics of osx #84 (Songmu)
+* Send plugin.check._name_s list on `updateHost` #86 (mechairoi)
+
+
 ## 0.15.0 (2015-04-02)
 
 * Only skip device mapper created by docker
