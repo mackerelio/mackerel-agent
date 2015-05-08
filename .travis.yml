@@ -13,6 +13,8 @@ script:
 - make crossbuild
 after_script:
 - goveralls -coverprofile=.profile.cov
+after_success:
+- tool/travis/autotag.sh
 before_deploy:
 - make rpm deb
 deploy:
