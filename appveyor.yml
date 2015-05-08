@@ -1,4 +1,4 @@
-version: 0.14.{build}
+version: 0.16.{build}
 clone_folder: c:\gopath\src\github.com\mackerelio\mackerel-agent
 environment:
   GOPATH: c:\gopath
