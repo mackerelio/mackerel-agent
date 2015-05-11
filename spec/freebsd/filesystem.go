@@ -4,7 +4,7 @@ package freebsd
 
 import (
 	"github.com/mackerelio/mackerel-agent/logging"
-	utilFreebsd "github.com/mackerelio/mackerel-agent/util/freebsd"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 // FilesystemGenerator XXX
@@ -18,15 +18,15 @@ func (g *FilesystemGenerator) Key() string {
 
 var logger = logging.GetLogger("spec.filesystem")
 
-var dfColumnSpecs = []utilFreebsd.DfColumnSpec{
-	utilFreebsd.DfColumnSpec{Name: "kb_size", IsInt: true},
-	utilFreebsd.DfColumnSpec{Name: "kb_used", IsInt: true},
-	utilFreebsd.DfColumnSpec{Name: "kb_available", IsInt: true},
-	utilFreebsd.DfColumnSpec{Name: "percent_used", IsInt: false},
-	utilFreebsd.DfColumnSpec{Name: "mount", IsInt: false},
+var dfColumnSpecs = []util.DfColumnSpec{
+	util.DfColumnSpec{Name: "kb_size", IsInt: true},
+	util.DfColumnSpec{Name: "kb_used", IsInt: true},
+	util.DfColumnSpec{Name: "kb_available", IsInt: true},
+	util.DfColumnSpec{Name: "percent_used", IsInt: false},
+	util.DfColumnSpec{Name: "mount", IsInt: false},
 }
 
 // Generate XXX
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
-	return utilFreebsd.CollectDfValues(dfColumnSpecs)
+	return util.CollectDfValues(dfColumnSpecs)
 }
