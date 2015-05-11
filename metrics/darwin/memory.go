@@ -15,9 +15,9 @@ import (
 /*
 MemoryGenerator collect memory usage
 
-`memory.{metric}`: using memory size retrieved from `vm_stat` and `sysctl vm.swapusage`
+`memory.{metric}`: using memory size retrieved from `vm_stat`
 
-metric = "total", "free", "used", "cached", "active", "inactive", "swap_total", "swap_used", "swap_free"
+metric = "total", "free", "used", "cached", "active", "inactive"
 
 graph: stacks `memory.{metric}`
 */

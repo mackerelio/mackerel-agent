@@ -19,7 +19,7 @@ SwapGenerator collect swap usage
 
 metric = "swap_total", "swap_free"
 
-graph: stacks `memory.{metric}`
+graph: `memory.{metric}`
 */
 type SwapGenerator struct {
 }
