@@ -11,6 +11,7 @@ import (
 
 var sampleConfig = `
 apikey = "abcde"
+displayname = "fghij"
 
 [connection]
 post_metrics_retry_delay_seconds = 600
@@ -49,6 +50,10 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("should be abcde (config value should be used)")
 	}
 
+	if config.DisplayName != "fghij" {
+		t.Error("should be fghij (config value should be used)")
+	}
+
 	if config.Connection.PostMetricsDequeueDelaySeconds != 30 {
 		t.Error("should be 30 (default value should be used)")
 	}
@@ -81,6 +86,10 @@ func TestLoadConfigFile(t *testing.T) {
 
 	if config.Apikey != "abcde" {
 		t.Error("Apikey should be abcde")
+	}
+
+	if config.DisplayName != "fghij" {
+		t.Error("DisplayName should be fghij")
 	}
 
 	if config.Connection.PostMetricsRetryMax != 5 {
