@@ -117,18 +117,15 @@ func (api *API) FindHost(id string) (*Host, error) {
 
 // CreateHost XXX
 func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, nickname string) (string, error) {
-	var spec = map[string]interface{}{
+	requestJSON, err := json.Marshal(map[string]interface{}{
 		"name":          name,
 		"type":          "unknown",
 		"status":        "working",
 		"meta":          meta,
 		"interfaces":    interfaces,
 		"roleFullnames": roleFullnames,
-	}
-	if nickname != "" {
-		spec["nickname"] = nickname
-	}
-	requestJSON, err := json.Marshal(spec)
+		"nickname":      nickname,
+	})
 	if err != nil {
 		return "", err
 	}

@@ -57,17 +57,14 @@ func saveHostID(root string, id string) error {
 
 // buildHostSpec build data structure for Host specs
 func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, checks []string, nickname string) map[string]interface{} {
-	var spec = map[string]interface{}{
+	return map[string]interface{}{
 		"name":          name,
 		"meta":          meta,
 		"interfaces":    interfaces,
 		"roleFullnames": roleFullnames,
 		"checks":        checks,
+		"nickname":      nickname,
 	}
-	if nickname != "" {
-		spec["nickname"] = nickname
-	}
-	return spec
 }
 
 // prepareHost collects specs of the host and sends them to Mackerel server.
