@@ -30,6 +30,7 @@ type Config struct {
 	Roles      []string
 	Verbose    bool
 	Connection ConnectionConfig
+	Nickname   string
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
