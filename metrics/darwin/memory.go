@@ -15,9 +15,9 @@ import (
 /*
 MemoryGenerator collect memory usage
 
-`memory.{metric}`: using memory size retrieved from `vm_stat` and `sysctl vm.swapusage`
+`memory.{metric}`: using memory size retrieved from `vm_stat`
 
-metric = "total", "free", "used", "cached", "active", "inactive", "swap_total", "swap_used", "swap_free"
+metric = "total", "free", "used", "cached", "active", "inactive"
 
 graph: stacks `memory.{metric}`
 */
@@ -51,14 +51,8 @@ Swapins:                                      0.
 Swapouts:                                     0.
 */
 
-/* sysctl vm.swapusage sample
-% sysctl vm.swapusage
-vm.swapusage: total = 1024.00M  used = 2.50M  free = 1021.50M  (encrypted)
-*/
-
 var memoryLogger = logging.GetLogger("metrics.memory")
 var statReg = regexp.MustCompile(`^(.+):\s+([0-9]+)\.$`)
-var swapReg = regexp.MustCompile(`([0-9]+(?:\.[0-9]+))?M[^0-9]*([0-9]+(?:\.[0-9]+)?)M[^0-9]*([0-9]+(?:\.[0-9]+)?)M`)
 
 // Generate generate metrics values
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
@@ -98,18 +92,5 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		"memory.inactive": float64(inactive),
 	}
 
-	outBytes, err = exec.Command("sysctl", "vm.swapusage").Output()
-	if err != nil {
-		memoryLogger.Errorf("Failed (skip swap metrics): %s", err)
-	} else {
-		if matches := swapReg.FindStringSubmatch(string(outBytes)); matches != nil {
-			t, _ := strconv.ParseFloat(matches[1], 64)
-			// swap_used are calculated at server, so don't send it
-			// u, _ := strconv.ParseFloat(matches[2], 64)
-			f, _ := strconv.ParseFloat(matches[3], 64)
-			ret["memory.swap_total"] = t * 1024 * 1024
-			ret["memory.swap_free"] = f * 1024 * 1024
-		}
-	}
 	return metrics.Values(ret), nil
 }
