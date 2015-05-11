@@ -56,20 +56,20 @@ func saveHostID(root string, id string) error {
 }
 
 // buildHostSpec build data structure for Host specs
-func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, checks []string, nickname string) map[string]interface{} {
+func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, checks []string, displayName string) map[string]interface{} {
 	return map[string]interface{}{
 		"name":          name,
 		"meta":          meta,
 		"interfaces":    interfaces,
 		"roleFullnames": roleFullnames,
 		"checks":        checks,
-		"nickname":      nickname,
+		"displayName":   displayName,
 	}
 }
 
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
-func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, nickname string) (*mackerel.Host, error) {
+func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, displayName string) (*mackerel.Host, error) {
 	// XXX this configuration should be moved to under spec/linux
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
@@ -82,7 +82,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 	var result *mackerel.Host
 	if hostID, err := loadHostID(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
-		createdHostID, err := api.CreateHost(hostname, meta, interfaces, roleFullnames, nickname)
+		createdHostID, err := api.CreateHost(hostname, meta, interfaces, roleFullnames, displayName)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to register this host: %s", err.Error())
 		}
@@ -96,7 +96,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), err.Error())
 		}
-		err := api.UpdateHost(hostID, buildHostSpec(hostname, meta, interfaces, roleFullnames, checks, nickname))
+		err := api.UpdateHost(hostID, buildHostSpec(hostname, meta, interfaces, roleFullnames, checks, displayName))
 		if err != nil {
 			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
 		}
@@ -456,7 +456,7 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 		return
 	}
 
-	err = api.UpdateHost(host.ID, buildHostSpec(hostname, meta, interfaces, conf.Roles, conf.CheckNames(), conf.Nickname))
+	err = api.UpdateHost(host.ID, buildHostSpec(hostname, meta, interfaces, conf.Roles, conf.CheckNames(), conf.DisplayName))
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
 	} else {
@@ -472,7 +472,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 		return nil, nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
 
-	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.Nickname)
+	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.DisplayName)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
 	}
@@ -492,7 +492,7 @@ func RunOnce(conf *config.Config) {
 	logger.Infof("Collecting metrics may take one minutes.")
 	metrics := ag.CollectMetrics(time.Now())
 	payload := map[string]interface{}{
-		"host":    buildHostSpec(hostname, meta, interfaces, conf.Roles, conf.CheckNames(), conf.Nickname),
+		"host":    buildHostSpec(hostname, meta, interfaces, conf.Roles, conf.CheckNames(), conf.DisplayName),
 		"metrics": metrics,
 	}
 	json, err := json.Marshal(payload)
