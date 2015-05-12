@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.16.1 (2015-05-12)
+
+* Code sharing around dfValues #85 (Songmu)
+* [FreeBSD] Fix 'panic: runtime error: index out of range'. #89 (iwadon)
+* separete out metrics/darwin/swap.go from memory.go #90 (Songmu)
+
+
 ## 0.16.0 (2015-05-08)
 
 * suppress logging #78 (stanaka)

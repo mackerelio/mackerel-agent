@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.16.0
+Version:   0.16.1
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -71,6 +71,11 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Tue May 12 2015 <y.songmu@gmail.com> - 0.16.1-1
+- Code sharing around dfValues (by Songmu)
+- [FreeBSD] Fix 'panic: runtime error: index out of range'. (by iwadon)
+- separete out metrics/darwin/swap.go from memory.go (by Songmu)
+
 * Fri May 08 2015 <y.songmu@gmail.com> - 0.16.0-1
 - suppress logging (by stanaka)
 - "Check" functionality (by motemen)
