@@ -1,3 +1,14 @@
+mackerel-agent (0.16.1-1) stable; urgency=low
+
+  * Code sharing around dfValues (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/85>
+  * [FreeBSD] Fix 'panic: runtime error: index out of range'. (by iwadon)
+    <https://github.com/mackerelio/mackerel-agent/pull/89>
+  * separete out metrics/darwin/swap.go from memory.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/90>
+
+ -- Songmu <y.songmu@gmail.com>  Tue, 12 May 2015 15:30:58 +0900
+
 mackerel-agent (0.16.0-1) stable; urgency=low
 
   * suppress logging (by stanaka)
