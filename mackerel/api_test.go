@@ -159,7 +159,7 @@ func TestCreateHost(t *testing.T) {
 	})
 	hostID, err := api.CreateHost("dummy", map[string]interface{}{
 		"memo": "hello",
-	}, interfaces, []string{"My-Service:app-default"})
+	}, interfaces, []string{"My-Service:app-default"}, "label")
 
 	if err != nil {
 		t.Error("should not raise error: ", err)
@@ -213,7 +213,7 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	// with nil args
-	hostID, err := api.CreateHost("nilsome", nil, nil, nil)
+	hostID, err := api.CreateHost("nilsome", nil, nil, nil, "")
 	if err != nil {
 		t.Error("should not return error but got: ", err)
 	}

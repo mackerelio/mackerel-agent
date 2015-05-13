@@ -30,8 +30,9 @@ func TestBuildHostSpec(t *testing.T) {
 	}
 	roleFullnames := []string{"My-Service:app-default"}
 	checks := []string{"heartbeat"}
+	displayName := "label"
 
-	hostSpec := buildHostSpec("Host123", meta, interfaces, roleFullnames, checks)
+	hostSpec := buildHostSpec("Host123", meta, interfaces, roleFullnames, checks, displayName)
 
 	if hostSpec["name"] != "Host123" {
 		t.Error("name should 'Host123' but:", hostSpec["name"])
@@ -50,6 +51,10 @@ func TestBuildHostSpec(t *testing.T) {
 	_, ok = hostSpec["roleFullnames"].([]string)
 	if !ok {
 		t.Error("the type of meta should be '[]string'")
+	}
+
+	if hostSpec["displayName"] != displayName {
+		t.Error("name should 'label' but:", hostSpec["displayName"])
 	}
 }
 
