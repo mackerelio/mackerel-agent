@@ -17,42 +17,6 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
-func TestBuildHostSpec(t *testing.T) {
-	var interfaces []map[string]interface{}
-	interfaces = append(interfaces, map[string]interface{}{
-		"name":       "eth0",
-		"ipAddress":  "10.0.4.7",
-		"macAddress": "01:23:45:67:89:ab",
-		"encap":      "Ethernet",
-	})
-	meta := map[string]interface{}{
-		"memo": "hello",
-	}
-	roleFullnames := []string{"My-Service:app-default"}
-	checks := []string{"heartbeat"}
-
-	hostSpec := buildHostSpec("Host123", meta, interfaces, roleFullnames, checks)
-
-	if hostSpec["name"] != "Host123" {
-		t.Error("name should 'Host123' but:", hostSpec["name"])
-	}
-
-	_, ok := hostSpec["interfaces"].([]map[string]interface{})
-	if !ok {
-		t.Error("the type of interfaces should be '[]map[string]interface{}'")
-	}
-
-	_, ok = hostSpec["meta"].(map[string]interface{})
-	if !ok {
-		t.Error("the type of meta should be 'map[string]interface{}'")
-	}
-
-	_, ok = hostSpec["roleFullnames"].([]string)
-	if !ok {
-		t.Error("the type of meta should be '[]string'")
-	}
-}
-
 func TestDelayByHost(t *testing.T) {
 	delay1 := time.Duration(delayByHost(&mackerel.Host{
 		ID:     "246PUVUngPo",

@@ -116,7 +116,7 @@ func (api *API) FindHost(id string) (*Host, error) {
 }
 
 // CreateHost XXX
-func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string) (string, error) {
+func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, displayName string) (string, error) {
 	requestJSON, err := json.Marshal(map[string]interface{}{
 		"name":          name,
 		"type":          "unknown",
@@ -124,6 +124,7 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 		"meta":          meta,
 		"interfaces":    interfaces,
 		"roleFullnames": roleFullnames,
+		"displayName":   displayName,
 	})
 	if err != nil {
 		return "", err
@@ -166,7 +167,7 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 }
 
 // UpdateHost updates the host information on Mackerel.
-func (api *API) UpdateHost(hostID string, hostSpec map[string]interface{}) error {
+func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
 	url := api.urlFor("/api/v0/hosts/" + hostID)
 
 	requestJSON, err := json.Marshal(hostSpec)

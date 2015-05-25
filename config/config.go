@@ -22,14 +22,15 @@ func getApibase() string {
 
 // Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase    string
-	Apikey     string
-	Root       string
-	Pidfile    string
-	Conffile   string
-	Roles      []string
-	Verbose    bool
-	Connection ConnectionConfig
+	Apibase     string
+	Apikey      string
+	Root        string
+	Pidfile     string
+	Conffile    string
+	Roles       []string
+	Verbose     bool
+	Connection  ConnectionConfig
+	DisplayName string `toml:"display_name"`
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
