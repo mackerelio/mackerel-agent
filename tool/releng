@@ -254,7 +254,7 @@ sub update_changelog {
     replace 'CHANGELOG.md' => sub {
         my $content = shift;
 
-        my $update = "\n\n## %s (%s)\n\n", $next_version, $now->strftime('%Y-%m-%d');
+        my $update = sprintf "\n\n## %s (%s)\n\n", $next_version, $now->strftime('%Y-%m-%d');
         for my $rel (@releases) {
             $update .= sprintf "* %s #%d (%s)\n", $rel->{title}, $rel->{num}, $rel->{user};
         }

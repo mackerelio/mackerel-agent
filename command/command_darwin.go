@@ -25,6 +25,8 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsDarwin.Loadavg5Generator{},
 		&metricsDarwin.CPUUsageGenerator{},
+		&metricsDarwin.MemoryGenerator{},
+		&metricsDarwin.SwapGenerator{},
 		&metricsDarwin.FilesystemGenerator{},
 		&metricsDarwin.InterfaceGenerator{Interval: 60},
 	}

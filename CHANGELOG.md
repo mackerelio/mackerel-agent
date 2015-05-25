@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.16.1 (2015-05-12)
+
+* Code sharing around dfValues #85 (Songmu)
+* [FreeBSD] Fix 'panic: runtime error: index out of range'. #89 (iwadon)
+* separete out metrics/darwin/swap.go from memory.go #90 (Songmu)
+
+
+## 0.16.0 (2015-05-08)
+
+* suppress logging #78 (stanaka)
+* "Check" functionality #80 (motemen)
+* update for windows #81 (daiksy)
+* collect memory metrics of osx #84 (Songmu)
+* Send plugin.check._name_s list on `updateHost` #86 (mechairoi)
+
+
 ## 0.15.0 (2015-04-02)
 
 * Only skip device mapper created by docker

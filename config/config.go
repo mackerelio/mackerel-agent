@@ -20,25 +20,30 @@ func getApibase() string {
 	return "https://mackerel.io"
 }
 
-// Config XXX
+// Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase         string
-	Apikey          string
-	Root            string
-	Pidfile         string
-	Conffile        string
-	Roles           []string
-	Verbose         bool
-	Connection      ConnectionConfig
-	Plugin          map[string]PluginConfigs
+	Apibase    string
+	Apikey     string
+	Root       string
+	Pidfile    string
+	Conffile   string
+	Roles      []string
+	Verbose    bool
+	Connection ConnectionConfig
+
+	// Corresponds to the set of [plugin.<kind>.<name>] sections
+	// the key of the map is <kind>, which should be one of "metrics" or "checks".
+	Plugin map[string]PluginConfigs
+
 	DeprecatedSensu map[string]PluginConfigs `toml:"sensu"` // DEPRECATED this is for backward compatibility
 	Include         string
 }
 
-// PluginConfigs XXX
+// PluginConfigs represents a set of [plugin.<kind>.<name>] sections in the configuration file
+// under a specific <kind>. The key of the map is <name>, for example "mysql" of "plugin.metrics.mysql".
 type PluginConfigs map[string]PluginConfig
 
-// PluginConfig XXX
+// PluginConfig represents a section of [plugin.*].
 type PluginConfig struct {
 	Command string
 }
@@ -55,6 +60,15 @@ type ConnectionConfig struct {
 	PostMetricsRetryDelaySeconds   int `toml:"post_metrics_retry_delay_seconds"`   // delay for retrying a request that caused errors
 	PostMetricsRetryMax            int `toml:"post_metrics_retry_max"`             // max numbers of retries for a request that causes errors
 	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
+}
+
+// CheckNames return list of plugin.checks._name_
+func (conf *Config)CheckNames ()([]string) {
+	checks := []string{}
+	for name := range conf.Plugin["checks"] {
+		checks = append(checks, name)
+	}
+	return checks
 }
 
 // LoadConfig XXX

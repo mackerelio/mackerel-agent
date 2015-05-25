@@ -3,15 +3,17 @@ package agent
 import (
 	"time"
 
+	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
-// Agent XXX
+// Agent is the root of metrics collectors
 type Agent struct {
 	MetricsGenerators []metrics.Generator
 	PluginGenerators  []metrics.PluginGenerator
+	Checkers          []checks.Checker
 }
 
 // MetricsResult XXX

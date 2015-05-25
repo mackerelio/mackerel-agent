@@ -39,38 +39,32 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		}
 
 		if fields[0] == "Mem:" {
-
-			if v, err := getValue(fields[1]); err == nil {
-				ret["memory.active"] = v
-			} else {
-				errRet = err
-			}
-			if v, err := getValue(fields[3]); err == nil {
-				ret["memory.inactive"] = v
-			} else {
-				errRet = err
-			}
-			/*
-			         if v, err := getValue(fields[5]); err == nil {
-			           ret["memory.wired"] = v
-			         } else {
-			   	errRet = err
-			         }
-			*/
-			if v, err := getValue(fields[7]); err == nil {
-				ret["memory.cached"] = v
-			} else {
-				errRet = err
-			}
-			if v, err := getValue(fields[9]); err == nil {
-				ret["memory.buffers"] = v
-			} else {
-				errRet = err
-			}
-			if v, err := getValue(fields[11]); err == nil {
-				ret["memory.free"] = v
-			} else {
-				errRet = err
+			for i := 1; i < len(fields); i += 2 {
+				v, err := getValue(fields[i])
+				if err == nil {
+					k := fields[i + 1]
+					if strings.HasSuffix(k, ",") {
+						k = k[0 : len(k) - 1]
+					}
+					switch k {
+					case "Active":
+						ret["memory.active"] = v
+					case "Inact":
+						ret["memory.inactive"] = v
+					/*
+					case "Wired":
+						ret["memory.wired"] = v
+					*/
+					case "Cache":
+						ret["memory.cached"] = v
+					case "Buf":
+						ret["memory.buffers"] = v
+					case "Free":
+						ret["memory.free"] = v
+					}
+				} else {
+					errRet = err;
+				}
 			}
 		}
 		if fields[0] == "Swap:" {

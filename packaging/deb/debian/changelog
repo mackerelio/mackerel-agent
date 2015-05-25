@@ -1,3 +1,29 @@
+mackerel-agent (0.16.1-1) stable; urgency=low
+
+  * Code sharing around dfValues (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/85>
+  * [FreeBSD] Fix 'panic: runtime error: index out of range'. (by iwadon)
+    <https://github.com/mackerelio/mackerel-agent/pull/89>
+  * separete out metrics/darwin/swap.go from memory.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/90>
+
+ -- Songmu <y.songmu@gmail.com>  Tue, 12 May 2015 15:30:58 +0900
+
+mackerel-agent (0.16.0-1) stable; urgency=low
+
+  * suppress logging (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/78>
+  * "Check" functionality (by motemen)
+    <https://github.com/mackerelio/mackerel-agent/pull/80>
+  * update for windows (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/81>
+  * collect memory metrics of osx (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/84>
+  * Send plugin.check._name_s list on `updateHost` (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/86>
+
+ -- Songmu <y.songmu@gmail.com>  Fri, 08 May 2015 14:36:32 +0900
+
 mackerel-agent (0.15.0-1) stable; urgency=low
 
   * building packages (by Songmu)

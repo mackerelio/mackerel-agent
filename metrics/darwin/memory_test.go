@@ -1,10 +1,8 @@
-// +build windows
+// +build darwin
 
-package windows
+package darwin
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestMemoryGenerator(t *testing.T) {
 	g := &MemoryGenerator{}
@@ -16,12 +14,15 @@ func TestMemoryGenerator(t *testing.T) {
 	for _, name := range []string{
 		"total",
 		"free",
-		"pagefile_total",
-		"pagefile_free",
+		"cached",
+		"active",
+		"inactive",
 		"used",
 	} {
-		if _, ok := values["memory."+name]; !ok {
+		if v, ok := values["memory."+name]; !ok {
 			t.Errorf("memory should has %s", name)
+		} else {
+			t.Logf("memory '%s' collected: %+v", name, v)
 		}
 	}
 }
