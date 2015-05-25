@@ -8,6 +8,7 @@ type Host struct {
 	Status string `json:"status"`
 }
 
+// HostSpec is host specifications sent Mackerel server per hour
 type HostSpec struct {
 	Name          string                   `json:"name"`
 	Meta          map[string]interface{}   `json:"meta"`
