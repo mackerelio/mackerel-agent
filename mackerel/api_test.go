@@ -107,7 +107,7 @@ func TestCreateHost(t *testing.T) {
 
 		var data struct {
 			Name          string              `json:"name"`
-			Tame          string              `json:"type"`
+			Type          string              `json:"type"`
 			Status        string              `json:"status"`
 			Meta          map[string]string   `json:"meta"`
 			Interfaces    []map[string]string `json:"interfaces"`
@@ -189,7 +189,7 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 
 		var data struct {
 			Name          string              `json:"name"`
-			Tame          string              `json:"type"`
+			Type          string              `json:"type"`
 			Status        string              `json:"status"`
 			Meta          map[string]string   `json:"meta"`
 			Interfaces    []map[string]string `json:"interfaces"`
@@ -240,7 +240,7 @@ func TestUpdateHost(t *testing.T) {
 
 		var data struct {
 			Name          string              `json:"name"`
-			Tame          string              `json:"type"`
+			Type          string              `json:"type"`
 			Status        string              `json:"status"`
 			Meta          map[string]string   `json:"meta"`
 			Interfaces    []map[string]string `json:"interfaces"`
@@ -284,13 +284,13 @@ func TestUpdateHost(t *testing.T) {
 		"encap":      "Ethernet",
 	})
 
-	hostSpec := map[string]interface{}{
-		"name": "dummy",
-		"meta": map[string]interface{}{
+	hostSpec := HostSpec{
+		Name: "dummy",
+		Meta: map[string]interface{}{
 			"memo": "hello",
 		},
-		"interfaces":    interfaces,
-		"roleFullnames": []string{"My-Service:app-default"},
+		Interfaces:    interfaces,
+		RoleFullnames: []string{"My-Service:app-default"},
 	}
 
 	err := api.UpdateHost("ABCD123", hostSpec)
