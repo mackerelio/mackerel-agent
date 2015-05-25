@@ -55,18 +55,6 @@ func saveHostID(root string, id string) error {
 	return nil
 }
 
-// buildHostSpec build data structure for Host specs
-func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, checks []string, displayName string) mackerel.HostSpec {
-	return mackerel.HostSpec{
-		Name:          name,
-		Meta:          meta,
-		Interfaces:    interfaces,
-		RoleFullnames: roleFullnames,
-		Checks:        checks,
-		DisplayName:   displayName,
-	}
-}
-
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
 func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, displayName string) (*mackerel.Host, error) {
@@ -96,7 +84,15 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), err.Error())
 		}
-		err := api.UpdateHost(hostID, buildHostSpec(hostname, meta, interfaces, roleFullnames, checks, displayName))
+		err := api.UpdateHost(hostID, mackerel.HostSpec{
+			Name:          hostname,
+			Meta:          meta,
+			Interfaces:    interfaces,
+			RoleFullnames: roleFullnames,
+			Checks:        checks,
+			DisplayName:   displayName,
+		})
+
 		if err != nil {
 			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
 		}
@@ -456,7 +452,15 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 		return
 	}
 
-	err = api.UpdateHost(host.ID, buildHostSpec(hostname, meta, interfaces, conf.Roles, conf.CheckNames(), conf.DisplayName))
+	err = api.UpdateHost(host.ID, mackerel.HostSpec{
+		Name:          hostname,
+		Meta:          meta,
+		Interfaces:    interfaces,
+		RoleFullnames: conf.Roles,
+		Checks:        conf.CheckNames(),
+		DisplayName:   conf.DisplayName,
+	})
+
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
 	} else {
@@ -492,7 +496,14 @@ func RunOnce(conf *config.Config) {
 	logger.Infof("Collecting metrics may take one minutes.")
 	metrics := ag.CollectMetrics(time.Now())
 	payload := map[string]interface{}{
-		"host":    buildHostSpec(hostname, meta, interfaces, conf.Roles, conf.CheckNames(), conf.DisplayName),
+		"host": mackerel.HostSpec{
+			Name:          hostname,
+			Meta:          meta,
+			Interfaces:    interfaces,
+			RoleFullnames: conf.Roles,
+			Checks:        conf.CheckNames(),
+			DisplayName:   conf.DisplayName,
+		},
 		"metrics": metrics,
 	}
 	json, err := json.Marshal(payload)
