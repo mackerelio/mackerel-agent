@@ -56,14 +56,14 @@ func saveHostID(root string, id string) error {
 }
 
 // buildHostSpec build data structure for Host specs
-func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, checks []string, displayName string) map[string]interface{} {
-	return map[string]interface{}{
-		"name":          name,
-		"meta":          meta,
-		"interfaces":    interfaces,
-		"roleFullnames": roleFullnames,
-		"checks":        checks,
-		"displayName":   displayName,
+func buildHostSpec(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, checks []string, displayName string) mackerel.HostSpec {
+	return mackerel.HostSpec{
+		Name:          name,
+		Meta:          meta,
+		Interfaces:    interfaces,
+		RoleFullnames: roleFullnames,
+		Checks:        checks,
+		DisplayName:   displayName,
 	}
 }
 

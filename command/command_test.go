@@ -34,27 +34,12 @@ func TestBuildHostSpec(t *testing.T) {
 
 	hostSpec := buildHostSpec("Host123", meta, interfaces, roleFullnames, checks, displayName)
 
-	if hostSpec["name"] != "Host123" {
-		t.Error("name should 'Host123' but:", hostSpec["name"])
+	if hostSpec.Name != "Host123" {
+		t.Error("name should 'Host123' but:", hostSpec.Name)
 	}
 
-	_, ok := hostSpec["interfaces"].([]map[string]interface{})
-	if !ok {
-		t.Error("the type of interfaces should be '[]map[string]interface{}'")
-	}
-
-	_, ok = hostSpec["meta"].(map[string]interface{})
-	if !ok {
-		t.Error("the type of meta should be 'map[string]interface{}'")
-	}
-
-	_, ok = hostSpec["roleFullnames"].([]string)
-	if !ok {
-		t.Error("the type of meta should be '[]string'")
-	}
-
-	if hostSpec["displayName"] != displayName {
-		t.Error("name should 'label' but:", hostSpec["displayName"])
+	if hostSpec.DisplayName != displayName {
+		t.Error("name should 'label' but:", hostSpec.DisplayName)
 	}
 }
 

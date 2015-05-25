@@ -167,7 +167,7 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 }
 
 // UpdateHost updates the host information on Mackerel.
-func (api *API) UpdateHost(hostID string, hostSpec map[string]interface{}) error {
+func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
 	url := api.urlFor("/api/v0/hosts/" + hostID)
 
 	requestJSON, err := json.Marshal(hostSpec)

@@ -7,3 +7,12 @@ type Host struct {
 	Type   string `json:"type"` // TODO ENUM
 	Status string `json:"status"`
 }
+
+type HostSpec struct {
+	Name          string                   `json:"name"`
+	Meta          map[string]interface{}   `json:"meta"`
+	Interfaces    []map[string]interface{} `json:"interfaces"`
+	RoleFullnames []string                 `json:"roleFullnames"`
+	Checks        []string                 `json:"checks,omitempty"`
+	DisplayName   string                   `json:"displayName,omitempty"`
+}
