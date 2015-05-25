@@ -11,7 +11,7 @@ import (
 
 var sampleConfig = `
 apikey = "abcde"
-displayname = "fghij"
+display_name = "fghij"
 
 [connection]
 post_metrics_retry_delay_seconds = 600
