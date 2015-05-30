@@ -33,9 +33,9 @@ lint: deps
 	rm -f $(LINT_RET)
 	for os in "$(BUILD_OS_TARGETS)"; do \
 		if [ $$os != "windows" ]; then \
-			GOOS=$$os golint ./... | tee -a $(LINT_RET); \
+			GOOS=$$os golint ./... | grep -v '_string.go:' | tee -a $(LINT_RET); \
 		else \
-			GOOS=$$os golint --min_confidence=0.9 ./... | tee -a $(LINT_RET); \
+			GOOS=$$os golint --min_confidence=0.9 ./... | grep -v '_string.go:' | tee -a $(LINT_RET); \
 		fi \
 	done
 	test ! -s $(LINT_RET)
