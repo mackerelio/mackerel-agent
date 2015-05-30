@@ -33,42 +33,43 @@ func ConfigureLoggers(lv level) {
 }
 
 func (logger *Logger) message(lv level, message string) string {
-   return lv.String() + " <" + logger.tag + "> " + message
+	return lv.String() + " <" + logger.tag + "> " + message
 }
 
 func (logger *Logger) log(lv level, message string, args ...interface{}) {
 	if lv >= logLv {
+		// caller -> Infof() -> log()
 		const depth = 3
 		lgr.Output(depth, fmt.Sprintf(logger.message(lv, message), args...))
 	}
 }
 
-// Criticalf XXX
+// Criticalf critical log
 func (logger *Logger) Criticalf(m string, args ...interface{}) {
 	logger.log(CRITICAL, m, args...)
 }
 
-// Errorf XXX
+// Errorf error log
 func (logger *Logger) Errorf(m string, args ...interface{}) {
 	logger.log(ERROR, m, args...)
 }
 
-// Warningf XXX
+// Warningf warning log
 func (logger *Logger) Warningf(m string, args ...interface{}) {
 	logger.log(WARNING, m, args...)
 }
 
-// Infof XXX
+// Infof info log
 func (logger *Logger) Infof(m string, args ...interface{}) {
 	logger.log(INFO, m, args...)
 }
 
-// Debugf XXX
+// Debugf debug log
 func (logger *Logger) Debugf(m string, args ...interface{}) {
 	logger.log(DEBUG, m, args...)
 }
 
-// Tracef XXX
+// Tracef trace log for debugging details
 func (logger *Logger) Tracef(m string, args ...interface{}) {
 	logger.log(TRACE, m, args...)
 }
