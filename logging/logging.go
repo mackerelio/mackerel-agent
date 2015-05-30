@@ -20,8 +20,8 @@ func GetLogger(tag string) *Logger {
 var logLv = INFO
 var lgr = log.New(os.Stderr, "", log.LstdFlags)
 
-// ConfigureLoggers congigure log settings
-func ConfigureLoggers(lv level) {
+// SetLogLevel congigure log settings
+func SetLogLevel(lv level) {
 	if logLv != lv {
 		logLv = lv
 		if logLv <= DEBUG {

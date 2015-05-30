@@ -154,7 +154,7 @@ func (b byTime) Less(i, j int) bool { return b[i].Time < b[j].Time }
 
 func TestLoop(t *testing.T) {
 	if testing.Verbose() {
-		logging.ConfigureLoggers(logging.DEBUG)
+		logging.SetLogLevel(logging.DEBUG)
 	}
 
 	conf, mockHandlers, ts := newMockAPIServer(t)
