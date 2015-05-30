@@ -4,13 +4,14 @@ package logging
 
 import "fmt"
 
-const _level_name = "UNKNOWNTRACEDEBUGINFOWARNINGERRORCRITICAL"
+const _level_name = "TRACEDEBUGINFOWARNINGERRORCRITICAL"
 
-var _level_index = [...]uint8{0, 7, 12, 17, 21, 28, 33, 41}
+var _level_index = [...]uint8{0, 5, 10, 14, 21, 26, 34}
 
 func (i level) String() string {
+	i -= 1
 	if i+1 >= level(len(_level_index)) {
-		return fmt.Sprintf("level(%d)", i)
+		return fmt.Sprintf("level(%d)", i+1)
 	}
 	return _level_name[_level_index[i]:_level_index[i+1]]
 }

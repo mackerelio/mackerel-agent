@@ -5,7 +5,7 @@ type level uint8
 
 // loglevels
 const (
-	UNKNOWN level = iota
+	_ level = iota
 	TRACE
 	DEBUG
 	INFO
