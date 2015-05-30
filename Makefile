@@ -41,6 +41,7 @@ lint: deps
 	test ! -s $(LINT_RET)
 
 crossbuild: deps
+	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
 	    -os=$(BUILD_OS_TARGETS) -arch="386 amd64 arm" -d . \
 	    -resources-include='README*,mackerel-agent.conf' -n $(BIN) \
@@ -51,13 +52,13 @@ cover: deps
 
 rpm:
 	GOOS=linux GOARCH=386 make build
-	cp packaging/mackerel-agent.conf packaging/rpm/src/mackerel-agent.conf
+	cp mackerel-agent.sample.conf packaging/rpm/src/mackerel-agent.conf
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm/src" --define "_builddir `pwd`/build" -ba packaging/rpm/mackerel-agent.spec
 
 deb:
 	GOOS=linux GOARCH=386 make build
 	cp build/$(BIN)        packaging/deb/debian/mackerel-agent.bin
-	cp packaging/mackerel-agent.conf packaging/deb/debian/mackerel-agent.conf
+	cp mackerel-agent.sample.conf packaging/deb/debian/mackerel-agent.conf
 	cd packaging/deb && debuild --no-tgz-check -rfakeroot -uc -us
 
 release:
