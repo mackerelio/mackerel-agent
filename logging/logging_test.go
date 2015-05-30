@@ -14,8 +14,8 @@ func TestGetLogger(t *testing.T) {
 
 func TestConfigureLoggers(t *testing.T) {
 	ConfigureLoggers("INFO")
-	if logLevelConfigs["root"] != info {
-		t.Errorf("tag should be tag but %v", logLevelConfigs["root"])
+	if logLv != INFO {
+		t.Errorf("tag should be tag but %v", logLv.String())
 	}
 }
 
