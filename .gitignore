@@ -8,3 +8,4 @@
 /wix/mackerel-agent.wxs
 /wix/mackerel-agent.wixobj
 packaging/rpm/src/mackerel-agent.conf
+/mackerel-agent.conf
