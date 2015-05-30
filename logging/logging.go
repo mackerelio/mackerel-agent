@@ -1,7 +1,9 @@
 package logging
 
 import (
+	"fmt"
 	"log"
+	"os"
 )
 
 // Logger struct for logging
@@ -34,10 +36,16 @@ func GetLogger(tag string) *Logger {
 
 // global log level
 var logLv = INFO
+var lgr = log.New(os.Stderr, "", log.LstdFlags)
 
 // ConfigureLoggers congigure log settings
 func ConfigureLoggers(logLevel string) {
 	logLv = stringToLevel(logLevel)
+	if logLv <= DEBUG {
+		lgr.SetFlags(log.LstdFlags | log.Lshortfile)
+	} else {
+		lgr.SetFlags(log.LstdFlags)
+	}
 }
 
 func (logger *Logger) message(lv level, message string) string {
@@ -46,7 +54,8 @@ func (logger *Logger) message(lv level, message string) string {
 
 func (logger *Logger) log(lv level, message string, args ...interface{}) {
 	if lv >= logLv {
-		log.Printf(logger.message(lv, message), args...)
+		const depth = 3
+		lgr.Output(depth, fmt.Sprintf(logger.message(lv, message), args...))
 	}
 }
 
