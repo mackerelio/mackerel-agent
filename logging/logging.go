@@ -11,24 +11,6 @@ type Logger struct {
 	tag string
 }
 
-func stringToLevel(name string) level {
-	switch name {
-	case "TRACE":
-		return TRACE
-	case "DEBUG":
-		return DEBUG
-	case "INFO":
-		return INFO
-	case "WARNING":
-		return WARNING
-	case "ERROR":
-		return ERROR
-	case "CRITICAL":
-		return CRITICAL
-	}
-	return UNKNOWN
-}
-
 // GetLogger get the logger
 func GetLogger(tag string) *Logger {
 	return &Logger{tag: tag}
@@ -39,12 +21,14 @@ var logLv = INFO
 var lgr = log.New(os.Stderr, "", log.LstdFlags)
 
 // ConfigureLoggers congigure log settings
-func ConfigureLoggers(logLevel string) {
-	logLv = stringToLevel(logLevel)
-	if logLv <= DEBUG {
-		lgr.SetFlags(log.LstdFlags | log.Lshortfile)
-	} else {
-		lgr.SetFlags(log.LstdFlags)
+func ConfigureLoggers(lv level) {
+	if logLv != lv {
+		logLv = lv
+		if logLv <= DEBUG {
+			lgr.SetFlags(log.LstdFlags | log.Lshortfile)
+		} else {
+			lgr.SetFlags(log.LstdFlags)
+		}
 	}
 }
 
