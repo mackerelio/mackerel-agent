@@ -49,7 +49,7 @@ func ConfigureLoggers(logLevel string) {
 }
 
 func (logger *Logger) message(lv level, message string) string {
-   return lv.String() + " " + logger.tag + " " + message
+   return lv.String() + " <" + logger.tag + "> " + message
 }
 
 func (logger *Logger) log(lv level, message string, args ...interface{}) {
