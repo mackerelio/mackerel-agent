@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/mackerelio/mackerel-agent/version"
@@ -301,5 +302,182 @@ func TestUpdateHost(t *testing.T) {
 
 	if !called {
 		t.Error("should http-request")
+	}
+}
+
+func TestFindHost(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/hosts/9rxGOHfVF8F" {
+			t.Error("request URL should be /api/v0/hosts/9rxGOHfVF8F but :", req.URL.Path)
+		}
+
+		if req.Method != "GET" {
+			t.Error("request method should be GET but :", req.Method)
+		}
+
+		respJSON, _ := json.Marshal(map[string]map[string]interface{}{
+			"host": map[string]interface{}{
+				"id":     "9rxGOHfVF8F",
+				"name":   "mydb001",
+				"status": "working",
+				"memo":   "memo",
+				"roles":  map[string][]string{"My-Service": []string{"db-master", "db-slave"}},
+			},
+		})
+
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJSON))
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	host, err := api.FindHost("9rxGOHfVF8F")
+
+	if err != nil {
+		t.Error("err shoud be nil but: ", err)
+	}
+
+	if reflect.DeepEqual(host, &Host{
+		ID:     "9rxGOHfVF8F",
+		Name:   "mydb001",
+		Type:   "",
+		Status: "working",
+	}) != true {
+		t.Error("request sends json including memo but: ", host)
+	}
+}
+
+func TestPostHostMetricValues(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/tsdb" {
+			t.Error("request URL should be /api/v0/tsdb but :", req.URL.Path)
+		}
+
+		if req.Method != "POST" {
+			t.Error("request method should be POST but: ", req.Method)
+		}
+
+		body, _ := ioutil.ReadAll(req.Body)
+
+		var values []struct {
+			HostID string      `json:"hostID"`
+			Name   string      `json:"name"`
+			Time   float64     `json:"time"`
+			Value  interface{} `json:"value"`
+		}
+
+		err := json.Unmarshal(body, &values)
+		if err != nil {
+			t.Fatal("request body should be decoded as json", string(body))
+		}
+
+		if values[0].HostID != "9rxGOHfVF8F" {
+			t.Error("request sends json including hostID but: ", values[0].HostID)
+		}
+		if values[0].Name != "custom.metric.mysql.connections" {
+			t.Error("request sends json including name but: ", values[0].Name)
+		}
+		if values[0].Time != 123456789 {
+			t.Error("request sends json including time but: ", values[0].Time)
+		}
+		if values[0].Value.(float64) != 100 {
+			t.Error("request sends json including value but: ", values[0].Value)
+		}
+
+		respJSON, _ := json.Marshal(map[string]bool{
+			"success": true,
+		})
+
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJSON))
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	err := api.PostMetricsValues([]*CreatingMetricsValue{
+		&CreatingMetricsValue{
+			HostID: "9rxGOHfVF8F",
+			Name:   "custom.metric.mysql.connections",
+			Time:   123456789,
+			Value:  100,
+		},
+	})
+
+	if err != nil {
+		t.Error("err shoud be nil but: ", err)
+	}
+}
+
+func TestCreateGraphDefs(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/graph-defs/create" {
+			t.Error("request URL should be /api/v0/graph-defs/create but :", req.URL.Path)
+		}
+
+		if req.Method != "POST" {
+			t.Error("request method should be GET but :", req.Method)
+		}
+		body, _ := ioutil.ReadAll(req.Body)
+
+		var datas []struct {
+			Name        string                         `json:"name"`
+			DisplayName string                         `json:"displayName"`
+			Unit        string                         `json:"unit"`
+			Metrics     []CreateGraphDefsPayloadMetric `json:"metrics"`
+		}
+
+		err := json.Unmarshal(body, &datas)
+		if err != nil {
+			t.Fatal("request body should be decoded as json", string(body))
+		}
+		data := datas[0]
+
+		if data.Name != "mackerel" {
+			t.Errorf("request sends json including name but: %s", data.Name)
+		}
+		if data.DisplayName != "HorseMackerel" {
+			t.Errorf("request sends json including DisplayName but: %s", data.Name)
+		}
+		if !reflect.DeepEqual(
+			data.Metrics[0],
+			CreateGraphDefsPayloadMetric{
+				Name:        "saba1",
+				DisplayName: "aji1",
+				IsStacked:   false,
+			},
+		) {
+			t.Error("request sends json including GraphDefsMetric but: ", data.Metrics[0])
+		}
+		respJSON, _ := json.Marshal(map[string]string{
+			"result": "OK",
+		})
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJSON))
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	err := api.CreateGraphDefs([]CreateGraphDefsPayload{
+		CreateGraphDefsPayload{
+			Name:        "mackerel",
+			DisplayName: "HorseMackerel",
+			Unit:        "percentage",
+			Metrics: []CreateGraphDefsPayloadMetric{
+				CreateGraphDefsPayloadMetric{
+					Name:        "saba1",
+					DisplayName: "aji1",
+					IsStacked:   false,
+				},
+				CreateGraphDefsPayloadMetric{
+					Name:        "saba2",
+					DisplayName: "aji2",
+					IsStacked:   false,
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		t.Error("err shoud be nil but: ", err)
 	}
 }
