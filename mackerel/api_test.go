@@ -345,5 +345,65 @@ func TestFindHost(t *testing.T) {
 	}) != true {
 		t.Error("request sends json including memo but: ", host)
 	}
+}
 
+func TestPostHostMetricValues(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/tsdb" {
+			t.Error("request URL should be /api/v0/tsdb but :", req.URL.Path)
+		}
+
+		if req.Method != "POST" {
+			t.Error("request method should be POST but: ", req.Method)
+		}
+
+		body, _ := ioutil.ReadAll(req.Body)
+
+		var values []struct {
+			HostID string      `json:"hostID"`
+			Name   string      `json:"name"`
+			Time   float64     `json:"time"`
+			Value  interface{} `json:"value"`
+		}
+
+		err := json.Unmarshal(body, &values)
+		if err != nil {
+			t.Fatal("request body should be decoded as json", string(body))
+		}
+
+		if values[0].HostID != "9rxGOHfVF8F" {
+			t.Error("request sends json including hostID but: ", values[0].HostID)
+		}
+		if values[0].Name != "custom.metric.mysql.connections" {
+			t.Error("request sends json including name but: ", values[0].Name)
+		}
+		if values[0].Time != 123456789 {
+			t.Error("request sends json including time but: ", values[0].Time)
+		}
+		if values[0].Value.(float64) != 100 {
+			t.Error("request sends json including value but: ", values[0].Value)
+		}
+
+		respJSON, _ := json.Marshal(map[string]bool{
+			"success": true,
+		})
+
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJSON))
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	err := api.PostMetricsValues([]*CreatingMetricsValue{
+		&CreatingMetricsValue{
+			HostID: "9rxGOHfVF8F",
+			Name:   "custom.metric.mysql.connections",
+			Time:   123456789,
+			Value:  100,
+		},
+	})
+
+	if err != nil {
+		t.Error("err shoud be nil but: ", err)
+	}
 }
