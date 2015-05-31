@@ -41,11 +41,7 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 }
 
 func (api *API) urlFor(path string) *url.URL {
-	newURL, err := url.Parse(api.BaseURL.String())
-	if err != nil {
-		panic("invalid url passed")
-	}
-
+	newURL, _ := url.Parse(api.BaseURL.String())
 	newURL.Path = path
 	return newURL
 }
