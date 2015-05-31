@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -48,7 +47,6 @@ func (api *API) urlFor(path string) *url.URL {
 	}
 
 	newURL.Path = path
-
 	return newURL
 }
 
@@ -104,20 +102,13 @@ func (api *API) FindHost(id string) (*Host, error) {
 		return nil, errors.New("status code is not 200")
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
 	var data struct {
 		Host *Host `json:"host"`
 	}
-
-	err = json.Unmarshal(body, &data)
+	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		return nil, err
 	}
-
 	return data.Host, err
 }
 
@@ -155,16 +146,10 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 		return "", fmt.Errorf("API result failed: %s", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
 	var data struct {
 		ID string `json:"id"`
 	}
-
-	err = json.Unmarshal(body, &data)
+	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		return "", err
 	}
@@ -214,15 +199,13 @@ func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error
 	}
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := api.do(req)
-	if err != nil {
-		return err
-	}
-	body, err := ioutil.ReadAll(resp.Body)
 	defer closeResp(resp)
 	if err != nil {
 		return err
 	}
-	logger.Debugf("Metrics Post Response: %s", string(body))
+	if err != nil {
+		return err
+	}
 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("API result failed: %s", resp.Status)
@@ -270,18 +253,6 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 	if err != nil {
 		return err
 	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	if resp.StatusCode >= 300 {
-		logger.Warningf("Create graph defs response: %s", string(body))
-	} else {
-		logger.Debugf("Create graph defs response: %s", string(body))
-	}
-
 	return nil
 }
 
@@ -305,11 +276,10 @@ func (api *API) requestJSON(method, path string, payload interface{}) (*http.Res
 		return resp, err
 	}
 
+	logger.Debugf("%s %s status=%q", method, path, resp.Status)
 	if resp.StatusCode >= 400 {
 		return resp, fmt.Errorf("request failed: [%s]", resp.Status)
 	}
-	logger.Debugf("%s %s status=%q", method, path, resp.Status)
-
 	return resp, nil
 }
 
