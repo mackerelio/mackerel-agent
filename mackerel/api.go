@@ -110,7 +110,7 @@ func (api *API) FindHost(id string) (*Host, error) {
 
 // CreateHost XXX
 func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, displayName string) (string, error) {
-	requestJSON, err := json.Marshal(map[string]interface{}{
+	resp, err := api.postJSON("/api/v0/hosts", map[string]interface{}{
 		"name":          name,
 		"type":          "unknown",
 		"status":        "working",
@@ -119,20 +119,6 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 		"roleFullnames": roleFullnames,
 		"displayName":   displayName,
 	})
-	if err != nil {
-		return "", err
-	}
-
-	req, err := http.NewRequest(
-		"POST",
-		api.urlFor("/api/v0/hosts").String(),
-		bytes.NewReader(requestJSON),
-	)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.do(req)
 	defer closeResp(resp)
 	if err != nil {
 		return "", err
@@ -155,20 +141,7 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 
 // UpdateHost updates the host information on Mackerel.
 func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
-	url := api.urlFor("/api/v0/hosts/" + hostID)
-
-	requestJSON, err := json.Marshal(hostSpec)
-	if err != nil {
-		return err
-	}
-
-	req, err := http.NewRequest("PUT", url.String(), bytes.NewReader(requestJSON))
-	if err != nil {
-		return err
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.do(req)
+	resp, err := api.putJSON("/api/v0/hosts/"+hostID, hostSpec)
 	defer closeResp(resp)
 	if err != nil {
 		return err
@@ -179,30 +152,11 @@ func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
 
 // PostMetricsValues XXX
 func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error {
-	requestJSON, err := json.Marshal(metricsValues)
-	if err != nil {
-		return err
-	}
-	logger.Debugf("Metrics Post Request: %s", string(requestJSON))
-
-	req, err := http.NewRequest(
-		"POST",
-		api.urlFor("/api/v0/tsdb").String(),
-		bytes.NewReader(requestJSON),
-	)
-	if err != nil {
-		return err
-	}
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.do(req)
+	resp, err := api.postJSON("/api/v0/tsdb", metricsValues)
 	defer closeResp(resp)
 	if err != nil {
 		return err
 	}
-	if err != nil {
-		return err
-	}
-
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("API result failed: %s", resp.Status)
 	}
@@ -227,24 +181,7 @@ type CreateGraphDefsPayloadMetric struct {
 
 // CreateGraphDefs XXX
 func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
-	requestJSON, err := json.Marshal(payloads)
-	if err != nil {
-		return err
-	}
-
-	req, err := http.NewRequest(
-		"POST",
-		api.urlFor("/api/v0/graph-defs/create").String(),
-		bytes.NewReader(requestJSON),
-	)
-	if err != nil {
-		return err
-	}
-
-	logger.Debugf("Create grpah defs request: %s", string(requestJSON))
-
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.do(req)
+	resp, err := api.postJSON("/api/v0/graph-defs/create", payloads)
 	defer closeResp(resp)
 	if err != nil {
 		return err
