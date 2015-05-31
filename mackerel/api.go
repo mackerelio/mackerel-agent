@@ -16,7 +16,7 @@ import (
 
 var logger = logging.GetLogger("api")
 
-// CreatingMetricsValue XXX
+// CreatingMetricsValue parameters of metric values
 type CreatingMetricsValue struct {
 	HostID string      `json:"hostId"`
 	Name   string      `json:"name"`
@@ -82,7 +82,7 @@ func closeResp(resp *http.Response) {
 	}
 }
 
-// FindHost XXX
+// FindHost find the host
 func (api *API) FindHost(id string) (*Host, error) {
 	resp, err := api.get(fmt.Sprintf("/api/v0/hosts/%s", id))
 	defer closeResp(resp)
@@ -104,7 +104,7 @@ func (api *API) FindHost(id string) (*Host, error) {
 	return data.Host, err
 }
 
-// CreateHost XXX
+// CreateHost register the host to mackerel
 func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces []map[string]interface{}, roleFullnames []string, displayName string) (string, error) {
 	resp, err := api.postJSON("/api/v0/hosts", map[string]interface{}{
 		"name":          name,
@@ -146,7 +146,7 @@ func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
 	return nil
 }
 
-// PostMetricsValues XXX
+// PostMetricsValues post metrics
 func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error {
 	resp, err := api.postJSON("/api/v0/tsdb", metricsValues)
 	defer closeResp(resp)
@@ -160,7 +160,7 @@ func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error
 	return nil
 }
 
-// CreateGraphDefsPayload XXX
+// CreateGraphDefsPayload payload for post graph defs
 type CreateGraphDefsPayload struct {
 	Name        string                         `json:"name"`
 	DisplayName string                         `json:"displayName"`
@@ -168,14 +168,14 @@ type CreateGraphDefsPayload struct {
 	Metrics     []CreateGraphDefsPayloadMetric `json:"metrics"`
 }
 
-// CreateGraphDefsPayloadMetric XXX
+// CreateGraphDefsPayloadMetric repreesnt graph defs of each metric
 type CreateGraphDefsPayloadMetric struct {
 	Name        string `json:"name"`
 	DisplayName string `json:"displayName"`
 	IsStacked   bool   `json:"isStacked"`
 }
 
-// CreateGraphDefs XXX
+// CreateGraphDefs register graph defs
 func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 	resp, err := api.postJSON("/api/v0/graph-defs/create", payloads)
 	defer closeResp(resp)
