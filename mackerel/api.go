@@ -285,21 +285,16 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 	return nil
 }
 
-func (api *API) postJSON(path string, payload interface{}) (*http.Response, error) {
+func (api *API) requestJSON(method, path string, payload interface{}) (*http.Response, error) {
 	var body bytes.Buffer
 
 	err := json.NewEncoder(&body).Encode(payload)
 	if err != nil {
 		return nil, err
 	}
+	logger.Debugf("%s %s %s", method, path, body.String())
 
-	logger.Debugf("POST %s %s", path, body.String())
-
-	req, err := http.NewRequest(
-		"POST",
-		api.urlFor(path).String(),
-		&body,
-	)
+	req, err := http.NewRequest(method, api.urlFor(path).String(), &body)
 	if err != nil {
 		return nil, err
 	}
@@ -313,9 +308,17 @@ func (api *API) postJSON(path string, payload interface{}) (*http.Response, erro
 	if resp.StatusCode >= 400 {
 		return resp, fmt.Errorf("request failed: [%s]", resp.Status)
 	}
-	logger.Debugf("POST %s status=%q", path, resp.Status)
+	logger.Debugf("%s %s status=%q", method, path, resp.Status)
 
 	return resp, nil
+}
+
+func (api *API) postJSON(path string, payload interface{}) (*http.Response, error) {
+	return api.requestJSON("POST", path, payload)
+}
+
+func (api *API) putJSON(path string, payload interface{}) (*http.Response, error) {
+	return api.requestJSON("PUT", path, payload)
 }
 
 // Time is a type for sending time information to Mackerel API server.
