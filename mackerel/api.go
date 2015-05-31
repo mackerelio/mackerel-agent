@@ -82,6 +82,12 @@ func (api *API) do(req *http.Request) (resp *http.Response, err error) {
 	return resp, nil
 }
 
+func closeResp(resp *http.Response) {
+	if resp != nil {
+		resp.Body.Close()
+	}
+}
+
 // FindHost XXX
 func (api *API) FindHost(id string) (*Host, error) {
 	req, err := http.NewRequest("GET", api.urlFor(fmt.Sprintf("/api/v0/hosts/%s", id)).String(), nil)
@@ -89,10 +95,10 @@ func (api *API) FindHost(id string) (*Host, error) {
 		return nil, err
 	}
 	resp, err := api.do(req)
+	defer closeResp(resp)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		return nil, errors.New("status code is not 200")
@@ -140,10 +146,10 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 	}
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := api.do(req)
+	defer closeResp(resp)
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		return "", fmt.Errorf("API result failed: %s", resp.Status)
@@ -182,10 +188,10 @@ func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
 
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := api.do(req)
+	defer closeResp(resp)
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
 	return nil
 }
@@ -212,11 +218,11 @@ func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error
 		return err
 	}
 	body, err := ioutil.ReadAll(resp.Body)
+	defer closeResp(resp)
 	if err != nil {
 		return err
 	}
 	logger.Debugf("Metrics Post Response: %s", string(body))
-	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("API result failed: %s", resp.Status)
@@ -260,6 +266,7 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := api.do(req)
+	defer closeResp(resp)
 	if err != nil {
 		return err
 	}
@@ -268,7 +275,6 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode >= 300 {
 		logger.Warningf("Create graph defs response: %s", string(body))
@@ -300,11 +306,10 @@ func (api *API) postJSON(path string, payload interface{}, result interface{}) e
 
 	req.Header.Add("Content-Type", "application/json")
 	resp, err := api.do(req)
+	defer closeResp(resp)
 	if err != nil {
 		return err
 	}
-
-	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("request failed: [%s]", resp.Status)
