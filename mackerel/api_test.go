@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/mackerelio/mackerel-agent/version"
@@ -302,4 +303,47 @@ func TestUpdateHost(t *testing.T) {
 	if !called {
 		t.Error("should http-request")
 	}
+}
+
+func TestFindHost(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/hosts/9rxGOHfVF8F" {
+			t.Error("request URL should be /api/v0/hosts/9rxGOHfVF8F but :", req.URL.Path)
+		}
+
+		if req.Method != "GET" {
+			t.Error("request method should be GET but :", req.Method)
+		}
+
+		respJSON, _ := json.Marshal(map[string]map[string]interface{}{
+			"host": map[string]interface{}{
+				"id":     "9rxGOHfVF8F",
+				"name":   "mydb001",
+				"status": "working",
+				"memo":   "memo",
+				"roles":  map[string][]string{"My-Service": []string{"db-master", "db-slave"}},
+			},
+		})
+
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJSON))
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	host, err := api.FindHost("9rxGOHfVF8F")
+
+	if err != nil {
+		t.Error("err shoud be nil but: ", err)
+	}
+
+	if reflect.DeepEqual(host, &Host{
+		ID:     "9rxGOHfVF8F",
+		Name:   "mydb001",
+		Type:   "",
+		Status: "working",
+	}) != true {
+		t.Error("request sends json including memo but: ", host)
+	}
+
 }
