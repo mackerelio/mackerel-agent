@@ -88,11 +88,7 @@ func closeResp(resp *http.Response) {
 
 // FindHost XXX
 func (api *API) FindHost(id string) (*Host, error) {
-	req, err := http.NewRequest("GET", api.urlFor(fmt.Sprintf("/api/v0/hosts/%s", id)).String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	resp, err := api.do(req)
+	resp, err := api.get(fmt.Sprintf("/api/v0/hosts/%s", id))
 	defer closeResp(resp)
 	if err != nil {
 		return nil, err
@@ -254,6 +250,14 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 		return err
 	}
 	return nil
+}
+
+func (api *API) get(path string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", api.urlFor(path).String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	return api.do(req)
 }
 
 func (api *API) requestJSON(method, path string, payload interface{}) (*http.Response, error) {
