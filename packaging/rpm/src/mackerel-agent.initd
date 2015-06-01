@@ -25,9 +25,6 @@ LOGFILE=${LOGILE:="/var/log/$prog.log"}
 PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
 ROOT=${ROOT:="/var/lib/$prog"}
 
-lockfile=/var/lock/subsys/$prog
-
-
 # if matched return 0, else return 1
 prefix_match() {
     [ "${1#$2*}" = "$1" ] && return 1
@@ -39,14 +36,6 @@ start() {
 
     echo -n $"Starting $prog:"
 
-    if [ -f $lockfile ]; then
-        failure
-        echo
-        echo "Found lock file ($lockfile). mackerel-agent process already exists" >&2
-
-        return 1
-    fi
-
     $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then
@@ -56,7 +45,6 @@ start() {
         return 1
     fi
 
-    touch $lockfile
     success
     echo
 
@@ -96,7 +84,6 @@ stop() {
     killproc -p $PIDFILE -QUIT
     retval=$?
     echo
-    [ $retval -eq 0 ] && rm -f $lockfile
     return $retval
 }
 
