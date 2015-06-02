@@ -27,7 +27,6 @@ ROOT=${ROOT:="/var/lib/$prog"}
 
 lockfile=/var/lock/subsys/$prog
 
-
 # if matched return 0, else return 1
 prefix_match() {
     [ "${1#$2*}" = "$1" ] && return 1
@@ -38,14 +37,6 @@ start() {
     [ -x $exec ] || exit 5
 
     echo -n $"Starting $prog:"
-
-    if [ -f $lockfile ]; then
-        failure
-        echo
-        echo "Found lock file ($lockfile). mackerel-agent process already exists" >&2
-
-        return 1
-    fi
 
     $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
