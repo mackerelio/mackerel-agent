@@ -2,12 +2,13 @@ package config
 
 // DefaultConfig The default configuration for linux
 var DefaultConfig = &Config{
-	Apibase:  getApibase(),
-	Root:     "/var/lib/mackerel-agent",
-	Pidfile:  "/var/run/mackerel-agent.pid",
-	Conffile: "/etc/mackerel-agent/mackerel-agent.conf",
-	Roles:    []string{},
-	Verbose:  false,
+	Apibase:        getApibase(),
+	Root:           "/var/lib/mackerel-agent",
+	Pidfile:        "/var/run/mackerel-agent.pid",
+	Conffile:       "/etc/mackerel-agent/mackerel-agent.conf",
+	Roles:          []string{},
+	Verbose:        false,
+	DiagnosticMode: false,
 	Connection: ConnectionConfig{
 		PostMetricsDequeueDelaySeconds: 30,     // Check the metric values queue for each half minutes
 		PostMetricsRetryDelaySeconds:   60,     // Wait a minute before retrying metric value posts
