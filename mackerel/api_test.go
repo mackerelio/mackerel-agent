@@ -328,12 +328,12 @@ func TestUpdateHostStatus(t *testing.T) {
 			t.Error("request sends json including status but: ", data.Status)
 		}
 
-		respJson, _ := json.Marshal(map[string]bool{
+		respJSON, _ := json.Marshal(map[string]bool{
 			"success": true,
 		})
 
 		res.Header()["Content-Type"] = []string{"application/json"}
-		fmt.Fprint(res, string(respJson))
+		fmt.Fprint(res, string(respJSON))
 	}))
 	defer ts.Close()
 

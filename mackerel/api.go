@@ -147,8 +147,8 @@ func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
 }
 
 // UpdateHostStatus updates the status of the host
-func (api *API) UpdateHostStatus(hostId string, status string) error {
-	resp, err := api.postJSON(fmt.Sprintf("/api/v0/hosts/%s/status", hostId), map[string]string{
+func (api *API) UpdateHostStatus(hostID string, status string) error {
+	resp, err := api.postJSON(fmt.Sprintf("/api/v0/hosts/%s/status", hostID), map[string]string{
 		"status": status,
 	})
 	defer closeResp(resp)
