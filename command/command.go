@@ -15,6 +15,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/spec"
 	"github.com/mackerelio/mackerel-agent/util"
 )
@@ -517,7 +518,7 @@ func RunOnce(conf *config.Config) {
 // NewAgent creates a new instance of agent.Agent from its configuration conf.
 func NewAgent(conf *config.Config) *agent.Agent {
 	return &agent.Agent{
-		MetricsGenerators: metricsGenerators(conf),
+		MetricsGenerators: prepareGenerators(conf),
 		PluginGenerators:  pluginGenerators(conf),
 		Checkers:          createCheckers(conf),
 	}
@@ -552,4 +553,13 @@ func createCheckers(conf *config.Config) []checks.Checker {
 	}
 
 	return checkers
+}
+
+func prepareGenerators(conf *config.Config) []metrics.Generator {
+	diagnosticMode := conf.DiagnosticMode
+	generators := metricsGenerators(conf)
+	if diagnosticMode {
+		generators = append(generators, &metrics.AgentGenerator{})
+	}
+	return generators
 }
