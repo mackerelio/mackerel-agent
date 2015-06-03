@@ -157,7 +157,7 @@ sub merged_prs {
             title => $data->{title},
             user  => $data->{user}{login},
             url   => $data->{html_url},
-        };
+        } if $data->{title} !~ /\[nit\]/i;
     }
     @releases;
 }
