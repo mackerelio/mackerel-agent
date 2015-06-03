@@ -305,6 +305,46 @@ func TestUpdateHost(t *testing.T) {
 	}
 }
 
+func TestUpdateHostStatus(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/hosts/9rxGOHfVF8F/status" {
+			t.Error("request URL should be /api/v0/hosts/9rxGOHfVF8F/status but :", req.URL.Path)
+		}
+		if req.Method != "POST" {
+			t.Error("request method should be POST but: ", req.Method)
+		}
+
+		body, _ := ioutil.ReadAll(req.Body)
+
+		var data struct {
+			Status string `json:"status"`
+		}
+		err := json.Unmarshal(body, &data)
+		if err != nil {
+			t.Fatal("request body should be decoded as json", string(body))
+		}
+
+		if data.Status != "maintenance" {
+			t.Error("request sends json including status but: ", data.Status)
+		}
+
+		respJson, _ := json.Marshal(map[string]bool{
+			"success": true,
+		})
+
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJson))
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	err := api.UpdateHostStatus("9rxGOHfVF8F", "maintenance")
+
+	if err != nil {
+		t.Error("err shoud be nil but: ", err)
+	}
+}
+
 func TestFindHost(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		if req.URL.Path != "/api/v0/hosts/9rxGOHfVF8F" {

@@ -146,6 +146,18 @@ func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
 	return nil
 }
 
+// UpdateHostStatus updates the status of the host
+func (api *API) UpdateHostStatus(hostId string, status string) error {
+	resp, err := api.postJSON(fmt.Sprintf("/api/v0/hosts/%s/status", hostId), map[string]string{
+		"status": status,
+	})
+	defer closeResp(resp)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // PostMetricsValues post metrics
 func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error {
 	resp, err := api.postJSON("/api/v0/tsdb", metricsValues)
