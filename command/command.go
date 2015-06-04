@@ -543,7 +543,12 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 		api:  api,
 	}
 
-	return loop(c, termCh)
+	exitCode := loop(c, termCh)
+	if exitCode == 0 && conf.HostStatus.Stop != "" {
+		// TOOD error handling. supoprt retire
+		api.UpdateHostStatus(host.ID, conf.HostStatus.Stop)
+	}
+	return exitCode
 }
 
 func createCheckers(conf *config.Config) []checks.Checker {
