@@ -485,11 +485,11 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 }
 
 // RunOnce collects specs and metrics, then output them to stdout.
-func RunOnce(conf *config.Config) {
+func RunOnce(conf *config.Config) error {
 	hostname, meta, interfaces, err := collectHostSpecs()
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
-		return
+		return err
 	}
 	ag := NewAgent(conf)
 	graphdefs := ag.CollectGraphDefsOfPlugins()
@@ -509,9 +509,10 @@ func RunOnce(conf *config.Config) {
 	json, err := json.Marshal(payload)
 	if err != nil {
 		logger.Warningf("Error while marshaling graphdefs: err = %s, graphdefs = %s.", err.Error(), graphdefs)
-	} else {
-		fmt.Println(string(json))
+		return err
 	}
+	fmt.Println(string(json))
+	return nil
 }
 
 // NewAgent creates a new instance of agent.Agent from its configuration conf.
