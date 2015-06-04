@@ -22,16 +22,16 @@ func getApibase() string {
 
 // Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase       string
-	Apikey        string
-	Root          string
-	Pidfile       string
-	Conffile      string
-	Roles         []string
-	Verbose       bool
-	Connection    ConnectionConfig
-	DisplayName   string `toml:"display_name"`
-	DefaultStatus string `toml:"default_status"`
+	Apibase     string
+	Apikey      string
+	Root        string
+	Pidfile     string
+	Conffile    string
+	Roles       []string
+	Verbose     bool
+	Connection  ConnectionConfig
+	DisplayName string     `toml:"display_name"`
+	HostStatus  HostStatus `toml:"host_status"`
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
@@ -62,6 +62,11 @@ type ConnectionConfig struct {
 	PostMetricsRetryDelaySeconds   int `toml:"post_metrics_retry_delay_seconds"`   // delay for retrying a request that caused errors
 	PostMetricsRetryMax            int `toml:"post_metrics_retry_max"`             // max numbers of retries for a request that causes errors
 	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
+}
+
+type HostStatus struct {
+	Start string
+	Stop  string
 }
 
 // CheckNames return list of plugin.checks._name_
