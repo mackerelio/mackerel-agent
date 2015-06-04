@@ -64,6 +64,7 @@ type ConnectionConfig struct {
 	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
 }
 
+// HostStatus configure host status on agent start/stop
 type HostStatus struct {
 	Start string
 	Stop  string
