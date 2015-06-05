@@ -59,9 +59,7 @@ func main() {
 	}
 
 	if conf.Verbose {
-		logging.ConfigureLoggers("DEBUG")
-	} else {
-		logging.ConfigureLoggers("INFO")
+		logging.SetLogLevel(logging.DEBUG)
 	}
 
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
