@@ -13,7 +13,7 @@ func TestRunOnce(t *testing.T) {
 		Plugin: map[string]config.PluginConfigs{
 			"metrics": map[string]config.PluginConfig{
 				"metric1": config.PluginConfig{
-					Command: "echo test\t1\t1",
+					Command: "ruby ../example/metrics-plugins/dice-with-meta.rb",
 				},
 			},
 			"checks": map[string]config.PluginConfig{
