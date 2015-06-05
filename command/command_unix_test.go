@@ -2,6 +2,12 @@
 
 package command
 
+import (
+	"testing"
+
+	"github.com/mackerelio/mackerel-agent/config"
+)
+
 func TestRunOnce(t *testing.T) {
 	conf := &config.Config{
 		Plugin: map[string]config.PluginConfigs{
