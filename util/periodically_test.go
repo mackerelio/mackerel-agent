@@ -19,6 +19,6 @@ func TestPeriodically(t *testing.T) {
 	quit <- struct{}{}
 
 	if counter != 2 {
-		t.Errorf("counter should be 2, but", counter)
+		t.Error("counter should be 2, but", counter)
 	}
 }
