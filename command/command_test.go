@@ -85,7 +85,7 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 	return conf, mockHandlers, ts
 }
 
-func TestPrepare(t *testing.T) {
+func TestPrepareWithCreate(t *testing.T) {
 	conf, mockHandlers, ts := newMockAPIServer(t)
 	defer ts.Close()
 
@@ -113,6 +113,45 @@ func TestPrepare(t *testing.T) {
 	}
 
 	if host.ID != "xxx1234567890" {
+		t.Error("Host ID mismatch", host)
+	}
+
+	if host.Name != "host.example.com" {
+		t.Error("Host name mismatch", host)
+	}
+}
+
+func TestPrepareWithUpdate(t *testing.T) {
+	conf, mockHandlers, ts := newMockAPIServer(t)
+	defer ts.Close()
+	tempDir, _ := ioutil.TempDir("", "")
+	conf.Root = tempDir
+	saveHostID(tempDir, "xxx12345678901")
+
+	mockHandlers["PUT /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "OK",
+		}
+	}
+
+	mockHandlers["GET /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"host": mackerel.Host{
+				ID:     "xxx12345678901",
+				Name:   "host.example.com",
+				Type:   "unknown",
+				Status: "standby",
+			},
+		}
+	}
+
+	api, host, _ := Prepare(&conf)
+
+	if api.BaseURL.String() != ts.URL {
+		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
+	}
+
+	if host.ID != "xxx12345678901" {
 		t.Error("Host ID mismatch", host)
 	}
 
