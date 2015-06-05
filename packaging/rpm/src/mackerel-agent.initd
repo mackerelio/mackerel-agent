@@ -25,6 +25,8 @@ LOGFILE=${LOGILE:="/var/log/$prog.log"}
 PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
 ROOT=${ROOT:="/var/lib/$prog"}
 
+lockfile=/var/lock/subsys/$prog
+
 # if matched return 0, else return 1
 prefix_match() {
     [ "${1#$2*}" = "$1" ] && return 1
@@ -45,6 +47,7 @@ start() {
         return 1
     fi
 
+    touch $lockfile
     success
     echo
 
@@ -84,6 +87,7 @@ stop() {
     killproc -p $PIDFILE -QUIT
     retval=$?
     echo
+    [ $retval -eq 0 ] && rm -f $lockfile
     return $retval
 }
 
