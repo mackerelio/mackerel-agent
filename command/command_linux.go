@@ -1,6 +1,8 @@
 package command
 
 import (
+	"time"
+
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	metricsLinux "github.com/mackerelio/mackerel-agent/metrics/linux"
@@ -32,11 +34,11 @@ func interfaceGenerator() spec.Generator {
 func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsLinux.Loadavg5Generator{},
-		&metricsLinux.CPUUsageGenerator{Interval: 60},
+		&metricsLinux.CPUUsageGenerator{Interval: time.Duration(metricsInterval)},
 		&metricsLinux.MemoryGenerator{},
 		&metricsLinux.UptimeGenerator{},
-		&metricsLinux.InterfaceGenerator{Interval: 60},
-		&metricsLinux.DiskGenerator{Interval: 60},
+		&metricsLinux.InterfaceGenerator{Interval: time.Duration(metricsInterval)},
+		&metricsLinux.DiskGenerator{Interval: time.Duration(metricsInterval)},
 		&metricsLinux.FilesystemGenerator{},
 	}
 

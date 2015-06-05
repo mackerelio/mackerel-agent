@@ -20,6 +20,7 @@ import (
 )
 
 var logger = logging.GetLogger("command")
+var metricsInterval = 60
 
 const idFileName = "id"
 
@@ -486,33 +487,41 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 
 // RunOnce collects specs and metrics, then output them to stdout.
 func RunOnce(conf *config.Config) error {
-	hostname, meta, interfaces, err := collectHostSpecs()
+	graphdefs, hostSpec, metrics, err := runOncePayload(conf)
 	if err != nil {
-		logger.Errorf("While collecting host specs: %s", err)
 		return err
 	}
-	ag := NewAgent(conf)
-	graphdefs := ag.CollectGraphDefsOfPlugins()
-	logger.Infof("Collecting metrics may take one minutes.")
-	metrics := ag.CollectMetrics(time.Now())
-	payload := map[string]interface{}{
-		"host": mackerel.HostSpec{
-			Name:          hostname,
-			Meta:          meta,
-			Interfaces:    interfaces,
-			RoleFullnames: conf.Roles,
-			Checks:        conf.CheckNames(),
-			DisplayName:   conf.DisplayName,
-		},
+
+	json, err := json.Marshal(map[string]interface{}{
+		"host":    hostSpec,
 		"metrics": metrics,
-	}
-	json, err := json.Marshal(payload)
+	})
 	if err != nil {
 		logger.Warningf("Error while marshaling graphdefs: err = %s, graphdefs = %s.", err.Error(), graphdefs)
 		return err
 	}
 	fmt.Println(string(json))
 	return nil
+}
+
+func runOncePayload(conf *config.Config) ([]mackerel.CreateGraphDefsPayload, *mackerel.HostSpec, *agent.MetricsResult, error) {
+	hostname, meta, interfaces, err := collectHostSpecs()
+	if err != nil {
+		logger.Errorf("While collecting host specs: %s", err)
+		return nil, nil, nil, err
+	}
+	ag := NewAgent(conf)
+	graphdefs := ag.CollectGraphDefsOfPlugins()
+	logger.Infof("Collecting metrics may take one minutes.")
+	metrics := ag.CollectMetrics(time.Now())
+	return graphdefs, &mackerel.HostSpec{
+		Name:          hostname,
+		Meta:          meta,
+		Interfaces:    interfaces,
+		RoleFullnames: conf.Roles,
+		Checks:        conf.CheckNames(),
+		DisplayName:   conf.DisplayName,
+	}, metrics, nil
 }
 
 // NewAgent creates a new instance of agent.Agent from its configuration conf.
