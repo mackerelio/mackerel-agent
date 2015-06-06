@@ -4,7 +4,6 @@ package command
 
 import (
 	"os"
-	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -12,14 +11,17 @@ import (
 	"github.com/mackerelio/mackerel-agent/mackerel"
 )
 
-var diceCommand string
-
-func init() {
-	metricsInterval = 1
-	diceCommand = filepath.Join(os.Getenv("GOPATH"), "/src/github.com/mackerelio/mackerel-agent/example/metrics-plugins/dice-with-meta.rb")
-}
+var diceCommand = "../example/metrics-plugins/dice-with-meta.rb"
 
 func TestRunOnce(t *testing.T) {
+	if testing.Short() {
+		origMetricsInterval := metricsInterval
+		metricsInterval = 1
+		defer func() {
+			metricsInterval = origMetricsInterval
+		}()
+	}
+
 	conf := &config.Config{
 		Plugin: map[string]config.PluginConfigs{
 			"metrics": map[string]config.PluginConfig{
@@ -41,6 +43,18 @@ func TestRunOnce(t *testing.T) {
 }
 
 func TestRunOncePayload(t *testing.T) {
+	if os.Getenv("TRAVIS") != "" {
+		t.Skip("Skip in travis")
+	}
+
+	if testing.Short() {
+		origMetricsInterval := metricsInterval
+		metricsInterval = 1
+		defer func() {
+			metricsInterval = origMetricsInterval
+		}()
+	}
+
 	conf := &config.Config{
 		Plugin: map[string]config.PluginConfigs{
 			"metrics": map[string]config.PluginConfig{
