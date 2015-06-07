@@ -8,7 +8,10 @@ import (
 	"time"
 
 	"github.com/Songmu/timeout"
+	"github.com/mackerelio/mackerel-agent/logging"
 )
+
+var utilLogger = logging.GetLogger("util")
 
 // timeoutDuration is option of `Runcommand()` set timeout limit of command execution.
 var timeoutDuration = 30 * time.Second
@@ -28,6 +31,8 @@ func RunCommand(command string) (string, string, int, error) {
 	if err == nil && exitStatus.IsTimedOut() {
 		err = fmt.Errorf("command timed out")
 	}
-
+	if err != nil {
+		utilLogger.Errorf("RunCommand error command: %s, error: %s", command, err)
+	}
 	return stdout, stderr, exitStatus.GetChildExitCode(), err
 }
