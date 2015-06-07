@@ -20,7 +20,7 @@ trap cleanup INT QUIT TERM EXIT
 gopath1=$(echo $GOPATH | cut -d: -f1)
 for pkg in $(go list ./...); do
   tmpprof=$gopath1/src/$pkg/profile.tmp
-  go test -short -covermode=count -coverprofile=$tmpprof $pkg
+  go test -v -short -covermode=count -coverprofile=$tmpprof $pkg
   if [ -f $tmpprof ]; then
     cat $tmpprof | tail -n +2 >> $prof
     rm $tmpprof
