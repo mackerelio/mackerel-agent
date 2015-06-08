@@ -30,7 +30,8 @@ type Config struct {
 	Roles       []string
 	Verbose     bool
 	Connection  ConnectionConfig
-	DisplayName string `toml:"display_name"`
+	DisplayName string     `toml:"display_name"`
+	HostStatus  HostStatus `toml:"host_status"`
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
@@ -63,8 +64,14 @@ type ConnectionConfig struct {
 	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
 }
 
+// HostStatus configure host status on agent start/stop
+type HostStatus struct {
+	OnStart string `toml:"on_start"`
+	OnStop  string `toml:"on_stop"`
+}
+
 // CheckNames return list of plugin.checks._name_
-func (conf *Config)CheckNames ()([]string) {
+func (conf *Config) CheckNames() []string {
 	checks := []string{}
 	for name := range conf.Plugin["checks"] {
 		checks = append(checks, name)

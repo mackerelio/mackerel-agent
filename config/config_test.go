@@ -67,6 +67,46 @@ func TestLoadConfig(t *testing.T) {
 	}
 }
 
+var sampleConfigWithHostStatus = `
+apikey = "abcde"
+display_name = "fghij"
+
+[host_status]
+on_start = "working"
+on_stop  = "poweroff"
+`
+
+func TestLoadConfigWithHostStatus(t *testing.T) {
+	tmpFile, err := ioutil.TempFile("", "")
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfigWithHostStatus), 0644); err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+
+	config, err := LoadConfig(tmpFile.Name())
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+
+	if config.Apikey != "abcde" {
+		t.Error("should be abcde (config value should be used)")
+	}
+
+	if config.DisplayName != "fghij" {
+		t.Error("should be fghij (config value should be used)")
+	}
+
+	if config.HostStatus.OnStart != "working" {
+		t.Error(`HostStatus.OnStart should be "working"`)
+	}
+
+	if config.HostStatus.OnStop != "poweroff" {
+		t.Error(`HostStatus.OnStop should be "poweroff"`)
+	}
+}
+
 func TestLoadConfigFile(t *testing.T) {
 	tmpFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {

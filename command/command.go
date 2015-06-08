@@ -57,7 +57,7 @@ func saveHostID(root string, id string) error {
 
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
-func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, displayName string) (*mackerel.Host, error) {
+func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, displayName string, hostSt string) (*mackerel.Host, error) {
 	// XXX this configuration should be moved to under spec/linux
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
@@ -95,6 +95,13 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
+		}
+	}
+
+	if hostSt != "" && hostSt != result.Status {
+		err := api.UpdateHostStatus(result.ID, hostSt)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to set default host status: %s, %s", hostSt, err.Error())
 		}
 	}
 
@@ -476,7 +483,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 		return nil, nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
 
-	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.DisplayName)
+	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.DisplayName, conf.HostStatus.OnStart)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
 	}
@@ -536,7 +543,15 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 		api:  api,
 	}
 
-	return loop(c, termCh)
+	exitCode := loop(c, termCh)
+	if exitCode == 0 && conf.HostStatus.OnStop != "" {
+		// TOOD error handling. supoprt retire(?)
+		err := api.UpdateHostStatus(host.ID, conf.HostStatus.OnStop)
+		if err != nil {
+			logger.Errorf("Failed update host status on stop: %s", err)
+		}
+	}
+	return exitCode
 }
 
 func createCheckers(conf *config.Config) []checks.Checker {
