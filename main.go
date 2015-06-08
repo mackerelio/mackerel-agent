@@ -95,7 +95,7 @@ func resolveConfig() (*config.Config, *otherOptions) {
 		pidfile        = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
 		root           = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey         = flag.String("apikey", "", "API key from mackerel.io web site")
-		diagnosticMode = flag.Bool("diagnostic", false, "Enables diagnostic features")
+		diagnostic = flag.Bool("diagnostic", false, "Enables diagnostic features")
 		runOnce        = flag.Bool("once", false, "Show spec and metrics to stdout once")
 		printVersion   = flag.Bool("version", false, "Prints version and exit")
 	)
@@ -139,7 +139,7 @@ func resolveConfig() (*config.Config, *otherOptions) {
 		case "root":
 			conf.Root = *root
 		case "diagnostic":
-			conf.DiagnosticMode = *diagnosticMode
+			conf.Diagnostic = *diagnostic
 		case "verbose", "v":
 			conf.Verbose = verbose
 		case "role":

@@ -19,13 +19,13 @@ var execdir = execdirInit()
 
 // The default configuration for windows
 var DefaultConfig = &Config{
-	Apibase:        getApibase(),
-	Root:           execdir,
-	Pidfile:        filepath.Join(execdir, "mackerel-agent.pid"),
-	Conffile:       filepath.Join(execdir, "mackerel-agent.conf"),
-	Roles:          []string{},
-	Verbose:        false,
-	DiagnosticMode: false,
+	Apibase:    getApibase(),
+	Root:       execdir,
+	Pidfile:    filepath.Join(execdir, "mackerel-agent.pid"),
+	Conffile:   filepath.Join(execdir, "mackerel-agent.conf"),
+	Roles:      []string{},
+	Verbose:    false,
+	Diagnostic: false,
 	Connection: ConnectionConfig{
 		PostMetricsDequeueDelaySeconds: 30,
 		PostMetricsRetryDelaySeconds:   60,

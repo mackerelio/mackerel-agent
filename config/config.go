@@ -22,16 +22,16 @@ func getApibase() string {
 
 // Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase        string
-	Apikey         string
-	Root           string
-	Pidfile        string
-	Conffile       string
-	Roles          []string
-	Verbose        bool
-	DiagnosticMode bool `toml:"diagnostic_mode"`
-	Connection     ConnectionConfig
-	DisplayName    string `toml:"display_name"`
+	Apibase     string
+	Apikey      string
+	Root        string
+	Pidfile     string
+	Conffile    string
+	Roles       []string
+	Verbose     bool
+	Diagnostic  bool `toml:"diagnostic"`
+	Connection  ConnectionConfig
+	DisplayName string `toml:"display_name"`
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
@@ -90,8 +90,8 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Verbose == false {
 		config.Verbose = DefaultConfig.Verbose
 	}
-	if config.DiagnosticMode == false {
-		config.DiagnosticMode = DefaultConfig.DiagnosticMode
+	if config.Diagnostic == false {
+		config.Diagnostic = DefaultConfig.Diagnostic
 	}
 	if config.Connection.PostMetricsDequeueDelaySeconds == 0 {
 		config.Connection.PostMetricsDequeueDelaySeconds = DefaultConfig.Connection.PostMetricsDequeueDelaySeconds

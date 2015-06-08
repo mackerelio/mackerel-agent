@@ -556,9 +556,9 @@ func createCheckers(conf *config.Config) []checks.Checker {
 }
 
 func prepareGenerators(conf *config.Config) []metrics.Generator {
-	diagnosticMode := conf.DiagnosticMode
+	diagnostic := conf.Diagnostic
 	generators := metricsGenerators(conf)
-	if diagnosticMode {
+	if diagnostic {
 		generators = append(generators, &metrics.AgentGenerator{})
 	}
 	return generators
