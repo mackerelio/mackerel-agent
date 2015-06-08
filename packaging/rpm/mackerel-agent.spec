@@ -33,6 +33,7 @@ mackerel.io agent beta
 rm -rf %{buildroot}
 install -d -m 755 %{buildroot}/%{_localbindir}
 install    -m 655 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
+install    -m 655 %{_builddir}/mkr  %{buildroot}/%{_localbindir}
 
 install -d -m 755 %{buildroot}/%{_localstatedir}/log/
 
@@ -66,6 +67,7 @@ fi
 %defattr(-,root,root)
 %{_initrddir}/%{name}
 %{_localbindir}/%{name}
+%{_localbindir}/mkr
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %config(noreplace) %{_sysconfdir}/mackerel-agent/%{name}.conf
 %{_sysconfdir}/logrotate.d/%{name}
