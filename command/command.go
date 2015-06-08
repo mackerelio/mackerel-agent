@@ -545,8 +545,11 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 
 	exitCode := loop(c, termCh)
 	if exitCode == 0 && conf.HostStatus.OnStop != "" {
-		// TOOD error handling. supoprt retire
-		api.UpdateHostStatus(host.ID, conf.HostStatus.OnStop)
+		// TOOD error handling. supoprt retire(?)
+		err := api.UpdateHostStatus(host.ID, conf.HostStatus.OnStop)
+		if err != nil {
+			logger.Errorf("Failed update host status on stop: %s", err)
+		}
 	}
 	return exitCode
 }
