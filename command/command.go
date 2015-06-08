@@ -483,7 +483,7 @@ func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
 		return nil, nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
 
-	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.DisplayName, conf.HostStatus.Start)
+	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.DisplayName, conf.HostStatus.OnStart)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
 	}
@@ -544,9 +544,9 @@ func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh cha
 	}
 
 	exitCode := loop(c, termCh)
-	if exitCode == 0 && conf.HostStatus.Stop != "" {
+	if exitCode == 0 && conf.HostStatus.OnStop != "" {
 		// TOOD error handling. supoprt retire
-		api.UpdateHostStatus(host.ID, conf.HostStatus.Stop)
+		api.UpdateHostStatus(host.ID, conf.HostStatus.OnStop)
 	}
 	return exitCode
 }

@@ -72,8 +72,8 @@ apikey = "abcde"
 display_name = "fghij"
 
 [host_status]
-start = "working"
-stop  = "poweroff"
+on_start = "working"
+on_stop  = "poweroff"
 `
 
 func TestLoadConfigWithHostStatus(t *testing.T) {
@@ -98,12 +98,12 @@ func TestLoadConfigWithHostStatus(t *testing.T) {
 		t.Error("should be fghij (config value should be used)")
 	}
 
-	if config.HostStatus.Start != "working" {
-		t.Error(`HostStatus.Start should be "working"`)
+	if config.HostStatus.OnStart != "working" {
+		t.Error(`HostStatus.OnStart should be "working"`)
 	}
 
-	if config.HostStatus.Stop != "poweroff" {
-		t.Error(`HostStatus.Stop should be "poweroff"`)
+	if config.HostStatus.OnStop != "poweroff" {
+		t.Error(`HostStatus.OnStop should be "poweroff"`)
 	}
 }
 

@@ -66,8 +66,8 @@ type ConnectionConfig struct {
 
 // HostStatus configure host status on agent start/stop
 type HostStatus struct {
-	Start string
-	Stop  string
+	OnStart string `toml:"on_start"`
+	OnStop  string `toml:"on_stop"`
 }
 
 // CheckNames return list of plugin.checks._name_
