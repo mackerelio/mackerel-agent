@@ -88,13 +88,14 @@ func resolveConfig() (*config.Config, *otherOptions) {
 	otherOptions := &otherOptions{}
 
 	var (
-		conffile     = flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-		apibase      = flag.String("apibase", config.DefaultConfig.Apibase, "API base")
-		pidfile      = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
-		root         = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey       = flag.String("apikey", "", "API key from mackerel.io web site")
-		runOnce      = flag.Bool("once", false, "Show spec and metrics to stdout once")
-		printVersion = flag.Bool("version", false, "Prints version and exit")
+		conffile       = flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase        = flag.String("apibase", config.DefaultConfig.Apibase, "API base")
+		pidfile        = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
+		root           = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey         = flag.String("apikey", "", "API key from mackerel.io web site")
+		diagnostic = flag.Bool("diagnostic", false, "Enables diagnostic features")
+		runOnce        = flag.Bool("once", false, "Show spec and metrics to stdout once")
+		printVersion   = flag.Bool("version", false, "Prints version and exit")
 	)
 
 	var verbose bool
@@ -135,6 +136,8 @@ func resolveConfig() (*config.Config, *otherOptions) {
 			conf.Pidfile = *pidfile
 		case "root":
 			conf.Root = *root
+		case "diagnostic":
+			conf.Diagnostic = *diagnostic
 		case "verbose", "v":
 			conf.Verbose = verbose
 		case "role":

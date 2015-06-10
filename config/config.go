@@ -29,6 +29,7 @@ type Config struct {
 	Conffile    string
 	Roles       []string
 	Verbose     bool
+	Diagnostic  bool `toml:"diagnostic"`
 	Connection  ConnectionConfig
 	DisplayName string     `toml:"display_name"`
 	HostStatus  HostStatus `toml:"host_status"`
@@ -95,6 +96,9 @@ func LoadConfig(conffile string) (*Config, error) {
 	}
 	if config.Verbose == false {
 		config.Verbose = DefaultConfig.Verbose
+	}
+	if config.Diagnostic == false {
+		config.Diagnostic = DefaultConfig.Diagnostic
 	}
 	if config.Connection.PostMetricsDequeueDelaySeconds == 0 {
 		config.Connection.PostMetricsDequeueDelaySeconds = DefaultConfig.Connection.PostMetricsDequeueDelaySeconds
