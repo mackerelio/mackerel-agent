@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.17.0 (2015-06-10)
+
+* Set `displayName` via agent #92 (Sixeight)
+* refactoring around api access #97 (Songmu)
+* Configurable host status on start/stop agent #100 (Songmu)
+* Add an agent memory usage metrics generator for diagnostic use #101 (hakobe)
+* Add mkr to deb/rpm package #102 (Sixeight)
+
+
 ## 0.16.1 (2015-05-12)
 
 * Code sharing around dfValues #85 (Songmu)

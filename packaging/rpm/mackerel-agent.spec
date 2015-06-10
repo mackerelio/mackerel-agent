@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.16.1
+Version:   0.17.0
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -73,6 +73,13 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Jun 10 2015 <tomohiro68@gmail.com> - 0.17.0-1
+- Set `displayName` via agent (by Sixeight)
+- refactoring around api access (by Songmu)
+- Configurable host status on start/stop agent (by Songmu)
+- Add an agent memory usage metrics generator for diagnostic use (by hakobe)
+- Add mkr to deb/rpm package (by Sixeight)
+
 * Tue May 12 2015 <y.songmu@gmail.com> - 0.16.1-1
 - Code sharing around dfValues (by Songmu)
 - [FreeBSD] Fix 'panic: runtime error: index out of range'. (by iwadon)
