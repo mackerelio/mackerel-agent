@@ -7,8 +7,8 @@ install:
   - echo %Path%
   - choco install ruby
   - rd c:\go /s /q
-  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.4.1.windows-amd64.zip
-  - 7z x go1.4.1.windows-amd64.zip -oC:\ >nul
+  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.4.2.windows-amd64.zip
+  - 7z x go1.4.2.windows-amd64.zip -oC:\ >nul
   - go version
   - go env
   - env
