@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.17.0
+Version:   0.17.1
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -73,6 +73,9 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Jun 17 2015 <tomohiro68@gmail.com> - 0.17.1-1
+- Update to go 1.4.2 for windows build (by mechairoi)
+
 * Wed Jun 10 2015 <tomohiro68@gmail.com> - 0.17.0-1
 - Set `displayName` via agent (by Sixeight)
 - refactoring around api access (by Songmu)
