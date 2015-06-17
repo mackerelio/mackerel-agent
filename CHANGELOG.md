@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.1 (2015-06-17)
+
+* Update to go 1.4.2 for windows build #105 (mechairoi)
+
+
 ## 0.17.0 (2015-06-10)
 
 * Set `displayName` via agent #92 (Sixeight)
