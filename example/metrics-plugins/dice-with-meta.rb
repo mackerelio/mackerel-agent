@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 if ENV['MACKEREL_AGENT_PLUGIN_META'] == '1'
   require 'json'
 

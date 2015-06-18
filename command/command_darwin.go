@@ -1,6 +1,8 @@
 package command
 
 import (
+	"time"
+
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	metricsDarwin "github.com/mackerelio/mackerel-agent/metrics/darwin"
@@ -28,7 +30,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsDarwin.MemoryGenerator{},
 		&metricsDarwin.SwapGenerator{},
 		&metricsDarwin.FilesystemGenerator{},
-		&metricsDarwin.InterfaceGenerator{Interval: 60},
+		&metricsDarwin.InterfaceGenerator{Interval: time.Duration(metricsInterval)},
 	}
 
 	return generators

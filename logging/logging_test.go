@@ -12,17 +12,17 @@ func TestGetLogger(t *testing.T) {
 	}
 }
 
-func TestConfigureLoggers(t *testing.T) {
-	ConfigureLoggers("INFO")
-	if logLevelConfigs["root"] != info {
-		t.Errorf("tag should be tag but %v", logLevelConfigs["root"])
+func TestSetLogLevel(t *testing.T) {
+	SetLogLevel(INFO)
+	if logLv != INFO {
+		t.Errorf("tag should be tag but %v", logLv.String())
 	}
 }
 
 // These tests do not check anything yet.
 // You can see result by go test -v
 func TestLogf(t *testing.T) {
-	ConfigureLoggers("TRACE")
+	SetLogLevel(TRACE)
 
 	var logger = GetLogger("tag")
 	logger.Criticalf("This is critical log: %v", time.Now())
@@ -34,7 +34,7 @@ func TestLogf(t *testing.T) {
 }
 
 func TestInfoLogf(t *testing.T) {
-	ConfigureLoggers("INFO")
+	SetLogLevel(INFO)
 
 	var logger = GetLogger("tag")
 	logger.Criticalf("This is critical log: %v", time.Now())
@@ -46,7 +46,7 @@ func TestInfoLogf(t *testing.T) {
 }
 
 func TestCriticalLogf(t *testing.T) {
-	ConfigureLoggers("CRITICAL")
+	SetLogLevel(CRITICAL)
 
 	var logger = GetLogger("tag")
 	logger.Criticalf("This is critical log: %v", time.Now()) // Shown until here

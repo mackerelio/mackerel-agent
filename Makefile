@@ -33,14 +33,15 @@ lint: deps
 	rm -f $(LINT_RET)
 	for os in "$(BUILD_OS_TARGETS)"; do \
 		if [ $$os != "windows" ]; then \
-			GOOS=$$os golint ./... | tee -a $(LINT_RET); \
+			GOOS=$$os golint ./... | grep -v '_string.go:' | tee -a $(LINT_RET); \
 		else \
-			GOOS=$$os golint --min_confidence=0.9 ./... | tee -a $(LINT_RET); \
+			GOOS=$$os golint --min_confidence=0.9 ./... | grep -v '_string.go:' | tee -a $(LINT_RET); \
 		fi \
 	done
 	test ! -s $(LINT_RET)
 
 crossbuild: deps
+	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
 	    -os=$(BUILD_OS_TARGETS) -arch="386 amd64 arm" -d . \
 	    -resources-include='README*,mackerel-agent.conf' -n $(BIN) \
@@ -49,16 +50,22 @@ crossbuild: deps
 cover: deps
 	tool/cover.sh
 
-rpm:
+rpm: mkr
 	GOOS=linux GOARCH=386 make build
-	cp packaging/mackerel-agent.conf packaging/rpm/src/mackerel-agent.conf
+	cp mackerel-agent.sample.conf packaging/rpm/src/mackerel-agent.conf
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm/src" --define "_builddir `pwd`/build" -ba packaging/rpm/mackerel-agent.spec
 
-deb:
+deb: mkr
 	GOOS=linux GOARCH=386 make build
-	cp build/$(BIN)        packaging/deb/debian/mackerel-agent.bin
-	cp packaging/mackerel-agent.conf packaging/deb/debian/mackerel-agent.conf
+	cp build/$(BIN)               packaging/deb/debian/mackerel-agent.bin
+	cp build/mkr                  packaging/deb/debian/mkr.bin
+	cp mackerel-agent.sample.conf packaging/deb/debian/mackerel-agent.conf
 	cd packaging/deb && debuild --no-tgz-check -rfakeroot -uc -us
+
+mkr:
+	mkdir -p build
+	curl -Ls -o build/mkr https://github.com/mackerelio/mkr/releases/download/v0.1.0/mkr_linux_386
+	chmod +x build/mkr
 
 release:
 	tool/releng
@@ -67,4 +74,4 @@ clean:
 	rm -f build/$(BIN)
 	go clean
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb
+.PHONY: test build run deps clean lint crossbuild cover rpm deb mkr

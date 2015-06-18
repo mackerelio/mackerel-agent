@@ -17,42 +17,6 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
-func TestBuildHostSpec(t *testing.T) {
-	var interfaces []map[string]interface{}
-	interfaces = append(interfaces, map[string]interface{}{
-		"name":       "eth0",
-		"ipAddress":  "10.0.4.7",
-		"macAddress": "01:23:45:67:89:ab",
-		"encap":      "Ethernet",
-	})
-	meta := map[string]interface{}{
-		"memo": "hello",
-	}
-	roleFullnames := []string{"My-Service:app-default"}
-	checks := []string{"heartbeat"}
-
-	hostSpec := buildHostSpec("Host123", meta, interfaces, roleFullnames, checks)
-
-	if hostSpec["name"] != "Host123" {
-		t.Error("name should 'Host123' but:", hostSpec["name"])
-	}
-
-	_, ok := hostSpec["interfaces"].([]map[string]interface{})
-	if !ok {
-		t.Error("the type of interfaces should be '[]map[string]interface{}'")
-	}
-
-	_, ok = hostSpec["meta"].(map[string]interface{})
-	if !ok {
-		t.Error("the type of meta should be 'map[string]interface{}'")
-	}
-
-	_, ok = hostSpec["roleFullnames"].([]string)
-	if !ok {
-		t.Error("the type of meta should be '[]string'")
-	}
-}
-
 func TestDelayByHost(t *testing.T) {
 	delay1 := time.Duration(delayByHost(&mackerel.Host{
 		ID:     "246PUVUngPo",
@@ -121,7 +85,7 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 	return conf, mockHandlers, ts
 }
 
-func TestPrepare(t *testing.T) {
+func TestPrepareWithCreate(t *testing.T) {
 	conf, mockHandlers, ts := newMockAPIServer(t)
 	defer ts.Close()
 
@@ -149,6 +113,45 @@ func TestPrepare(t *testing.T) {
 	}
 
 	if host.ID != "xxx1234567890" {
+		t.Error("Host ID mismatch", host)
+	}
+
+	if host.Name != "host.example.com" {
+		t.Error("Host name mismatch", host)
+	}
+}
+
+func TestPrepareWithUpdate(t *testing.T) {
+	conf, mockHandlers, ts := newMockAPIServer(t)
+	defer ts.Close()
+	tempDir, _ := ioutil.TempDir("", "")
+	conf.Root = tempDir
+	saveHostID(tempDir, "xxx12345678901")
+
+	mockHandlers["PUT /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "OK",
+		}
+	}
+
+	mockHandlers["GET /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"host": mackerel.Host{
+				ID:     "xxx12345678901",
+				Name:   "host.example.com",
+				Type:   "unknown",
+				Status: "standby",
+			},
+		}
+	}
+
+	api, host, _ := Prepare(&conf)
+
+	if api.BaseURL.String() != ts.URL {
+		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
+	}
+
+	if host.ID != "xxx12345678901" {
 		t.Error("Host ID mismatch", host)
 	}
 
@@ -190,7 +193,7 @@ func (b byTime) Less(i, j int) bool { return b[i].Time < b[j].Time }
 
 func TestLoop(t *testing.T) {
 	if testing.Verbose() {
-		logging.ConfigureLoggers("DEBUG")
+		logging.SetLogLevel(logging.DEBUG)
 	}
 
 	conf, mockHandlers, ts := newMockAPIServer(t)

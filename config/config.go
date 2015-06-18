@@ -22,14 +22,17 @@ func getApibase() string {
 
 // Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase    string
-	Apikey     string
-	Root       string
-	Pidfile    string
-	Conffile   string
-	Roles      []string
-	Verbose    bool
-	Connection ConnectionConfig
+	Apibase     string
+	Apikey      string
+	Root        string
+	Pidfile     string
+	Conffile    string
+	Roles       []string
+	Verbose     bool
+	Diagnostic  bool `toml:"diagnostic"`
+	Connection  ConnectionConfig
+	DisplayName string     `toml:"display_name"`
+	HostStatus  HostStatus `toml:"host_status"`
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
@@ -62,8 +65,14 @@ type ConnectionConfig struct {
 	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
 }
 
+// HostStatus configure host status on agent start/stop
+type HostStatus struct {
+	OnStart string `toml:"on_start"`
+	OnStop  string `toml:"on_stop"`
+}
+
 // CheckNames return list of plugin.checks._name_
-func (conf *Config)CheckNames ()([]string) {
+func (conf *Config) CheckNames() []string {
 	checks := []string{}
 	for name := range conf.Plugin["checks"] {
 		checks = append(checks, name)
@@ -87,6 +96,9 @@ func LoadConfig(conffile string) (*Config, error) {
 	}
 	if config.Verbose == false {
 		config.Verbose = DefaultConfig.Verbose
+	}
+	if config.Diagnostic == false {
+		config.Diagnostic = DefaultConfig.Diagnostic
 	}
 	if config.Connection.PostMetricsDequeueDelaySeconds == 0 {
 		config.Connection.PostMetricsDequeueDelaySeconds = DefaultConfig.Connection.PostMetricsDequeueDelaySeconds

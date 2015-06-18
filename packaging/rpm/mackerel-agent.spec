@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.16.1
+Version:   0.17.1
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -33,6 +33,7 @@ mackerel.io agent beta
 rm -rf %{buildroot}
 install -d -m 755 %{buildroot}/%{_localbindir}
 install    -m 655 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
+install    -m 655 %{_builddir}/mkr  %{buildroot}/%{_localbindir}
 
 install -d -m 755 %{buildroot}/%{_localstatedir}/log/
 
@@ -66,11 +67,22 @@ fi
 %defattr(-,root,root)
 %{_initrddir}/%{name}
 %{_localbindir}/%{name}
+%{_localbindir}/mkr
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %config(noreplace) %{_sysconfdir}/mackerel-agent/%{name}.conf
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Jun 17 2015 <tomohiro68@gmail.com> - 0.17.1-1
+- Update to go 1.4.2 for windows build (by mechairoi)
+
+* Wed Jun 10 2015 <tomohiro68@gmail.com> - 0.17.0-1
+- Set `displayName` via agent (by Sixeight)
+- refactoring around api access (by Songmu)
+- Configurable host status on start/stop agent (by Songmu)
+- Add an agent memory usage metrics generator for diagnostic use (by hakobe)
+- Add mkr to deb/rpm package (by Sixeight)
+
 * Tue May 12 2015 <y.songmu@gmail.com> - 0.16.1-1
 - Code sharing around dfValues (by Songmu)
 - [FreeBSD] Fix 'panic: runtime error: index out of range'. (by iwadon)

@@ -11,6 +11,8 @@ import (
 
 var sampleConfig = `
 apikey = "abcde"
+display_name = "fghij"
+diagnostic = true
 
 [connection]
 post_metrics_retry_delay_seconds = 600
@@ -49,6 +51,14 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("should be abcde (config value should be used)")
 	}
 
+	if config.DisplayName != "fghij" {
+		t.Error("should be fghij (config value should be used)")
+	}
+
+	if config.Diagnostic != true {
+		t.Error("should be true (config value should be used)")
+	}
+
 	if config.Connection.PostMetricsDequeueDelaySeconds != 30 {
 		t.Error("should be 30 (default value should be used)")
 	}
@@ -59,6 +69,46 @@ func TestLoadConfig(t *testing.T) {
 
 	if config.Connection.PostMetricsRetryMax != 5 {
 		t.Error("should be 5 (config value should be used)")
+	}
+}
+
+var sampleConfigWithHostStatus = `
+apikey = "abcde"
+display_name = "fghij"
+
+[host_status]
+on_start = "working"
+on_stop  = "poweroff"
+`
+
+func TestLoadConfigWithHostStatus(t *testing.T) {
+	tmpFile, err := ioutil.TempFile("", "")
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfigWithHostStatus), 0644); err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+
+	config, err := LoadConfig(tmpFile.Name())
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+
+	if config.Apikey != "abcde" {
+		t.Error("should be abcde (config value should be used)")
+	}
+
+	if config.DisplayName != "fghij" {
+		t.Error("should be fghij (config value should be used)")
+	}
+
+	if config.HostStatus.OnStart != "working" {
+		t.Error(`HostStatus.OnStart should be "working"`)
+	}
+
+	if config.HostStatus.OnStop != "poweroff" {
+		t.Error(`HostStatus.OnStop should be "poweroff"`)
 	}
 }
 
@@ -81,6 +131,14 @@ func TestLoadConfigFile(t *testing.T) {
 
 	if config.Apikey != "abcde" {
 		t.Error("Apikey should be abcde")
+	}
+
+	if config.DisplayName != "fghij" {
+		t.Error("DisplayName should be fghij")
+	}
+
+	if config.Diagnostic != true {
+		t.Error("Diagnostic should be true")
 	}
 
 	if config.Connection.PostMetricsRetryMax != 5 {

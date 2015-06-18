@@ -44,5 +44,7 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 			OccurredAt: Time(report.OccurredAt),
 		}
 	}
-	return api.postJSON("/api/v0/monitoring/checks/report", payload, nil)
+	resp, err := api.postJSON("/api/v0/monitoring/checks/report", payload)
+	defer closeResp(resp)
+	return err
 }

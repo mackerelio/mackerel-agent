@@ -17,12 +17,13 @@ func TestParseFlags(t *testing.T) {
 	confFile.WriteString(`verbose=false
 root="/hoge/fuga"
 apikey="DUMMYAPIKEY"
+diagnostic=false
 `)
 	confFile.Sync()
 	confFile.Close()
 	defer os.Remove(confFile.Name())
 
-	os.Args = []string{"mackerel-agent", "-conf=" + confFile.Name(), "-role=My-Service:default", "-verbose"}
+	os.Args = []string{"mackerel-agent", "-conf=" + confFile.Name(), "-role=My-Service:default", "-verbose", "-diagnostic"}
 	// Overrides Args from go test command
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
 
@@ -32,6 +33,7 @@ apikey="DUMMYAPIKEY"
 	t.Logf("       apikey: %v", mergedConfig.Apikey)
 	t.Logf("         root: %v", mergedConfig.Root)
 	t.Logf("      pidfile: %v", mergedConfig.Pidfile)
+	t.Logf("   diagnostic: %v", mergedConfig.Diagnostic)
 	t.Logf("roleFullnames: %v", mergedConfig.Roles)
 	t.Logf("      verbose: %v", mergedConfig.Verbose)
 
@@ -45,6 +47,10 @@ apikey="DUMMYAPIKEY"
 
 	if mergedConfig.Verbose != true {
 		t.Error("Verbose(overwritten by command line option) shoud be true")
+	}
+
+	if mergedConfig.Diagnostic != true {
+		t.Error("Diagnostic(overwritten by command line option) shoud be true")
 	}
 }
 

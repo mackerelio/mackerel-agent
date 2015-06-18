@@ -9,12 +9,13 @@ var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", "mackerel-agent")
 
 // DefaultConfig The default configuration for freebsd
 var DefaultConfig = &Config{
-	Apibase:  getApibase(),
-	Root:     mackerelRoot,
-	Pidfile:  filepath.Join(mackerelRoot, "pid"),
-	Conffile: filepath.Join(mackerelRoot, "mackerel-agent.conf"),
-	Roles:    []string{},
-	Verbose:  false,
+	Apibase:    getApibase(),
+	Root:       mackerelRoot,
+	Pidfile:    filepath.Join(mackerelRoot, "pid"),
+	Conffile:   filepath.Join(mackerelRoot, "mackerel-agent.conf"),
+	Roles:      []string{},
+	Verbose:    false,
+	Diagnostic: false,
 	Connection: ConnectionConfig{
 		PostMetricsDequeueDelaySeconds: 30,     // Check the metric values queue for each half minutes
 		PostMetricsRetryDelaySeconds:   60,     // Wait a minute before retrying metric value posts
