@@ -174,7 +174,7 @@ func loop(c *context, termCh chan struct{}) int {
 
 	// fan-out termCh
 	go func() {
-		for range termCh {
+		for _ = range termCh {
 			termCheckerCh <- struct{}{}
 			termMetricsCh <- struct{}{}
 		}
@@ -426,7 +426,7 @@ func runCheckersLoop(c *context, termCheckerCh <-chan struct{}, quit <-chan stru
 	} else {
 		// consume termCheckerCh
 		go func() {
-			for range termCheckerCh {
+			for _ = range termCheckerCh {
 			}
 		}()
 	}
