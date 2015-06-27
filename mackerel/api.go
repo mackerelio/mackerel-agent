@@ -82,6 +82,19 @@ func closeResp(resp *http.Response) {
 	}
 }
 
+// Ping to mackerel.io
+func (api *API) Ping() error {
+	resp, err := api.get("")
+	defer closeResp(resp)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("request failed: [%s]", resp.Status)
+	}
+	return nil
+}
+
 // FindHost find the host
 func (api *API) FindHost(id string) (*Host, error) {
 	resp, err := api.get(fmt.Sprintf("/api/v0/hosts/%s", id))
