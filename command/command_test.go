@@ -89,6 +89,12 @@ func TestPrepareWithCreate(t *testing.T) {
 	conf, mockHandlers, ts := newMockAPIServer(t)
 	defer ts.Close()
 
+	mockHandlers["GET /"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "ok",
+		}
+	}
+
 	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"id": "xxx1234567890",
@@ -127,6 +133,12 @@ func TestPrepareWithUpdate(t *testing.T) {
 	tempDir, _ := ioutil.TempDir("", "")
 	conf.Root = tempDir
 	saveHostID(tempDir, "xxx12345678901")
+
+	mockHandlers["GET /"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "ok",
+		}
+	}
 
 	mockHandlers["PUT /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
