@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/Songmu/retry"
 	"github.com/mackerelio/mackerel-agent/agent"
 	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
@@ -63,6 +64,19 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 	// XXX this configuration should be moved to under spec/linux
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
+
+	err := retry.Retry(20, 3*time.Second, func() error {
+		// check connection to mackerel.io up to 60 seconds
+		logger.Debugf("ping %s", api.BaseURL.String())
+		err := api.Ping()
+		if err != nil {
+			logger.Warningf("failed to ping %s", err)
+		}
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
 
 	hostname, meta, interfaces, err := collectHostSpecs()
 	if err != nil {
