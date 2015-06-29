@@ -66,7 +66,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
 
 	doRetry := func(f func() error) {
-		retry.Retry(10, 3*time.Second, f)
+		retry.Retry(20, 3*time.Second, f)
 	}
 
 	filterErrorForRetry := func(err error) error {
