@@ -30,6 +30,7 @@ type API struct {
 	Verbose bool
 }
 
+// Error represents API error
 type Error struct {
 	StatusCode int
 	Message    string
@@ -39,10 +40,12 @@ func (aperr *Error) Error() string {
 	return fmt.Sprintf("API error. status: %d, msg: %s", aperr.StatusCode, aperr.Message)
 }
 
+// IsClientError 4xx
 func (aperr *Error) IsClientError() bool {
 	return 400 <= aperr.StatusCode && aperr.StatusCode < 500
 }
 
+// IsServerError 5xx
 func (aperr *Error) IsServerError() bool {
 	return 500 <= aperr.StatusCode && aperr.StatusCode < 600
 }

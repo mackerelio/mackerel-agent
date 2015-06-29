@@ -59,6 +59,9 @@ func saveHostID(root string, id string) error {
 }
 
 func filterErrorForRetry(err error) error {
+	if err != nil {
+		logger.Warningf("%s", err.Error())
+	}
 	if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
 		// don't retry when client error (APIKey error etc.) occurred
 		return nil
