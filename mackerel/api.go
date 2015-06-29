@@ -3,7 +3,6 @@ package mackerel
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httputil"
@@ -29,6 +28,30 @@ type API struct {
 	BaseURL *url.URL
 	APIKey  string
 	Verbose bool
+}
+
+type Error struct {
+	StatusCode int
+	Message    string
+}
+
+func (aperr *Error) Error() string {
+	return fmt.Sprintf("API error. status: %d, msg: %s", aperr.StatusCode, aperr.Message)
+}
+
+func (aperr *Error) IsClientError() bool {
+	return 400 <= aperr.StatusCode && aperr.StatusCode < 500
+}
+
+func (aperr *Error) IsServerError() bool {
+	return 500 <= aperr.StatusCode && aperr.StatusCode < 600
+}
+
+func apiError(code int, msg string) *Error {
+	return &Error{
+		StatusCode: code,
+		Message:    msg,
+	}
 }
 
 // NewAPI creates a new instance of API.
@@ -91,7 +114,7 @@ func (api *API) FindHost(id string) (*Host, error) {
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, errors.New("status code is not 200")
+		return nil, apiError(resp.StatusCode, "status code is not 200")
 	}
 
 	var data struct {
@@ -121,7 +144,7 @@ func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces 
 	}
 
 	if resp.StatusCode != 200 {
-		return "", fmt.Errorf("API result failed: %s", resp.Status)
+		return "", apiError(resp.StatusCode, "API request failed")
 	}
 
 	var data struct {
@@ -166,7 +189,7 @@ func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error
 		return err
 	}
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("API result failed: %s", resp.Status)
+		return apiError(resp.StatusCode, "api request failed")
 	}
 
 	return nil
@@ -227,7 +250,7 @@ func (api *API) requestJSON(method, path string, payload interface{}) (*http.Res
 
 	logger.Debugf("%s %s status=%q", method, path, resp.Status)
 	if resp.StatusCode >= 400 {
-		return resp, fmt.Errorf("request failed: [%s]", resp.Status)
+		return resp, apiError(resp.StatusCode, "api request failed")
 	}
 	return resp, nil
 }
