@@ -58,6 +58,9 @@ func saveHostID(root string, id string) error {
 	return nil
 }
 
+var retryNum uint = 20
+var retryInterval = 3 * time.Second
+
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
 func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, displayName string, hostSt string) (*mackerel.Host, error) {
@@ -66,7 +69,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
 
 	doRetry := func(f func() error) {
-		retry.Retry(20, 3*time.Second, f)
+		retry.Retry(retryNum, retryInterval, f)
 	}
 
 	filterErrorForRetry := func(err error) error {
