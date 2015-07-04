@@ -5,6 +5,7 @@ package linux
 import (
 	"os"
 	"testing"
+	"time"
 )
 
 func TestDiskGenerator(t *testing.T) {
@@ -13,7 +14,7 @@ func TestDiskGenerator(t *testing.T) {
 		t.Skipf("Skip: can't access `/proc/diskstats` in Travis environment.")
 	}
 
-	g := &DiskGenerator{1}
+	g := &DiskGenerator{1 * time.Second}
 	values, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
