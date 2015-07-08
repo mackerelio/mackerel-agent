@@ -188,7 +188,7 @@ sub decide_next_version {
     if (!is_valid_version($next_version)) {
         die qq{"$next_version" is invalid version string\n};
     }
-    if ($next_version lt $current_version) {
+    if (version->parse($next_version) < version->parse($current_version)) {
         die qq{"$next_version" is smaller than current version "$current_version"\n};
     }
     $next_version;
