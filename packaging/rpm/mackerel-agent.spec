@@ -73,6 +73,10 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Jul 08 2015 <tomohiro68@gmail.com> - 0.18.0-1
+- Retry in prepare (by Songmu)
+- [WORKAROUND] downgrade golang version for windows (by Sixeight)
+
 * Wed Jun 17 2015 <tomohiro68@gmail.com> - 0.17.1-1
 - Update to go 1.4.2 for windows build (by mechairoi)
 

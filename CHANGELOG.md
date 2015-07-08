@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.0 (2015-07-08)
+
+* Retry in prepare #108 (Songmu)
+* [WORKAROUND] downgrade golang version for windows #109 (Sixeight)
+
+
 ## 0.17.1 (2015-06-17)
 
 * Update to go 1.4.2 for windows build #105 (mechairoi)
