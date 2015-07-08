@@ -39,10 +39,10 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	if g, err = metricsWindows.NewFilesystemGenerator(); err == nil {
 		generators = append(generators, g)
 	}
-	if g, err = metricsWindows.NewInterfaceGenerator(60); err == nil {
+	if g, err = metricsWindows.NewInterfaceGenerator(metricsInterval); err == nil {
 		generators = append(generators, g)
 	}
-	if g, err = metricsWindows.NewDiskGenerator(60); err == nil {
+	if g, err = metricsWindows.NewDiskGenerator(metricsInterval); err == nil {
 		generators = append(generators, g)
 	}
 	for _, pluginConfig := range conf.Plugin["metrics"] {

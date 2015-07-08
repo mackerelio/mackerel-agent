@@ -60,7 +60,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	time.Sleep(g.Interval * time.Second)
+	time.Sleep(g.Interval)
 
 	currValues, currTotal, cpuCount, err := g.collectProcStatValues()
 	if err != nil {

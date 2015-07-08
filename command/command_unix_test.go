@@ -6,6 +6,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
@@ -16,7 +17,7 @@ var diceCommand = "../example/metrics-plugins/dice-with-meta.rb"
 func TestRunOnce(t *testing.T) {
 	if testing.Short() {
 		origMetricsInterval := metricsInterval
-		metricsInterval = 1
+		metricsInterval = 1 * time.Second
 		defer func() {
 			metricsInterval = origMetricsInterval
 		}()

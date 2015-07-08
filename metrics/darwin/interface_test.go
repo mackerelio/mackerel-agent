@@ -2,10 +2,13 @@
 
 package darwin
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestInterfaceGenerator(t *testing.T) {
-	g := &InterfaceGenerator{1}
+	g := &InterfaceGenerator{1 * time.Second}
 	values, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)

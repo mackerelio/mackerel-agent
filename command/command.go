@@ -22,7 +22,7 @@ import (
 )
 
 var logger = logging.GetLogger("command")
-var metricsInterval = 60
+var metricsInterval = 60 * time.Second
 
 const idFileName = "id"
 
