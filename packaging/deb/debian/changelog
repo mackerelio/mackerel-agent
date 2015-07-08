@@ -1,3 +1,12 @@
+mackerel-agent (0.18.0-1) stable; urgency=low
+
+  * Retry in prepare (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/108>
+  * [WORKAROUND] downgrade golang version for windows (by Sixeight)
+    <https://github.com/mackerelio/mackerel-agent/pull/109>
+
+ -- Tomohiro Nishimura <tomohiro68@gmail.com>  Wed, 08 Jul 2015 11:30:03 +0900
+
 mackerel-agent (0.17.1-1) stable; urgency=low
 
   * Update to go 1.4.2 for windows build (by mechairoi)
