@@ -121,6 +121,29 @@ func TestPrepareWithCreate(t *testing.T) {
 	}
 }
 
+func TestPrepareWithCreateWithFail(t *testing.T) {
+	conf, mockHandlers, ts := newMockAPIServer(t)
+	defer ts.Close()
+
+	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
+		return 403, jsonObject{
+			"result": "error",
+		}
+	}
+
+	origRetryNum := retryNum
+	retryNum = 1
+	defer func() {
+		retryNum = origRetryNum
+	}()
+
+	_, _, err := Prepare(&conf)
+
+	if err == nil {
+		t.Errorf("error should be occurred")
+	}
+}
+
 func TestPrepareWithUpdate(t *testing.T) {
 	conf, mockHandlers, ts := newMockAPIServer(t)
 	defer ts.Close()

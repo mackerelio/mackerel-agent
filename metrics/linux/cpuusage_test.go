@@ -6,10 +6,13 @@ import (
 	"math"
 	"os"
 )
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestCPUUsageGenerate(t *testing.T) {
-	g := &CPUUsageGenerator{1}
+	g := &CPUUsageGenerator{1 * time.Second}
 	values, _ := g.Generate()
 
 	sumPercentage := float64(0)

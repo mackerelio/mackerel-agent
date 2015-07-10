@@ -5,6 +5,7 @@ package linux
 import (
 	"os"
 	"testing"
+	"time"
 )
 
 func TestInterfaceGenerator(t *testing.T) {
@@ -16,7 +17,7 @@ func TestInterfaceGenerator(t *testing.T) {
 		t.Skip("Skip: in Travis, Skipping interface test for now")
 	}
 
-	g := &InterfaceGenerator{1}
+	g := &InterfaceGenerator{1 * time.Second}
 	values, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)

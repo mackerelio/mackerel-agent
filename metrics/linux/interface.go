@@ -55,8 +55,7 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	interval := g.Interval * time.Second
-	time.Sleep(interval)
+	time.Sleep(g.Interval)
 
 	currValues, err := g.collectIntarfacesValues()
 	if err != nil {
@@ -70,7 +69,7 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 		}
 		currValue, ok := currValues[name]
 		if ok {
-			ret[name+".delta"] = (currValue - value) / interval.Seconds()
+			ret[name+".delta"] = (currValue - value) / g.Interval.Seconds()
 		}
 	}
 

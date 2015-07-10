@@ -89,8 +89,7 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 
 // Generate XXX
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
-	interval := g.Interval * time.Second
-	time.Sleep(interval)
+	time.Sleep(g.Interval)
 
 	r, _, err := windows.PdhCollectQueryData.Call(uintptr(g.query))
 	if r != 0 && err != nil {

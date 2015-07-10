@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/Songmu/retry"
 	"github.com/mackerelio/mackerel-agent/agent"
 	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
@@ -21,7 +22,7 @@ import (
 )
 
 var logger = logging.GetLogger("command")
-var metricsInterval = 60
+var metricsInterval = 60 * time.Second
 
 const idFileName = "id"
 
@@ -57,6 +58,9 @@ func saveHostID(root string, id string) error {
 	return nil
 }
 
+var retryNum uint = 20
+var retryInterval = 3 * time.Second
+
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
 func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, displayName string, hostSt string) (*mackerel.Host, error) {
@@ -64,52 +68,84 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
 
-	hostname, meta, interfaces, err := collectHostSpecs()
-	if err != nil {
-		return nil, fmt.Errorf("error while collecting host specs: %s", err.Error())
+	doRetry := func(f func() error) {
+		retry.Retry(retryNum, retryInterval, f)
+	}
+
+	filterErrorForRetry := func(err error) error {
+		if err != nil {
+			logger.Warningf("%s", err.Error())
+		}
+		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
+			// don't retry when client error (APIKey error etc.) occurred
+			return nil
+		}
+		return err
+	}
+
+	hostname, meta, interfaces, lastErr := collectHostSpecs()
+	if lastErr != nil {
+		return nil, fmt.Errorf("error while collecting host specs: %s", lastErr.Error())
 	}
 
 	var result *mackerel.Host
 	if hostID, err := loadHostID(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
-		createdHostID, err := api.CreateHost(hostname, meta, interfaces, roleFullnames, displayName)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to register this host: %s", err.Error())
-		}
 
-		result, err = api.FindHost(createdHostID)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", err.Error())
-		}
-	} else { // update
-		result, err = api.FindHost(hostID)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), err.Error())
-		}
-		err := api.UpdateHost(hostID, mackerel.HostSpec{
-			Name:          hostname,
-			Meta:          meta,
-			Interfaces:    interfaces,
-			RoleFullnames: roleFullnames,
-			Checks:        checks,
-			DisplayName:   displayName,
+		doRetry(func() error {
+			hostID, lastErr = api.CreateHost(hostname, meta, interfaces, roleFullnames, displayName)
+			return filterErrorForRetry(lastErr)
 		})
 
-		if err != nil {
-			return nil, fmt.Errorf("Failed to update this host: %s", err.Error())
+		if lastErr != nil {
+			return nil, fmt.Errorf("Failed to register this host: %s", lastErr.Error())
+		}
+
+		doRetry(func() error {
+			result, lastErr = api.FindHost(hostID)
+			return filterErrorForRetry(lastErr)
+		})
+		if lastErr != nil {
+			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
+		}
+	} else { // update
+		doRetry(func() error {
+			result, lastErr = api.FindHost(hostID)
+			return filterErrorForRetry(lastErr)
+		})
+		if lastErr != nil {
+			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), lastErr.Error())
+		}
+
+		doRetry(func() error {
+			lastErr = api.UpdateHost(hostID, mackerel.HostSpec{
+				Name:          hostname,
+				Meta:          meta,
+				Interfaces:    interfaces,
+				RoleFullnames: roleFullnames,
+				Checks:        checks,
+				DisplayName:   displayName,
+			})
+			return filterErrorForRetry(lastErr)
+		})
+		if lastErr != nil {
+			return nil, fmt.Errorf("Failed to update this host: %s", lastErr.Error())
 		}
 	}
 
 	if hostSt != "" && hostSt != result.Status {
-		err := api.UpdateHostStatus(result.ID, hostSt)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to set default host status: %s, %s", hostSt, err.Error())
+		doRetry(func() error {
+			lastErr = api.UpdateHostStatus(result.ID, hostSt)
+			return filterErrorForRetry(lastErr)
+		})
+		if lastErr != nil {
+			return nil, fmt.Errorf("Failed to set default host status: %s, %s", hostSt, lastErr.Error())
 		}
 	}
 
-	err = saveHostID(root, result.ID)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to save host ID: %s", err.Error())
+	lastErr = saveHostID(root, result.ID)
+	if lastErr != nil {
+		return nil, fmt.Errorf("Failed to save host ID: %s", lastErr.Error())
 	}
 
 	return result, nil
@@ -174,7 +210,7 @@ func loop(c *context, termCh chan struct{}) int {
 
 	// fan-out termCh
 	go func() {
-		for range termCh {
+		for _ = range termCh {
 			termCheckerCh <- struct{}{}
 			termMetricsCh <- struct{}{}
 		}
@@ -426,7 +462,7 @@ func runCheckersLoop(c *context, termCheckerCh <-chan struct{}, quit <-chan stru
 	} else {
 		// consume termCheckerCh
 		go func() {
-			for range termCheckerCh {
+			for _ = range termCheckerCh {
 			}
 		}()
 	}
