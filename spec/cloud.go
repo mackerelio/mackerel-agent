@@ -39,6 +39,22 @@ const (
 
 var timeout = 100 * time.Millisecond
 
+// SuggestCloudGenerator returns suitable CloudGenerator
+func SuggestCloudGenerator() *CloudGenerator {
+	cl := http.Client{
+		Timeout: timeout,
+	}
+
+	// '/ami-id` is may be aws specific URL
+	resp, err := cl.Get(ec2BaseURL + "/ami-id")
+	if err == nil {
+		resp.Body.Close()
+		return &CloudGenerator{NewEC2Generator()}
+	}
+
+	return nil
+}
+
 // NewCloudGenerator creates a Cloud Generator instance with specified baseurl.
 func NewCloudGenerator(baseurl string) (*CloudGenerator, error) {
 	if baseurl == "" {
