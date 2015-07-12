@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -46,6 +47,9 @@ var timeout = 100 * time.Millisecond
 func SuggestCloudGenerator() *CloudGenerator {
 	if isEC2() {
 		return &CloudGenerator{NewEC2Generator()}
+	}
+	if isGCE() {
+		return &CloudGenerator{NewGCEGenerator()}
 	}
 
 	return nil
@@ -154,6 +158,28 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 	results["metadata"] = metadata
 
 	return results, nil
+}
+
+// GCEGenerator generate for GCE
+type GCEGenerator struct {
+	metaURL *url.URL
+}
+
+// NewGCEGenerator returns new GCEGenerator
+func NewGCEGenerator() *GCEGenerator {
+	url, _ := url.Parse(gceMetaURL)
+	return &GCEGenerator{url}
+}
+
+// Generate collects metadata from cloud platform.
+func (g *GCEGenerator) Generate() (interface{}, error) {
+	bytes, err := requestGCEMeta(g.metaURL.String())
+	if err != nil {
+		return nil, err
+	}
+	var data gceMeta
+	json.Unmarshal(bytes, &data)
+	return data.toGeneratorResults(), nil
 }
 
 type gceInstance struct {
