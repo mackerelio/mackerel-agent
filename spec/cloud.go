@@ -27,6 +27,14 @@ func (g *CloudGenerator) Key() string {
 
 var cloudLogger = logging.GetLogger("spec.cloud")
 
+var ec2BaseURL, gcpBaseURL, digitalOceanBaseURL *url.URL
+
+func init() {
+	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
+	gcpBaseURL, _ = url.Parse("http://metadata.google.internal/computeMetadata/v1")
+	digitalOceanBaseURL, _ = url.Parse("http://169.254.169.254/metadata/v1") // has not been yet used
+}
+
 // NewCloudGenerator creates a Cloud Generator instance with specified baseurl.
 func NewCloudGenerator(baseurl string) (*CloudGenerator, error) {
 	if baseurl == "" {
