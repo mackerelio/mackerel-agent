@@ -17,10 +17,10 @@ import (
 
 // CloudGenerator definition
 type CloudGenerator struct {
-	CloudSpecGenerator
+	CloudMetaGenerator
 }
 
-type CloudSpecGenerator interface {
+type CloudMetaGenerator interface {
 	Generate() (interface{}, error)
 }
 
