@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -54,4 +55,95 @@ func TestCloudGenerate(t *testing.T) {
 	if len(metadata["instance-id"]) == 0 {
 		t.Error("instance-id should be filled")
 	}
+}
+
+func TestGCEGenerate(t *testing.T) {
+	// curl "http://metadata.google.internal/computeMetadata/v1/?recursive=true" -H "Metadata-Flavor: Google"
+	sampleJSON := []byte(`{
+	  "instance": {
+		"attributes": {},
+		"cpuPlatform": "Intel Ivy Bridge",
+		"description": "",
+		"disks": [
+		  {
+			"deviceName": "gce-1",
+			"index": 0,
+			"mode": "READ_WRITE",
+			"type": "PERSISTENT"
+		  }
+		],
+		"hostname": "gce-1.c.dummyproj-987.internal",
+		"id": 9876543210987654321,
+		"image": "",
+		"machineType": "projects/1234567890123/machineTypes/g1-small",
+		"maintenanceEvent": "NONE",
+		"networkInterfaces": [
+		  {
+			"accessConfigs": [
+			  {
+				"externalIp": "203.0.113.1",
+				"type": "ONE_TO_ONE_NAT"
+			  }
+			],
+			"forwardedIps": [],
+			"ip": "192.0.2.1",
+			"network": "projects/1234567890123/networks/default"
+		  }
+		],
+		"scheduling": {
+		  "automaticRestart": "TRUE",
+		  "onHostMaintenance": "MIGRATE"
+		},
+		"serviceAccounts": {
+		  "1234567890123-compute@developer.gserviceaccount.com": {
+			"aliases": [
+			  "default"
+			],
+			"email": "1234567890123-compute@developer.gserviceaccount.com",
+			"scopes": [
+			  "https://www.googleapis.com/auth/devstorage.read_only",
+			  "https://www.googleapis.com/auth/logging.write"
+			]
+		  },
+		  "default": {
+			"aliases": [
+			  "default"
+			],
+			"email": "1234567890123-compute@developer.gserviceaccount.com",
+			"scopes": [
+			  "https://www.googleapis.com/auth/devstorage.read_only",
+			  "https://www.googleapis.com/auth/logging.write"
+			]
+		  }
+		},
+		"tags": [],
+		"virtualClock": {
+		  "driftToken": "12345678901234567890"
+		},
+		"zone": "projects/1234567890123/zones/asia-east1-a"
+	  },
+	  "project": {
+		"attributes": {
+		  "google-compute-default-region": "us-central1",
+		  "google-compute-default-zone": "us-central1-f",
+		  "sshKeys": "dummy_user:ssh-rsa AAAhogehoge google-ssh {\"userName\":\"dummy_user@example.com\",\"expireOn\":\"2015-07-12T11:11:43+0000\"}\ndummy_user:ecdsa-sha2-nistp256 AAAhogefuga google-ssh {\"userName\":\"dummy_user@example.com\",\"expireOn\":\"2015-07-12T11:11:39+0000\"}\n"
+		},
+		"numericProjectId": 1234567890123,
+		"projectId": "dummyprof-987"
+	  }
+	}`)
+	var data struct {
+		Instance interface{}
+		Project  interface{}
+	}
+	json.Unmarshal(sampleJSON, &data)
+
+	if data.Instance == nil {
+		t.Errorf("data.Instance should be assigned")
+	}
+
+	if data.Project == nil {
+		t.Errorf("data.Project should be assigned")
+	}
+
 }
