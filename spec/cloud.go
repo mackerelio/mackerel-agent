@@ -48,10 +48,10 @@ var timeout = 100 * time.Millisecond
 // SuggestCloudGenerator returns suitable CloudGenerator
 func SuggestCloudGenerator() *CloudGenerator {
 	if isEC2() {
-		return &CloudGenerator{NewEC2Generator()}
+		return &CloudGenerator{&EC2Generator{ec2BaseURL}}
 	}
 	if isGCE() {
-		return &CloudGenerator{NewGCEGenerator()}
+		return &CloudGenerator{&GCEGenerator{gceMetaURL}}
 	}
 
 	return nil
@@ -104,11 +104,6 @@ func requestGCEMeta() ([]byte, error) {
 // EC2Generator meta generator for EC2
 type EC2Generator struct {
 	baseURL *url.URL
-}
-
-// NewEC2Generator returns new instance of EC2Generator
-func NewEC2Generator() *EC2Generator {
-	return &EC2Generator{ec2BaseURL}
 }
 
 // Generate collects metadata from cloud platform.
@@ -164,11 +159,6 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 // GCEGenerator generate for GCE
 type GCEGenerator struct {
 	metaURL *url.URL
-}
-
-// NewGCEGenerator returns new GCEGenerator
-func NewGCEGenerator() *GCEGenerator {
-	return &GCEGenerator{gceMetaURL}
 }
 
 // Generate collects metadata from cloud platform.
