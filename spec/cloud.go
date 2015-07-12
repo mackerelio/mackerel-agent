@@ -35,11 +35,13 @@ func (g *CloudGenerator) Key() string {
 
 var cloudLogger = logging.GetLogger("spec.cloud")
 
-const (
-	ec2BaseURL          = "http://169.254.169.254/latest/meta-data"
-	gceMetaURL          = "http://metadata.google.internal/computeMetadata/v1/?recursive=true"
-	digitalOceanBaseURL = "http://169.254.169.254/metadata/v1" // has not been yet used
-)
+var ec2BaseURL, gceMetaURL, digitalOceanBaseURL *url.URL
+
+func init() {
+	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
+	gceMetaURL, _ = url.Parse("http://metadata.google.internal/computeMetadata/v1/?recursive=true")
+	digitalOceanBaseURL, _ = url.Parse("http://169.254.169.254/metadata/v1") // has not been yet used
+}
 
 var timeout = 100 * time.Millisecond
 
@@ -60,7 +62,7 @@ func isEC2() bool {
 		Timeout: timeout,
 	}
 	// '/ami-id` is may be aws specific URL
-	resp, err := cl.Get(ec2BaseURL + "/ami-id")
+	resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
 	if err != nil {
 		return false
 	}
@@ -70,18 +72,18 @@ func isEC2() bool {
 }
 
 func isGCE() bool {
-	_, err := requestGCEMeta(gceMetaURL)
+	_, err := requestGCEMeta()
 	if err != nil {
 		return false
 	}
 	return true
 }
 
-func requestGCEMeta(u string) ([]byte, error) {
+func requestGCEMeta() ([]byte, error) {
 	cl := http.Client{
 		Timeout: timeout,
 	}
-	req, err := http.NewRequest("GET", u, nil)
+	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -106,8 +108,7 @@ type EC2Generator struct {
 
 // NewEC2Generator returns new instance of EC2Generator
 func NewEC2Generator() *EC2Generator {
-	url, _ := url.Parse(ec2BaseURL)
-	return &EC2Generator{url}
+	return &EC2Generator{ec2BaseURL}
 }
 
 // Generate collects metadata from cloud platform.
@@ -167,13 +168,12 @@ type GCEGenerator struct {
 
 // NewGCEGenerator returns new GCEGenerator
 func NewGCEGenerator() *GCEGenerator {
-	url, _ := url.Parse(gceMetaURL)
-	return &GCEGenerator{url}
+	return &GCEGenerator{gceMetaURL}
 }
 
 // Generate collects metadata from cloud platform.
 func (g *GCEGenerator) Generate() (interface{}, error) {
-	bytes, err := requestGCEMeta(g.metaURL.String())
+	bytes, err := requestGCEMeta()
 	if err != nil {
 		return nil, err
 	}
