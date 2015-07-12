@@ -36,7 +36,7 @@ var cloudLogger = logging.GetLogger("spec.cloud")
 
 const (
 	ec2BaseURL          = "http://169.254.169.254/latest/meta-data"
-	gceBaseURL          = "http://metadata.google.internal/computeMetadata/v1"
+	gceMetaURL          = "http://metadata.google.internal/computeMetadata/v1/?recursive=true"
 	digitalOceanBaseURL = "http://169.254.169.254/metadata/v1" // has not been yet used
 )
 
@@ -63,6 +63,36 @@ func isEC2() bool {
 	defer resp.Body.Close()
 
 	return resp.StatusCode == 200
+}
+
+func isGCE() bool {
+	_, err := requestGCEMeta(gceMetaURL)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func requestGCEMeta(u string) ([]byte, error) {
+	cl := http.Client{
+		Timeout: timeout,
+	}
+	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Metadata-Flavor", "Google")
+
+	resp, err := cl.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
+	}
+	return ioutil.ReadAll(resp.Body)
 }
 
 // EC2Generator meta generator for EC2
