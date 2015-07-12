@@ -191,7 +191,7 @@ type gceInstance struct {
 
 type gceProject struct {
 	ProjectID        string
-	NumericProjectId uint64
+	NumericProjectID uint64
 }
 
 type gceMeta struct {

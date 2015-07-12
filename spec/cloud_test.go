@@ -148,7 +148,7 @@ func TestGCEGenerate(t *testing.T) {
 
 	if !reflect.DeepEqual(data.Project, &gceProject{
 		ProjectID:        "dummyprof-987",
-		NumericProjectId: 1234567890123,
+		NumericProjectID: 1234567890123,
 	}) {
 		t.Errorf("data.Project should be assigned")
 	}
