@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
@@ -24,10 +25,12 @@ func TestCloudGenerate(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	g, err := NewCloudGenerator(ts.URL)
+	u, err := url.Parse(ts.URL)
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
+	g := &CloudGenerator{&EC2Generator{u}}
+
 	value, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)

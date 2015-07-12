@@ -55,18 +55,6 @@ func SuggestCloudGenerator() *CloudGenerator {
 	return nil
 }
 
-// NewCloudGenerator creates a Cloud Generator instance with specified baseurl.
-func NewCloudGenerator(baseurl string) (*CloudGenerator, error) {
-	if baseurl == "" {
-		baseurl = ec2BaseURL
-	}
-	u, err := url.Parse(baseurl)
-	if err != nil {
-		return nil, err
-	}
-	return &CloudGenerator{&EC2Generator{u}}, nil
-}
-
 type EC2Generator struct {
 	baseURL *url.URL
 }
