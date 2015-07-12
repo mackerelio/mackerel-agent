@@ -475,7 +475,12 @@ func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{
 		return "", nil, nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
 	}
 
-	meta := spec.Collect(specGenerators())
+	specGens := specGenerators()
+	cGen := spec.SuggestCloudGenerator()
+	if cGen != nil {
+		specGens = append(specGens, cGen)
+	}
+	meta := spec.Collect(specGens)
 
 	interfacesSpec, err := interfaceGenerator().Generate()
 	if err != nil {
