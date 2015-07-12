@@ -53,7 +53,7 @@ func (g *CloudGenerator) Generate() (interface{}, error) {
 		"instance-type",
 		"placement/availability-zone",
 		"security-groups",
-		"ami_id",
+		"ami-id",
 		"hostname",
 		"local-hostname",
 		"public-hostname",
