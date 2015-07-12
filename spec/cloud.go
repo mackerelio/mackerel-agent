@@ -20,6 +20,7 @@ type CloudGenerator struct {
 	CloudMetaGenerator
 }
 
+// CloudMetaGenerator interface of metadata generator for each cloud platform
 type CloudMetaGenerator interface {
 	Generate() (interface{}, error)
 }
@@ -55,10 +56,12 @@ func SuggestCloudGenerator() *CloudGenerator {
 	return nil
 }
 
+// EC2Generator meta generator for EC2
 type EC2Generator struct {
 	baseURL *url.URL
 }
 
+// NewEC2Generator returns new instance of EC2Generator
 func NewEC2Generator() *EC2Generator {
 	url, _ := url.Parse(ec2BaseURL)
 	return &EC2Generator{url}
