@@ -34,7 +34,7 @@ var cloudLogger = logging.GetLogger("spec.cloud")
 
 const (
 	ec2BaseURL          = "http://169.254.169.254/latest/meta-data"
-	gcpBaseURL          = "http://metadata.google.internal/computeMetadata/v1"
+	gceBaseURL          = "http://metadata.google.internal/computeMetadata/v1"
 	digitalOceanBaseURL = "http://169.254.169.254/metadata/v1" // has not been yet used
 )
 
@@ -122,4 +122,21 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 	results["metadata"] = metadata
 
 	return results, nil
+}
+
+type gceInstance struct {
+	Zone         string
+	InstanceType string `json:"machineType"`
+	Hostname     string
+	InstanceID   uint64 `json:"id"`
+}
+
+type gceProject struct {
+	ProjectID        string
+	NumericProjectId uint64
+}
+
+type gceMeta struct {
+	Instance *gceInstance
+	Project  *gceProject
 }

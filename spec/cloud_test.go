@@ -73,7 +73,7 @@ func TestGCEGenerate(t *testing.T) {
 		  }
 		],
 		"hostname": "gce-1.c.dummyproj-987.internal",
-		"id": 9876543210987654321,
+		"id": 4567890123456789123,
 		"image": "",
 		"machineType": "projects/1234567890123/machineTypes/g1-small",
 		"maintenanceEvent": "NONE",
@@ -132,10 +132,8 @@ func TestGCEGenerate(t *testing.T) {
 		"projectId": "dummyprof-987"
 	  }
 	}`)
-	var data struct {
-		Instance interface{}
-		Project  interface{}
-	}
+
+	var data gceMeta
 	json.Unmarshal(sampleJSON, &data)
 
 	if data.Instance == nil {
