@@ -17,7 +17,11 @@ import (
 
 // CloudGenerator definition
 type CloudGenerator struct {
-	baseURL *url.URL
+	CloudSpecGenerator
+}
+
+type CloudSpecGenerator interface {
+	Generate() (interface{}, error)
 }
 
 // Key is a root key for the generator.
@@ -27,30 +31,37 @@ func (g *CloudGenerator) Key() string {
 
 var cloudLogger = logging.GetLogger("spec.cloud")
 
-var ec2BaseURL, gcpBaseURL, digitalOceanBaseURL *url.URL
+const (
+	ec2BaseURL          = "http://169.254.169.254/latest/meta-data"
+	gcpBaseURL          = "http://metadata.google.internal/computeMetadata/v1"
+	digitalOceanBaseURL = "http://169.254.169.254/metadata/v1" // has not been yet used
+)
 
-func init() {
-	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
-	gcpBaseURL, _ = url.Parse("http://metadata.google.internal/computeMetadata/v1")
-	digitalOceanBaseURL, _ = url.Parse("http://169.254.169.254/metadata/v1") // has not been yet used
-}
+var timeout = 100 * time.Millisecond
 
 // NewCloudGenerator creates a Cloud Generator instance with specified baseurl.
 func NewCloudGenerator(baseurl string) (*CloudGenerator, error) {
 	if baseurl == "" {
-		baseurl = "http://169.254.169.254/latest/meta-data"
+		baseurl = ec2BaseURL
 	}
 	u, err := url.Parse(baseurl)
 	if err != nil {
 		return nil, err
 	}
-	return &CloudGenerator{u}, nil
+	return &CloudGenerator{&EC2Generator{u}}, nil
+}
+
+type EC2Generator struct {
+	baseURL *url.URL
+}
+
+func NewEC2Generator() *EC2Generator {
+	url, _ := url.Parse(ec2BaseURL)
+	return &EC2Generator{url}
 }
 
 // Generate collects metadata from cloud platform.
-func (g *CloudGenerator) Generate() (interface{}, error) {
-
-	timeout := time.Duration(100 * time.Millisecond)
+func (g *EC2Generator) Generate() (interface{}, error) {
 	client := http.Client{
 		Timeout: timeout,
 	}

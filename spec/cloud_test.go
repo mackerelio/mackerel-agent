@@ -7,20 +7,6 @@ import (
 	"testing"
 )
 
-func TestNewCloudGenerator(t *testing.T) {
-	g, err := NewCloudGenerator(
-		"http://example.com",
-	)
-
-	if err != nil {
-		t.Errorf("should not raise error: %v", err)
-	}
-
-	if g.baseURL.String() != "http://example.com" {
-		t.Error("should return URL")
-	}
-}
-
 func TestCloudKey(t *testing.T) {
 	g := &CloudGenerator{}
 
