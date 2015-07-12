@@ -53,7 +53,7 @@ func (g *CloudGenerator) Generate() (interface{}, error) {
 		"instance-type",
 		"placement/availability-zone",
 		"security-groups",
-		"ami_id",
+		"ami-id",
 		"hostname",
 		"local-hostname",
 		"public-hostname",
@@ -81,7 +81,7 @@ func (g *CloudGenerator) Generate() (interface{}, error) {
 			metadata[key] = string(body)
 			cloudLogger.Debugf("results %s:%s", key, string(body))
 		} else {
-			cloudLogger.Warningf("Status code of the result of requesting metadata is '%d'", resp.StatusCode)
+			cloudLogger.Warningf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
 		}
 	}
 
