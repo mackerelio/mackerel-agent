@@ -42,18 +42,28 @@ var timeout = 100 * time.Millisecond
 
 // SuggestCloudGenerator returns suitable CloudGenerator
 func SuggestCloudGenerator() *CloudGenerator {
-	cl := http.Client{
-		Timeout: timeout,
-	}
-
-	// '/ami-id` is may be aws specific URL
-	resp, err := cl.Get(ec2BaseURL + "/ami-id")
-	if err == nil {
-		resp.Body.Close()
+	if isEC2() {
 		return &CloudGenerator{NewEC2Generator()}
 	}
 
 	return nil
+}
+
+func isEC2() bool {
+	cl := http.Client{
+		Timeout: timeout,
+	}
+	// '/ami-id` is may be aws specific URL
+	resp, err := cl.Get(ec2BaseURL + "/ami-id")
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		return true
+	}
+	return false
 }
 
 // EC2Generator meta generator for EC2
