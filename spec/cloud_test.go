@@ -1,6 +1,4 @@
-// +build linux
-
-package linux
+package spec
 
 import (
 	"fmt"

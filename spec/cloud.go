@@ -1,13 +1,12 @@
-// +build linux
-
-package linux
+package spec
 
 import (
-	"github.com/mackerelio/mackerel-agent/logging"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/mackerelio/mackerel-agent/logging"
 )
 
 // This Generator collects metadata about cloud instances.

@@ -16,7 +16,7 @@ func specGenerators() []spec.Generator {
 		&specLinux.BlockDeviceGenerator{},
 		&specLinux.FilesystemGenerator{},
 	}
-	cloudGenerator, err := specLinux.NewCloudGenerator("")
+	cloudGenerator, err := spec.NewCloudGenerator("")
 	if err != nil {
 		logger.Errorf("Failed to create cloudGenerator: %s", err.Error())
 	} else {

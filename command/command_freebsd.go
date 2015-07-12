@@ -9,12 +9,19 @@ import (
 )
 
 func specGenerators() []spec.Generator {
-	return []spec.Generator{
+	specs := []spec.Generator{
 		&specFreebsd.KernelGenerator{},
 		&specFreebsd.MemoryGenerator{},
 		&specFreebsd.CPUGenerator{},
 		&specFreebsd.FilesystemGenerator{},
 	}
+	cloudGenerator, err := spec.NewCloudGenerator("")
+	if err != nil {
+		logger.Errorf("Failed to create cloudGenerator: %s", err.Error())
+	} else {
+		specs = append(specs, cloudGenerator)
+	}
+	return specs
 }
 
 func interfaceGenerator() spec.Generator {
