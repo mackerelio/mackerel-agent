@@ -1,9 +1,11 @@
 package spec
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -139,4 +141,34 @@ type gceProject struct {
 type gceMeta struct {
 	Instance *gceInstance
 	Project  *gceProject
+}
+
+func (g gceMeta) toGeneratorMeta() map[string]string {
+	meta := make(map[string]string)
+
+	lastS := func(s string) string {
+		ss := strings.Split(s, "/")
+		return ss[len(ss)-1]
+	}
+
+	if ins := g.Instance; ins != nil {
+		meta["hostname"] = ins.Hostname
+		meta["instance-id"] = fmt.Sprint(ins.InstanceID)
+		meta["instance-type"] = lastS(ins.InstanceType)
+		meta["zone"] = lastS(ins.Zone)
+	}
+
+	if proj := g.Project; proj != nil {
+		meta["projectId"] = proj.ProjectID
+	}
+
+	return meta
+}
+
+func (g gceMeta) toGeneratorResults() interface{} {
+	results := make(map[string]interface{})
+	results["provider"] = "gce"
+	results["metadata"] = g.toGeneratorMeta()
+
+	return results
 }

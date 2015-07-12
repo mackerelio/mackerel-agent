@@ -152,4 +152,15 @@ func TestGCEGenerate(t *testing.T) {
 	}) {
 		t.Errorf("data.Project should be assigned")
 	}
+
+	if d := data.toGeneratorMeta(); !reflect.DeepEqual(d, map[string]string{
+		"zone":          "asia-east1-a",
+		"instance-type": "g1-small",
+		"hostname":      "gce-1.c.dummyproj-987.internal",
+		"instance-id":   "4567890123456789123",
+		"projectId":     "dummyprof-987",
+	}) {
+		t.Errorf("data.Project should be assigned")
+	}
+
 }
