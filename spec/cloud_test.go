@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
 	"testing"
 )
 
@@ -136,12 +137,19 @@ func TestGCEGenerate(t *testing.T) {
 	var data gceMeta
 	json.Unmarshal(sampleJSON, &data)
 
-	if data.Instance == nil {
+	if !reflect.DeepEqual(data.Instance, &gceInstance{
+		Zone:         "projects/1234567890123/zones/asia-east1-a",
+		InstanceType: "projects/1234567890123/machineTypes/g1-small",
+		Hostname:     "gce-1.c.dummyproj-987.internal",
+		InstanceID:   4567890123456789123,
+	}) {
 		t.Errorf("data.Instance should be assigned")
 	}
 
-	if data.Project == nil {
+	if !reflect.DeepEqual(data.Project, &gceProject{
+		ProjectID:        "dummyprof-987",
+		NumericProjectId: 1234567890123,
+	}) {
 		t.Errorf("data.Project should be assigned")
 	}
-
 }
