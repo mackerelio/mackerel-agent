@@ -164,3 +164,73 @@ func TestGCEGenerate(t *testing.T) {
 	}
 
 }
+
+func TestSuggestCloudGenerator(t *testing.T) {
+	// both of ec2BaseURL and gceMetaURL are unreachable
+	unreachableURL, _ := url.Parse("http://unreachable.localhost")
+	ec2BaseURL = unreachableURL
+	gceMetaURL = unreachableURL
+	cGen := SuggestCloudGenerator()
+	if cGen != nil {
+		t.Errorf("cGen should be nil but, %s", cGen)
+	}
+
+	func() { // ec2BaseURL is reachable but returns 404
+		ts := httptest.NewServer(http.NotFoundHandler())
+		defer ts.Close()
+		u, _ := url.Parse(ts.URL)
+		ec2BaseURL = u
+
+		cGen = SuggestCloudGenerator()
+		if cGen != nil {
+			t.Errorf("cGen should be nil but, %s", cGen)
+		}
+	}()
+
+	func() { // suggest EC2Generator
+		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+			fmt.Fprint(res, "OK:ami-id")
+		}))
+		defer ts.Close()
+		u, _ := url.Parse(ts.URL)
+		ec2BaseURL = u
+
+		cGen = SuggestCloudGenerator()
+		if cGen == nil {
+			t.Errorf("cGen should not be nil.")
+		}
+
+		ec2gen, ok := cGen.CloudMetaGenerator.(*EC2Generator)
+
+		if !ok {
+			t.Errorf("cGen should be *EC2Generator")
+		}
+
+		if ec2gen.baseURL != ec2BaseURL {
+			t.Errorf("something went wrong")
+		}
+	}()
+
+	func() { // suggest EC2Generator
+		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+			fmt.Fprint(res, "GCE:OK")
+		}))
+		defer ts.Close()
+		ec2BaseURL = unreachableURL
+		u, _ := url.Parse(ts.URL)
+		gceMetaURL = u
+
+		cGen = SuggestCloudGenerator()
+		if cGen == nil {
+			t.Errorf("cGen should not be nil.")
+		}
+
+		gceGen, ok := cGen.CloudMetaGenerator.(*GCEGenerator)
+		if !ok {
+			t.Errorf("cGen should be *GCEGenerator")
+		}
+		if gceGen.metaURL != gceMetaURL {
+			t.Errorf("something went wrong")
+		}
+	}()
+}

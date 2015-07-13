@@ -73,10 +73,7 @@ func isEC2() bool {
 
 func isGCE() bool {
 	_, err := requestGCEMeta()
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func requestGCEMeta() ([]byte, error) {
