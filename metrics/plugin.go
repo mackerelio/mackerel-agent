@@ -212,6 +212,8 @@ func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 	return payloads
 }
 
+var delimReg = regexp.MustCompile(`[\s\t]+`)
+
 func (g *pluginGenerator) collectValues() (Values, error) {
 	command := g.Config.Command
 	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
@@ -228,7 +230,7 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 	for _, line := range strings.Split(stdout, "\n") {
 		// Key, value, timestamp
 		// ex.) tcp.CLOSING 0 1397031808
-		items := strings.Split(line, "\t")
+		items := delimReg.Split(line, 3)
 		if len(items) != 3 {
 			continue
 		}
