@@ -1,13 +1,12 @@
-// +build linux
-
-package linux
+package spec
 
 import (
-	"github.com/mackerelio/mackerel-agent/logging"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/mackerelio/mackerel-agent/logging"
 )
 
 // This Generator collects metadata about cloud instances.
@@ -18,7 +17,12 @@ import (
 
 // CloudGenerator definition
 type CloudGenerator struct {
-	baseURL *url.URL
+	CloudMetaGenerator
+}
+
+// CloudMetaGenerator interface of metadata generator for each cloud platform
+type CloudMetaGenerator interface {
+	Generate() (interface{}, error)
 }
 
 // Key is a root key for the generator.
@@ -28,22 +32,53 @@ func (g *CloudGenerator) Key() string {
 
 var cloudLogger = logging.GetLogger("spec.cloud")
 
-// NewCloudGenerator creates a Cloud Generator instance with specified baseurl.
-func NewCloudGenerator(baseurl string) (*CloudGenerator, error) {
-	if baseurl == "" {
-		baseurl = "http://169.254.169.254/latest/meta-data"
+const (
+	ec2BaseURL          = "http://169.254.169.254/latest/meta-data"
+	gcpBaseURL          = "http://metadata.google.internal/computeMetadata/v1"
+	digitalOceanBaseURL = "http://169.254.169.254/metadata/v1" // has not been yet used
+)
+
+var timeout = 100 * time.Millisecond
+
+// SuggestCloudGenerator returns suitable CloudGenerator
+func SuggestCloudGenerator() *CloudGenerator {
+	if isEC2() {
+		return &CloudGenerator{NewEC2Generator()}
 	}
-	u, err := url.Parse(baseurl)
+
+	return nil
+}
+
+func isEC2() bool {
+	cl := http.Client{
+		Timeout: timeout,
+	}
+	// '/ami-id` is may be aws specific URL
+	resp, err := cl.Get(ec2BaseURL + "/ami-id")
 	if err != nil {
-		return nil, err
+		return false
 	}
-	return &CloudGenerator{u}, nil
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 200 {
+		return true
+	}
+	return false
+}
+
+// EC2Generator meta generator for EC2
+type EC2Generator struct {
+	baseURL *url.URL
+}
+
+// NewEC2Generator returns new instance of EC2Generator
+func NewEC2Generator() *EC2Generator {
+	url, _ := url.Parse(ec2BaseURL)
+	return &EC2Generator{url}
 }
 
 // Generate collects metadata from cloud platform.
-func (g *CloudGenerator) Generate() (interface{}, error) {
-
-	timeout := time.Duration(100 * time.Millisecond)
+func (g *EC2Generator) Generate() (interface{}, error) {
 	client := http.Client{
 		Timeout: timeout,
 	}
