@@ -60,10 +60,7 @@ func isEC2() bool {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 200 {
-		return true
-	}
-	return false
+	return resp.StatusCode == 200
 }
 
 // EC2Generator meta generator for EC2
