@@ -284,6 +284,11 @@ func TestLoop(t *testing.T) {
 			"success": true,
 		}
 	}
+	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "OK",
+		}
+	}
 
 	// Prepare required objects...
 	ag := &agent.Agent{
