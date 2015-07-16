@@ -41,11 +41,16 @@ type otherOptions struct {
 
 var logger = logging.GetLogger("main")
 
+const (
+	exitStatusOK = iota
+	exitStatusError
+)
+
 func main() {
-	dispatch(os.Args[1:])
+	os.Exit(dispatch(os.Args[1:]))
 }
 
-var routes = map[string]func([]string){
+var routes = map[string](func([]string) int){
 	"": doMain,
 }
 
@@ -56,22 +61,25 @@ func splitSub(argv []string) (string, []string) {
 	return argv[0], argv[1:]
 }
 
-func dispatch(argv []string) {
+func dispatch(argv []string) int {
 	subCmd, argv := splitSub(argv)
 	fn, ok := routes[subCmd]
 	if !ok {
 		logger.Errorf("subcommand: %s not found", subCmd)
-		exit(1)
+		return exitStatusError
 	}
-	fn(argv)
+	return fn(argv)
 }
 
-func doMain(argv []string) {
+func doMain(argv []string) int {
 	conf, otherOpts := resolveConfig(argv)
+	if conf == nil {
+		return exitStatusError
+	}
 	if otherOpts != nil && otherOpts.printVersion {
 		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
 			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
-		exit(0)
+		return exitStatusOK
 	}
 
 	if conf.Verbose {
@@ -82,17 +90,14 @@ func doMain(argv []string) {
 
 	if otherOpts != nil && otherOpts.runOnce {
 		command.RunOnce(conf)
-		exit(0)
+		return exitStatusOK
 	}
 
 	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		exit(1)
+		return exitStatusError
 	}
-
-	if err := start(conf); err != nil {
-		exit(1)
-	}
+	return start(conf)
 }
 
 // resolveConfig parses command line arguments and loads config file to
@@ -139,7 +144,7 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	conf, confErr := config.LoadConfig(*conffile)
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
-		exit(1)
+		return nil, nil
 	}
 
 	// overwrite config from file by config from args
@@ -204,20 +209,16 @@ func removePidFile(pidfile string) {
 	}
 }
 
-func exit(exitCode int) {
-	os.Exit(exitCode)
-}
-
-func start(conf *config.Config) error {
+func start(conf *config.Config) int {
 	if err := createPidFile(conf.Pidfile); err != nil {
-		return err
+		return exitStatusError
 	}
 	defer removePidFile(conf.Pidfile)
 
 	ctx, err := command.Prepare(conf)
 	if err != nil {
 		logger.Criticalf(err.Error())
-		exit(1)
+		return exitStatusError
 	}
 
 	termCh := make(chan struct{})
@@ -225,10 +226,7 @@ func start(conf *config.Config) error {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go signalHandler(c, ctx, termCh)
 
-	exitCode := command.Run(ctx, termCh)
-	exit(exitCode)
-
-	return nil
+	return command.Run(ctx, termCh)
 }
 
 var maxTerminatingInterval = 30 * time.Second
