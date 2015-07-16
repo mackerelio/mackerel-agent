@@ -8,10 +8,11 @@ prof=${1:-".profile.cov"}
 echo "mode: count" > $prof
 
 cleanup() {
+  retval=$?
   if [ $tmpprof != "" ] && [ -f $tmpprof ]; then
     rm -f $tmpprof
   fi
-  exit
+  exit $retval
 }
 trap cleanup INT QUIT TERM EXIT
 
