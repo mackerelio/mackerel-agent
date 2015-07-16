@@ -73,6 +73,12 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Jul 16 2015 <y.songmu@gmail.com> - 0.18.1-1
+- s/ami_id/ami-id/ in spec/cloud.go (by Songmu)
+- remove `UpdateHost()` process from `prepareHost()` for simplicity (by Songmu)
+- filter invalid roleFullNames with warning logs (by Songmu)
+- allow using spaces as delimiter for custom metric values (by Songmu)
+
 * Wed Jul 08 2015 <tomohiro68@gmail.com> - 0.18.0-1
 - Retry in prepare (by Songmu)
 - [WORKAROUND] downgrade golang version for windows (by Sixeight)
