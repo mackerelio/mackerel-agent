@@ -54,23 +54,6 @@ var routes = map[string](func([]string) int){
 	"": doMain,
 }
 
-func splitSub(argv []string) (string, []string) {
-	if len(argv) == 0 || strings.HasPrefix(argv[0], "-") {
-		return "", argv
-	}
-	return argv[0], argv[1:]
-}
-
-func dispatch(argv []string) int {
-	subCmd, argv := splitSub(argv)
-	fn, ok := routes[subCmd]
-	if !ok {
-		logger.Errorf("subcommand: %s not found", subCmd)
-		return exitStatusError
-	}
-	return fn(argv)
-}
-
 func doMain(argv []string) int {
 	conf, otherOpts := resolveConfig(argv)
 	if conf == nil {
