@@ -108,28 +108,13 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 		if lastErr != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
 		}
-	} else { // update
+	} else { // check the hostID is valid or not
 		doRetry(func() error {
 			result, lastErr = api.FindHost(hostID)
 			return filterErrorForRetry(lastErr)
 		})
 		if lastErr != nil {
 			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), lastErr.Error())
-		}
-
-		doRetry(func() error {
-			lastErr = api.UpdateHost(hostID, mackerel.HostSpec{
-				Name:          hostname,
-				Meta:          meta,
-				Interfaces:    interfaces,
-				RoleFullnames: roleFullnames,
-				Checks:        checks,
-				DisplayName:   displayName,
-			})
-			return filterErrorForRetry(lastErr)
-		})
-		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to update this host: %s", lastErr.Error())
 		}
 	}
 
@@ -321,11 +306,12 @@ func loop(c *context, termCh chan struct{}) int {
 
 func updateHostSpecsLoop(c *context, quit chan struct{}) {
 	for {
+		UpdateHostSpecs(c.conf, c.api, c.host)
 		select {
 		case <-quit:
 			return
 		case <-time.After(specsUpdateInterval):
-			UpdateHostSpecs(c.conf, c.api, c.host)
+			// nop
 		}
 	}
 }
@@ -475,7 +461,12 @@ func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{
 		return "", nil, nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
 	}
 
-	meta := spec.Collect(specGenerators())
+	specGens := specGenerators()
+	cGen := spec.SuggestCloudGenerator()
+	if cGen != nil {
+		specGens = append(specGens, cGen)
+	}
+	meta := spec.Collect(specGens)
 
 	interfacesSpec, err := interfaceGenerator().Generate()
 	if err != nil {

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.18.1 (2015-07-16)
+
+* s/ami_id/ami-id/ in spec/cloud.go #112 (Songmu)
+* remove `UpdateHost()` process from `prepareHost()` for simplicity #116 (Songmu)
+* filter invalid roleFullNames with warning logs #117 (Songmu)
+* allow using spaces as delimiter for custom metric values #119 (Songmu)
+
+
 ## 0.18.0 (2015-07-08)
 
 * Retry in prepare #108 (Songmu)

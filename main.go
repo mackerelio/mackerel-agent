@@ -22,7 +22,7 @@ import (
 // allow options like -role=... -role=...
 type roleFullnamesFlag []string
 
-var roleFullnamePattern = regexp.MustCompile(`^[\w-]+:\s*[\w-]+$`)
+var roleFullnamePattern = regexp.MustCompile(`^[a-zA-Z0-9][-_a-zA-Z0-9]*:\s*[a-zA-Z0-9][-_a-zA-Z0-9]*$`)
 
 func (r *roleFullnamesFlag) String() string {
 	return fmt.Sprint(*r)
@@ -30,15 +30,7 @@ func (r *roleFullnamesFlag) String() string {
 
 func (r *roleFullnamesFlag) Set(input string) error {
 	inputRoles := strings.Split(input, ",")
-
-	for _, inputRole := range inputRoles {
-		if roleFullnamePattern.MatchString(inputRole) == false {
-			return fmt.Errorf("Bad format for role fullname (expecting <service>:<role>): %s", inputRole)
-		}
-	}
-
 	*r = append(*r, inputRoles...)
-
 	return nil
 }
 
@@ -88,14 +80,14 @@ func resolveConfig() (*config.Config, *otherOptions) {
 	otherOptions := &otherOptions{}
 
 	var (
-		conffile       = flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-		apibase        = flag.String("apibase", config.DefaultConfig.Apibase, "API base")
-		pidfile        = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
-		root           = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey         = flag.String("apikey", "", "API key from mackerel.io web site")
-		diagnostic = flag.Bool("diagnostic", false, "Enables diagnostic features")
-		runOnce        = flag.Bool("once", false, "Show spec and metrics to stdout once")
-		printVersion   = flag.Bool("version", false, "Prints version and exit")
+		conffile     = flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase      = flag.String("apibase", config.DefaultConfig.Apibase, "API base")
+		pidfile      = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
+		root         = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey       = flag.String("apikey", "", "API key from mackerel.io web site")
+		diagnostic   = flag.Bool("diagnostic", false, "Enables diagnostic features")
+		runOnce      = flag.Bool("once", false, "Show spec and metrics to stdout once")
+		printVersion = flag.Bool("version", false, "Prints version and exit")
 	)
 
 	var verbose bool
@@ -145,6 +137,15 @@ func resolveConfig() (*config.Config, *otherOptions) {
 		}
 	})
 
+	r := []string{}
+	for _, roleFullName := range conf.Roles {
+		if !roleFullnamePattern.MatchString(roleFullName) {
+			logger.Errorf("Bad format for role fullname (expecting <service>:<role>. Alphabet, numbers, hyphens and underscores are acceptable, but the first character must not be a hyphen or an underscore.): '%s'", roleFullName)
+		} else {
+			r = append(r, roleFullName)
+		}
+	}
+	conf.Roles = r
 	return conf, nil
 }
 

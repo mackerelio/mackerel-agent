@@ -23,7 +23,7 @@ diagnostic=false
 	confFile.Close()
 	defer os.Remove(confFile.Name())
 
-	os.Args = []string{"mackerel-agent", "-conf=" + confFile.Name(), "-role=My-Service:default", "-verbose", "-diagnostic"}
+	os.Args = []string{"mackerel-agent", "-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"}
 	// Overrides Args from go test command
 	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
 

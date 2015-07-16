@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"errors"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -43,6 +44,8 @@ func (g *PluginGenerator) Generate() (metrics.Values, error) {
 	return results, nil
 }
 
+var delimReg = regexp.MustCompile(`[\s\t]+`)
+
 func (g *PluginGenerator) collectValues(command string) (metrics.Values, error) {
 	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
 
@@ -63,7 +66,7 @@ func (g *PluginGenerator) collectValues(command string) (metrics.Values, error) 
 	for _, line := range strings.Split(string(outBuffer.Bytes()), "\n") {
 		// Key, value, timestamp
 		// ex.) localhost.localdomain.tcp.CLOSING 0 1397031808
-		items := strings.Split(line, "\t")
+		items := delimReg.Split(line, 3)
 		if len(items) != 3 {
 			continue
 		}
