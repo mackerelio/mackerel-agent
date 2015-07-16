@@ -41,4 +41,11 @@ func TestDispatch(t *testing.T) {
 			t.Errorf("exit code should be error")
 		}
 	}()
+
+	func() {
+		code := dispatch([]string{"version"})
+		if code != exitStatusOK {
+			t.Errorf("exit code should be ok")
+		}
+	}()
 }

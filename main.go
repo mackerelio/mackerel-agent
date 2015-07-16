@@ -51,7 +51,14 @@ func main() {
 }
 
 var routes = map[string](func([]string) int){
-	"": doMain,
+	"":        doMain,
+	"version": doVersion,
+}
+
+func doVersion(_ []string) int {
+	fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
+		version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
+	return exitStatusOK
 }
 
 func doMain(argv []string) int {
@@ -60,9 +67,7 @@ func doMain(argv []string) int {
 		return exitStatusError
 	}
 	if otherOpts != nil && otherOpts.printVersion {
-		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
-			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
-		return exitStatusOK
+		return doVersion([]string{})
 	}
 
 	if conf.Verbose {
