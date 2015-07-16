@@ -1,3 +1,16 @@
+mackerel-agent (0.19.1-1) stable; urgency=low
+
+  * s/ami_id/ami-id/ in spec/cloud.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/112>
+  * remove `UpdateHost()` process from `prepareHost()` for simplicity (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/116>
+  * filter invalid roleFullNames with warning logs (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/117>
+  * allow using spaces as delimiter for custom metric values (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/119>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 16 Jul 2015 17:04:19 +0900
+
 mackerel-agent (0.18.0-1) stable; urgency=low
 
   * Retry in prepare (by Songmu)
