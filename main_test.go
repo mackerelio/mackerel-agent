@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -31,12 +30,7 @@ diagnostic=false
 	confFile.Sync()
 	confFile.Close()
 	defer os.Remove(confFile.Name())
-
-	os.Args = []string{"mackerel-agent", "-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"}
-	// Overrides Args from go test command
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
-
-	mergedConfig, _ := resolveConfig()
+	mergedConfig, _ := resolveConfig([]string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
 
 	t.Logf("      apibase: %v", mergedConfig.Apibase)
 	t.Logf("       apikey: %v", mergedConfig.Apikey)
@@ -64,10 +58,7 @@ diagnostic=false
 }
 
 func TestParseFlagsPrintVersion(t *testing.T) {
-	os.Args = []string{"mackerel-agent", "-version"}
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
-
-	config, otherOptions := resolveConfig()
+	config, otherOptions := resolveConfig([]string{"-version"})
 
 	if config.Verbose != false {
 		t.Error("with -version args, variables of config should have default values")
@@ -79,10 +70,7 @@ func TestParseFlagsPrintVersion(t *testing.T) {
 }
 
 func TestParseFlagsRunOnce(t *testing.T) {
-	os.Args = []string{"mackerel-agent", "-once"}
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
-
-	config, otherOptions := resolveConfig()
+	config, otherOptions := resolveConfig([]string{"-once"})
 
 	if config.Verbose != false {
 		t.Error("with -version args, variables of config should have default values")

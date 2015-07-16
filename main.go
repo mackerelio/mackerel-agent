@@ -42,9 +42,33 @@ type otherOptions struct {
 var logger = logging.GetLogger("main")
 
 func main() {
-	conf, otherOptions := resolveConfig()
+	dispatch(os.Args[1:])
+}
 
-	if otherOptions != nil && otherOptions.printVersion {
+var routes = map[string]func([]string){
+	"": doMain,
+}
+
+func splitSub(argv []string) (string, []string) {
+	if len(argv) == 0 || strings.HasPrefix(argv[0], "-") {
+		return "", argv
+	}
+	return argv[0], argv[1:]
+}
+
+func dispatch(argv []string) {
+	subCmd, argv := splitSub(argv)
+	fn, ok := routes[subCmd]
+	if !ok {
+		logger.Errorf("subcommand: %s not found", subCmd)
+		exit(1)
+	}
+	fn(argv)
+}
+
+func doMain(argv []string) {
+	conf, otherOpts := resolveConfig(argv)
+	if otherOpts != nil && otherOpts.printVersion {
 		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
 			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
 		exit(0)
@@ -56,7 +80,7 @@ func main() {
 
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
 
-	if otherOptions != nil && otherOptions.runOnce {
+	if otherOpts != nil && otherOpts.runOnce {
 		command.RunOnce(conf)
 		exit(0)
 	}
@@ -75,31 +99,32 @@ func main() {
 // return config.Config information.
 // As a special case, if `-version` flag is given it stops processing
 // and return true for the second return value.
-func resolveConfig() (*config.Config, *otherOptions) {
+func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	conf := &config.Config{}
 	otherOptions := &otherOptions{}
 
+	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
+
 	var (
-		conffile     = flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-		apibase      = flag.String("apibase", config.DefaultConfig.Apibase, "API base")
-		pidfile      = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
-		root         = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey       = flag.String("apikey", "", "API key from mackerel.io web site")
-		diagnostic   = flag.Bool("diagnostic", false, "Enables diagnostic features")
-		runOnce      = flag.Bool("once", false, "Show spec and metrics to stdout once")
-		printVersion = flag.Bool("version", false, "Prints version and exit")
+		conffile     = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase      = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
+		pidfile      = fs.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
+		root         = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey       = fs.String("apikey", "", "API key from mackerel.io web site")
+		diagnostic   = fs.Bool("diagnostic", false, "Enables diagnostic features")
+		runOnce      = fs.Bool("once", false, "Show spec and metrics to stdout once")
+		printVersion = fs.Bool("version", false, "Prints version and exit")
 	)
 
 	var verbose bool
-	flag.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
-	flag.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
+	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
+	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
 
 	// The value of "role" option is internally "roll fullname",
 	// but we call it "role" here for ease.
 	var roleFullnames roleFullnamesFlag
-	flag.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
-
-	flag.Parse()
+	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
+	fs.Parse(argv)
 
 	if *printVersion {
 		otherOptions.printVersion = true
@@ -118,7 +143,7 @@ func resolveConfig() (*config.Config, *otherOptions) {
 	}
 
 	// overwrite config from file by config from args
-	flag.Visit(func(f *flag.Flag) {
+	fs.Visit(func(f *flag.Flag) {
 		switch f.Name {
 		case "apibase":
 			conf.Apibase = *apibase
