@@ -47,7 +47,7 @@ func main() {
 	if otherOptions != nil && otherOptions.printVersion {
 		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
 			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
-		exitWithoutPidfileCleaning(0)
+		exit(0)
 	}
 
 	if conf.Verbose {
@@ -58,16 +58,16 @@ func main() {
 
 	if otherOptions != nil && otherOptions.runOnce {
 		command.RunOnce(conf)
-		exitWithoutPidfileCleaning(0)
+		exit(0)
 	}
 
 	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		exit(1, conf)
+		exit(1)
 	}
 
 	if err := start(conf); err != nil {
-		exit(1, conf)
+		exit(1)
 	}
 }
 
@@ -114,7 +114,7 @@ func resolveConfig() (*config.Config, *otherOptions) {
 	conf, confErr := config.LoadConfig(*conffile)
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
-		exitWithoutPidfileCleaning(1)
+		exit(1)
 	}
 
 	// overwrite config from file by config from args
@@ -179,12 +179,7 @@ func removePidFile(pidfile string) {
 	}
 }
 
-func exit(exitCode int, conf *config.Config) {
-	removePidFile(conf.Pidfile)
-	exitWithoutPidfileCleaning(exitCode)
-}
-
-func exitWithoutPidfileCleaning(exitCode int) {
+func exit(exitCode int) {
 	os.Exit(exitCode)
 }
 
@@ -192,11 +187,12 @@ func start(conf *config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
 	}
+	defer removePidFile(conf.Pidfile)
 
 	ctx, err := command.Prepare(conf)
 	if err != nil {
 		logger.Criticalf(err.Error())
-		exit(1, conf)
+		exit(1)
 	}
 
 	termCh := make(chan struct{})
@@ -205,7 +201,7 @@ func start(conf *config.Config) error {
 	go signalHandler(c, ctx, termCh)
 
 	exitCode := command.Run(ctx, termCh)
-	exit(exitCode, conf)
+	exit(exitCode)
 
 	return nil
 }
