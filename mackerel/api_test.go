@@ -521,3 +521,15 @@ func TestCreateGraphDefs(t *testing.T) {
 		t.Error("err shoud be nil but: ", err)
 	}
 }
+
+func TestApiError(t *testing.T) {
+	aperr := apiError(400, "bad request")
+
+	if !aperr.IsClientError() {
+		t.Error("something went wrong")
+	}
+
+	if aperr.IsServerError() {
+		t.Error("something went wrong")
+	}
+}
