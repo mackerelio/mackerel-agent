@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 # Calculate coverage
 # run this and you can see coverage reports as following
 #   % go tool cover -html .profile.cov
