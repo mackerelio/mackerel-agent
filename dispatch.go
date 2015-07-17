@@ -2,7 +2,8 @@ package main
 
 import "strings"
 
-func splitSub(argv []string) (string, []string) {
+// separate argv into sub-command and restArgv
+func separateSub(argv []string) (string, []string) {
 	if len(argv) == 0 || strings.HasPrefix(argv[0], "-") {
 		return "", argv
 	}
@@ -10,8 +11,8 @@ func splitSub(argv []string) (string, []string) {
 }
 
 func dispatch(argv []string) int {
-	subCmd, argv := splitSub(argv)
-	fn, ok := routes[subCmd]
+	subCmd, argv := separateSub(argv)
+	fn, ok := commands[subCmd]
 	if !ok {
 		logger.Errorf("subcommand: %s not found", subCmd)
 		return exitStatusError

@@ -4,7 +4,7 @@ import "testing"
 
 func TestSplitSub(t *testing.T) {
 	func() {
-		cmd, argv := splitSub([]string{})
+		cmd, argv := separateSub([]string{})
 		if cmd != "" {
 			t.Errorf("cmd should be empty")
 		}
@@ -14,7 +14,7 @@ func TestSplitSub(t *testing.T) {
 	}()
 
 	func() {
-		cmd, argv := splitSub([]string{"-help"})
+		cmd, argv := separateSub([]string{"-help"})
 		if cmd != "" {
 			t.Errorf("cmd should be empty")
 		}
@@ -24,7 +24,7 @@ func TestSplitSub(t *testing.T) {
 	}()
 
 	func() {
-		cmd, argv := splitSub([]string{"version", "-help"})
+		cmd, argv := separateSub([]string{"version", "-help"})
 		if cmd != "version" {
 			t.Errorf("cmd should be version")
 		}

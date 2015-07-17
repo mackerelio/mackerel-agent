@@ -50,7 +50,8 @@ func main() {
 	os.Exit(dispatch(os.Args[1:]))
 }
 
-var routes = map[string](func([]string) int){
+// subcommands and processes of the mackerel-agent
+var commands = map[string](func([]string) int){
 	"":        doMain,
 	"version": doVersion,
 }
