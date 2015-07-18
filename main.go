@@ -188,8 +188,6 @@ func exitWithoutPidfileCleaning(exitCode int) {
 	os.Exit(exitCode)
 }
 
-const maxTerminatingInterval = 30
-
 func start(conf *config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
@@ -212,6 +210,8 @@ func start(conf *config.Config) error {
 	return nil
 }
 
+var maxTerminatingInterval = 30 * time.Second
+
 func signalHandler(c chan os.Signal, ctx *command.Context, termCh chan struct{}) {
 	received := false
 	for sig := range c {
@@ -224,15 +224,15 @@ func signalHandler(c chan os.Signal, ctx *command.Context, termCh chan struct{})
 			if !received {
 				received = true
 				logger.Infof(
-					"Received signal '%v', try graceful shutdown up to %d seconds. If you want force shutdown immediately, send a signal again.",
+					"Received signal '%v', try graceful shutdown up to %f seconds. If you want force shutdown immediately, send a signal again.",
 					sig,
-					maxTerminatingInterval)
+					maxTerminatingInterval.Seconds())
 			} else {
 				logger.Infof("Received signal '%v' again, force shutdown.", sig)
 			}
 			termCh <- struct{}{}
 			go func() {
-				time.Sleep(maxTerminatingInterval * time.Second)
+				time.Sleep(maxTerminatingInterval)
 				logger.Infof("Timed out. force shutdown.")
 				termCh <- struct{}{}
 			}()
