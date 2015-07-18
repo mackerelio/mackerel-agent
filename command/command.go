@@ -144,6 +144,7 @@ func delayByHost(host *mackerel.Host) int {
 	return int(s[len(s)-1]) % int(config.PostMetricsInterval.Seconds())
 }
 
+// Context context object
 type Context struct {
 	ag   *agent.Agent
 	Conf *config.Config
