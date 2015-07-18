@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func existsPid(int pid) bool {
+func existsPid(pid int) bool {
 	_, err := os.Stat(fmt.Sprintf("/proc/%d/", pid))
 	return err == nil
 }

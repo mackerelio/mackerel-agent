@@ -2,8 +2,12 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
+	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -81,5 +85,36 @@ func TestParseFlagsRunOnce(t *testing.T) {
 
 	if otherOptions.runOnce == false {
 		t.Error("with -once args, RunOnce should be true")
+	}
+}
+
+func TestCreateAndRemovePidFile(t *testing.T) {
+	file, err := ioutil.TempFile("", "")
+	if err != nil {
+		t.Errorf("failed to create tmpfile, %s", err)
+	}
+	fpath := file.Name()
+	defer os.Remove(fpath)
+
+	err = createPidFile(fpath)
+	if err != nil {
+		t.Errorf("pid file should be created but, %s", err)
+	}
+
+	if runtime.GOOS != "windows" {
+		if err := createPidFile(fpath); err == nil || !strings.HasPrefix(err.Error(), "Pidfile found, try stopping another running mackerel-agent or delete") {
+			t.Errorf("creating pid file should be failed when the running process exists, %s", err)
+		}
+	}
+
+	removePidFile(fpath)
+	if err := createPidFile(fpath); err != nil {
+		t.Errorf("pid file should be created but, %s", err)
+	}
+
+	removePidFile(fpath)
+	ioutil.WriteFile(fpath, []byte(fmt.Sprint(math.MaxInt32)), 0644)
+	if err := createPidFile(fpath); err != nil {
+		t.Errorf("old pid file should be ignored and new pid file should be created but, %s", err)
 	}
 }
