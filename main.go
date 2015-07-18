@@ -152,9 +152,10 @@ func resolveConfig() (*config.Config, *otherOptions) {
 func createPidFile(pidfile string) error {
 	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
-			if _, err := os.Stat(fmt.Sprintf("/proc/%d/", pid)); err == nil {
+			if existsPid(pid) {
 				return fmt.Errorf("Pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
 			}
+			// Note mackerel-agent in windows can't remove pidfile during stoping the service
 			logger.Warningf("Pidfile found, but there seems no another process of mackerel-agent. Ignoring %s", pidfile)
 		} else {
 			logger.Warningf("Malformed pidfile found. Ignoring %s", pidfile)
