@@ -20,6 +20,7 @@ func Collect(specGenerators []Generator) map[string]interface{} {
 		value, err := g.Generate()
 		if err != nil {
 			logger.Errorf("Failed to collect meta in %T (skip this spec): %s", g, err.Error())
+			continue
 		}
 		specs[g.Key()] = value
 	}
