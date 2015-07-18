@@ -204,36 +204,38 @@ func start(conf *config.Config) error {
 	termCh := make(chan struct{})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
-	go func() {
-		received := false
-		for sig := range c {
-			if sig == syscall.SIGHUP {
-				logger.Debugf("Received signal '%v'", sig)
-				// TODO reload configuration file
-
-				command.UpdateHostSpecs(ctx.Conf, ctx.API, ctx.Host)
-			} else {
-				if !received {
-					received = true
-					logger.Infof(
-						"Received signal '%v', try graceful shutdown up to %d seconds. If you want force shutdown immediately, send a signal again.",
-						sig,
-						maxTerminatingInterval)
-				} else {
-					logger.Infof("Received signal '%v' again, force shutdown.", sig)
-				}
-				termCh <- struct{}{}
-				go func() {
-					time.Sleep(maxTerminatingInterval * time.Second)
-					logger.Infof("Timed out. force shutdown.")
-					termCh <- struct{}{}
-				}()
-			}
-		}
-	}()
+	go signalHandler(c, ctx, termCh)
 
 	exitCode := command.Run(ctx, termCh)
 	exit(exitCode, conf)
 
 	return nil
+}
+
+func signalHandler(c chan os.Signal, ctx *command.Context, termCh chan struct{}) {
+	received := false
+	for sig := range c {
+		if sig == syscall.SIGHUP {
+			logger.Debugf("Received signal '%v'", sig)
+			// TODO reload configuration file
+
+			command.UpdateHostSpecs(ctx.Conf, ctx.API, ctx.Host)
+		} else {
+			if !received {
+				received = true
+				logger.Infof(
+					"Received signal '%v', try graceful shutdown up to %d seconds. If you want force shutdown immediately, send a signal again.",
+					sig,
+					maxTerminatingInterval)
+			} else {
+				logger.Infof("Received signal '%v' again, force shutdown.", sig)
+			}
+			termCh <- struct{}{}
+			go func() {
+				time.Sleep(maxTerminatingInterval * time.Second)
+				logger.Infof("Timed out. force shutdown.")
+				termCh <- struct{}{}
+			}()
+		}
+	}
 }
