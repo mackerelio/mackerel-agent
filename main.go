@@ -195,7 +195,7 @@ func start(conf *config.Config) error {
 		return err
 	}
 
-	api, host, err := command.Prepare(conf)
+	ctx, err := command.Prepare(conf)
 	if err != nil {
 		logger.Criticalf(err.Error())
 		exit(1, conf)
@@ -211,7 +211,7 @@ func start(conf *config.Config) error {
 				logger.Debugf("Received signal '%v'", sig)
 				// TODO reload configuration file
 
-				command.UpdateHostSpecs(conf, api, host)
+				command.UpdateHostSpecs(ctx.Conf, ctx.API, ctx.Host)
 			} else {
 				if !received {
 					received = true
@@ -232,7 +232,7 @@ func start(conf *config.Config) error {
 		}
 	}()
 
-	exitCode := command.Run(conf, api, host, termCh)
+	exitCode := command.Run(ctx, termCh)
 	exit(exitCode, conf)
 
 	return nil

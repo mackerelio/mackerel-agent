@@ -106,7 +106,9 @@ func TestPrepareWithCreate(t *testing.T) {
 		}
 	}
 
-	api, host, _ := Prepare(&conf)
+	c, _ := Prepare(&conf)
+	api := c.API
+	host := c.Host
 
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
@@ -137,7 +139,7 @@ func TestPrepareWithCreateWithFail(t *testing.T) {
 		retryNum = origRetryNum
 	}()
 
-	_, _, err := Prepare(&conf)
+	_, err := Prepare(&conf)
 
 	if err == nil {
 		t.Errorf("error should be occurred")
@@ -168,7 +170,9 @@ func TestPrepareWithUpdate(t *testing.T) {
 		}
 	}
 
-	api, host, _ := Prepare(&conf)
+	c, _ := Prepare(&conf)
+	api := c.API
+	host := c.Host
 
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
@@ -306,11 +310,11 @@ func TestLoop(t *testing.T) {
 
 	termCh := make(chan struct{})
 	exitCh := make(chan int)
-	c := &context{
+	c := &Context{
 		ag:   ag,
-		conf: &conf,
-		api:  api,
-		host: host,
+		Conf: &conf,
+		API:  api,
+		Host: host,
 	}
 	// Start looping!
 	go func() {
