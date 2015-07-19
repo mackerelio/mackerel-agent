@@ -219,7 +219,7 @@ func signalHandler(c chan os.Signal, ctx *command.Context, termCh chan struct{})
 			logger.Debugf("Received signal '%v'", sig)
 			// TODO reload configuration file
 
-			command.UpdateHostSpecs(ctx.Conf, ctx.API, ctx.Host)
+			ctx.UpdateHostSpecs()
 		} else {
 			if !received {
 				received = true

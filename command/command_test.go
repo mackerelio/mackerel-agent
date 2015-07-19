@@ -107,8 +107,8 @@ func TestPrepareWithCreate(t *testing.T) {
 	}
 
 	c, _ := Prepare(&conf)
-	api := c.API
-	host := c.Host
+	api := c.api
+	host := c.host
 
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
@@ -171,8 +171,8 @@ func TestPrepareWithUpdate(t *testing.T) {
 	}
 
 	c, _ := Prepare(&conf)
-	api := c.API
-	host := c.Host
+	api := c.api
+	host := c.host
 
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
@@ -312,9 +312,9 @@ func TestLoop(t *testing.T) {
 	exitCh := make(chan int)
 	c := &Context{
 		ag:   ag,
-		Conf: &conf,
-		API:  api,
-		Host: host,
+		conf: &conf,
+		api:  api,
+		host: host,
 	}
 	// Start looping!
 	go func() {

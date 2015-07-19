@@ -147,9 +147,9 @@ func delayByHost(host *mackerel.Host) int {
 // Context context object
 type Context struct {
 	ag   *agent.Agent
-	Conf *config.Config
-	Host *mackerel.Host
-	API  *mackerel.API
+	conf *config.Config
+	host *mackerel.Host
+	api  *mackerel.API
 }
 
 type postValue struct {
@@ -178,17 +178,17 @@ func loop(c *Context, termCh chan struct{}) int {
 	// Periodically update host specs.
 	go updateHostSpecsLoop(c, quit)
 
-	postQueue := make(chan *postValue, c.Conf.Connection.PostMetricsBufferSize)
+	postQueue := make(chan *postValue, c.conf.Connection.PostMetricsBufferSize)
 	go enqueueLoop(c, postQueue, quit)
 
-	postDelaySeconds := delayByHost(c.Host)
+	postDelaySeconds := delayByHost(c.host)
 	initialDelay := postDelaySeconds / 2
 	logger.Debugf("wait %d seconds before initial posting.", initialDelay)
 	select {
 	case <-termCh:
 		return 0
 	case <-time.After(time.Duration(initialDelay) * time.Second):
-		c.ag.InitPluginGenerators(c.API)
+		c.ag.InitPluginGenerators(c.api)
 	}
 
 	termCheckerCh := make(chan struct{})
@@ -229,10 +229,10 @@ func loop(c *Context, termCh chan struct{}) int {
 			case loopStateFirst: // request immediately to create graph defs of host
 				// nop
 			case loopStateQueued:
-				delaySeconds = c.Conf.Connection.PostMetricsDequeueDelaySeconds
+				delaySeconds = c.conf.Connection.PostMetricsDequeueDelaySeconds
 			case loopStateHadError:
 				// TODO: better interval calculation. exponential backoff or so.
-				delaySeconds = c.Conf.Connection.PostMetricsRetryDelaySeconds
+				delaySeconds = c.conf.Connection.PostMetricsRetryDelaySeconds
 			case loopStateTerminating:
 				// dequeue and post every one second when terminating.
 				delaySeconds = 1
@@ -271,7 +271,7 @@ func loop(c *Context, termCh chan struct{}) int {
 			for _, v := range origPostValues {
 				postValues = append(postValues, v.values...)
 			}
-			err := c.API.PostMetricsValues(postValues)
+			err := c.api.PostMetricsValues(postValues)
 			if err != nil {
 				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
 				if lState != loopStateTerminating {
@@ -282,7 +282,7 @@ func loop(c *Context, termCh chan struct{}) int {
 						v.retryCnt++
 						// It is difficult to distinguish the error is server error or data error.
 						// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
-						if v.retryCnt > c.Conf.Connection.PostMetricsRetryMax {
+						if v.retryCnt > c.conf.Connection.PostMetricsRetryMax {
 							json, err := json.Marshal(v.values)
 							if err != nil {
 								logger.Errorf("Something wrong with post values. marshaling failed.")
@@ -307,7 +307,7 @@ func loop(c *Context, termCh chan struct{}) int {
 
 func updateHostSpecsLoop(c *Context, quit chan struct{}) {
 	for {
-		UpdateHostSpecs(c.Conf, c.API, c.Host)
+		c.UpdateHostSpecs()
 		select {
 		case <-quit:
 			return
@@ -328,14 +328,14 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 			creatingValues := [](*mackerel.CreatingMetricsValue){}
 			for name, value := range (map[string]float64)(result.Values) {
 				if math.IsNaN(value) || math.IsInf(value, 0) {
-					logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", c.Host.ID, name, value)
+					logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", c.host.ID, name, value)
 					continue
 				}
 
 				creatingValues = append(
 					creatingValues,
 					&mackerel.CreatingMetricsValue{
-						HostID: c.Host.ID,
+						HostID: c.host.ID,
 						Name:   name,
 						Time:   created,
 						Value:  value,
@@ -432,7 +432,7 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 					continue
 				}
 
-				err := c.API.ReportCheckMonitors(c.Host.ID, reports)
+				err := c.api.ReportCheckMonitors(c.host.ID, reports)
 				if err != nil {
 					logger.Errorf("ReportCheckMonitors: %s", err)
 
@@ -480,7 +480,7 @@ func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{
 }
 
 // UpdateHostSpecs updates the host information that is already registered on Mackerel.
-func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
+func (c *Context) UpdateHostSpecs() {
 	logger.Debugf("Updating host specs...")
 
 	hostname, meta, interfaces, err := collectHostSpecs()
@@ -489,13 +489,13 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 		return
 	}
 
-	err = api.UpdateHost(host.ID, mackerel.HostSpec{
+	err = c.api.UpdateHost(c.host.ID, mackerel.HostSpec{
 		Name:          hostname,
 		Meta:          meta,
 		Interfaces:    interfaces,
-		RoleFullnames: conf.Roles,
-		Checks:        conf.CheckNames(),
-		DisplayName:   conf.DisplayName,
+		RoleFullnames: c.conf.Roles,
+		Checks:        c.conf.CheckNames(),
+		DisplayName:   c.conf.DisplayName,
 	})
 
 	if err != nil {
@@ -520,9 +520,9 @@ func Prepare(conf *config.Config) (*Context, error) {
 
 	return &Context{
 		ag:   NewAgent(conf),
-		Conf: conf,
-		Host: host,
-		API:  api,
+		conf: conf,
+		host: host,
+		api:  api,
 	}, nil
 }
 
@@ -581,12 +581,12 @@ func NewAgent(conf *config.Config) *agent.Agent {
 
 // Run starts the main metric collecting logic and this function will never return.
 func Run(c *Context, termCh chan struct{}) int {
-	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", c.Conf.Apibase, c.Host.Name, c.Host.ID)
+	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", c.conf.Apibase, c.host.Name, c.host.ID)
 
 	exitCode := loop(c, termCh)
-	if exitCode == 0 && c.Conf.HostStatus.OnStop != "" {
+	if exitCode == 0 && c.conf.HostStatus.OnStop != "" {
 		// TOOD error handling. supoprt retire(?)
-		err := c.API.UpdateHostStatus(c.Host.ID, c.Conf.HostStatus.OnStop)
+		err := c.api.UpdateHostStatus(c.host.ID, c.conf.HostStatus.OnStop)
 		if err != nil {
 			logger.Errorf("Failed update host status on stop: %s", err)
 		}
