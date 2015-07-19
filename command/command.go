@@ -545,9 +545,14 @@ func runOncePayload(conf *config.Config) ([]mackerel.CreateGraphDefsPayload, *ma
 		logger.Errorf("While collecting host specs: %s", err)
 		return nil, nil, nil, err
 	}
+
+	origInterval := metricsInterval
+	metricsInterval = 1 * time.Second
+	defer func() {
+		metricsInterval = origInterval
+	}()
 	ag := NewAgent(conf)
 	graphdefs := ag.CollectGraphDefsOfPlugins()
-	logger.Infof("Collecting metrics may take one minutes.")
 	metrics := ag.CollectMetrics(time.Now())
 	return graphdefs, &mackerel.HostSpec{
 		Name:          hostname,
