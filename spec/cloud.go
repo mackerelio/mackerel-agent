@@ -1,9 +1,12 @@
 package spec
 
 import (
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -32,18 +35,23 @@ func (g *CloudGenerator) Key() string {
 
 var cloudLogger = logging.GetLogger("spec.cloud")
 
-const (
-	ec2BaseURL          = "http://169.254.169.254/latest/meta-data"
-	gcpBaseURL          = "http://metadata.google.internal/computeMetadata/v1"
-	digitalOceanBaseURL = "http://169.254.169.254/metadata/v1" // has not been yet used
-)
+var ec2BaseURL, gceMetaURL, digitalOceanBaseURL *url.URL
+
+func init() {
+	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
+	gceMetaURL, _ = url.Parse("http://metadata.google.internal/computeMetadata/v1/?recursive=true")
+	digitalOceanBaseURL, _ = url.Parse("http://169.254.169.254/metadata/v1") // has not been yet used
+}
 
 var timeout = 100 * time.Millisecond
 
 // SuggestCloudGenerator returns suitable CloudGenerator
 func SuggestCloudGenerator() *CloudGenerator {
 	if isEC2() {
-		return &CloudGenerator{NewEC2Generator()}
+		return &CloudGenerator{&EC2Generator{ec2BaseURL}}
+	}
+	if isGCE() {
+		return &CloudGenerator{&GCEGenerator{gceMetaURL}}
 	}
 
 	return nil
@@ -54,7 +62,7 @@ func isEC2() bool {
 		Timeout: timeout,
 	}
 	// '/ami-id` is may be aws specific URL
-	resp, err := cl.Get(ec2BaseURL + "/ami-id")
+	resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
 	if err != nil {
 		return false
 	}
@@ -63,15 +71,36 @@ func isEC2() bool {
 	return resp.StatusCode == 200
 }
 
+func isGCE() bool {
+	_, err := requestGCEMeta()
+	return err == nil
+}
+
+func requestGCEMeta() ([]byte, error) {
+	cl := http.Client{
+		Timeout: timeout,
+	}
+	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Metadata-Flavor", "Google")
+
+	resp, err := cl.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
+	}
+	return ioutil.ReadAll(resp.Body)
+}
+
 // EC2Generator meta generator for EC2
 type EC2Generator struct {
 	baseURL *url.URL
-}
-
-// NewEC2Generator returns new instance of EC2Generator
-func NewEC2Generator() *EC2Generator {
-	url, _ := url.Parse(ec2BaseURL)
-	return &EC2Generator{url}
 }
 
 // Generate collects metadata from cloud platform.
@@ -122,4 +151,67 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 	results["metadata"] = metadata
 
 	return results, nil
+}
+
+// GCEGenerator generate for GCE
+type GCEGenerator struct {
+	metaURL *url.URL
+}
+
+// Generate collects metadata from cloud platform.
+func (g *GCEGenerator) Generate() (interface{}, error) {
+	bytes, err := requestGCEMeta()
+	if err != nil {
+		return nil, err
+	}
+	var data gceMeta
+	json.Unmarshal(bytes, &data)
+	return data.toGeneratorResults(), nil
+}
+
+type gceInstance struct {
+	Zone         string
+	InstanceType string `json:"machineType"`
+	Hostname     string
+	InstanceID   uint64 `json:"id"`
+}
+
+type gceProject struct {
+	ProjectID        string
+	NumericProjectID uint64
+}
+
+type gceMeta struct {
+	Instance *gceInstance
+	Project  *gceProject
+}
+
+func (g gceMeta) toGeneratorMeta() map[string]string {
+	meta := make(map[string]string)
+
+	lastS := func(s string) string {
+		ss := strings.Split(s, "/")
+		return ss[len(ss)-1]
+	}
+
+	if ins := g.Instance; ins != nil {
+		meta["hostname"] = ins.Hostname
+		meta["instance-id"] = fmt.Sprint(ins.InstanceID)
+		meta["instance-type"] = lastS(ins.InstanceType)
+		meta["zone"] = lastS(ins.Zone)
+	}
+
+	if proj := g.Project; proj != nil {
+		meta["projectId"] = proj.ProjectID
+	}
+
+	return meta
+}
+
+func (g gceMeta) toGeneratorResults() interface{} {
+	results := make(map[string]interface{})
+	results["provider"] = "gce"
+	results["metadata"] = g.toGeneratorMeta()
+
+	return results
 }
