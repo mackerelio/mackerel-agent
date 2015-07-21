@@ -6,9 +6,14 @@ import (
 	"io/ioutil"
 	"math"
 	"os"
+	"os/signal"
 	"runtime"
 	"strings"
+	"syscall"
 	"testing"
+	"time"
+
+	"github.com/mackerelio/mackerel-agent/command"
 )
 
 func TestParseFlags(t *testing.T) {
@@ -116,5 +121,36 @@ func TestCreateAndRemovePidFile(t *testing.T) {
 	ioutil.WriteFile(fpath, []byte(fmt.Sprint(math.MaxInt32)), 0644)
 	if err := createPidFile(fpath); err != nil {
 		t.Errorf("old pid file should be ignored and new pid file should be created but, %s", err)
+	}
+}
+
+func TestSignalHandler(t *testing.T) {
+	ctx := &command.Context{}
+	termCh := make(chan struct{})
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
+	go signalHandler(c, ctx, termCh)
+
+	resultCh := make(chan int)
+
+	maxTerminatingInterval = 100 * time.Millisecond
+	c <- os.Interrupt
+	c <- os.Interrupt
+
+	go func() {
+		<-termCh
+		<-termCh
+		<-termCh
+		<-termCh
+		resultCh <- 0
+	}()
+
+	go func() {
+		time.Sleep(time.Second)
+		resultCh <- 1
+	}()
+
+	if r := <-resultCh; r != 0 {
+		t.Errorf("Something went wrong")
 	}
 }

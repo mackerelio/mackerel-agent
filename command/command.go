@@ -144,7 +144,8 @@ func delayByHost(host *mackerel.Host) int {
 	return int(s[len(s)-1]) % int(config.PostMetricsInterval.Seconds())
 }
 
-type context struct {
+// Context context object
+type Context struct {
 	ag   *agent.Agent
 	conf *config.Config
 	host *mackerel.Host
@@ -170,7 +171,7 @@ const (
 	loopStateTerminating
 )
 
-func loop(c *context, termCh chan struct{}) int {
+func loop(c *Context, termCh chan struct{}) int {
 	quit := make(chan struct{})
 	defer close(quit) // broadcast terminating
 
@@ -304,9 +305,9 @@ func loop(c *context, termCh chan struct{}) int {
 	}
 }
 
-func updateHostSpecsLoop(c *context, quit chan struct{}) {
+func updateHostSpecsLoop(c *Context, quit chan struct{}) {
 	for {
-		UpdateHostSpecs(c.conf, c.api, c.host)
+		c.UpdateHostSpecs()
 		select {
 		case <-quit:
 			return
@@ -316,7 +317,7 @@ func updateHostSpecsLoop(c *context, quit chan struct{}) {
 	}
 }
 
-func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
+func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 	metricsResult := c.ag.Watch()
 	for {
 		select {
@@ -350,7 +351,7 @@ func enqueueLoop(c *context, postQueue chan *postValue, quit chan struct{}) {
 // runCheckersLoop generates "checker" goroutines
 // which run for each checker commands and one for HTTP POSTing
 // the reports to Mackerel API.
-func runCheckersLoop(c *context, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
+func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
 	var (
 		checkReportCh          chan *checks.Report
 		reportCheckImmediateCh chan struct{}
@@ -479,7 +480,7 @@ func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{
 }
 
 // UpdateHostSpecs updates the host information that is already registered on Mackerel.
-func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host) {
+func (c *Context) UpdateHostSpecs() {
 	logger.Debugf("Updating host specs...")
 
 	hostname, meta, interfaces, err := collectHostSpecs()
@@ -488,13 +489,13 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 		return
 	}
 
-	err = api.UpdateHost(host.ID, mackerel.HostSpec{
+	err = c.api.UpdateHost(c.host.ID, mackerel.HostSpec{
 		Name:          hostname,
 		Meta:          meta,
 		Interfaces:    interfaces,
-		RoleFullnames: conf.Roles,
-		Checks:        conf.CheckNames(),
-		DisplayName:   conf.DisplayName,
+		RoleFullnames: c.conf.Roles,
+		Checks:        c.conf.CheckNames(),
+		DisplayName:   c.conf.DisplayName,
 	})
 
 	if err != nil {
@@ -506,18 +507,23 @@ func UpdateHostSpecs(conf *config.Config, api *mackerel.API, host *mackerel.Host
 
 // Prepare sets up API and registers the host data to the Mackerel server.
 // Use returned values to call Run().
-func Prepare(conf *config.Config) (*mackerel.API, *mackerel.Host, error) {
+func Prepare(conf *config.Config) (*Context, error) {
 	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
+		return nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
 
 	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.DisplayName, conf.HostStatus.OnStart)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
+		return nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
 	}
 
-	return api, host, nil
+	return &Context{
+		ag:   NewAgent(conf),
+		conf: conf,
+		host: host,
+		api:  api,
+	}, nil
 }
 
 // RunOnce collects specs and metrics, then output them to stdout.
@@ -574,22 +580,13 @@ func NewAgent(conf *config.Config) *agent.Agent {
 }
 
 // Run starts the main metric collecting logic and this function will never return.
-func Run(conf *config.Config, api *mackerel.API, host *mackerel.Host, termCh chan struct{}) int {
-	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", conf.Apibase, host.Name, host.ID)
-
-	ag := NewAgent(conf)
-
-	c := &context{
-		ag:   ag,
-		conf: conf,
-		host: host,
-		api:  api,
-	}
+func Run(c *Context, termCh chan struct{}) int {
+	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", c.conf.Apibase, c.host.Name, c.host.ID)
 
 	exitCode := loop(c, termCh)
-	if exitCode == 0 && conf.HostStatus.OnStop != "" {
+	if exitCode == 0 && c.conf.HostStatus.OnStop != "" {
 		// TOOD error handling. supoprt retire(?)
-		err := api.UpdateHostStatus(host.ID, conf.HostStatus.OnStop)
+		err := c.api.UpdateHostStatus(c.host.ID, c.conf.HostStatus.OnStop)
 		if err != nil {
 			logger.Errorf("Failed update host status on stop: %s", err)
 		}

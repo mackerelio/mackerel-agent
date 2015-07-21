@@ -188,14 +188,12 @@ func exitWithoutPidfileCleaning(exitCode int) {
 	os.Exit(exitCode)
 }
 
-const maxTerminatingInterval = 30
-
 func start(conf *config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
 	}
 
-	api, host, err := command.Prepare(conf)
+	ctx, err := command.Prepare(conf)
 	if err != nil {
 		logger.Criticalf(err.Error())
 		exit(1, conf)
@@ -204,36 +202,40 @@ func start(conf *config.Config) error {
 	termCh := make(chan struct{})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
-	go func() {
-		received := false
-		for sig := range c {
-			if sig == syscall.SIGHUP {
-				logger.Debugf("Received signal '%v'", sig)
-				// TODO reload configuration file
+	go signalHandler(c, ctx, termCh)
 
-				command.UpdateHostSpecs(conf, api, host)
-			} else {
-				if !received {
-					received = true
-					logger.Infof(
-						"Received signal '%v', try graceful shutdown up to %d seconds. If you want force shutdown immediately, send a signal again.",
-						sig,
-						maxTerminatingInterval)
-				} else {
-					logger.Infof("Received signal '%v' again, force shutdown.", sig)
-				}
-				termCh <- struct{}{}
-				go func() {
-					time.Sleep(maxTerminatingInterval * time.Second)
-					logger.Infof("Timed out. force shutdown.")
-					termCh <- struct{}{}
-				}()
-			}
-		}
-	}()
-
-	exitCode := command.Run(conf, api, host, termCh)
+	exitCode := command.Run(ctx, termCh)
 	exit(exitCode, conf)
 
 	return nil
+}
+
+var maxTerminatingInterval = 30 * time.Second
+
+func signalHandler(c chan os.Signal, ctx *command.Context, termCh chan struct{}) {
+	received := false
+	for sig := range c {
+		if sig == syscall.SIGHUP {
+			logger.Debugf("Received signal '%v'", sig)
+			// TODO reload configuration file
+
+			ctx.UpdateHostSpecs()
+		} else {
+			if !received {
+				received = true
+				logger.Infof(
+					"Received signal '%v', try graceful shutdown up to %f seconds. If you want force shutdown immediately, send a signal again.",
+					sig,
+					maxTerminatingInterval.Seconds())
+			} else {
+				logger.Infof("Received signal '%v' again, force shutdown.", sig)
+			}
+			termCh <- struct{}{}
+			go func() {
+				time.Sleep(maxTerminatingInterval)
+				logger.Infof("Timed out. force shutdown.")
+				termCh <- struct{}{}
+			}()
+		}
+	}
 }
