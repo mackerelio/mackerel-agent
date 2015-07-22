@@ -3,30 +3,29 @@ mackerel-agent
 
 ![agent-si](docs/images/agent-si.png "mackerel-agent")
 
-mackerel-agent is an agent program to post your hosts' metrics to [Mackerel](https://mackerel.io/).
+mackerel-agent is a piece of software which is installed on your hosts to collect metrics and events and send them to [Mackerel](https://mackerel.io/) where they can be visualized and monitored.
 
-mackerel-agent executes the following tasks in foreground:
-- Register your host to Mackerel
-- Collect and post specs and metrics of your host to Mackerel periodically
+mackerel-agent executes the following tasks in the foreground:
+- registering your hosts with Mackerel
+- collecting specs and metrics from your hosts and posting them to Mackerel
 
-You can see the information of the host on [Mackerel](https://mackerel.io/).
+Your hosts' information will be viewable on [Mackerel](https://mackerel.io/).
 
-For now, mackerel-agent is guaranteed to run only on CentOS 5/6 and Debian 6/7.
+As of now, mackerel-agent is officially supported to run on CentOS 5/6 and Debian 6/7.
 
 SYNOPSIS
 --------
 
-Build and Run mackerel-agent.
+Build and Run the mackerel-agent.
 
 ```
 make build
 make run
 ```
 
-The `apikey` is required to run the agent.
+The `apikey` will be required in order to run the agent.
 
-Create an organization in [Mackerel](https://mackerel.io/) and configure `apikey` in `mackerel-agent.conf`.
-
+An organization must first be created in [Mackerel](https://mackerel.io/), then the `apikey` can be configured in `mackerel-agent.conf`.
 
 The following commands can be used instead of `make`.
 
@@ -40,17 +39,17 @@ go build -o build/mackerel-agent \
 ./build/mackerel-agent -conf=mackerel-agent.conf
 ```
 
-Build on Windows, please use ```build.bat```
+To build on Windows use the command ```build.bat```
 
-Run on Windows, please use ```run.bat```
+To run on Windows use the command ```run.bat```
 
 
 Test
 ----------
 
-Test mackerel-agent.
+Test mackerel-agent to confirm it's working properly.
 
-The agent collects information about a host which the agent run.
+The agent will collect information about the host on which it has been installed.
 
 ```
 make test
