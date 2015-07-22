@@ -4,7 +4,7 @@
 #
 #       Daemon for mackerel.io
 #
-# chkconfig:   2345 95 95
+# chkconfig:   2345 95 5
 # description: Daemon for mackerel.io
 
 ### BEGIN INIT INFO
