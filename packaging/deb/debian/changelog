@@ -1,3 +1,16 @@
+mackerel-agent (0.19.0-1) stable; urgency=low
+
+  * Support gce meta (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/115>
+  * Valid pidfile handling (fix on darwin) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/123>
+  * -once only takes one second (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/126>
+  * fix shutdown priority in rpm/src/mackerel-agent.initd (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/127>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 22 Jul 2015 17:40:14 +0900
+
 mackerel-agent (0.18.1-1) stable; urgency=low
 
   * s/ami_id/ami-id/ in spec/cloud.go (by Songmu)

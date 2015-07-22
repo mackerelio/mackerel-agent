@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.18.1
+Version:   0.19.0
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -73,6 +73,12 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Jul 22 2015 <y.songmu@gmail.com> - 0.19.0-1
+- Support gce meta (by Songmu)
+- Valid pidfile handling (fix on darwin) (by Songmu)
+- -once only takes one second (by Songmu)
+- fix shutdown priority in rpm/src/mackerel-agent.initd (by Songmu)
+
 * Thu Jul 16 2015 <y.songmu@gmail.com> - 0.18.1-1
 - s/ami_id/ami-id/ in spec/cloud.go (by Songmu)
 - remove `UpdateHost()` process from `prepareHost()` for simplicity (by Songmu)
