@@ -16,6 +16,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/version"
 )
 
@@ -57,6 +58,7 @@ const mainProcess = ""
 var commands = map[string](func([]string) int){
 	mainProcess: doMain,
 	"version":   doVersion,
+	"retire":    doRetire,
 }
 
 func doVersion(_ []string) int {
@@ -90,6 +92,39 @@ func doMain(argv []string) int {
 		return exitStatusError
 	}
 	return start(conf)
+}
+
+func doRetire(argv []string) int {
+	conf, _ := resolveConfig(argv)
+	if conf == nil {
+		return exitStatusError
+	}
+	if conf.Verbose {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+	if conf.Apikey == "" {
+		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
+		return exitStatusError
+	}
+
+	hostID, err := command.LoadHostID(conf.Root)
+	if err != nil {
+		logger.Warningf("HostID file is not found")
+		return exitStatusError
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
+	if err != nil {
+		logger.Errorf("failed to create api client: %s", err)
+		return exitStatusError
+	}
+
+	err = api.RetireHost(hostID)
+	if err != nil {
+		logger.Errorf("failed to retire host: %s", err)
+		return exitStatusError
+	}
+	return exitStatusOK
 }
 
 // resolveConfig parses command line arguments and loads config file to
