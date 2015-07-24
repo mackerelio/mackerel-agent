@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.19.0 (2015-07-22)
+
+* Support gce meta #115 (Songmu)
+* Valid pidfile handling (fix on darwin) #123 (Songmu)
+* -once only takes one second #126 (Songmu)
+* fix shutdown priority in rpm/src/mackerel-agent.initd #127 (Songmu)
+
+
 ## 0.18.1 (2015-07-16)
 
 * s/ami_id/ami-id/ in spec/cloud.go #112 (Songmu)

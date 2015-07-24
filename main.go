@@ -152,9 +152,10 @@ func resolveConfig() (*config.Config, *otherOptions) {
 func createPidFile(pidfile string) error {
 	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
-			if _, err := os.Stat(fmt.Sprintf("/proc/%d/", pid)); err == nil {
+			if existsPid(pid) {
 				return fmt.Errorf("Pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
 			}
+			// Note mackerel-agent in windows can't remove pidfile during stoping the service
 			logger.Warningf("Pidfile found, but there seems no another process of mackerel-agent. Ignoring %s", pidfile)
 		} else {
 			logger.Warningf("Malformed pidfile found. Ignoring %s", pidfile)
@@ -187,14 +188,12 @@ func exitWithoutPidfileCleaning(exitCode int) {
 	os.Exit(exitCode)
 }
 
-const maxTerminatingInterval = 30
-
 func start(conf *config.Config) error {
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return err
 	}
 
-	api, host, err := command.Prepare(conf)
+	ctx, err := command.Prepare(conf)
 	if err != nil {
 		logger.Criticalf(err.Error())
 		exit(1, conf)
@@ -203,36 +202,40 @@ func start(conf *config.Config) error {
 	termCh := make(chan struct{})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
-	go func() {
-		received := false
-		for sig := range c {
-			if sig == syscall.SIGHUP {
-				logger.Debugf("Received signal '%v'", sig)
-				// TODO reload configuration file
+	go signalHandler(c, ctx, termCh)
 
-				command.UpdateHostSpecs(conf, api, host)
-			} else {
-				if !received {
-					received = true
-					logger.Infof(
-						"Received signal '%v', try graceful shutdown up to %d seconds. If you want force shutdown immediately, send a signal again.",
-						sig,
-						maxTerminatingInterval)
-				} else {
-					logger.Infof("Received signal '%v' again, force shutdown.", sig)
-				}
-				termCh <- struct{}{}
-				go func() {
-					time.Sleep(maxTerminatingInterval * time.Second)
-					logger.Infof("Timed out. force shutdown.")
-					termCh <- struct{}{}
-				}()
-			}
-		}
-	}()
-
-	exitCode := command.Run(conf, api, host, termCh)
+	exitCode := command.Run(ctx, termCh)
 	exit(exitCode, conf)
 
 	return nil
+}
+
+var maxTerminatingInterval = 30 * time.Second
+
+func signalHandler(c chan os.Signal, ctx *command.Context, termCh chan struct{}) {
+	received := false
+	for sig := range c {
+		if sig == syscall.SIGHUP {
+			logger.Debugf("Received signal '%v'", sig)
+			// TODO reload configuration file
+
+			ctx.UpdateHostSpecs()
+		} else {
+			if !received {
+				received = true
+				logger.Infof(
+					"Received signal '%v', try graceful shutdown up to %f seconds. If you want force shutdown immediately, send a signal again.",
+					sig,
+					maxTerminatingInterval.Seconds())
+			} else {
+				logger.Infof("Received signal '%v' again, force shutdown.", sig)
+			}
+			termCh <- struct{}{}
+			go func() {
+				time.Sleep(maxTerminatingInterval)
+				logger.Infof("Timed out. force shutdown.")
+				termCh <- struct{}{}
+			}()
+		}
+	}
 }
