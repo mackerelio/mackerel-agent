@@ -39,6 +39,11 @@ do_start()
     return $?
 }
 
+do_retire()
+{
+    $DAEMON retire -force ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1
+}
+
 #
 # Function that stops the daemon/service
 #
@@ -66,7 +71,9 @@ case "$1" in
     stop)
         log_daemon_msg "Stopping $DESC" "$NAME"
         do_stop
-        case "$?" in
+        retval=$?
+        [ "$AUTO_RETIREMENT" != "" ] && do_retire
+        case "$retval" in
             0|1) log_end_msg 0 ;;
             *)   log_end_msg 1 ;;
         esac

@@ -96,6 +96,19 @@ restart() {
     start
 }
 
+retire() {
+    echo -n $"Retiring the Host:"
+    $BIN retire -force ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1
+    retval=$?
+    if [ $retval -ne 0 ]; then
+        failure
+        echo
+        return $retval
+    fi
+    success
+    echo
+}
+
 rh_status() {
     status -p $PIDFILE $prog
 }
@@ -112,6 +125,9 @@ case "$1" in
     stop)
         rh_status_q || exit 0
         $1
+        retval=$?
+        [ "$AUTO_RETIREMENT" != "" ] && retire
+        exit $retval
         ;;
     restart)
         $1
