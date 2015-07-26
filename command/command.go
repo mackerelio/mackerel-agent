@@ -40,6 +40,11 @@ func LoadHostID(root string) (string, error) {
 	return strings.TrimRight(string(content), "\r\n"), nil
 }
 
+// RemoveIDFile removes idfile
+func RemoveIDFile(root string) error {
+	return os.Remove(idFilePath(root))
+}
+
 func saveHostID(root string, id string) error {
 	err := os.MkdirAll(root, 0755)
 	if err != nil {

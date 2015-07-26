@@ -117,7 +117,7 @@ func doRetire(argv []string) int {
 		return exitStatusError
 	}
 
-	if !force && !prompter.YN("retire this host?", false) {
+	if !force && !prompter.YN(fmt.Sprintf("retire this host? (hostID: %s)", hostID), false) {
 		logger.Infof("Retirement is canceled.")
 		return exitStatusError
 	}
@@ -126,6 +126,12 @@ func doRetire(argv []string) int {
 	if err != nil {
 		logger.Errorf("failed to retire host: %s", err)
 		return exitStatusError
+	}
+	logger.Infof("This host (hostID: %s) has retired.", hostID)
+	// just to try to remove hostID file.
+	err = command.RemoveIDFile(conf.Root)
+	if err != nil {
+		logger.Warningf("Failed to remove HostID file: %s", err)
 	}
 	return exitStatusOK
 }
