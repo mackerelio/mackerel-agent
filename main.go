@@ -135,10 +135,17 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 	var (
 		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
 		apibase  = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
+		_        = fs.String("pidfile", config.DefaultConfig.Pidfile, "(not used in retire)")
 		root     = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey   = fs.String("apikey", "", "API key from mackerel.io web site")
 		force    = fs.Bool("force", false, "force retirement without prompting")
+		_        = fs.Bool("diagnostic", false, "(not used in retire)")
 	)
+	var roleFullnames roleFullnamesFlag
+	fs.Var(&roleFullnames, "role", "(not used in retire)")
+	var verbose bool
+	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
+	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
 	fs.Parse(argv)
 	conf, err := config.LoadConfig(*conffile)
 	if err != nil {
@@ -153,6 +160,8 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 			conf.Apikey = *apikey
 		case "root":
 			conf.Root = *root
+		case "verbose", "v":
+			conf.Verbose = verbose
 		}
 	})
 	return conf, *force, nil
