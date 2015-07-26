@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Songmu/prompter"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -95,12 +96,9 @@ func doMain(argv []string) int {
 }
 
 func doRetire(argv []string) int {
-	conf, _ := resolveConfig(argv)
-	if conf == nil {
+	conf, force, err := resolveConfigForRetire(argv)
+	if err != nil {
 		return exitStatusError
-	}
-	if conf.Verbose {
-		logging.SetLogLevel(logging.DEBUG)
 	}
 	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
@@ -119,12 +117,45 @@ func doRetire(argv []string) int {
 		return exitStatusError
 	}
 
+	if !force && !prompter.YN("retire this host?", false) {
+		logger.Infof("Retirement is canceled.")
+		return exitStatusError
+	}
+
 	err = api.RetireHost(hostID)
 	if err != nil {
 		logger.Errorf("failed to retire host: %s", err)
 		return exitStatusError
 	}
 	return exitStatusOK
+}
+
+func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
+	fs := flag.NewFlagSet("mackerel-agent retire", flag.ExitOnError)
+	var (
+		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase  = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
+		root     = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey   = fs.String("apikey", "", "API key from mackerel.io web site")
+		force    = fs.Bool("force", false, "force retirement without prompting")
+	)
+	fs.Parse(argv)
+	conf, err := config.LoadConfig(*conffile)
+	if err != nil {
+		return nil, *force, err
+	}
+	// overwrite config from file by config from args
+	fs.Visit(func(f *flag.Flag) {
+		switch f.Name {
+		case "apibase":
+			conf.Apibase = *apibase
+		case "apikey":
+			conf.Apikey = *apikey
+		case "root":
+			conf.Root = *root
+		}
+	})
+	return conf, *force, nil
 }
 
 // resolveConfig parses command line arguments and loads config file to
