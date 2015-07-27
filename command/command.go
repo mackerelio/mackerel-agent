@@ -8,6 +8,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Songmu/retry"
@@ -35,7 +36,7 @@ func loadHostID(root string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(content), nil
+	return strings.TrimRight(string(content), "\r\n"), nil
 }
 
 func saveHostID(root string, id string) error {
