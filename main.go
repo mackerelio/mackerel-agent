@@ -41,13 +41,37 @@ type otherOptions struct {
 
 var logger = logging.GetLogger("main")
 
-func main() {
-	conf, otherOptions := resolveConfig()
+const (
+	exitStatusOK = iota
+	exitStatusError
+)
 
-	if otherOptions != nil && otherOptions.printVersion {
-		fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
-			version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
-		exitWithoutPidfileCleaning(0)
+func main() {
+	os.Exit(dispatch(os.Args[1:]))
+}
+
+// empty string is dealt with the key of main process
+const mainProcess = ""
+
+// subcommands and processes of the mackerel-agent
+var commands = map[string](func([]string) int){
+	mainProcess: doMain,
+	"version":   doVersion,
+}
+
+func doVersion(_ []string) int {
+	fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
+		version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
+	return exitStatusOK
+}
+
+func doMain(argv []string) int {
+	conf, otherOpts := resolveConfig(argv)
+	if conf == nil {
+		return exitStatusError
+	}
+	if otherOpts != nil && otherOpts.printVersion {
+		return doVersion([]string{})
 	}
 
 	if conf.Verbose {
@@ -56,50 +80,48 @@ func main() {
 
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
 
-	if otherOptions != nil && otherOptions.runOnce {
+	if otherOpts != nil && otherOpts.runOnce {
 		command.RunOnce(conf)
-		exitWithoutPidfileCleaning(0)
+		return exitStatusOK
 	}
 
 	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		exit(1, conf)
+		return exitStatusError
 	}
-
-	if err := start(conf); err != nil {
-		exit(1, conf)
-	}
+	return start(conf)
 }
 
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
 // As a special case, if `-version` flag is given it stops processing
 // and return true for the second return value.
-func resolveConfig() (*config.Config, *otherOptions) {
+func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	conf := &config.Config{}
 	otherOptions := &otherOptions{}
 
+	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
+
 	var (
-		conffile     = flag.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-		apibase      = flag.String("apibase", config.DefaultConfig.Apibase, "API base")
-		pidfile      = flag.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
-		root         = flag.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey       = flag.String("apikey", "", "API key from mackerel.io web site")
-		diagnostic   = flag.Bool("diagnostic", false, "Enables diagnostic features")
-		runOnce      = flag.Bool("once", false, "Show spec and metrics to stdout once")
-		printVersion = flag.Bool("version", false, "Prints version and exit")
+		conffile     = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase      = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
+		pidfile      = fs.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
+		root         = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey       = fs.String("apikey", "", "API key from mackerel.io web site")
+		diagnostic   = fs.Bool("diagnostic", false, "Enables diagnostic features")
+		runOnce      = fs.Bool("once", false, "Show spec and metrics to stdout once")
+		printVersion = fs.Bool("version", false, "Prints version and exit")
 	)
 
 	var verbose bool
-	flag.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
-	flag.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
+	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
+	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
 
 	// The value of "role" option is internally "roll fullname",
 	// but we call it "role" here for ease.
 	var roleFullnames roleFullnamesFlag
-	flag.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
-
-	flag.Parse()
+	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
+	fs.Parse(argv)
 
 	if *printVersion {
 		otherOptions.printVersion = true
@@ -114,11 +136,11 @@ func resolveConfig() (*config.Config, *otherOptions) {
 	conf, confErr := config.LoadConfig(*conffile)
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
-		exitWithoutPidfileCleaning(1)
+		return nil, nil
 	}
 
 	// overwrite config from file by config from args
-	flag.Visit(func(f *flag.Flag) {
+	fs.Visit(func(f *flag.Flag) {
 		switch f.Name {
 		case "apibase":
 			conf.Apibase = *apibase
@@ -179,24 +201,16 @@ func removePidFile(pidfile string) {
 	}
 }
 
-func exit(exitCode int, conf *config.Config) {
-	removePidFile(conf.Pidfile)
-	exitWithoutPidfileCleaning(exitCode)
-}
-
-func exitWithoutPidfileCleaning(exitCode int) {
-	os.Exit(exitCode)
-}
-
-func start(conf *config.Config) error {
+func start(conf *config.Config) int {
 	if err := createPidFile(conf.Pidfile); err != nil {
-		return err
+		return exitStatusError
 	}
+	defer removePidFile(conf.Pidfile)
 
 	ctx, err := command.Prepare(conf)
 	if err != nil {
 		logger.Criticalf(err.Error())
-		exit(1, conf)
+		return exitStatusError
 	}
 
 	termCh := make(chan struct{})
@@ -204,10 +218,7 @@ func start(conf *config.Config) error {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go signalHandler(c, ctx, termCh)
 
-	exitCode := command.Run(ctx, termCh)
-	exit(exitCode, conf)
-
-	return nil
+	return command.Run(ctx, termCh)
 }
 
 var maxTerminatingInterval = 30 * time.Second
