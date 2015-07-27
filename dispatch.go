@@ -5,7 +5,7 @@ import "strings"
 // separate argv into sub-command and restArgv
 func separateSub(argv []string) (string, []string) {
 	if len(argv) == 0 || strings.HasPrefix(argv[0], "-") {
-		return "", argv
+		return mainProcess, argv
 	}
 	return argv[0], argv[1:]
 }

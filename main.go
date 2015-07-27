@@ -50,10 +50,13 @@ func main() {
 	os.Exit(dispatch(os.Args[1:]))
 }
 
+// empty string is dealt with the key of main process
+const mainProcess = ""
+
 // subcommands and processes of the mackerel-agent
 var commands = map[string](func([]string) int){
-	"":        doMain,
-	"version": doVersion,
+	mainProcess: doMain,
+	"version":   doVersion,
 }
 
 func doVersion(_ []string) int {
