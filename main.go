@@ -138,6 +138,8 @@ func doRetire(argv []string) int {
 
 func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 	fs := flag.NewFlagSet("mackerel-agent retire", flag.ExitOnError)
+	// Allow accepting unnecessary options, pidfile, diagnostic and role.
+	// Because, these options are potentially passed in initd script by using $OTHER_OPTS. dirty...
 	var (
 		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
 		apibase  = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
