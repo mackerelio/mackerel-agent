@@ -64,7 +64,7 @@ deb: mkr
 
 mkr:
 	mkdir -p build
-	curl -Ls -o build/mkr https://github.com/mackerelio/mkr/releases/download/v0.1.0/mkr_linux_386
+	curl -Ls -o build/mkr https://github.com/mackerelio/mkr/releases/download/v0.3.1/mkr_linux_386
 	chmod +x build/mkr
 
 release:
