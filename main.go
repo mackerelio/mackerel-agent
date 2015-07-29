@@ -124,10 +124,10 @@ func doRetire(argv []string) int {
 
 	err = api.RetireHost(hostID)
 	if err != nil {
-		logger.Errorf("failed to retire host: %s", err)
+		logger.Errorf("failed to retire the host: %s", err)
 		return exitStatusError
 	}
-	logger.Infof("This host (hostID: %s) has retired.", hostID)
+	logger.Infof("This host (hostID: %s) has been retired.", hostID)
 	// just to try to remove hostID file.
 	err = command.RemoveIDFile(conf.Root)
 	if err != nil {
