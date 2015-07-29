@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.20.0 (2015-07-29)
+
+* support subcommand #122 (Songmu)
+* remove trailing newline chars when loading hostID #129 (Songmu)
+* add sub-command `retire` and support $AUTO_RETIREMENT in initd #130 (Songmu)
+* add postinst to register mackerel-agent to start-up (deb package) #131 (stanaka)
+* bump bundled mkr version to 0.3.1 #132 (Songmu)
+
+
 ## 0.19.0 (2015-07-22)
 
 * Support gce meta #115 (Songmu)

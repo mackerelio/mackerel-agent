@@ -73,6 +73,13 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Jul 29 2015 <y.songmu@gmail.com> - 0.20.0-1
+- support subcommand (by Songmu)
+- remove trailing newline chars when loading hostID (by Songmu)
+- add sub-command `retire` and support $AUTO_RETIREMENT in initd (by Songmu)
+- add postinst to register mackerel-agent to start-up (deb package) (by stanaka)
+- bump bundled mkr version to 0.3.1 (by Songmu)
+
 * Wed Jul 22 2015 <y.songmu@gmail.com> - 0.19.0-1
 - Support gce meta (by Songmu)
 - Valid pidfile handling (fix on darwin) (by Songmu)
