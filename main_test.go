@@ -81,6 +81,37 @@ func TestParseFlagsRunOnce(t *testing.T) {
 	}
 }
 
+func TestDetectForce(t *testing.T) {
+	// prepare dummy config
+	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		t.Fatalf("Could not create temprary config file for test")
+	}
+	confFile.WriteString(`apikey="DUMMYAPIKEY"
+`)
+	confFile.Sync()
+	confFile.Close()
+	defer os.Remove(confFile.Name())
+
+	argv := []string{"-conf=" + confFile.Name()}
+	conf, force, err := resolveConfigForRetire(argv)
+	if force {
+		t.Errorf("force should be false")
+	}
+	if conf.Apikey != "DUMMYAPIKEY" {
+		t.Errorf("Apikey should be 'DUMMYAPIKEY'")
+	}
+
+	argv = append(argv, "-force")
+	conf, force, err = resolveConfigForRetire(argv)
+	if !force {
+		t.Errorf("force should be true")
+	}
+	if conf.Apikey != "DUMMYAPIKEY" {
+		t.Errorf("Apikey should be 'DUMMYAPIKEY'")
+	}
+}
+
 func TestCreateAndRemovePidFile(t *testing.T) {
 	file, err := ioutil.TempFile("", "")
 	if err != nil {

@@ -13,9 +13,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Songmu/prompter"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/version"
 )
 
@@ -57,6 +59,7 @@ const mainProcess = ""
 var commands = map[string](func([]string) int){
 	mainProcess: doMain,
 	"version":   doVersion,
+	"retire":    doRetire,
 }
 
 func doVersion(_ []string) int {
@@ -90,6 +93,86 @@ func doMain(argv []string) int {
 		return exitStatusError
 	}
 	return start(conf)
+}
+
+func doRetire(argv []string) int {
+	conf, force, err := resolveConfigForRetire(argv)
+	if err != nil {
+		return exitStatusError
+	}
+	if conf.Apikey == "" {
+		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
+		return exitStatusError
+	}
+
+	hostID, err := command.LoadHostID(conf.Root)
+	if err != nil {
+		logger.Warningf("HostID file is not found")
+		return exitStatusError
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
+	if err != nil {
+		logger.Errorf("failed to create api client: %s", err)
+		return exitStatusError
+	}
+
+	if !force && !prompter.YN(fmt.Sprintf("retire this host? (hostID: %s)", hostID), false) {
+		logger.Infof("Retirement is canceled.")
+		return exitStatusError
+	}
+
+	err = api.RetireHost(hostID)
+	if err != nil {
+		logger.Errorf("failed to retire the host: %s", err)
+		return exitStatusError
+	}
+	logger.Infof("This host (hostID: %s) has been retired.", hostID)
+	// just to try to remove hostID file.
+	err = command.RemoveIDFile(conf.Root)
+	if err != nil {
+		logger.Warningf("Failed to remove HostID file: %s", err)
+	}
+	return exitStatusOK
+}
+
+func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
+	fs := flag.NewFlagSet("mackerel-agent retire", flag.ExitOnError)
+	// Allow accepting unnecessary options, pidfile, diagnostic and role.
+	// Because, these options are potentially passed in initd script by using $OTHER_OPTS. dirty...
+	var (
+		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase  = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
+		_        = fs.String("pidfile", config.DefaultConfig.Pidfile, "(not used in retire)")
+		root     = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey   = fs.String("apikey", "", "API key from mackerel.io web site")
+		force    = fs.Bool("force", false, "force retirement without prompting")
+		_        = fs.Bool("diagnostic", false, "(not used in retire)")
+	)
+	var roleFullnames roleFullnamesFlag
+	fs.Var(&roleFullnames, "role", "(not used in retire)")
+	var verbose bool
+	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
+	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
+	fs.Parse(argv)
+	conf, err := config.LoadConfig(*conffile)
+	if err != nil {
+		return nil, *force, err
+	}
+	// overwrite config from file by config from args
+	fs.Visit(func(f *flag.Flag) {
+		switch f.Name {
+		case "apibase":
+			conf.Apibase = *apibase
+		case "apikey":
+			conf.Apikey = *apikey
+		case "root":
+			conf.Root = *root
+		case "verbose", "v":
+			conf.Verbose = verbose
+		}
+	})
+	return conf, *force, nil
 }
 
 // resolveConfig parses command line arguments and loads config file to

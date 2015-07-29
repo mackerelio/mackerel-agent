@@ -31,12 +31,18 @@ func idFilePath(root string) string {
 	return filepath.Join(root, idFileName)
 }
 
-func loadHostID(root string) (string, error) {
+// LoadHostID loads hostID
+func LoadHostID(root string) (string, error) {
 	content, err := ioutil.ReadFile(idFilePath(root))
 	if err != nil {
 		return "", err
 	}
 	return strings.TrimRight(string(content), "\r\n"), nil
+}
+
+// RemoveIDFile removes idfile
+func RemoveIDFile(root string) error {
+	return os.Remove(idFilePath(root))
 }
 
 func saveHostID(root string, id string) error {
@@ -90,7 +96,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 	}
 
 	var result *mackerel.Host
-	if hostID, err := loadHostID(root); err != nil { // create
+	if hostID, err := LoadHostID(root); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
 
 		doRetry(func() error {
