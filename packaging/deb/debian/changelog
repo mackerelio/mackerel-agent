@@ -1,3 +1,18 @@
+mackerel-agent (0.20.0-1) stable; urgency=low
+
+  * support subcommand (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/122>
+  * remove trailing newline chars when loading hostID (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/129>
+  * add sub-command `retire` and support $AUTO_RETIREMENT in initd (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/130>
+  * add postinst to register mackerel-agent to start-up (deb package) (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/131>
+  * bump bundled mkr version to 0.3.1 (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/132>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 29 Jul 2015 14:42:44 +0900
+
 mackerel-agent (0.19.0-1) stable; urgency=low
 
   * Support gce meta (by Songmu)
