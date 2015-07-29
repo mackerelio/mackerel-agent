@@ -126,7 +126,7 @@ case "$1" in
         rh_status_q || exit 0
         $1
         retval=$?
-        [ "$AUTO_RETIREMENT" != "" ] && retire
+        [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && retire
         exit $retval
         ;;
     restart)
