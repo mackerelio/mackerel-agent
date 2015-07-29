@@ -223,6 +223,19 @@ func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
 	return nil
 }
 
+// RetireHost retires the host
+func (api *API) RetireHost(hostID string) error {
+	resp, err := api.postJSON(fmt.Sprintf("/api/v0/hosts/%s/retire", hostID), []byte("{}"))
+	defer closeResp(resp)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != 200 {
+		return apiError(resp.StatusCode, "api request failed")
+	}
+	return nil
+}
+
 func (api *API) get(path string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", api.urlFor(path).String(), nil)
 	if err != nil {

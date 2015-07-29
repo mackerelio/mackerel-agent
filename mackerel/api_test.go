@@ -522,6 +522,30 @@ func TestCreateGraphDefs(t *testing.T) {
 	}
 }
 
+func TestRetireHost(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/hosts/9rxGOHfVF8F/retire" {
+			t.Error("request URL should be /api/v0/hosts/9rxGOHfVF8F/retire but :", req.URL.Path)
+		}
+		if req.Method != "POST" {
+			t.Error("request method should be POST but: ", req.Method)
+		}
+		respJSON, _ := json.Marshal(map[string]bool{
+			"success": true,
+		})
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJSON))
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	err := api.RetireHost("9rxGOHfVF8F")
+
+	if err != nil {
+		t.Error("err shoud be nil but: ", err)
+	}
+}
+
 func TestApiError(t *testing.T) {
 	aperr := apiError(400, "bad request")
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -31,12 +30,7 @@ diagnostic=false
 	confFile.Sync()
 	confFile.Close()
 	defer os.Remove(confFile.Name())
-
-	os.Args = []string{"mackerel-agent", "-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"}
-	// Overrides Args from go test command
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
-
-	mergedConfig, _ := resolveConfig()
+	mergedConfig, _ := resolveConfig([]string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
 
 	t.Logf("      apibase: %v", mergedConfig.Apibase)
 	t.Logf("       apikey: %v", mergedConfig.Apikey)
@@ -64,10 +58,7 @@ diagnostic=false
 }
 
 func TestParseFlagsPrintVersion(t *testing.T) {
-	os.Args = []string{"mackerel-agent", "-version"}
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
-
-	config, otherOptions := resolveConfig()
+	config, otherOptions := resolveConfig([]string{"-version"})
 
 	if config.Verbose != false {
 		t.Error("with -version args, variables of config should have default values")
@@ -79,10 +70,7 @@ func TestParseFlagsPrintVersion(t *testing.T) {
 }
 
 func TestParseFlagsRunOnce(t *testing.T) {
-	os.Args = []string{"mackerel-agent", "-once"}
-	flag.CommandLine = flag.NewFlagSet(os.Args[0], flag.PanicOnError)
-
-	config, otherOptions := resolveConfig()
+	config, otherOptions := resolveConfig([]string{"-once"})
 
 	if config.Verbose != false {
 		t.Error("with -version args, variables of config should have default values")
@@ -90,6 +78,37 @@ func TestParseFlagsRunOnce(t *testing.T) {
 
 	if otherOptions.runOnce == false {
 		t.Error("with -once args, RunOnce should be true")
+	}
+}
+
+func TestDetectForce(t *testing.T) {
+	// prepare dummy config
+	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		t.Fatalf("Could not create temprary config file for test")
+	}
+	confFile.WriteString(`apikey="DUMMYAPIKEY"
+`)
+	confFile.Sync()
+	confFile.Close()
+	defer os.Remove(confFile.Name())
+
+	argv := []string{"-conf=" + confFile.Name()}
+	conf, force, err := resolveConfigForRetire(argv)
+	if force {
+		t.Errorf("force should be false")
+	}
+	if conf.Apikey != "DUMMYAPIKEY" {
+		t.Errorf("Apikey should be 'DUMMYAPIKEY'")
+	}
+
+	argv = append(argv, "-force")
+	conf, force, err = resolveConfigForRetire(argv)
+	if !force {
+		t.Errorf("force should be true")
+	}
+	if conf.Apikey != "DUMMYAPIKEY" {
+		t.Errorf("Apikey should be 'DUMMYAPIKEY'")
 	}
 }
 
