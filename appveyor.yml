@@ -7,7 +7,7 @@ install:
   - echo %Path%
   - choco install ruby
   - rd c:\go /s /q
-  - choco install mingw-w64
+  - choco install mingw
   - set PATH=%PATH%;C:\tools\mingw64\bin
   - appveyor DownloadFile https://storage.googleapis.com/golang/go1.3.3.windows-amd64.zip
   - 7z x go1.3.3.windows-amd64.zip -oC:\ >nul
