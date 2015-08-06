@@ -43,7 +43,7 @@ lint: deps
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
-	    -os=$(BUILD_OS_TARGETS) -arch="386 amd64 arm" -d . \
+	    -os="linux darwin freebsd" -arch="386 amd64 arm" -d . \
 	    -resources-include='README*,mackerel-agent.conf' -n $(BIN) \
 	    -main-dirs-exclude ./wix
 
