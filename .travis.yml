@@ -32,8 +32,6 @@ deploy:
   - snapshot/mackerel-agent_linux_386.tar.gz
   - snapshot/mackerel-agent_linux_amd64.tar.gz
   - snapshot/mackerel-agent_linux_arm.tar.gz
-  - snapshot/mackerel-agent_windows_386.zip
-  - snapshot/mackerel-agent_windows_amd64.zip
   skip_cleanup: true
   on:
     repo: mackerelio/mackerel-agent
