@@ -179,6 +179,7 @@ func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 	}, nil
 }
 
+// GetCounterValue get counter value from handle
 func GetCounterValue(counter syscall.Handle) (float64, error) {
 	var value C.PDH_FMT_COUNTERVALUE_DOUBLE
 	r, _, err := PdhGetFormattedCounterValue.Call(uintptr(counter), PDH_FMT_DOUBLE, uintptr(0), uintptr(unsafe.Pointer(&value)))
