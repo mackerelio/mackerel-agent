@@ -14,6 +14,6 @@ type HostSpec struct {
 	Meta          map[string]interface{}   `json:"meta"`
 	Interfaces    []map[string]interface{} `json:"interfaces"`
 	RoleFullnames []string                 `json:"roleFullnames"`
-	Checks        []string                 `json:"checks,omitempty"`
+	Checks        []string                 `json:"checks"`
 	DisplayName   string                   `json:"displayName,omitempty"`
 }
