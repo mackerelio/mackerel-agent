@@ -50,22 +50,16 @@ crossbuild: deps
 cover: deps
 	tool/cover.sh
 
-rpm: mkr
+rpm:
 	GOOS=linux GOARCH=386 make build
 	cp mackerel-agent.sample.conf packaging/rpm/src/mackerel-agent.conf
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm/src" --define "_builddir `pwd`/build" -ba packaging/rpm/mackerel-agent.spec
 
-deb: mkr
+deb:
 	GOOS=linux GOARCH=386 make build
-	cp build/$(BIN)               packaging/deb/debian/mackerel-agent.bin
-	cp build/mkr                  packaging/deb/debian/mkr.bin
+	cp build/$(BIN)        packaging/deb/debian/mackerel-agent.bin
 	cp mackerel-agent.sample.conf packaging/deb/debian/mackerel-agent.conf
 	cd packaging/deb && debuild --no-tgz-check -rfakeroot -uc -us
-
-mkr:
-	mkdir -p build
-	curl -Ls -o build/mkr https://github.com/mackerelio/mkr/releases/download/v0.3.1/mkr_linux_386
-	chmod +x build/mkr
 
 release:
 	tool/releng
@@ -74,4 +68,4 @@ clean:
 	rm -f build/$(BIN)
 	go clean
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb mkr
+.PHONY: test build run deps clean lint crossbuild cover rpm deb
