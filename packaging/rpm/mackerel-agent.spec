@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.20.0
+Version:   0.20.1
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -73,6 +73,10 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Aug 13 2015 <tomohiro68@gmail.com> - 0.20.1-1
+- use C struct for accessing Windows APIs (by stanaka)
+- Fix bug that checks is not removed when no checks. (by Sixeight)
+
 * Wed Jul 29 2015 <y.songmu@gmail.com> - 0.20.0-1
 - support subcommand (by Songmu)
 - remove trailing newline chars when loading hostID (by Songmu)
