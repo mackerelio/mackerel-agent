@@ -1,3 +1,12 @@
+mackerel-agent (0.20.1-1) stable; urgency=low
+
+  * use C struct for accessing Windows APIs (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/134>
+  * Fix bug that checks is not removed when no checks. (by Sixeight)
+    <https://github.com/mackerelio/mackerel-agent/pull/135>
+
+ -- Tomohiro Nishimura <tomohiro68@gmail.com>  Thu, 13 Aug 2015 15:54:52 +0900
+
 mackerel-agent (0.20.0-1) stable; urgency=low
 
   * support subcommand (by Songmu)

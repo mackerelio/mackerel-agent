@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.20.1 (2015-08-13)
+
+* use C struct for accessing Windows APIs #134 (stanaka)
+* Fix bug that checks is not removed when no checks. #135 (Sixeight)
+
+
 ## 0.20.0 (2015-07-29)
 
 * support subcommand #122 (Songmu)
