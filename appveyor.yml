@@ -34,7 +34,6 @@ deploy:
     secure: nT6f+l3sILrBAyVGLE1il+wkv5BvrnEnVkiPGDZQegePa81MUC4AIDTNQ/gX8AWW
   artifact: mackerel-agent-k-msi
   prerelease: true
-  appveyor_repo_tag: true
   on:
     appveyor_repo_tag: true
 artifacts:
