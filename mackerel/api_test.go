@@ -246,6 +246,7 @@ func TestUpdateHost(t *testing.T) {
 			Meta          map[string]string   `json:"meta"`
 			Interfaces    []map[string]string `json:"interfaces"`
 			RoleFullnames []string            `json:"roleFullnames"`
+			Checks        []string            `json:"checks"`
 		}
 
 		err := json.Unmarshal(body, &data)
@@ -272,6 +273,11 @@ func TestUpdateHost(t *testing.T) {
 		if data.RoleFullnames[0] != "My-Service:app-default" {
 			t.Errorf("Wrong data for roleFullnames: %v", data.RoleFullnames)
 		}
+
+		if data.Checks == nil {
+			t.Errorf("Wrong data for checks: %v", data.Checks)
+
+		}
 	}))
 	defer ts.Close()
 
@@ -285,6 +291,8 @@ func TestUpdateHost(t *testing.T) {
 		"encap":      "Ethernet",
 	})
 
+	var checkNames = []string{}
+
 	hostSpec := HostSpec{
 		Name: "dummy",
 		Meta: map[string]interface{}{
@@ -292,6 +300,7 @@ func TestUpdateHost(t *testing.T) {
 		},
 		Interfaces:    interfaces,
 		RoleFullnames: []string{"My-Service:app-default"},
+		Checks:        checkNames,
 	}
 
 	err := api.UpdateHost("ABCD123", hostSpec)

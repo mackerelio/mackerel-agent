@@ -8,6 +8,17 @@ import (
 	"unsafe"
 )
 
+/*
+//#include <pdh.h>
+typedef unsigned long DWORD;
+// Union specialization for double values
+typedef struct _PDH_FMT_COUNTERVALUE_DOUBLE {
+	DWORD  CStatus;
+	double DoubleValue;
+} PDH_FMT_COUNTERVALUE_DOUBLE;
+*/
+import "C"
+
 // SYSTEM_INFO XXX
 type SYSTEM_INFO struct {
 	ProcessorArchitecture     uint16
@@ -166,6 +177,16 @@ func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 		CounterName: v,
 		Counter:     counter,
 	}, nil
+}
+
+// GetCounterValue get counter value from handle
+func GetCounterValue(counter syscall.Handle) (float64, error) {
+	var value C.PDH_FMT_COUNTERVALUE_DOUBLE
+	r, _, err := PdhGetFormattedCounterValue.Call(uintptr(counter), PDH_FMT_DOUBLE, uintptr(0), uintptr(unsafe.Pointer(&value)))
+	if r != 0 && r != PDH_INVALID_DATA {
+		return 0.0, err
+	}
+	return float64(value.DoubleValue), nil
 }
 
 // GetAdapterList XXX
