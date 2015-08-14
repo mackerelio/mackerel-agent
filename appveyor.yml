@@ -33,6 +33,7 @@ deploy:
   auth_token:
     secure: nT6f+l3sILrBAyVGLE1il+wkv5BvrnEnVkiPGDZQegePa81MUC4AIDTNQ/gX8AWW
   artifact: mackerel-agent-k-msi
+  draft: true
   prerelease: true
   on:
     appveyor_repo_tag: true
