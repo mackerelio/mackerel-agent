@@ -129,6 +129,9 @@ case "$1" in
         [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && retire
         exit $retval
         ;;
+    reload)
+        restart
+        ;;
     restart)
         $1
         ;;
@@ -136,7 +139,7 @@ case "$1" in
         rh_status
         ;;
     *)
-        echo $"Usage: $0 {start|stop|status|restart}"
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
         exit 2
 esac
 
