@@ -71,6 +71,9 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Sep 02 2015 <tomohiro68@gmail.com> - 0.21.0-1
+- Exclude mkr binary from deb/rpm package (by Sixeight)
+
 * Thu Aug 13 2015 <tomohiro68@gmail.com> - 0.20.1-1
 - use C struct for accessing Windows APIs (by stanaka)
 - Fix bug that checks is not removed when no checks. (by Sixeight)
