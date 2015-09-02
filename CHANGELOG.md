@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.21.0 (2015-09-02)
+
+* Exclude mkr binary from deb/rpm package #137 (Sixeight)
+
+
 ## 0.20.1 (2015-08-13)
 
 * use C struct for accessing Windows APIs #134 (stanaka)

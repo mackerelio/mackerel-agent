@@ -1,3 +1,10 @@
+mackerel-agent (0.21.0-1) stable; urgency=low
+
+  * Exclude mkr binary from deb/rpm package (by Sixeight)
+    <https://github.com/mackerelio/mackerel-agent/pull/137>
+
+ -- Tomohiro Nishimura <tomohiro68@gmail.com>  Wed, 02 Sep 2015 11:58:24 +0900
+
 mackerel-agent (0.20.1-1) stable; urgency=low
 
   * use C struct for accessing Windows APIs (by stanaka)
