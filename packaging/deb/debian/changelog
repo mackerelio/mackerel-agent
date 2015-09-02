@@ -1,3 +1,10 @@
+mackerel-agent (0.22.0-1) stable; urgency=low
+
+  * add `reload` to init scripts (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/139>
+
+ -- Tomohiro Nishimura <tomohiro68@gmail.com>  Wed, 02 Sep 2015 15:37:37 +0900
+
 mackerel-agent (0.21.0-1) stable; urgency=low
 
   * Exclude mkr binary from deb/rpm package (by Sixeight)

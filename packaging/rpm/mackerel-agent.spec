@@ -71,6 +71,9 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Sep 02 2015 <tomohiro68@gmail.com> - 0.22.0-1
+- add `reload` to init scripts (by Songmu)
+
 * Wed Sep 02 2015 <tomohiro68@gmail.com> - 0.21.0-1
 - Exclude mkr binary from deb/rpm package (by Sixeight)
 
