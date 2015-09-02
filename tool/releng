@@ -144,7 +144,7 @@ sub merged_prs {
         my $res = $ua->get($url);
         unless ($res->{success}) {
             warnf "request to $url failed\n";
-            next;
+            exit;
         }
         my $data = eval { decode_json $res->{content} };
         if ($@) {
