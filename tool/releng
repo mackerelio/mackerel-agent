@@ -144,7 +144,7 @@ sub merged_prs {
         my $res = $ua->get($url);
         unless ($res->{success}) {
             warnf "request to $url failed\n";
-            next;
+            exit;
         }
         my $data = eval { decode_json $res->{content} };
         if ($@) {
@@ -304,6 +304,10 @@ sub main {
     update_changelog($next_version, @releases);
     git qw/commit -am/, "update changelogs";
 
+    git qw/diff/, qw/--word-diff/, "master..$branch_name";
+    my $pr_body = build_pull_request_body($next_version, @releases);
+    say $pr_body;
+
     if (prompt('push changes?', 'y') !~ /^y(?:es)?$/i ) {
         warnf('releng is aborted. remove the branch [%s] before next releng', $branch_name);
         return;
@@ -311,7 +315,6 @@ sub main {
 
     infof "push changes\n";
     git qw/push --set-upstream origin/, $branch_name;
-    my $pr_body = build_pull_request_body($next_version, @releases);
     hub qw/pull-request -m/, $pr_body;
 
     infof "Releasing pull request is created. Review and merge it. You can update changelogs and commit more in this branch before merging.\n";
