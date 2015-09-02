@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.22.0 (2015-09-02)
+
+* add `reload` to init scripts #139 (Songmu)
+
+
 ## 0.21.0 (2015-09-02)
 
 * Exclude mkr binary from deb/rpm package #137 (Sixeight)
