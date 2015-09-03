@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.20.1
+Version:   0.22.0
 Release:   1
 License:   Commercial
 Summary:   macekrel.io agent
@@ -33,7 +33,6 @@ mackerel.io agent beta
 rm -rf %{buildroot}
 install -d -m 755 %{buildroot}/%{_localbindir}
 install    -m 655 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
-install    -m 655 %{_builddir}/mkr  %{buildroot}/%{_localbindir}
 
 install -d -m 755 %{buildroot}/%{_localstatedir}/log/
 
@@ -67,12 +66,17 @@ fi
 %defattr(-,root,root)
 %{_initrddir}/%{name}
 %{_localbindir}/%{name}
-%{_localbindir}/mkr
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %config(noreplace) %{_sysconfdir}/mackerel-agent/%{name}.conf
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Sep 02 2015 <tomohiro68@gmail.com> - 0.22.0-1
+- add `reload` to init scripts (by Songmu)
+
+* Wed Sep 02 2015 <tomohiro68@gmail.com> - 0.21.0-1
+- Exclude mkr binary from deb/rpm package (by Sixeight)
+
 * Thu Aug 13 2015 <tomohiro68@gmail.com> - 0.20.1-1
 - use C struct for accessing Windows APIs (by stanaka)
 - Fix bug that checks is not removed when no checks. (by Sixeight)
