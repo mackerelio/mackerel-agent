@@ -385,7 +385,7 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 
 					logger.Debugf("checker %q: report=%v", checker.Name, report)
 
-					if report.Status == lastStatus && report.Message == lastMessage {
+					if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
 						// Do not report if nothing has changed
 						return
 					}
