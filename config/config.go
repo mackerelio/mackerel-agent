@@ -11,6 +11,7 @@ import (
 
 var configLogger = logging.GetLogger("config")
 
+// `apibase` and `agentName` are set from build flags
 var apibase string
 
 func getApibase() string {
@@ -18,6 +19,15 @@ func getApibase() string {
 		return apibase
 	}
 	return "https://mackerel.io"
+}
+
+var agentName string
+
+func getAgentName() string {
+	if agentName != "" {
+		return agentName
+	}
+	return "mackerel-agent"
 }
 
 // Config represents mackerel-agent's configuration file.
