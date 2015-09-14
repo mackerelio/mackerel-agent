@@ -1,3 +1,12 @@
+mackerel-agent (0.23.0-1) stable; urgency=low
+
+  * send check monitor report to server when check script failed even if the monitor result is not changed (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/143>
+  * Correct sample nginx comment. (by kamatama41)
+    <https://github.com/mackerelio/mackerel-agent/pull/144>
+
+ -- itchyny <itchyny@hatena.ne.jp>  Mon, 14 Sep 2015 11:36:02 +0900
+
 mackerel-agent (0.22.0-1) stable; urgency=low
 
   * add `reload` to init scripts (by Songmu)
