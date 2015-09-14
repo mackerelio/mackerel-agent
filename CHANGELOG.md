@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.23.0 (2015-09-14)
+
+* send check monitor report to server when check script failed even if the monitor result is not changed #143 (Songmu)
+* Correct sample nginx comment. #144 (kamatama41)
+
+
 ## 0.22.0 (2015-09-02)
 
 * add `reload` to init scripts #139 (Songmu)

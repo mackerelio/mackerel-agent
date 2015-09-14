@@ -71,6 +71,10 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Mon Sep 14 2015 <itchyny@hatena.ne.jp> - 0.23.0-1
+- send check monitor report to server when check script failed even if the monitor result is not changed (by Songmu)
+- Correct sample nginx comment. (by kamatama41)
+
 * Wed Sep 02 2015 <tomohiro68@gmail.com> - 0.22.0-1
 - add `reload` to init scripts (by Songmu)
 
