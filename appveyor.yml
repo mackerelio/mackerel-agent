@@ -9,7 +9,6 @@ install:
   - echo %Path%
   - choco install ruby
   - choco install openssl.light
-  - which openssl
   - openssl ciphers
   - rd c:\go /s /q
   #- choco install mingw
