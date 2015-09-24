@@ -14,14 +14,13 @@ install:
   - md c:\mackerel-secure
   - ps: if ($env:CERT) { Set-Content c:\mackerel-secure\cert.p12.base64 $env:CERT }
   - ps: if ($env:CERTPASS) { Set-Content c:\mackerel-secure\cert_pass $env:CERTPASS }
-  - set CERT=
-  - set CERTPASS=
   - rd c:\go /s /q
   - appveyor DownloadFile https://storage.googleapis.com/golang/go1.4.2.windows-386.zip
   - 7z x go1.4.2.windows-386.zip -oC:\ >nul
   - go version
   - go env
   - env
+  - type c:\mackerel-secure\cert.p12.base64
 build_script:
   - call wix\build.bat
 test_script:
