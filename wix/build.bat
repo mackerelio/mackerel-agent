@@ -22,3 +22,8 @@ del /F mackerel-agent.wxs
 
 "%WIX%bin\candle.exe" mackerel-agent.wxs
 "%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
+
+REM if defined APPVEYOR_REPO_TAG_NAME ( .. )
+certutil -f -decode c:\mackerel-secure\cert.p12.base64 c:\mackerel-secure\cert.p12
+setx PFXPASSWORD c:\mackerel-secure\cert_pass
+"%SIGNTOOL%" sign /t http://timestamp.comodoca.com/rfc3161 /f "c:\mackerel-secure\cert.p12" /p %%PFXPASSWORD%% "..\build\mackerel-agent.msi"
