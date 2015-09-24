@@ -2,20 +2,27 @@ version: 0.19.{build}
 clone_folder: c:\gopath\src\github.com\mackerelio\mackerel-agent
 environment:
   GOPATH: c:\gopath
+  SIGNTOOL: C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\signtool.exe
+  CERT:
+    secure: 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
+  CERTPASS:
+    secure: cKE+o5eZKdo5i9I+mdVDV80dvU1Fd6Aw/21xMRKoFx0=
 install:
-  - set PATH=c:\go\bin;c:\tools\ruby215\bin;%PATH%
+  - set PATH=c:\go\bin;c:\tools\ruby215\bin;%PATH%;C:\MinGW\bin
   - echo %Path%
   - choco install ruby
+  - md c:\mackerel-secure
+  - ps: if ($env:CERT) { Set-Content c:\mackerel-secure\cert.p12.base64 $env:CERT }
+  - ps: if ($env:CERTPASS) { Set-Content c:\mackerel-secure\cert_pass $env:CERTPASS }
   - rd c:\go /s /q
-  #- choco install mingw
-  - set PATH=%PATH%;C:\MinGW\bin
   - appveyor DownloadFile https://storage.googleapis.com/golang/go1.4.2.windows-386.zip
   - 7z x go1.4.2.windows-386.zip -oC:\ >nul
   - go version
   - go env
   - env
+  - type c:\mackerel-secure\cert.p12.base64
 build_script:
-- call wix\build.bat
+  - call wix\build.bat
 test_script:
 - FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w
 - cd %CDUP%
