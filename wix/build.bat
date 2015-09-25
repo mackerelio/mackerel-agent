@@ -24,10 +24,10 @@ del /F mackerel-agent.wxs
 "%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
 
 REM code signing if build on tags
-if defined APPVEYOR_REPO_TAG_NAME (
+REM if defined APPVEYOR_REPO_TAG_NAME (
   certutil -f -decode c:\mackerel-secure\cert.p12.base64 c:\mackerel-secure\cert.p12
   setx PFXPASSWORD c:\mackerel-secure\cert_pass
 
   REM ref. https://support.comodo.com/index.php?/Default/Knowledgebase/Article/View/68/7/time-stamping-server
   "%SIGNTOOL%" sign /t http://timestamp.comodoca.com/rfc3161 /f "c:\mackerel-secure\cert.p12" /p %%PFXPASSWORD%% "..\build\mackerel-agent.msi"
-)
+REM )
