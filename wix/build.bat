@@ -28,5 +28,6 @@ REM if defined APPVEYOR_REPO_TAG_NAME (
   certutil -f -decode c:\mackerel-secure\cert.p12.base64 c:\mackerel-secure\cert.p12
 
   REM ref. https://support.comodo.com/index.php?/Default/Knowledgebase/Article/View/68/7/time-stamping-server
+  echo "%CERTPASS%"
   "%SIGNTOOL%" sign /t http://timestamp.comodoca.com/rfc3161 /f "c:\mackerel-secure\cert.p12" /p "%CERTPASS%" "..\build\mackerel-agent.msi"
 REM )
