@@ -10,7 +10,6 @@ environment:
 install:
   - md c:\mackerel-secure
   - ps: if ($env:CERT) { Set-Content c:\mackerel-secure\cert.p12.base64 $env:CERT }
-  - ps: if ($env:CERTPASS) { Set-Content c:\mackerel-secure\cert_pass $env:CERTPASS }
   - set PATH=c:\go\bin;c:\tools\ruby215\bin;%PATH%;C:\MinGW\bin
   - echo %Path%
   - choco install ruby
