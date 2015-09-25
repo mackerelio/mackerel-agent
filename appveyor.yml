@@ -33,6 +33,15 @@ notifications:
     auth_token:
       secure: A7QmXiJAvb+wWfCyBXGCDmKpe7mEDywYI7Ai1LLEi8NNAssCJusGjCpHNv7KiRZz
     channel: mackerel
+deploy:
+  release: $(appveyor_repo_tag_name)
+  provider: GitHub
+  auth_token:
+    secure: nT6f+l3sILrBAyVGLE1il+wkv5BvrnEnVkiPGDZQegePa81MUC4AIDTNQ/gX8AWW
+  artifact: mackerel-agent-msi
+  appveyor_repo_tag: true
+  on:
+    appveyor_repo_tag: true
 artifacts:
   - path: build\mackerel-agent.msi
     name: mackerel-agent-msi
