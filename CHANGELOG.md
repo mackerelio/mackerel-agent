@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.23.1 (2015-09-30)
+
+* Code signing for windows installer #148 (mechairoi)
+
+
 ## 0.23.0 (2015-09-14)
 
 * send check monitor report to server when check script failed even if the monitor result is not changed #143 (Songmu)
