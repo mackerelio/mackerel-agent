@@ -71,8 +71,6 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
-<<<<<<< HEAD
-=======
 * Wed Sep 30 2015 <ttsujikawa@gmail.com> - 0.23.1-1
 - Code signing for windows installer (by mechairoi)
 
@@ -80,7 +78,6 @@ fi
 - send check monitor report to server when check script failed even if the monitor result is not changed (by Songmu)
 - Correct sample nginx comment. (by kamatama41)
 
->>>>>>> origin/master
 * Wed Sep 02 2015 <tomohiro68@gmail.com> - 0.22.0-1
 - add `reload` to init scripts (by Songmu)
 
