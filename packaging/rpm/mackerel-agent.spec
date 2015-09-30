@@ -71,6 +71,9 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Sep 30 2015 <ttsujikawa@gmail.com> - 0.23.1-1
+- Code signing for windows installer (by mechairoi)
+
 * Mon Sep 14 2015 <itchyny@hatena.ne.jp> - 0.23.0-1
 - send check monitor report to server when check script failed even if the monitor result is not changed (by Songmu)
 - Correct sample nginx comment. (by kamatama41)

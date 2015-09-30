@@ -1,3 +1,10 @@
+mackerel-agent (0.23.1-1) stable; urgency=low
+
+  * Code signing for windows installer (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/148>
+
+ -- mechairoi <ttsujikawa@gmail.com>  Wed, 30 Sep 2015 12:55:13 +0900
+
 mackerel-agent (0.23.0-1) stable; urgency=low
 
   * send check monitor report to server when check script failed even if the monitor result is not changed (by Songmu)
