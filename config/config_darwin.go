@@ -1,16 +1,18 @@
 package config
 
-import "path/filepath"
-import "os"
+import (
+	"os"
+	"path/filepath"
+)
 
-var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", "mackerel-agent")
+var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", getAgentName())
 
 // The default configuration for dawrin.
 var DefaultConfig = &Config{
 	Apibase:    getApibase(),
 	Root:       mackerelRoot,
 	Pidfile:    filepath.Join(mackerelRoot, "pid"),
-	Conffile:   filepath.Join(mackerelRoot, "mackerel-agent.conf"),
+	Conffile:   filepath.Join(mackerelRoot, getAgentName()+".conf"),
 	Roles:      []string{},
 	Verbose:    false,
 	Diagnostic: false,
