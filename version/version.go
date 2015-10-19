@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-// make build sets this automaticaly
+// VERSION make build sets this automaticaly
 var VERSION string
 
-// make build sets this automaticaly
+// GITCOMMIT make build sets this automaticaly
 var GITCOMMIT string
 
 // UserAgent XXX

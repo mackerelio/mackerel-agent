@@ -7,7 +7,7 @@ import (
 
 var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", getAgentName())
 
-// The default configuration for dawrin.
+// DefaultConfig The default configuration for dawrin.
 var DefaultConfig = &Config{
 	Apibase:    getApibase(),
 	Root:       mackerelRoot,

@@ -17,7 +17,7 @@ func execdirInit() string {
 
 var execdir = execdirInit()
 
-// The default configuration for windows
+// DefaultConfig The default configuration for windows
 var DefaultConfig = &Config{
 	Apibase:    getApibase(),
 	Root:       execdir,
