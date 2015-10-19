@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -267,6 +268,10 @@ func createPidFile(pidfile string) error {
 		}
 	}
 
+	err := os.MkdirAll(filepath.Dir(pidfile), 0755)
+	if err != nil {
+		return err
+	}
 	file, err := os.Create(pidfile)
 	if err != nil {
 		logger.Criticalf("Failed to create a pidfile: %s", err)
