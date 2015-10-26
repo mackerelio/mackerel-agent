@@ -71,6 +71,11 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Mon Oct 26 2015 <daiksy@hatena.ne.jp> - 0.24.0-1
+- define config.agentName and set proper config path (by Songmu)
+- /proc/cpuinfo parser for old ARM Linux kernels (by hanazuki)
+- os.MkdirAll() before creating pidfile (by Songmu)
+
 * Wed Sep 30 2015 <ttsujikawa@gmail.com> - 0.23.1-1
 - Code signing for windows installer (by mechairoi)
 
