@@ -1,3 +1,14 @@
+mackerel-agent (0.24.0-1) stable; urgency=low
+
+  * define config.agentName and set proper config path (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/150>
+  * /proc/cpuinfo parser for old ARM Linux kernels (by hanazuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/152>
+  * os.MkdirAll() before creating pidfile (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/153>
+
+ -- daiksy <daiksy@hatena.ne.jp>  Mon, 26 Oct 2015 15:15:43 +0900
+
 mackerel-agent (0.23.1-1) stable; urgency=low
 
   * Code signing for windows installer (by mechairoi)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.24.0 (2015-10-26)
+
+* define config.agentName and set proper config path #150 (Songmu)
+* /proc/cpuinfo parser for old ARM Linux kernels #152 (hanazuki)
+* os.MkdirAll() before creating pidfile #153 (Songmu)
+
+
 ## 0.23.1 (2015-09-30)
 
 * Code signing for windows installer #148 (mechairoi)
