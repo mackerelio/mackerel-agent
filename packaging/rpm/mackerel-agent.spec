@@ -8,7 +8,7 @@ Name:      mackerel-agent
 Version:   0.24.0
 Release:   1
 License:   Commercial
-Summary:   macekrel.io agent
+Summary:   mackerel.io agent
 URL:       https://mackerel.io
 Group:     Hatena
 Source0:   %{name}.initd
