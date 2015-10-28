@@ -13,7 +13,7 @@ import (
 	"unsafe"
 )
 
-const name = "macekrel-agent"
+const name = "mackerel-agent"
 
 const defaultEid = 1
 const startEid = 2
