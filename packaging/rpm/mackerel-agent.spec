@@ -71,6 +71,9 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Nov 05 2015 <y.songmu@gmail.com> - 0.24.1-1
+- We are Mackerel (by itchyny)
+
 * Mon Oct 26 2015 <daiksy@hatena.ne.jp> - 0.24.0-1
 - define config.agentName and set proper config path (by Songmu)
 - /proc/cpuinfo parser for old ARM Linux kernels (by hanazuki)
