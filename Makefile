@@ -25,6 +25,7 @@ deps:
 	go get github.com/golang/lint/golint
 	go get golang.org/x/tools/cmd/vet
 	go get golang.org/x/tools/cmd/cover
+	go get github.com/pierrre/gotestcover
 	go get github.com/laher/goxc
 	go get github.com/mattn/goveralls
 
@@ -49,7 +50,7 @@ crossbuild: deps
 	    -main-dirs-exclude ./wix
 
 cover: deps
-	tool/cover.sh
+	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
 
 rpm:
 	GOOS=linux GOARCH=386 make build
