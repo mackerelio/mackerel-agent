@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.24.1 (2015-11-05)
+
+* We are Mackerel #156 (itchyny)
+
+
 ## 0.24.0 (2015-10-26)
 
 * define config.agentName and set proper config path #150 (Songmu)
