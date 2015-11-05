@@ -115,28 +115,5 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 		}
 	}
 
-	{
-		// arp -an
-		out, err := exec.Command("arp", "-an").Output()
-		if err != nil {
-			interfaceLogger.Errorf("Failed to run arp command (skip this spec): %s", err)
-			return interfaces, err
-		}
-
-		arpRegexp := regexp.MustCompile(`^\S+ \((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\) at ([a-fA-F0-9\:]+) on ([0-9a-zA-Z@\-_]+) ifscope \[(\w+)\]`)
-		lineScanner := bufio.NewScanner(bytes.NewReader(out))
-		for lineScanner.Scan() {
-			line := lineScanner.Text()
-			// ex.) ? (10.0.3.1) at 01:23:45:67:89:ab on en0 ifscope [ethernet]
-			if matches := arpRegexp.FindStringSubmatch(line); matches != nil {
-				if interfaces[matches[3]] == nil {
-					continue
-				}
-				interfaces[matches[3]]["address"] = matches[1]
-				break
-			}
-		}
-	}
-
 	return interfaces, nil
 }

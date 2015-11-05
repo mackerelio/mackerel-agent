@@ -45,9 +45,6 @@ func TestInterfaceGenerate(t *testing.T) {
 	if _, ok := iface["netmask"]; !ok {
 		t.Error("interface should have netmask")
 	}
-	if _, ok := iface["address"]; !ok {
-		t.Error("interface should have address")
-	}
 	if _, ok := iface["defaultGateway"]; !ok {
 		t.Error("interface should have defaultGateway")
 	}
@@ -77,9 +74,6 @@ func TestGenerateByIfconfigCommand(t *testing.T) {
 	}
 	if _, ok := iface["netmask"]; !ok {
 		t.Log("Skip: interface should have netmask")
-	}
-	if _, ok := iface["address"]; !ok {
-		t.Log("Skip: interface should have address")
 	}
 	if _, ok := iface["defaultGateway"]; !ok {
 		t.Log("Skip: interface should have defaultGateway")
