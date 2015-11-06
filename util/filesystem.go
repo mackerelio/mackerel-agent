@@ -1,4 +1,4 @@
-// +build linux darwin freebsd
+// +build linux darwin freebsd netbsd
 
 package util
 
@@ -48,6 +48,8 @@ func init() {
 		dfOpt = []string{"-Pkl"}
 	case "freebsd":
 		dfOpt = []string{"-Pkt", "noprocfs,devfs,fdescfs,nfs,cd9660"}
+	case "netbsd":
+		dfOpt = []string{"-Pkl"}
 	default:
 		dfOpt = []string{"-P"}
 	}
