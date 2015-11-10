@@ -5,7 +5,6 @@ BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
 BUILD_LDFLAGS = "\
 	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT `git rev-parse --short HEAD` \
 	  -X github.com/mackerelio/mackerel-agent/version.VERSION   `git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/\+.*$$//'` \
-	  -X github.com/mackerelio/mackerel-agent/config.agentName \"$(MACKEREL_AGENT_NAME)\" \
 	  -X github.com/mackerelio/mackerel-agent/config.apibase \"$(MACKEREL_API_BASE)\""
 
 all: clean test build
@@ -25,7 +24,6 @@ deps:
 	go get github.com/golang/lint/golint
 	go get golang.org/x/tools/cmd/vet
 	go get golang.org/x/tools/cmd/cover
-	go get github.com/pierrre/gotestcover
 	go get github.com/laher/goxc
 	go get github.com/mattn/goveralls
 
@@ -50,7 +48,7 @@ crossbuild: deps
 	    -main-dirs-exclude ./wix
 
 cover: deps
-	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
+	tool/cover.sh
 
 rpm:
 	GOOS=linux GOARCH=386 make build
