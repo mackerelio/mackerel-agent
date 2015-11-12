@@ -71,6 +71,10 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Nov 12 2015 <y.songmu@gmail.com> - 0.25.0-1
+- Retrieve interfaces on Darwin (by itchyny)
+- add NetBSD support. (by miwarin)
+
 * Thu Nov 05 2015 <y.songmu@gmail.com> - 0.24.1-1
 - We are Mackerel (by itchyny)
 

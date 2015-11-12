@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.25.0 (2015-11-12)
+
+* Retrieve interfaces on Darwin #158 (itchyny)
+* add NetBSD support. #162 (miwarin)
+
+
 ## 0.24.1 (2015-11-05)
 
 * We are Mackerel #156 (itchyny)
