@@ -1,3 +1,12 @@
+mackerel-agent (0.25.0-1) stable; urgency=low
+
+  * Retrieve interfaces on Darwin (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/158>
+  * add NetBSD support. (by miwarin)
+    <https://github.com/mackerelio/mackerel-agent/pull/162>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 12 Nov 2015 12:34:38 +0900
+
 mackerel-agent (0.24.1-1) stable; urgency=low
 
   * We are Mackerel (by itchyny)
