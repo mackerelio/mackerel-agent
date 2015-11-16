@@ -1,6 +1,6 @@
 language: go
 go:
-- 1.4
+- 1.5
 env: PATH=/home/travis/gopath/bin:$PATH
 install:
 - sudo apt-get update
@@ -9,7 +9,6 @@ install:
 script:
 - make lint
 - make cover
-- goxc -t
 - make crossbuild
 after_script:
 - goveralls -coverprofile=.profile.cov
