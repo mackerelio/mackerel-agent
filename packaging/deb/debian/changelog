@@ -1,3 +1,12 @@
+mackerel-agent (0.25.1-1) stable; urgency=low
+
+  * Go 1.5.1 (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/164>
+  * logging STDERR of checker command (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/165>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 25 Nov 2015 10:57:07 +0900
+
 mackerel-agent (0.25.0-1) stable; urgency=low
 
   * Retrieve interfaces on Darwin (by itchyny)

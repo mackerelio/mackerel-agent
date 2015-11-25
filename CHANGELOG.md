@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.25.1 (2015-11-25)
+
+* Go 1.5.1 #164 (Songmu)
+* logging STDERR of checker command #165 (Songmu)
+
+
 ## 0.25.0 (2015-11-12)
 
 * Retrieve interfaces on Darwin #158 (itchyny)
