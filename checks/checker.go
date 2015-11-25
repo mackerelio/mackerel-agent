@@ -62,8 +62,10 @@ func (c Checker) Check() (*Report, error) {
 
 	command := c.Config.Command
 	logger.Debugf("Checker %q executing command %q", c.Name, command)
-	// NOTE(motemen): Should we consider using stderr?
-	message, _, exitCode, err := util.RunCommand(command)
+	message, stderr, exitCode, err := util.RunCommand(command)
+	if stderr != "" {
+		logger.Warningf("Checker %q output stderr: %s", c.Name, stderr)
+	}
 	if err != nil {
 		return nil, err
 	}

@@ -3,10 +3,10 @@ ARGS = "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
 
 BUILD_LDFLAGS = "\
-	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT `git rev-parse --short HEAD` \
-	  -X github.com/mackerelio/mackerel-agent/version.VERSION   `git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/\+.*$$//'` \
-	  -X github.com/mackerelio/mackerel-agent/config.agentName \"$(MACKEREL_AGENT_NAME)\" \
-	  -X github.com/mackerelio/mackerel-agent/config.apibase \"$(MACKEREL_API_BASE)\""
+	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT=`git rev-parse --short HEAD` \
+	  -X github.com/mackerelio/mackerel-agent/version.VERSION=`git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/\+.*$$//'` \
+	  -X github.com/mackerelio/mackerel-agent/config.agentName=$(MACKEREL_AGENT_NAME) \
+	  -X github.com/mackerelio/mackerel-agent/config.apibase=$(MACKEREL_API_BASE)"
 
 all: clean test build
 
@@ -45,9 +45,7 @@ lint: deps
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
-	    -os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . \
-	    -resources-include='README*,mackerel-agent.conf' -n $(BIN) \
-	    -main-dirs-exclude ./wix
+	    -os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . -n $(BIN)
 
 cover: deps
 	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
