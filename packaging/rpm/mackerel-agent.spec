@@ -71,6 +71,10 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Nov 25 2015 <y.songmu@gmail.com> - 0.25.1-1
+- Go 1.5.1 (by Songmu)
+- logging STDERR of checker command (by Songmu)
+
 * Thu Nov 12 2015 <y.songmu@gmail.com> - 0.25.0-1
 - Retrieve interfaces on Darwin (by itchyny)
 - add NetBSD support. (by miwarin)
