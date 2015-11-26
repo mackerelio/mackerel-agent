@@ -78,7 +78,10 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 			return filterErrorForRetry(lastErr)
 		})
 		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", conf.HostIDFile(), lastErr.Error())
+			if fsStorage, ok := conf.HostIDStorage.(*config.FileSystemHostIDStorage); ok {
+				return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", fsStorage.HostIDFile(), lastErr.Error())
+			}
+			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
 		}
 	}
 

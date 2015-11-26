@@ -53,6 +53,9 @@ type Config struct {
 
 	DeprecatedSensu map[string]PluginConfigs `toml:"sensu"` // DEPRECATED this is for backward compatibility
 	Include         string
+
+	// Cannot exist in configuration files
+	HostIDStorage HostIDStorage
 }
 
 // PluginConfigs represents a set of [plugin.<kind>.<name>] sections in the configuration file
@@ -213,29 +216,68 @@ func includeConfigFile(config *Config, include string) error {
 	return nil
 }
 
-const idFileName = "id"
-
-func (c Config) HostIDFile() string {
-	return filepath.Join(c.Root, idFileName)
+func (conf *Config) hostIDStorage() HostIDStorage {
+	if conf.HostIDStorage == nil {
+		conf.HostIDStorage = &FileSystemHostIDStorage{Root: conf.Root}
+	}
+	return conf.HostIDStorage
 }
 
-// LoadHostID loads the HostID of the host where the agent is running on.
-// The HostID is chosen and given by Mackerel on host registration.
-func (c Config) LoadHostID() (string, error) {
-	content, err := ioutil.ReadFile(c.HostIDFile())
+// LoadHostID loads the previously saved host id.
+func (conf *Config) LoadHostID() (string, error) {
+	return conf.hostIDStorage().LoadHostID()
+}
+
+// SaveHostID saves the host id, which may be restored by LoadHostID.
+func (conf *Config) SaveHostID(id string) error {
+	return conf.hostIDStorage().SaveHostID(id)
+}
+
+// DeleteSavedHostID deletes the host id saved by SaveHostID.
+func (conf *Config) DeleteSavedHostID() error {
+	return conf.hostIDStorage().DeleteSavedHostID()
+}
+
+// HostIDStorage is an interface which maintains persistency
+// of the "Host ID" for the current host where the agent is running on.
+// The ID is always generated and given by Mackerel (mackerel.io).
+type HostIDStorage interface {
+	LoadHostID() (string, error)
+	SaveHostID(id string) error
+	DeleteSavedHostID() error
+}
+
+// FileSystemHostIDStorage is the default HostIDStorage
+// which saves/loads the host id using an id file on the local filesystem.
+// The file will be located at /var/lib/mackerel-agent/id by default on linux.
+type FileSystemHostIDStorage struct {
+	Root string
+}
+
+const idFileName = "id"
+
+// HostIDFile is the location of the host id file.
+func (s FileSystemHostIDStorage) HostIDFile() string {
+	return filepath.Join(s.Root, idFileName)
+}
+
+// LoadHostID loads the current host ID from the mackerel-agent's id file.
+func (s FileSystemHostIDStorage) LoadHostID() (string, error) {
+	content, err := ioutil.ReadFile(s.HostIDFile())
 	if err != nil {
 		return "", err
 	}
 	return strings.TrimRight(string(content), "\r\n"), nil
 }
 
-func (c Config) SaveHostID(id string) error {
-	err := os.MkdirAll(c.Root, 0755)
+// SaveHostID saves the host ID to the mackerel-agent's id file.
+func (s FileSystemHostIDStorage) SaveHostID(id string) error {
+	err := os.MkdirAll(s.Root, 0755)
 	if err != nil {
 		return err
 	}
 
-	file, err := os.Create(c.HostIDFile())
+	file, err := os.Create(s.HostIDFile())
 	if err != nil {
 		return err
 	}
@@ -249,6 +291,7 @@ func (c Config) SaveHostID(id string) error {
 	return nil
 }
 
-func (c Config) DeleteSavedHostID() error {
-	return os.Remove(c.HostIDFile())
+// DeleteSavedHostID deletes the mackerel-agent's id file.
+func (s FileSystemHostIDStorage) DeleteSavedHostID() error {
+	return os.Remove(s.HostIDFile())
 }
