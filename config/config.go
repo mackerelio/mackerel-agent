@@ -2,7 +2,10 @@ package config
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -208,4 +211,44 @@ func includeConfigFile(config *Config, include string) error {
 	}
 
 	return nil
+}
+
+const idFileName = "id"
+
+func (c Config) HostIDFile() string {
+	return filepath.Join(c.Root, idFileName)
+}
+
+// LoadHostID loads the HostID of the host where the agent is running on.
+// The HostID is chosen and given by Mackerel on host registration.
+func (c Config) LoadHostID() (string, error) {
+	content, err := ioutil.ReadFile(c.HostIDFile())
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimRight(string(content), "\r\n"), nil
+}
+
+func (c Config) SaveHostID(id string) error {
+	err := os.MkdirAll(c.Root, 0755)
+	if err != nil {
+		return err
+	}
+
+	file, err := os.Create(c.HostIDFile())
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.Write([]byte(id))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c Config) DeleteSavedHostID() error {
+	return os.Remove(c.HostIDFile())
 }

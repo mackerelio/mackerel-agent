@@ -106,7 +106,7 @@ func doRetire(argv []string) int {
 		return exitStatusError
 	}
 
-	hostID, err := command.LoadHostID(conf.Root)
+	hostID, err := conf.LoadHostID()
 	if err != nil {
 		logger.Warningf("HostID file is not found")
 		return exitStatusError
@@ -130,7 +130,7 @@ func doRetire(argv []string) int {
 	}
 	logger.Infof("This host (hostID: %s) has been retired.", hostID)
 	// just to try to remove hostID file.
-	err = command.RemoveIDFile(conf.Root)
+	err = conf.DeleteSavedHostID()
 	if err != nil {
 		logger.Warningf("Failed to remove HostID file: %s", err)
 	}
