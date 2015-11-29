@@ -241,3 +241,34 @@ command = "bar"
 	assert(t, config.Plugin["metrics"]["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
 	assert(t, config.Plugin["metrics"]["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
 }
+
+func TestFileSystemHostIDStorage(t *testing.T) {
+	root, err := ioutil.TempDir("", "mackerel-agent-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	s := FileSystemHostIDStorage{Root: root}
+	err = s.SaveHostID("test-host-id")
+	assertNoError(t, err)
+
+	hostID, err := s.LoadHostID()
+	assertNoError(t, err)
+	assert(t, hostID == "test-host-id", "SaveHostID and LoadHostID should preserve the host id")
+
+	err = s.DeleteSavedHostID()
+	assertNoError(t, err)
+
+	_, err = s.LoadHostID()
+	assert(t, err != nil, "LoadHostID after DeleteSavedHostID must fail")
+}
+
+func TestConfig_HostIDStorage(t *testing.T) {
+	conf := Config{
+		Root: "test-root",
+	}
+
+	storage, ok := conf.hostIDStorage().(*FileSystemHostIDStorage)
+	assert(t, ok, "Default hostIDStorage must be *FileSystemHostIDStorage")
+	assert(t, storage.Root == "test-root", "FileSystemHostIDStorage must have the same Root of Config")
+}

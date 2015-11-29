@@ -4,11 +4,8 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Songmu/retry"
@@ -25,52 +22,12 @@ import (
 var logger = logging.GetLogger("command")
 var metricsInterval = 60 * time.Second
 
-const idFileName = "id"
-
-func idFilePath(root string) string {
-	return filepath.Join(root, idFileName)
-}
-
-// LoadHostID loads hostID
-func LoadHostID(root string) (string, error) {
-	content, err := ioutil.ReadFile(idFilePath(root))
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimRight(string(content), "\r\n"), nil
-}
-
-// RemoveIDFile removes idfile
-func RemoveIDFile(root string) error {
-	return os.Remove(idFilePath(root))
-}
-
-func saveHostID(root string, id string) error {
-	err := os.MkdirAll(root, 0755)
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Create(idFilePath(root))
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	_, err = file.Write([]byte(id))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
-func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, displayName string, hostSt string) (*mackerel.Host, error) {
+func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error) {
 	// XXX this configuration should be moved to under spec/linux
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
@@ -96,11 +53,11 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 	}
 
 	var result *mackerel.Host
-	if hostID, err := LoadHostID(root); err != nil { // create
+	if hostID, err := conf.LoadHostID(); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
 
 		doRetry(func() error {
-			hostID, lastErr = api.CreateHost(hostname, meta, interfaces, roleFullnames, displayName)
+			hostID, lastErr = api.CreateHost(hostname, meta, interfaces, conf.Roles, conf.DisplayName)
 			return filterErrorForRetry(lastErr)
 		})
 
@@ -121,10 +78,14 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 			return filterErrorForRetry(lastErr)
 		})
 		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), lastErr.Error())
+			if fsStorage, ok := conf.HostIDStorage.(*config.FileSystemHostIDStorage); ok {
+				return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", fsStorage.HostIDFile(), lastErr.Error())
+			}
+			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
 		}
 	}
 
+	hostSt := conf.HostStatus.OnStart
 	if hostSt != "" && hostSt != result.Status {
 		doRetry(func() error {
 			lastErr = api.UpdateHostStatus(result.ID, hostSt)
@@ -135,7 +96,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 		}
 	}
 
-	lastErr = saveHostID(root, result.ID)
+	lastErr = conf.SaveHostID(result.ID)
 	if lastErr != nil {
 		return nil, fmt.Errorf("Failed to save host ID: %s", lastErr.Error())
 	}
@@ -520,7 +481,7 @@ func Prepare(conf *config.Config) (*Context, error) {
 		return nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
 
-	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.DisplayName, conf.HostStatus.OnStart)
+	host, err := prepareHost(conf, api)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
 	}
