@@ -22,16 +22,15 @@ run: build
 
 deps:
 	go get -d -v -t ./...
-	go get github.com/golang/lint/golint
 	go get golang.org/x/tools/cmd/vet
-	go get golang.org/x/tools/cmd/cover
+	go get github.com/golang/lint/golint
 	go get github.com/pierrre/gotestcover
 	go get github.com/laher/goxc
 	go get github.com/mattn/goveralls
 
 LINT_RET = .golint.txt
 lint: deps
-	go vet ./...
+	go tool vet -all .
 	rm -f $(LINT_RET)
 	for os in "$(BUILD_OS_TARGETS)"; do \
 		if [ $$os != "windows" ]; then \
