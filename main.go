@@ -58,9 +58,10 @@ const mainProcess = ""
 
 // subcommands and processes of the mackerel-agent
 var commands = map[string](func([]string) int){
-	mainProcess: doMain,
-	"version":   doVersion,
-	"retire":    doRetire,
+	mainProcess:  doMain,
+	"version":    doVersion,
+	"retire":     doRetire,
+	"configtest": doConfigtest,
 }
 
 func doVersion(_ []string) int {
@@ -69,13 +70,17 @@ func doVersion(_ []string) int {
 	return exitStatusOK
 }
 
-func doMain(argv []string) int {
-	conf, otherOpts, err := resolveConfig(argv)
+func doConfigtest(argv []string) int {
+	conf, _ := resolveConfig(argv)
 	if conf == nil {
-		if err == nil {
-			// configtest successful
-			return exitStatusOK
-		}
+		return exitStatusError
+	}
+	return exitStatusOK
+}
+
+func doMain(argv []string) int {
+	conf, otherOpts := resolveConfig(argv)
+	if conf == nil {
 		return exitStatusError
 	}
 	if otherOpts != nil && otherOpts.printVersion {
@@ -184,7 +189,7 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 // return config.Config information.
 // As a special case, if `-version` flag is given it stops processing
 // and return true for the second return value.
-func resolveConfig(argv []string) (*config.Config, *otherOptions, error) {
+func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	conf := &config.Config{}
 	otherOptions := &otherOptions{}
 
@@ -199,7 +204,6 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions, error) {
 		diagnostic   = fs.Bool("diagnostic", false, "Enables diagnostic features")
 		runOnce      = fs.Bool("once", false, "Show spec and metrics to stdout once")
 		printVersion = fs.Bool("version", false, "Prints version and exit")
-		configTest   = fs.Bool("configtest", false, "Config test only")
 	)
 
 	var verbose bool
@@ -214,26 +218,18 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions, error) {
 
 	if *printVersion {
 		otherOptions.printVersion = true
-		return conf, otherOptions, nil
+		return conf, otherOptions
 	}
 
 	if *runOnce {
 		otherOptions.runOnce = true
-		return conf, otherOptions, nil
+		return conf, otherOptions
 	}
 
 	conf, confErr := config.LoadConfig(*conffile)
-	if *configTest {
-		if confErr != nil {
-			logger.Criticalf("Failed to load the config file: %s", confErr)
-			return nil, nil, confErr
-		}
-		return nil, nil, nil
-	}
-
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
-		return nil, nil, confErr
+		return nil, nil
 	}
 
 	// overwrite config from file by config from args
@@ -265,7 +261,7 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions, error) {
 		}
 	}
 	conf.Roles = r
-	return conf, nil, nil
+	return conf, nil
 }
 
 func createPidFile(pidfile string) error {

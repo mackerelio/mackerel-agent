@@ -30,7 +30,7 @@ diagnostic=false
 	confFile.Sync()
 	confFile.Close()
 	defer os.Remove(confFile.Name())
-	mergedConfig, _, err := resolveConfig([]string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
+	mergedConfig, _ := resolveConfig([]string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
 
 	t.Logf("      apibase: %v", mergedConfig.Apibase)
 	t.Logf("       apikey: %v", mergedConfig.Apikey)
@@ -58,7 +58,7 @@ diagnostic=false
 }
 
 func TestParseFlagsPrintVersion(t *testing.T) {
-	config, otherOptions, _ := resolveConfig([]string{"-version"})
+	config, otherOptions := resolveConfig([]string{"-version"})
 
 	if config.Verbose != false {
 		t.Error("with -version args, variables of config should have default values")
@@ -70,7 +70,7 @@ func TestParseFlagsPrintVersion(t *testing.T) {
 }
 
 func TestParseFlagsRunOnce(t *testing.T) {
-	config, otherOptions, _ := resolveConfig([]string{"-once"})
+	config, otherOptions := resolveConfig([]string{"-once"})
 
 	if config.Verbose != false {
 		t.Error("with -version args, variables of config should have default values")
@@ -186,11 +186,11 @@ func TestConfigTestOK(t *testing.T) {
 	confFile.Close()
 	defer os.Remove(confFile.Name())
 
-	argv := []string{"-conf=" + confFile.Name(), "-configtest"}
-	conf, _, err := resolveConfig(argv)
+	argv := []string{"-conf=" + confFile.Name()}
+	status := doConfigtest(argv)
 
-	if conf != nil || err != nil {
-		t.Errorf("configtest(ok) must be return conf=nil, err=nil")
+	if status != exitStatusOK {
+		t.Errorf("configtest(ok) must be return exitStatusOK")
 	}
 }
 
@@ -206,11 +206,11 @@ func TestConfigTestNotFound(t *testing.T) {
 	confFile.Close()
 	defer os.Remove(confFile.Name())
 
-	argv := []string{"-conf=" + confFile.Name() + "xxx", "-configtest"}
-	conf, _, err := resolveConfig(argv)
+	argv := []string{"-conf=" + confFile.Name() + "xxx"}
+	status := doConfigtest(argv)
 
-	if conf != nil || err == nil {
-		t.Errorf("configtest(failed) must be return conf=nil, err!=nil")
+	if status != exitStatusError {
+		t.Errorf("configtest(failed) must be return existStatusError")
 	}
 }
 
@@ -228,10 +228,10 @@ command = "bar"
 	confFile.Close()
 	defer os.Remove(confFile.Name())
 
-	argv := []string{"-conf=" + confFile.Name(), "-configtest"}
-	conf, _, err := resolveConfig(argv)
+	argv := []string{"-conf=" + confFile.Name()}
+	status := doConfigtest(argv)
 
-	if conf != nil || err == nil {
-		t.Errorf("configtest(failed) must be return conf=nil, err!=nil")
+	if status != exitStatusError {
+		t.Errorf("configtest(failed) must be return exitStatusError")
 	}
 }
