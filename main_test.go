@@ -112,6 +112,39 @@ func TestDetectForce(t *testing.T) {
 	}
 }
 
+func TestResolveConfigForRetire(t *testing.T) {
+	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		t.Fatalf("Could not create temprary config file for test")
+	}
+	confFile.WriteString(`apikey="DUMMYAPIKEY"
+`)
+	confFile.Sync()
+	confFile.Close()
+	defer os.Remove(confFile.Name())
+
+	// Allow accepting unnecessary options, pidfile, diagnostic and role.
+	// Because, these options are potentially passed in initd script by using $OTHER_OPTS.
+	argv := []string{
+		"-conf=" + confFile.Name(),
+		"-apibase=https://mackerel.io",
+		"-pidfile=hoge",
+		"-root=hoge",
+		"-verbose",
+		"-diagnostic",
+		"-apikey=hogege",
+		"-role=hoge:fuga",
+	}
+
+	conf, force, err := resolveConfigForRetire(argv)
+	if force {
+		t.Errorf("force should be false")
+	}
+	if conf.Apikey != "hogege" {
+		t.Errorf("Apikey should be 'hogege'")
+	}
+}
+
 func TestCreateAndRemovePidFile(t *testing.T) {
 	file, err := ioutil.TempFile("", "")
 	if err != nil {
