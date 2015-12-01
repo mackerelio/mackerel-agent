@@ -98,20 +98,12 @@ func doMain(argv []string) int {
 		return exitStatusOK
 	}
 
-	if conf.Apikey == "" {
-		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		return exitStatusError
-	}
 	return start(conf)
 }
 
 func doRetire(argv []string) int {
 	conf, force, err := resolveConfigForRetire(argv)
 	if err != nil {
-		return exitStatusError
-	}
-	if conf.Apikey == "" {
-		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
 		return exitStatusError
 	}
 
@@ -270,6 +262,11 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 		}
 	}
 	conf.Roles = r
+
+	if conf.Apikey == "" {
+		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
+		return nil, nil
+	}
 	return conf, nil
 }
 
