@@ -131,7 +131,7 @@ case "$1" in
         esac
         ;;
     *)
-        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status}" >&2
+        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status|configtest}" >&2
         exit 3
     ;;
 esac
