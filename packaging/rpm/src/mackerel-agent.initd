@@ -54,6 +54,24 @@ start() {
     return 0
 }
 
+configtest_q() {
+    $BIN --configtest ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1
+}
+
+configtest() {
+    echo -n $"Testing configuration of $prog: "
+
+    configtest_q
+    if [ "$?" -eq 0 ]; then
+        success
+        echo
+    else
+        failure
+        echo
+        return 1
+    fi
+}
+
 stop() {
     echo -n $"Stopping $prog: "
 
@@ -130,6 +148,7 @@ case "$1" in
         exit $retval
         ;;
     reload)
+        configtest_q || exit 1
         restart
         ;;
     restart)
@@ -138,8 +157,11 @@ case "$1" in
     status)
         rh_status
         ;;
+    configtest)
+        configtest
+        ;;
     *)
-        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        echo $"Usage: $0 {start|stop|restart|reload|status|configtest}"
         exit 2
 esac
 
