@@ -62,6 +62,7 @@ var commands = map[string](func([]string) int){
 	"version":    doVersion,
 	"retire":     doRetire,
 	"configtest": doConfigtest,
+	"once":       doOnce,
 }
 
 func doVersion(_ []string) int {
@@ -135,6 +136,16 @@ func doRetire(argv []string) int {
 	if err != nil {
 		logger.Warningf("Failed to remove HostID file: %s", err)
 	}
+	return exitStatusOK
+}
+
+func doOnce(argv []string) int {
+	argvOpt := append(argv, "-apikey=dummy")
+	conf, _ := resolveConfig(argvOpt)
+	if conf == nil {
+		return exitStatusError
+	}
+	command.RunOnce(conf)
 	return exitStatusOK
 }
 
