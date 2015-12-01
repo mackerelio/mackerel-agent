@@ -146,43 +146,52 @@ func doRetire(argv []string) int {
 	return exitStatusOK
 }
 
+func printRetireUsage() {
+	usage := fmt.Sprintf(`Usage of mackerel-agent retire:
+  -conf string
+        Config file path (Configs in this file are over-written by command line options)
+        (default "%s")
+  -force
+        force retirement without prompting
+  -apibase string
+        API base (default "%s")
+  -apikey string
+        API key from mackerel.io web site`,
+		config.DefaultConfig.Conffile,
+		config.DefaultConfig.Apibase)
+
+	fmt.Fprintln(os.Stderr, usage)
+	os.Exit(2)
+}
+
+var helpReg = regexp.MustCompile(`^--?h(?:elp)?$`)
+var forceReg = regexp.MustCompile(`^--?force$`)
+
 func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
-	fs := flag.NewFlagSet("mackerel-agent retire", flag.ExitOnError)
-	// Allow accepting unnecessary options, pidfile, diagnostic and role.
-	// Because, these options are potentially passed in initd script by using $OTHER_OPTS. dirty...
-	var (
-		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-		apibase  = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
-		_        = fs.String("pidfile", config.DefaultConfig.Pidfile, "(not used in retire)")
-		root     = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey   = fs.String("apikey", "", "API key from mackerel.io web site")
-		force    = fs.Bool("force", false, "force retirement without prompting")
-		_        = fs.Bool("diagnostic", false, "(not used in retire)")
-	)
-	var roleFullnames roleFullnamesFlag
-	fs.Var(&roleFullnames, "role", "(not used in retire)")
-	var verbose bool
-	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
-	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
-	fs.Parse(argv)
-	conf, err := config.LoadConfig(*conffile)
-	if err != nil {
-		return nil, *force, err
-	}
-	// overwrite config from file by config from args
-	fs.Visit(func(f *flag.Flag) {
-		switch f.Name {
-		case "apibase":
-			conf.Apibase = *apibase
-		case "apikey":
-			conf.Apikey = *apikey
-		case "root":
-			conf.Root = *root
-		case "verbose", "v":
-			conf.Verbose = verbose
+	optArgs := []string{}
+	isForce := false
+	for _, v := range argv {
+		if helpReg.MatchString(v) {
+			printRetireUsage()
 		}
-	})
-	return conf, *force, nil
+		if forceReg.MatchString(v) {
+			isForce = true
+			continue
+		}
+		optArgs = append(optArgs, v)
+	}
+	conf, otherOpts := resolveConfig(optArgs)
+	if conf == nil {
+		printRetireUsage()
+	}
+
+	if otherOpts != nil {
+		msg := "can't use -vesion/-once option in retire"
+		logger.Errorf(msg)
+		return nil, isForce, fmt.Errorf(msg)
+	}
+
+	return conf, isForce, nil
 }
 
 // resolveConfig parses command line arguments and loads config file to
