@@ -173,3 +173,65 @@ func TestSignalHandler(t *testing.T) {
 		t.Errorf("Something went wrong")
 	}
 }
+
+func TestConfigTestOK(t *testing.T) {
+	// prepare dummy config
+	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		t.Fatalf("Could not create temprary config file for test")
+	}
+	confFile.WriteString(`apikey="DUMMYAPIKEY"
+`)
+	confFile.Sync()
+	confFile.Close()
+	defer os.Remove(confFile.Name())
+
+	argv := []string{"-conf=" + confFile.Name()}
+	status := doConfigtest(argv)
+
+	if status != exitStatusOK {
+		t.Errorf("configtest(ok) must be return exitStatusOK")
+	}
+}
+
+func TestConfigTestNotFound(t *testing.T) {
+	// prepare dummy config
+	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		t.Fatalf("Could not create temprary config file for test")
+	}
+	confFile.WriteString(`apikey="DUMMYAPIKEY"
+`)
+	confFile.Sync()
+	confFile.Close()
+	defer os.Remove(confFile.Name())
+
+	argv := []string{"-conf=" + confFile.Name() + "xxx"}
+	status := doConfigtest(argv)
+
+	if status != exitStatusError {
+		t.Errorf("configtest(failed) must be return existStatusError")
+	}
+}
+
+func TestConfigTestInvalidFormat(t *testing.T) {
+	// prepare dummy config
+	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		t.Fatalf("Could not create temprary config file for test")
+	}
+	confFile.WriteString(`apikey="DUMMYAPIKEY"
+[plugin.checks.foo ]
+command = "bar"
+`)
+	confFile.Sync()
+	confFile.Close()
+	defer os.Remove(confFile.Name())
+
+	argv := []string{"-conf=" + confFile.Name()}
+	status := doConfigtest(argv)
+
+	if status != exitStatusError {
+		t.Errorf("configtest(failed) must be return exitStatusError")
+	}
+}

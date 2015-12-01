@@ -58,14 +58,23 @@ const mainProcess = ""
 
 // subcommands and processes of the mackerel-agent
 var commands = map[string](func([]string) int){
-	mainProcess: doMain,
-	"version":   doVersion,
-	"retire":    doRetire,
+	mainProcess:  doMain,
+	"version":    doVersion,
+	"retire":     doRetire,
+	"configtest": doConfigtest,
 }
 
 func doVersion(_ []string) int {
 	fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
 		version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
+	return exitStatusOK
+}
+
+func doConfigtest(argv []string) int {
+	conf, _ := resolveConfig(argv)
+	if conf == nil {
+		return exitStatusError
+	}
 	return exitStatusOK
 }
 

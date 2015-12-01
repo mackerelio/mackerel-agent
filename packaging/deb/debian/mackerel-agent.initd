@@ -39,6 +39,12 @@ do_start()
     return $?
 }
 
+do_configtest()
+{
+    $DAEMON configtest ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1
+    return $?
+}
+
 do_retire()
 {
     $DAEMON retire -force ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1
@@ -82,6 +88,7 @@ case "$1" in
         status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
         ;;
     reload)
+        do_configtest || exit 1
         log_daemon_msg "Restarting $DESC" "$NAME"
         do_stop
         case "$?" in
@@ -115,8 +122,16 @@ case "$1" in
             ;;
         esac
         ;;
+    configtest)
+        log_daemon_msg "Testing configuration of $NAME"
+        do_configtest
+        case "$?" in
+            0) log_end_msg 0 ;;
+            *) log_end_msg 1; exit 1;;
+        esac
+        ;;
     *)
-        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status}" >&2
+        echo "Usage: $SCRIPTNAME {start|stop|restart|reload|status|configtest}" >&2
         exit 3
     ;;
 esac
