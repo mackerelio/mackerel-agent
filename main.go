@@ -71,8 +71,8 @@ func doVersion(_ []string) int {
 }
 
 func doConfigtest(argv []string) int {
-	conf, _ := resolveConfig(argv)
-	if conf == nil {
+	conf, otherOpts := resolveConfig(argv)
+	if conf == nil || otherOpts != nil {
 		return exitStatusError
 	}
 	return exitStatusOK
