@@ -140,6 +140,7 @@ func doRetire(argv []string) int {
 }
 
 func doOnce(argv []string) int {
+	// dirty hack `resolveConfig` required apikey so fill up
 	argvOpt := append(argv, "-apikey=dummy")
 	conf, _ := resolveConfig(argvOpt)
 	if conf == nil {
@@ -208,24 +209,27 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
 
 	var (
-		conffile     = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-		apibase      = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
-		pidfile      = fs.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
-		root         = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey       = fs.String("apikey", "", "API key from mackerel.io web site")
-		diagnostic   = fs.Bool("diagnostic", false, "Enables diagnostic features")
-		runOnce      = fs.Bool("once", false, "Show spec and metrics to stdout once")
-		printVersion = fs.Bool("version", false, "Prints version and exit")
+		conffile      = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase       = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
+		pidfile       = fs.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
+		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey        = fs.String("apikey", "", "API key from mackerel.io web site")
+		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
+		verbose       bool
+		roleFullnames roleFullnamesFlag
 	)
-
-	var verbose bool
 	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
 	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
 
 	// The value of "role" option is internally "roll fullname",
 	// but we call it "role" here for ease.
-	var roleFullnames roleFullnamesFlag
 	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
+
+	// flags for otherOpts
+	var (
+		runOnce      = fs.Bool("once", false, "(DEPRECATED) Show spec and metrics to stdout once")
+		printVersion = fs.Bool("version", false, "(DEPRECATED) Prints version and exit")
+	)
 	fs.Parse(argv)
 
 	if *printVersion {
