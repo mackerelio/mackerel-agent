@@ -234,11 +234,13 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 
 	if *printVersion {
 		otherOptions.printVersion = true
+		logger.Warningf("-print option is deprecated. use subcommand instead")
 		return conf, otherOptions
 	}
 
 	if *runOnce {
 		otherOptions.runOnce = true
+		logger.Warningf("-once option is deprecated. use subcommand instead")
 		return conf, otherOptions
 	}
 
