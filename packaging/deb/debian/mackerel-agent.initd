@@ -69,65 +69,71 @@ case "$1" in
     start)
         log_daemon_msg "Starting $NAME"
         do_start
-        case "$?" in
+        retval=$?
+        case "$retval" in
             0) log_end_msg 0 ;;
-            *) log_end_msg 1 ;;
+            *) log_end_msg 1; exit $retval ;;
         esac
         ;;
     stop)
         log_daemon_msg "Stopping $DESC" "$NAME"
         do_stop
         retval=$?
-        [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && do_retire
+        [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && do_retire || exit $?
         case "$retval" in
             0|1) log_end_msg 0 ;;
-            *)   log_end_msg 1 ;;
+            *)   log_end_msg 1; exit $retval ;;
         esac
         ;;
     status)
         status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
         ;;
     reload)
-        do_configtest || exit 1
+        do_configtest || exit $?
         log_daemon_msg "Restarting $DESC" "$NAME"
         do_stop
-        case "$?" in
+        retval=$?
+        case "$retval" in
             0|1)
                 do_start
-                case "$?" in
+                retval=$?
+                case "$retval" in
                     0) log_end_msg 0 ;;
-                    *) log_end_msg 1 ;; # Failed to start
+                    *) log_end_msg 1; exit $retval ;; # Failed to start
                 esac
                 ;;
             *)
                 # Failed to stop
-                log_end_msg 1
+                log_end_msg 1; exit $retval
             ;;
         esac
         ;;
     restart)
         log_daemon_msg "Restarting $DESC" "$NAME"
         do_stop
-        case "$?" in
+        retval=$?
+        case "$retval" in
             0|1)
                 do_start
-                case "$?" in
+                retval=$?
+                case "$retval" in
                     0) log_end_msg 0 ;;
-                    *) log_end_msg 1 ;; # Failed to start
+                    *) log_end_msg 1; exit $retval ;; # Failed to start
                 esac
                 ;;
             *)
                 # Failed to stop
-                log_end_msg 1
+                log_end_msg 1; exit $retval
             ;;
         esac
         ;;
     configtest)
         log_daemon_msg "Testing configuration of $NAME"
         do_configtest
-        case "$?" in
+        retval=$?
+        case "$retval" in
             0) log_end_msg 0 ;;
-            *) log_end_msg 1; exit 1;;
+            *) log_end_msg 1; exit $retval ;;
         esac
         ;;
     *)
