@@ -213,7 +213,7 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 		apibase       = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
 		pidfile       = fs.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
 		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey        = fs.String("apikey", "", "API key from mackerel.io web site")
+		apikey        = fs.String("apikey", "", "(DEPRECATED) API key from mackerel.io web site")
 		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
 		verbose       bool
 		roleFullnames roleFullnamesFlag
@@ -256,6 +256,7 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 		case "apibase":
 			conf.Apibase = *apibase
 		case "apikey":
+			logger.Warningf("-apikey option is deprecated. use config file instead")
 			conf.Apikey = *apikey
 		case "pidfile":
 			conf.Pidfile = *pidfile
