@@ -71,6 +71,14 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Tue Dec 08 2015 <y.songmu@gmail.com> - 0.26.0-1
+- Make HostID storage replacable (by motemen)
+- Publicize command.Context's fields (by motemen)
+- Configtest (by fujiwara)
+- Refactor config loading and check if Apikey exists in configtest (by Songmu)
+- fix exit status of debian init script. (by fujiwara)
+- Deprecate version and once option (by Songmu)
+
 * Wed Nov 25 2015 <y.songmu@gmail.com> - 0.25.1-1
 - Go 1.5.1 (by Songmu)
 - logging STDERR of checker command (by Songmu)
