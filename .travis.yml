@@ -21,8 +21,8 @@ deploy:
   api_key:
     secure: NtpNjquqjnwpeVQQM1GTHTTU7YOo8fEIyoBtMf3Vf1ayZjuWVZxwNfM77E596TG52a8pnZtpapXyHT0M4e1zms7F5KVCrOEfOB0OrA4IDzoATelVqdONnN3lbRJeVJVdSmK8/FNKwjI24tQZTaTQcIOioNqh7ZRcrEYlatGCuAw=
   file:
-  - /home/travis/rpmbuild/RPMS/noarch/mackerel-agent-0.26.0-1.noarch.rpm
-  - packaging/mackerel-agent_0.26.0-1_all.deb
+  - /home/travis/rpmbuild/RPMS/noarch/mackerel-agent-0.26.1-1.noarch.rpm
+  - packaging/mackerel-agent_0.26.1-1_all.deb
   - snapshot/mackerel-agent_darwin_386.zip
   - snapshot/mackerel-agent_darwin_amd64.zip
   - snapshot/mackerel-agent_freebsd_386.zip
