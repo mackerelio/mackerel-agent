@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.26.1 (2015-12-09)
+
+* fix deprecate message #176 (Songmu)
+
+
 ## 0.26.0 (2015-12-08)
 
 * Make HostID storage replacable #167 (motemen)

@@ -1,3 +1,10 @@
+mackerel-agent (0.26.1-1) stable; urgency=low
+
+  * fix deprecate message (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/176>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 09 Dec 2015 15:20:47 +0900
+
 mackerel-agent (0.26.0-1) stable; urgency=low
 
   * Make HostID storage replacable (by motemen)

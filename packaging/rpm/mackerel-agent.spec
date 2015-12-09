@@ -71,6 +71,9 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Dec 09 2015 <y.songmu@gmail.com> - 0.26.1-1
+- fix deprecate message (by Songmu)
+
 * Tue Dec 08 2015 <y.songmu@gmail.com> - 0.26.0-1
 - Make HostID storage replacable (by motemen)
 - Publicize command.Context's fields (by motemen)
