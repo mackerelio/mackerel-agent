@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.26.1
+Version:   0.26.2
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -71,6 +71,9 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Dec 10 2015 <y.songmu@gmail.com> - 0.26.2-1
+- output success message to stderr when configtest succeed (by Songmu)
+
 * Wed Dec 09 2015 <y.songmu@gmail.com> - 0.26.1-1
 - fix deprecate message (by Songmu)
 
