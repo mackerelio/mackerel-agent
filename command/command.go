@@ -4,11 +4,8 @@ import (
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math"
 	"os"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/Songmu/retry"
@@ -25,52 +22,12 @@ import (
 var logger = logging.GetLogger("command")
 var metricsInterval = 60 * time.Second
 
-const idFileName = "id"
-
-func idFilePath(root string) string {
-	return filepath.Join(root, idFileName)
-}
-
-// LoadHostID loads hostID
-func LoadHostID(root string) (string, error) {
-	content, err := ioutil.ReadFile(idFilePath(root))
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimRight(string(content), "\r\n"), nil
-}
-
-// RemoveIDFile removes idfile
-func RemoveIDFile(root string) error {
-	return os.Remove(idFilePath(root))
-}
-
-func saveHostID(root string, id string) error {
-	err := os.MkdirAll(root, 0755)
-	if err != nil {
-		return err
-	}
-
-	file, err := os.Create(idFilePath(root))
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	_, err = file.Write([]byte(id))
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
-func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks []string, displayName string, hostSt string) (*mackerel.Host, error) {
+func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error) {
 	// XXX this configuration should be moved to under spec/linux
 	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
 	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
@@ -96,11 +53,11 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 	}
 
 	var result *mackerel.Host
-	if hostID, err := LoadHostID(root); err != nil { // create
+	if hostID, err := conf.LoadHostID(); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
 
 		doRetry(func() error {
-			hostID, lastErr = api.CreateHost(hostname, meta, interfaces, roleFullnames, displayName)
+			hostID, lastErr = api.CreateHost(hostname, meta, interfaces, conf.Roles, conf.DisplayName)
 			return filterErrorForRetry(lastErr)
 		})
 
@@ -121,10 +78,14 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 			return filterErrorForRetry(lastErr)
 		})
 		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", idFilePath(root), lastErr.Error())
+			if fsStorage, ok := conf.HostIDStorage.(*config.FileSystemHostIDStorage); ok {
+				return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", fsStorage.HostIDFile(), lastErr.Error())
+			}
+			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
 		}
 	}
 
+	hostSt := conf.HostStatus.OnStart
 	if hostSt != "" && hostSt != result.Status {
 		doRetry(func() error {
 			lastErr = api.UpdateHostStatus(result.ID, hostSt)
@@ -135,7 +96,7 @@ func prepareHost(root string, api *mackerel.API, roleFullnames []string, checks 
 		}
 	}
 
-	lastErr = saveHostID(root, result.ID)
+	lastErr = conf.SaveHostID(result.ID)
 	if lastErr != nil {
 		return nil, fmt.Errorf("Failed to save host ID: %s", lastErr.Error())
 	}
@@ -153,10 +114,10 @@ func delayByHost(host *mackerel.Host) int {
 
 // Context context object
 type Context struct {
-	ag   *agent.Agent
-	conf *config.Config
-	host *mackerel.Host
-	api  *mackerel.API
+	Agent  *agent.Agent
+	Config *config.Config
+	Host   *mackerel.Host
+	API    *mackerel.API
 }
 
 type postValue struct {
@@ -185,17 +146,17 @@ func loop(c *Context, termCh chan struct{}) int {
 	// Periodically update host specs.
 	go updateHostSpecsLoop(c, quit)
 
-	postQueue := make(chan *postValue, c.conf.Connection.PostMetricsBufferSize)
+	postQueue := make(chan *postValue, c.Config.Connection.PostMetricsBufferSize)
 	go enqueueLoop(c, postQueue, quit)
 
-	postDelaySeconds := delayByHost(c.host)
+	postDelaySeconds := delayByHost(c.Host)
 	initialDelay := postDelaySeconds / 2
 	logger.Debugf("wait %d seconds before initial posting.", initialDelay)
 	select {
 	case <-termCh:
 		return 0
 	case <-time.After(time.Duration(initialDelay) * time.Second):
-		c.ag.InitPluginGenerators(c.api)
+		c.Agent.InitPluginGenerators(c.API)
 	}
 
 	termCheckerCh := make(chan struct{})
@@ -236,10 +197,10 @@ func loop(c *Context, termCh chan struct{}) int {
 			case loopStateFirst: // request immediately to create graph defs of host
 				// nop
 			case loopStateQueued:
-				delaySeconds = c.conf.Connection.PostMetricsDequeueDelaySeconds
+				delaySeconds = c.Config.Connection.PostMetricsDequeueDelaySeconds
 			case loopStateHadError:
 				// TODO: better interval calculation. exponential backoff or so.
-				delaySeconds = c.conf.Connection.PostMetricsRetryDelaySeconds
+				delaySeconds = c.Config.Connection.PostMetricsRetryDelaySeconds
 			case loopStateTerminating:
 				// dequeue and post every one second when terminating.
 				delaySeconds = 1
@@ -278,7 +239,7 @@ func loop(c *Context, termCh chan struct{}) int {
 			for _, v := range origPostValues {
 				postValues = append(postValues, v.values...)
 			}
-			err := c.api.PostMetricsValues(postValues)
+			err := c.API.PostMetricsValues(postValues)
 			if err != nil {
 				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
 				if lState != loopStateTerminating {
@@ -289,7 +250,7 @@ func loop(c *Context, termCh chan struct{}) int {
 						v.retryCnt++
 						// It is difficult to distinguish the error is server error or data error.
 						// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
-						if v.retryCnt > c.conf.Connection.PostMetricsRetryMax {
+						if v.retryCnt > c.Config.Connection.PostMetricsRetryMax {
 							json, err := json.Marshal(v.values)
 							if err != nil {
 								logger.Errorf("Something wrong with post values. marshaling failed.")
@@ -325,7 +286,7 @@ func updateHostSpecsLoop(c *Context, quit chan struct{}) {
 }
 
 func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
-	metricsResult := c.ag.Watch()
+	metricsResult := c.Agent.Watch()
 	for {
 		select {
 		case <-quit:
@@ -335,14 +296,14 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 			creatingValues := [](*mackerel.CreatingMetricsValue){}
 			for name, value := range (map[string]float64)(result.Values) {
 				if math.IsNaN(value) || math.IsInf(value, 0) {
-					logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", c.host.ID, name, value)
+					logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", c.Host.ID, name, value)
 					continue
 				}
 
 				creatingValues = append(
 					creatingValues,
 					&mackerel.CreatingMetricsValue{
-						HostID: c.host.ID,
+						HostID: c.Host.ID,
 						Name:   name,
 						Time:   created,
 						Value:  value,
@@ -363,7 +324,7 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 		checkReportCh          chan *checks.Report
 		reportCheckImmediateCh chan struct{}
 	)
-	for _, checker := range c.ag.Checkers {
+	for _, checker := range c.Agent.Checkers {
 		if checkReportCh == nil {
 			checkReportCh = make(chan *checks.Report)
 			reportCheckImmediateCh = make(chan struct{})
@@ -439,7 +400,7 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 					continue
 				}
 
-				err := c.api.ReportCheckMonitors(c.host.ID, reports)
+				err := c.API.ReportCheckMonitors(c.Host.ID, reports)
 				if err != nil {
 					logger.Errorf("ReportCheckMonitors: %s", err)
 
@@ -496,13 +457,13 @@ func (c *Context) UpdateHostSpecs() {
 		return
 	}
 
-	err = c.api.UpdateHost(c.host.ID, mackerel.HostSpec{
+	err = c.API.UpdateHost(c.Host.ID, mackerel.HostSpec{
 		Name:          hostname,
 		Meta:          meta,
 		Interfaces:    interfaces,
-		RoleFullnames: c.conf.Roles,
-		Checks:        c.conf.CheckNames(),
-		DisplayName:   c.conf.DisplayName,
+		RoleFullnames: c.Config.Roles,
+		Checks:        c.Config.CheckNames(),
+		DisplayName:   c.Config.DisplayName,
 	})
 
 	if err != nil {
@@ -520,16 +481,16 @@ func Prepare(conf *config.Config) (*Context, error) {
 		return nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
 	}
 
-	host, err := prepareHost(conf.Root, api, conf.Roles, conf.CheckNames(), conf.DisplayName, conf.HostStatus.OnStart)
+	host, err := prepareHost(conf, api)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
 	}
 
 	return &Context{
-		ag:   NewAgent(conf),
-		conf: conf,
-		host: host,
-		api:  api,
+		Agent:  NewAgent(conf),
+		Config: conf,
+		Host:   host,
+		API:    api,
 	}, nil
 }
 
@@ -588,12 +549,12 @@ func NewAgent(conf *config.Config) *agent.Agent {
 
 // Run starts the main metric collecting logic and this function will never return.
 func Run(c *Context, termCh chan struct{}) int {
-	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", c.conf.Apibase, c.host.Name, c.host.ID)
+	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", c.Config.Apibase, c.Host.Name, c.Host.ID)
 
 	exitCode := loop(c, termCh)
-	if exitCode == 0 && c.conf.HostStatus.OnStop != "" {
+	if exitCode == 0 && c.Config.HostStatus.OnStop != "" {
 		// TOOD error handling. supoprt retire(?)
-		err := c.api.UpdateHostStatus(c.host.ID, c.conf.HostStatus.OnStop)
+		err := c.API.UpdateHostStatus(c.Host.ID, c.Config.HostStatus.OnStop)
 		if err != nil {
 			logger.Errorf("Failed update host status on stop: %s", err)
 		}

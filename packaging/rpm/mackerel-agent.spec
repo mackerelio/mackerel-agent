@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.25.1
+Version:   0.26.2
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -71,6 +71,20 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Dec 10 2015 <y.songmu@gmail.com> - 0.26.2-1
+- output success message to stderr when configtest succeed (by Songmu)
+
+* Wed Dec 09 2015 <y.songmu@gmail.com> - 0.26.1-1
+- fix deprecate message (by Songmu)
+
+* Tue Dec 08 2015 <y.songmu@gmail.com> - 0.26.0-1
+- Make HostID storage replacable (by motemen)
+- Publicize command.Context's fields (by motemen)
+- Configtest (by fujiwara)
+- Refactor config loading and check if Apikey exists in configtest (by Songmu)
+- fix exit status of debian init script. (by fujiwara)
+- Deprecate version and once option (by Songmu)
+
 * Wed Nov 25 2015 <y.songmu@gmail.com> - 0.25.1-1
 - Go 1.5.1 (by Songmu)
 - logging STDERR of checker command (by Songmu)

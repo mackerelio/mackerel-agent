@@ -107,8 +107,8 @@ func TestPrepareWithCreate(t *testing.T) {
 	}
 
 	c, _ := Prepare(&conf)
-	api := c.api
-	host := c.host
+	api := c.API
+	host := c.Host
 
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
@@ -151,7 +151,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 	defer ts.Close()
 	tempDir, _ := ioutil.TempDir("", "")
 	conf.Root = tempDir
-	saveHostID(tempDir, "xxx12345678901")
+	conf.SaveHostID("xxx12345678901")
 
 	mockHandlers["PUT /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
@@ -171,8 +171,8 @@ func TestPrepareWithUpdate(t *testing.T) {
 	}
 
 	c, _ := Prepare(&conf)
-	api := c.api
-	host := c.host
+	api := c.API
+	host := c.Host
 
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
@@ -311,10 +311,10 @@ func TestLoop(t *testing.T) {
 	termCh := make(chan struct{})
 	exitCh := make(chan int)
 	c := &Context{
-		ag:   ag,
-		conf: &conf,
-		api:  api,
-		host: host,
+		Agent:  ag,
+		Config: &conf,
+		API:    api,
+		Host:   host,
 	}
 	// Start looping!
 	go func() {

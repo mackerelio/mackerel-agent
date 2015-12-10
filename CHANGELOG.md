@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.26.2 (2015-12-10)
+
+* output success message to stderr when configtest succeed #178 (Songmu)
+
+
+## 0.26.1 (2015-12-09)
+
+* fix deprecate message #176 (Songmu)
+
+
+## 0.26.0 (2015-12-08)
+
+* Make HostID storage replacable #167 (motemen)
+* Publicize command.Context's fields #168 (motemen)
+* Configtest #169 (fujiwara)
+* Refactor config loading and check if Apikey exists in configtest #171 (Songmu)
+* fix exit status of debian init script. #172 (fujiwara)
+* Deprecate version and once option #173 (Songmu)
+
+
 ## 0.25.1 (2015-11-25)
 
 * Go 1.5.1 #164 (Songmu)

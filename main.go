@@ -58,14 +58,25 @@ const mainProcess = ""
 
 // subcommands and processes of the mackerel-agent
 var commands = map[string](func([]string) int){
-	mainProcess: doMain,
-	"version":   doVersion,
-	"retire":    doRetire,
+	mainProcess:  doMain,
+	"version":    doVersion,
+	"retire":     doRetire,
+	"configtest": doConfigtest,
+	"once":       doOnce,
 }
 
 func doVersion(_ []string) int {
 	fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
 		version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
+	return exitStatusOK
+}
+
+func doConfigtest(argv []string) int {
+	conf, otherOpts := resolveConfig(argv)
+	if conf == nil || otherOpts != nil {
+		return exitStatusError
+	}
+	fmt.Fprintf(os.Stderr, "%s Syntax OK\n", conf.Conffile)
 	return exitStatusOK
 }
 
@@ -89,10 +100,6 @@ func doMain(argv []string) int {
 		return exitStatusOK
 	}
 
-	if conf.Apikey == "" {
-		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		return exitStatusError
-	}
 	return start(conf)
 }
 
@@ -101,12 +108,8 @@ func doRetire(argv []string) int {
 	if err != nil {
 		return exitStatusError
 	}
-	if conf.Apikey == "" {
-		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		return exitStatusError
-	}
 
-	hostID, err := command.LoadHostID(conf.Root)
+	hostID, err := conf.LoadHostID()
 	if err != nil {
 		logger.Warningf("HostID file is not found")
 		return exitStatusError
@@ -130,50 +133,70 @@ func doRetire(argv []string) int {
 	}
 	logger.Infof("This host (hostID: %s) has been retired.", hostID)
 	// just to try to remove hostID file.
-	err = command.RemoveIDFile(conf.Root)
+	err = conf.DeleteSavedHostID()
 	if err != nil {
 		logger.Warningf("Failed to remove HostID file: %s", err)
 	}
 	return exitStatusOK
 }
 
-func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
-	fs := flag.NewFlagSet("mackerel-agent retire", flag.ExitOnError)
-	// Allow accepting unnecessary options, pidfile, diagnostic and role.
-	// Because, these options are potentially passed in initd script by using $OTHER_OPTS. dirty...
-	var (
-		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-		apibase  = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
-		_        = fs.String("pidfile", config.DefaultConfig.Pidfile, "(not used in retire)")
-		root     = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey   = fs.String("apikey", "", "API key from mackerel.io web site")
-		force    = fs.Bool("force", false, "force retirement without prompting")
-		_        = fs.Bool("diagnostic", false, "(not used in retire)")
-	)
-	var roleFullnames roleFullnamesFlag
-	fs.Var(&roleFullnames, "role", "(not used in retire)")
-	var verbose bool
-	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
-	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
-	fs.Parse(argv)
-	conf, err := config.LoadConfig(*conffile)
-	if err != nil {
-		return nil, *force, err
+func doOnce(argv []string) int {
+	// dirty hack `resolveConfig` required apikey so fill up
+	argvOpt := append(argv, "-apikey=dummy")
+	conf, _ := resolveConfig(argvOpt)
+	if conf == nil {
+		return exitStatusError
 	}
-	// overwrite config from file by config from args
-	fs.Visit(func(f *flag.Flag) {
-		switch f.Name {
-		case "apibase":
-			conf.Apibase = *apibase
-		case "apikey":
-			conf.Apikey = *apikey
-		case "root":
-			conf.Root = *root
-		case "verbose", "v":
-			conf.Verbose = verbose
+	command.RunOnce(conf)
+	return exitStatusOK
+}
+
+func printRetireUsage() {
+	usage := fmt.Sprintf(`Usage of mackerel-agent retire:
+  -conf string
+        Config file path (Configs in this file are over-written by command line options)
+        (default "%s")
+  -force
+        force retirement without prompting
+  -apibase string
+        API base (default "%s")
+  -apikey string
+        API key from mackerel.io web site`,
+		config.DefaultConfig.Conffile,
+		config.DefaultConfig.Apibase)
+
+	fmt.Fprintln(os.Stderr, usage)
+	os.Exit(2)
+}
+
+var helpReg = regexp.MustCompile(`^--?h(?:elp)?$`)
+var forceReg = regexp.MustCompile(`^--?force$`)
+
+func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
+	optArgs := []string{}
+	isForce := false
+	for _, v := range argv {
+		if helpReg.MatchString(v) {
+			printRetireUsage()
 		}
-	})
-	return conf, *force, nil
+		if forceReg.MatchString(v) {
+			isForce = true
+			continue
+		}
+		optArgs = append(optArgs, v)
+	}
+	conf, otherOpts := resolveConfig(optArgs)
+	if conf == nil {
+		printRetireUsage()
+	}
+
+	if otherOpts != nil {
+		msg := "can't use -vesion/-once option in retire"
+		logger.Errorf(msg)
+		return nil, isForce, fmt.Errorf(msg)
+	}
+
+	return conf, isForce, nil
 }
 
 // resolveConfig parses command line arguments and loads config file to
@@ -187,37 +210,43 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
 
 	var (
-		conffile     = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
-		apibase      = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
-		pidfile      = fs.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
-		root         = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
-		apikey       = fs.String("apikey", "", "API key from mackerel.io web site")
-		diagnostic   = fs.Bool("diagnostic", false, "Enables diagnostic features")
-		runOnce      = fs.Bool("once", false, "Show spec and metrics to stdout once")
-		printVersion = fs.Bool("version", false, "Prints version and exit")
+		conffile      = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		apibase       = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
+		pidfile       = fs.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
+		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		apikey        = fs.String("apikey", "", "(DEPRECATED) API key from mackerel.io web site")
+		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
+		verbose       bool
+		roleFullnames roleFullnamesFlag
 	)
-
-	var verbose bool
 	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
 	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
 
 	// The value of "role" option is internally "roll fullname",
 	// but we call it "role" here for ease.
-	var roleFullnames roleFullnamesFlag
 	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
+
+	// flags for otherOpts
+	var (
+		runOnce      = fs.Bool("once", false, "(DEPRECATED) Show spec and metrics to stdout once")
+		printVersion = fs.Bool("version", false, "(DEPRECATED) Prints version and exit")
+	)
 	fs.Parse(argv)
 
 	if *printVersion {
 		otherOptions.printVersion = true
+		logger.Warningf("-version option is deprecated. use subcommand (`%% mackerel-agent version`) instead")
 		return conf, otherOptions
 	}
 
 	if *runOnce {
 		otherOptions.runOnce = true
+		logger.Warningf("-once option is deprecated. use subcommand (`%% mackerel-agent once`) instead")
 		return conf, otherOptions
 	}
 
 	conf, confErr := config.LoadConfig(*conffile)
+	conf.Conffile = *conffile
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
 		return nil, nil
@@ -229,6 +258,7 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 		case "apibase":
 			conf.Apibase = *apibase
 		case "apikey":
+			logger.Warningf("-apikey option is deprecated. use config file instead")
 			conf.Apikey = *apikey
 		case "pidfile":
 			conf.Pidfile = *pidfile
@@ -252,6 +282,11 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 		}
 	}
 	conf.Roles = r
+
+	if conf.Apikey == "" {
+		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
+		return nil, nil
+	}
 	return conf, nil
 }
 

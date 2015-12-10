@@ -1,5 +1,5 @@
 #!/bin/sh
-set -ex
+set -e
 
 deploykey=~/.ssh/deploy.key
 
