@@ -1,3 +1,10 @@
+mackerel-agent (0.26.2-1) stable; urgency=low
+
+  * output success message to stderr when configtest succeed (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/178>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 10 Dec 2015 11:15:21 +0900
+
 mackerel-agent (0.26.1-1) stable; urgency=low
 
   * fix deprecate message (by Songmu)

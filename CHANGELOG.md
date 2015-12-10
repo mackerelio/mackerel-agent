@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.26.2 (2015-12-10)
+
+* output success message to stderr when configtest succeed #178 (Songmu)
+
+
 ## 0.26.1 (2015-12-09)
 
 * fix deprecate message #176 (Songmu)
