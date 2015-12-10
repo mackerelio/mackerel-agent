@@ -76,6 +76,7 @@ func doConfigtest(argv []string) int {
 	if conf == nil || otherOpts != nil {
 		return exitStatusError
 	}
+	fmt.Fprintf(os.Stderr, "%s Syntax OK\n", conf.Conffile)
 	return exitStatusOK
 }
 
@@ -245,6 +246,7 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	}
 
 	conf, confErr := config.LoadConfig(*conffile)
+	conf.Conffile = *conffile
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
 		return nil, nil
