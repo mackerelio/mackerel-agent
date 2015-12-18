@@ -6,13 +6,13 @@ package util
 
 import (
 	"bufio"
-	"bytes"
 	"os/exec"
 	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
 
+	"github.com/Songmu/timeout"
 	"github.com/mackerelio/mackerel-agent/logging"
 )
 
@@ -59,15 +59,20 @@ func init() {
 func CollectDfValues(dfColumnSpecs []DfColumnSpec) (map[string]map[string]interface{}, error) {
 	cmd := exec.Command("df", dfOpt...)
 	cmd.Env = append(cmd.Env, "LANG=C")
-
+	tio := &timeout.Timeout{
+		Cmd:       cmd,
+		Duration:  15,
+		KillAfter: 5,
+	}
 	// Ignores exit status in case that df returns exit status 1
 	// when the agent does not have permission to access file system info.
-	out, err := cmd.Output()
+	_, stdout, _, err := tio.Run()
+
 	if err != nil {
 		logger.Warningf("'df %s' command exited with a non-zero status: '%s'", strings.Join(dfOpt, " "), err)
 	}
 
-	lineScanner := bufio.NewScanner(bytes.NewReader(out))
+	lineScanner := bufio.NewScanner(strings.NewReader(stdout))
 	filesystems := make(map[string]map[string]interface{})
 
 DF_LINES:
