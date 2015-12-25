@@ -16,7 +16,7 @@ type checkReport struct {
 	Status               checks.Status     `json:"status"`
 	Message              string            `json:"message"`
 	OccurredAt           Time              `json:"occurredAt"`
-	NotificationInterval *int32            `json:"notificationInterval"`
+	NotificationInterval *int32            `json:"notificationInterval,omitempty"`
 }
 
 type monitorTargetHost struct {
