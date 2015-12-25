@@ -64,7 +64,8 @@ type PluginConfigs map[string]PluginConfig
 
 // PluginConfig represents a section of [plugin.*].
 type PluginConfig struct {
-	Command string
+	Command              string
+	NotificationInterval *int32 `toml:"notification_interval"`
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
