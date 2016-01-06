@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.26.2
+Version:   0.27.0
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -71,6 +71,10 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Jan 06 2016 <y.songmu@gmail.com> - 0.27.0-1
+- use timeout when calling `df` (by Songmu)
+- Notification Interval for check monitoring (by itchyny)
+
 * Thu Dec 10 2015 <y.songmu@gmail.com> - 0.26.2-1
 - output success message to stderr when configtest succeed (by Songmu)
 

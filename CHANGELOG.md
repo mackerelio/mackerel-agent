@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.27.0 (2016-01-06)
+
+* use timeout when calling `df` #180 (Songmu)
+* Notification Interval for check monitoring #181 (itchyny)
+
+
 ## 0.26.2 (2015-12-10)
 
 * output success message to stderr when configtest succeed #178 (Songmu)
