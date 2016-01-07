@@ -11,11 +11,12 @@ type monitoringChecksPayload struct {
 }
 
 type checkReport struct {
-	Source     monitorTargetHost `json:"source"`
-	Name       string            `json:"name"`
-	Status     checks.Status     `json:"status"`
-	Message    string            `json:"message"`
-	OccurredAt Time              `json:"occurredAt"`
+	Source               monitorTargetHost `json:"source"`
+	Name                 string            `json:"name"`
+	Status               checks.Status     `json:"status"`
+	Message              string            `json:"message"`
+	OccurredAt           Time              `json:"occurredAt"`
+	NotificationInterval *int32            `json:"notificationInterval,omitempty"`
 }
 
 type monitorTargetHost struct {
@@ -37,11 +38,12 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 	}
 	for i, report := range reports {
 		payload.Reports[i] = &checkReport{
-			Source:     monitorTargetHost{HostID: hostID},
-			Name:       report.Name,
-			Status:     report.Status,
-			Message:    report.Message,
-			OccurredAt: Time(report.OccurredAt),
+			Source:               monitorTargetHost{HostID: hostID},
+			Name:                 report.Name,
+			Status:               report.Status,
+			Message:              report.Message,
+			OccurredAt:           Time(report.OccurredAt),
+			NotificationInterval: report.NotificationInterval,
 		}
 	}
 	resp, err := api.postJSON("/api/v0/monitoring/checks/report", payload)
