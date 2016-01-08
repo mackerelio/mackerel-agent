@@ -71,6 +71,9 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Fri Jan 08 2016 <y.songmu@gmail.com> - 0.27.1-1
+- [bugfix] fix timeout interval when calling `df` (by Songmu)
+
 * Wed Jan 06 2016 <y.songmu@gmail.com> - 0.27.0-1
 - use timeout when calling `df` (by Songmu)
 - Notification Interval for check monitoring (by itchyny)
