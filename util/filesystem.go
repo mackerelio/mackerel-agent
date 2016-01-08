@@ -11,6 +11,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Songmu/timeout"
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -61,8 +62,8 @@ func CollectDfValues(dfColumnSpecs []DfColumnSpec) (map[string]map[string]interf
 	cmd.Env = append(cmd.Env, "LANG=C")
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
-		Duration:  15,
-		KillAfter: 5,
+		Duration:  15 * time.Second,
+		KillAfter: 5 * time.Second,
 	}
 	// Ignores exit status in case that df returns exit status 1
 	// when the agent does not have permission to access file system info.

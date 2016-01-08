@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.27.1 (2016-01-08)
+
+* [bugfix] fix timeout interval when calling `df` #184 (Songmu)
+
+
 ## 0.27.0 (2016-01-06)
 
 * use timeout when calling `df` #180 (Songmu)
