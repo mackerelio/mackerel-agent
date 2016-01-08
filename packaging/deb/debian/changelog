@@ -1,3 +1,10 @@
+mackerel-agent (0.27.1-1) stable; urgency=low
+
+  * [bugfix] fix timeout interval when calling `df` (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/184>
+
+ -- Songmu <y.songmu@gmail.com>  Fri, 08 Jan 2016 15:20:24 +0900
+
 mackerel-agent (0.27.0-1) stable; urgency=low
 
   * use timeout when calling `df` (by Songmu)
