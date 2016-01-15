@@ -17,6 +17,7 @@ type checkReport struct {
 	Message              string            `json:"message"`
 	OccurredAt           Time              `json:"occurredAt"`
 	NotificationInterval *int32            `json:"notificationInterval,omitempty"`
+	MaxCheckAttempts     *int32            `json:"maxCheckAttempts,omitempty"`
 }
 
 type monitorTargetHost struct {
@@ -44,6 +45,7 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 			Message:              report.Message,
 			OccurredAt:           Time(report.OccurredAt),
 			NotificationInterval: report.NotificationInterval,
+			MaxCheckAttempts:     report.MaxCheckAttempts,
 		}
 	}
 	resp, err := api.postJSON("/api/v0/monitoring/checks/report", payload)
