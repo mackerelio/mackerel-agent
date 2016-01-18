@@ -28,6 +28,7 @@ type = "metric"
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
 notification_interval = 60
+max_check_attempts = 3
 `
 
 func TestLoadConfig(t *testing.T) {
@@ -169,6 +170,9 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if *checks.NotificationInterval != 60 {
 		t.Error("notification_interval should be 60")
+	}
+	if *checks.MaxCheckAttempts != 3 {
+		t.Error("max_check_attempts should be 3")
 	}
 }
 
