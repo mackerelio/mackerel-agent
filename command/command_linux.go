@@ -8,13 +8,13 @@ import (
 	specLinux "github.com/mackerelio/mackerel-agent/spec/linux"
 )
 
-func specGenerators() []spec.Generator {
+func specGenerators(conf *config.Config) []spec.Generator {
 	return []spec.Generator{
 		&specLinux.KernelGenerator{},
 		&specLinux.CPUGenerator{},
 		&specLinux.MemoryGenerator{},
 		&specLinux.BlockDeviceGenerator{},
-		&specLinux.FilesystemGenerator{},
+		&specLinux.FilesystemGenerator{Ignore: conf.Filesystems.Ignore},
 	}
 }
 
@@ -30,7 +30,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsLinux.UptimeGenerator{},
 		&metricsLinux.InterfaceGenerator{Interval: metricsInterval},
 		&metricsLinux.DiskGenerator{Interval: metricsInterval},
-		&metricsLinux.FilesystemGenerator{},
+		&metricsLinux.FilesystemGenerator{Ignore: conf.Filesystems.Ignore},
 	}
 
 	return generators
