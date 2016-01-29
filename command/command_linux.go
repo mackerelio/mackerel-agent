@@ -8,13 +8,13 @@ import (
 	specLinux "github.com/mackerelio/mackerel-agent/spec/linux"
 )
 
-func specGenerators(conf *config.Config) []spec.Generator {
+func specGenerators() []spec.Generator {
 	return []spec.Generator{
 		&specLinux.KernelGenerator{},
 		&specLinux.CPUGenerator{},
 		&specLinux.MemoryGenerator{},
 		&specLinux.BlockDeviceGenerator{},
-		&specLinux.FilesystemGenerator{Ignore: conf.Filesystems.Ignore},
+		&specLinux.FilesystemGenerator{},
 	}
 }
 
