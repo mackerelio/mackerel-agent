@@ -6,6 +6,7 @@ package util
 
 import (
 	"bufio"
+	"os"
 	"os/exec"
 	"regexp"
 	"runtime"
@@ -59,7 +60,7 @@ func init() {
 // CollectDfValues XXX
 func CollectDfValues(dfColumnSpecs []DfColumnSpec) (map[string]map[string]interface{}, error) {
 	cmd := exec.Command("df", dfOpt...)
-	cmd.Env = append(cmd.Env, "LANG=C")
+	cmd.Env = append(os.Environ(), "LANG=C")
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  15 * time.Second,
