@@ -2,8 +2,6 @@ package main
 
 import (
 	"bufio"
-	"code.google.com/p/winsvc/eventlog"
-	"code.google.com/p/winsvc/svc"
 	"io"
 	"log"
 	"os/exec"
@@ -11,6 +9,9 @@ import (
 	"regexp"
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/windows/svc"
+	"golang.org/x/sys/windows/svc/eventlog"
 )
 
 const name = "mackerel-agent"
@@ -84,7 +85,7 @@ func (h *handler) stop() error {
 	return nil
 }
 
-// implement https://godoc.org/code.google.com/p/winsvc/svc#Handler
+// implement https://godoc.org/golang.org/x/sys/windows/svc#Handler
 func (h *handler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- svc.Status) (svcSpecificEC bool, exitCode uint32) {
 	s <- svc.Status{State: svc.StartPending}
 	defer func() {
