@@ -14,6 +14,9 @@ apikey = "abcde"
 display_name = "fghij"
 diagnostic = true
 
+[filesystems]
+ignore = "/dev/ram.*"
+
 [connection]
 post_metrics_retry_delay_seconds = 600
 post_metrics_retry_max = 5
@@ -110,6 +113,29 @@ func TestLoadConfigWithHostStatus(t *testing.T) {
 
 	if config.HostStatus.OnStop != "poweroff" {
 		t.Error(`HostStatus.OnStop should be "poweroff"`)
+	}
+}
+
+var sampleConfigWithInvalidIgnoreRegexp = `
+apikey = "abcde"
+display_name = "fghij"
+
+[filesystems]
+ignore = "**"
+`
+
+func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
+	tmpFile, err := ioutil.TempFile("", "")
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfigWithInvalidIgnoreRegexp), 0644); err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: %v", err)
 	}
 }
 

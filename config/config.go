@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -91,7 +92,19 @@ type HostStatus struct {
 
 // Filesystems configure filesystem related settings
 type Filesystems struct {
-	Ignore string `toml:"ignore"`
+	Ignore Regexpwrapper `toml:"ignore"`
+}
+
+// Regexpwrapper is a wrapper type for marshalling string
+type Regexpwrapper struct {
+	*regexp.Regexp
+}
+
+// UnmarshalText for compiling regexp string while loading toml
+func (r *Regexpwrapper) UnmarshalText(text []byte) error {
+	var err error
+	r.Regexp, err = regexp.Compile(string(text))
+	return err
 }
 
 // CheckNames return list of plugin.checks._name_
