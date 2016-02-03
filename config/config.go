@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -44,8 +45,9 @@ type Config struct {
 	Verbose     bool
 	Diagnostic  bool `toml:"diagnostic"`
 	Connection  ConnectionConfig
-	DisplayName string     `toml:"display_name"`
-	HostStatus  HostStatus `toml:"host_status"`
+	DisplayName string      `toml:"display_name"`
+	HostStatus  HostStatus  `toml:"host_status"`
+	Filesystems Filesystems `toml:"filesystems"`
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
@@ -86,6 +88,23 @@ type ConnectionConfig struct {
 type HostStatus struct {
 	OnStart string `toml:"on_start"`
 	OnStop  string `toml:"on_stop"`
+}
+
+// Filesystems configure filesystem related settings
+type Filesystems struct {
+	Ignore Regexpwrapper `toml:"ignore"`
+}
+
+// Regexpwrapper is a wrapper type for marshalling string
+type Regexpwrapper struct {
+	*regexp.Regexp
+}
+
+// UnmarshalText for compiling regexp string while loading toml
+func (r *Regexpwrapper) UnmarshalText(text []byte) error {
+	var err error
+	r.Regexp, err = regexp.Compile(string(text))
+	return err
 }
 
 // CheckNames return list of plugin.checks._name_

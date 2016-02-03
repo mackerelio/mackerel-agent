@@ -25,7 +25,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsNetbsd.Loadavg5Generator{},
 		&metricsNetbsd.CPUUsageGenerator{},
-		&metricsNetbsd.FilesystemGenerator{},
+		&metricsNetbsd.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp},
 		&metricsNetbsd.MemoryGenerator{},
 	}
 
