@@ -16,8 +16,8 @@ type FilesystemInfo struct {
 	KbUsed      float64
 	KbSize      float64
 	KbAvailable float64
-	Mount        string
-	Label        string
+	Mount       string
+	Label       string
 	VolumeName  string
 	FsType      string
 }
@@ -89,8 +89,8 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 			KbUsed:      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
 			KbSize:      float64(totalNumberOfBytes / 1024),
 			KbAvailable: float64(freeBytesAvailable / 1024),
-			Mount:        drive,
-			Label:        syscall.UTF16ToString(drivebuf),
+			Mount:       drive,
+			Label:       syscall.UTF16ToString(drivebuf),
 			VolumeName:  syscall.UTF16ToString(volumebuf),
 			FsType:      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
 		}
