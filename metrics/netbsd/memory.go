@@ -42,9 +42,9 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 			for i := 1; i < len(fields); i += 2 {
 				v, err := getValue(fields[i])
 				if err == nil {
-					k := fields[i + 1]
+					k := fields[i+1]
 					if strings.HasSuffix(k, ",") {
-						k = k[0 : len(k) - 1]
+						k = k[0 : len(k)-1]
 					}
 					switch k {
 					case "Act":
@@ -59,7 +59,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 						ret["memory.free"] = v
 					}
 				} else {
-					errRet = err;
+					errRet = err
 				}
 			}
 		}
@@ -71,7 +71,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 			}
 			swapFreeIndex := 5
 			if len(fields) == 5 {
-			   swapFreeIndex =  3
+				swapFreeIndex = 3
 			}
 			if v, err := getValue(fields[swapFreeIndex]); err == nil {
 				ret["memory.swap_free"] = v

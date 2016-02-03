@@ -67,7 +67,7 @@ type PluginConfigs map[string]PluginConfig
 type PluginConfig struct {
 	Command              string
 	NotificationInterval *int32 `toml:"notification_interval"`
-	MaxCheckAttempts *int32 `toml:"max_check_attempts"`
+	MaxCheckAttempts     *int32 `toml:"max_check_attempts"`
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
