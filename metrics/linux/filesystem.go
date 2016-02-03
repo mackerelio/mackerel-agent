@@ -5,7 +5,6 @@ package linux
 import (
 	"regexp"
 
-	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/util"
@@ -13,7 +12,7 @@ import (
 
 // FilesystemGenerator XXX
 type FilesystemGenerator struct {
-	Ignore config.Regexpwrapper
+	IgnoreRegexp *regexp.Regexp
 }
 
 var logger = logging.GetLogger("metrics.filesystem")
@@ -34,7 +33,7 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 	for name, values := range filesystems {
 		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
 		if regexp.MustCompile(`^/dev/mapper/docker-`).FindStringSubmatch(name) != nil ||
-			(g.Ignore.Regexp != nil && g.Ignore.Regexp.FindStringSubmatch(name) != nil) {
+			(g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name)) {
 			continue
 		}
 		if matches := regexp.MustCompile(`^/dev/(.*)$`).FindStringSubmatch(name); matches != nil {

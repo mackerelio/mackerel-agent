@@ -30,7 +30,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsLinux.UptimeGenerator{},
 		&metricsLinux.InterfaceGenerator{Interval: metricsInterval},
 		&metricsLinux.DiskGenerator{Interval: metricsInterval},
-		&metricsLinux.FilesystemGenerator{Ignore: conf.Filesystems.Ignore},
+		&metricsLinux.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp},
 	}
 
 	return generators
