@@ -31,7 +31,7 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, values := range filesystems {
-		if g.IgnoreRegexp != nil && g.Ignore.MatchString(name) {
+		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
 			continue
 		}
 		if matches := regexp.MustCompile(`^/dev/(.*)$`).FindStringSubmatch(name); matches != nil {
