@@ -51,6 +51,7 @@ type Report struct {
 	Message              string
 	OccurredAt           time.Time
 	NotificationInterval *int32
+	MaxCheckAttempts     *int32
 }
 
 func (c Checker) String() string {
@@ -84,6 +85,7 @@ func (c Checker) Check() (*Report, error) {
 		Message:              message,
 		OccurredAt:           now,
 		NotificationInterval: c.Config.NotificationInterval,
+		MaxCheckAttempts:     c.Config.MaxCheckAttempts,
 	}, nil
 }
 
