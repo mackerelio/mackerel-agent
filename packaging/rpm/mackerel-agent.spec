@@ -71,6 +71,12 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Feb 04 2016 <y.songmu@gmail.com> - 0.28.0-1
+- add a configuration to ignore filesystems (by stanaka)
+- fix the code of extending the process's environment (by itchyny)
+- s{code.google.com/p/winsvc}{golang.org/x/sys/windows/svc} (by Songmu)
+- Max check attempts option for check plugin (by mechairoi)
+
 * Fri Jan 08 2016 <y.songmu@gmail.com> - 0.27.1-1
 - [bugfix] fix timeout interval when calling `df` (by Songmu)
 

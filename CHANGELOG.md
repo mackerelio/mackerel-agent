@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.28.0 (2016-02-04)
+
+* add a configuration to ignore filesystems #186 (stanaka)
+* fix the code of extending the process's environment #187 (itchyny)
+* s{code.google.com/p/winsvc}{golang.org/x/sys/windows/svc} #188 (Songmu)
+* Max check attempts option for check plugin #189 (mechairoi)
+
+
 ## 0.27.1 (2016-01-08)
 
 * [bugfix] fix timeout interval when calling `df` #184 (Songmu)
