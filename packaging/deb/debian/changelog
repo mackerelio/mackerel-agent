@@ -1,3 +1,16 @@
+mackerel-agent (0.28.0-1) stable; urgency=low
+
+  * add a configuration to ignore filesystems (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/186>
+  * fix the code of extending the process's environment (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/187>
+  * s{code.google.com/p/winsvc}{golang.org/x/sys/windows/svc} (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/188>
+  * Max check attempts option for check plugin (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/189>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 04 Feb 2016 11:31:56 +0900
+
 mackerel-agent (0.27.1-1) stable; urgency=low
 
   * [bugfix] fix timeout interval when calling `df` (by Songmu)
