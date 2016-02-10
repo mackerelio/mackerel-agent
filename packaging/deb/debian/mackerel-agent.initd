@@ -79,7 +79,11 @@ case "$1" in
         log_daemon_msg "Stopping $DESC" "$NAME"
         do_stop
         retval=$?
-        [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && do_retire || exit $?
+        if [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ]; then
+          if ! do_retire; then
+            retval=$?
+          fi
+        fi
         case "$retval" in
             0|1) log_end_msg 0 ;;
             *)   log_end_msg 1; exit $retval ;;
