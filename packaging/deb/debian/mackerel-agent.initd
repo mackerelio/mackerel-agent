@@ -80,9 +80,7 @@ case "$1" in
         do_stop
         retval=$?
         if [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ]; then
-          if ! do_retire; then
-            retval=$?
-          fi
+          do_retire || retval=$?
         fi
         case "$retval" in
             0|1) log_end_msg 0 ;;
