@@ -37,11 +37,6 @@ func (r *roleFullnamesFlag) Set(input string) error {
 	return nil
 }
 
-type otherOptions struct {
-	printVersion bool
-	runOnce      bool
-}
-
 var logger = logging.GetLogger("main")
 
 const (
@@ -72,8 +67,8 @@ func doVersion(_ []string) int {
 }
 
 func doConfigtest(argv []string) int {
-	conf, otherOpts := resolveConfig(argv)
-	if conf == nil || otherOpts != nil {
+	conf := resolveConfig(argv)
+	if conf == nil {
 		return exitStatusError
 	}
 	fmt.Fprintf(os.Stderr, "%s Syntax OK\n", conf.Conffile)
@@ -81,25 +76,14 @@ func doConfigtest(argv []string) int {
 }
 
 func doMain(argv []string) int {
-	conf, otherOpts := resolveConfig(argv)
+	conf := resolveConfig(argv)
 	if conf == nil {
 		return exitStatusError
 	}
-	if otherOpts != nil && otherOpts.printVersion {
-		return doVersion([]string{})
-	}
-
 	if conf.Verbose {
 		logging.SetLogLevel(logging.DEBUG)
 	}
-
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
-
-	if otherOpts != nil && otherOpts.runOnce {
-		command.RunOnce(conf)
-		return exitStatusOK
-	}
-
 	return start(conf)
 }
 
@@ -143,7 +127,7 @@ func doRetire(argv []string) int {
 func doOnce(argv []string) int {
 	// dirty hack `resolveConfig` required apikey so fill up
 	argvOpt := append(argv, "-apikey=dummy")
-	conf, _ := resolveConfig(argvOpt)
+	conf := resolveConfig(argvOpt)
 	if conf == nil {
 		return exitStatusError
 	}
@@ -185,28 +169,17 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 		}
 		optArgs = append(optArgs, v)
 	}
-	conf, otherOpts := resolveConfig(optArgs)
+	conf := resolveConfig(optArgs)
 	if conf == nil {
 		printRetireUsage()
 	}
-
-	if otherOpts != nil {
-		msg := "can't use -vesion/-once option in retire"
-		logger.Errorf(msg)
-		return nil, isForce, fmt.Errorf(msg)
-	}
-
 	return conf, isForce, nil
 }
 
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
-// As a special case, if `-version` flag is given it stops processing
-// and return true for the second return value.
-func resolveConfig(argv []string) (*config.Config, *otherOptions) {
+func resolveConfig(argv []string) *config.Config {
 	conf := &config.Config{}
-	otherOptions := &otherOptions{}
-
 	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
 
 	var (
@@ -226,30 +199,13 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	// but we call it "role" here for ease.
 	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
 
-	// flags for otherOpts
-	var (
-		runOnce      = fs.Bool("once", false, "(DEPRECATED) Show spec and metrics to stdout once")
-		printVersion = fs.Bool("version", false, "(DEPRECATED) Prints version and exit")
-	)
 	fs.Parse(argv)
-
-	if *printVersion {
-		otherOptions.printVersion = true
-		logger.Warningf("-version option is deprecated. use subcommand (`%% mackerel-agent version`) instead")
-		return conf, otherOptions
-	}
-
-	if *runOnce {
-		otherOptions.runOnce = true
-		logger.Warningf("-once option is deprecated. use subcommand (`%% mackerel-agent once`) instead")
-		return conf, otherOptions
-	}
 
 	conf, confErr := config.LoadConfig(*conffile)
 	conf.Conffile = *conffile
 	if confErr != nil {
 		logger.Criticalf("Failed to load the config file: %s", confErr)
-		return nil, nil
+		return nil
 	}
 
 	// overwrite config from file by config from args
@@ -258,7 +214,6 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 		case "apibase":
 			conf.Apibase = *apibase
 		case "apikey":
-			logger.Warningf("-apikey option is deprecated. use config file instead")
 			conf.Apikey = *apikey
 		case "pidfile":
 			conf.Pidfile = *pidfile
@@ -285,9 +240,9 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 
 	if conf.Apikey == "" {
 		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		return nil, nil
+		return nil
 	}
-	return conf, nil
+	return conf
 }
 
 func createPidFile(pidfile string) error {

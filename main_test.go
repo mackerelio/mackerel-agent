@@ -30,7 +30,7 @@ diagnostic=false
 	confFile.Sync()
 	confFile.Close()
 	defer os.Remove(confFile.Name())
-	mergedConfig, _ := resolveConfig([]string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
+	mergedConfig := resolveConfig([]string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
 
 	t.Logf("      apibase: %v", mergedConfig.Apibase)
 	t.Logf("       apikey: %v", mergedConfig.Apikey)
@@ -54,30 +54,6 @@ diagnostic=false
 
 	if mergedConfig.Diagnostic != true {
 		t.Error("Diagnostic(overwritten by command line option) shoud be true")
-	}
-}
-
-func TestParseFlagsPrintVersion(t *testing.T) {
-	config, otherOptions := resolveConfig([]string{"-version"})
-
-	if config.Verbose != false {
-		t.Error("with -version args, variables of config should have default values")
-	}
-
-	if otherOptions.printVersion == false {
-		t.Error("with -version args, printVersion should be true")
-	}
-}
-
-func TestParseFlagsRunOnce(t *testing.T) {
-	config, otherOptions := resolveConfig([]string{"-once"})
-
-	if config.Verbose != false {
-		t.Error("with -version args, variables of config should have default values")
-	}
-
-	if otherOptions.runOnce == false {
-		t.Error("with -once args, RunOnce should be true")
 	}
 }
 
