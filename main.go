@@ -179,7 +179,7 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 }
 
 func printSubCommands() {
-	for c, _ := range commands() {
+	for c := range commands() {
 		if c != mainProcess {
 			fmt.Fprintf(os.Stderr, "  %s\n", c)
 		}
