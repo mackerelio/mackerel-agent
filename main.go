@@ -126,12 +126,10 @@ func doRetire(argv []string) int {
 }
 
 func doOnce(argv []string) int {
-	// dirty hack `resolveConfig` required apikey so fill up
-	argvOpt := append(argv, "-apikey=dummy")
-	conf, err := resolveConfig(argvOpt)
+	conf, err := resolveConfig(argv)
 	if err != nil {
-		logger.Criticalf("failed to load config: %s", err)
-		return exitStatusError
+		logger.Warningf("failed to load config (but `once` must not required conf): %s", err)
+		conf = &config.Config{}
 	}
 	command.RunOnce(conf)
 	return exitStatusOK
