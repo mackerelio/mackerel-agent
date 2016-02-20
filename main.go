@@ -164,7 +164,7 @@ func printRetireUsage() {
   -apibase string
         API base (default "%s")
   -apikey string
-        API key from mackerel.io web site`,
+        (DEPRECATED) API key from mackerel.io web site`,
 		config.DefaultConfig.Conffile,
 		config.DefaultConfig.Apibase)
 
@@ -172,36 +172,20 @@ func printRetireUsage() {
 	os.Exit(2)
 }
 
-var helpReg = regexp.MustCompile(`^--?h(?:elp)?$`)
-var forceReg = regexp.MustCompile(`^--?force$`)
-
 func resolveConfigForRetire(fs *flag.FlagSet, argv []string) (*config.Config, bool) {
-	optArgs := []string{}
-	isForce := false
-	for _, v := range argv {
-		if helpReg.MatchString(v) {
-			printRetireUsage()
-		}
-		if forceReg.MatchString(v) {
-			isForce = true
-			continue
-		}
-		optArgs = append(optArgs, v)
-	}
-	conf, err := resolveConfig(fs, optArgs)
+	var force = fs.Bool("force", false, "force retirement without prompting")
+	fs.Usage = printRetireUsage
+	conf, err := resolveConfig(fs, argv)
 	if err != nil {
 		logger.Criticalf("failed to load config: %s", err)
 		printRetireUsage()
 	}
-	return conf, isForce
+	return conf, *force
 }
 
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
 func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
-	if fs == nil {
-		fs = flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
-	}
 	conf := &config.Config{}
 
 	var (

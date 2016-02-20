@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -30,7 +31,7 @@ diagnostic=false
 	confFile.Sync()
 	confFile.Close()
 	defer os.Remove(confFile.Name())
-	mergedConfig, _ := resolveConfig(nil, []string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
+	mergedConfig, _ := resolveConfig(&flag.FlagSet{}, []string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
 
 	t.Logf("      apibase: %v", mergedConfig.Apibase)
 	t.Logf("       apikey: %v", mergedConfig.Apikey)
@@ -70,7 +71,7 @@ func TestDetectForce(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	conf, force := resolveConfigForRetire(nil, argv)
+	conf, force := resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if force {
 		t.Errorf("force should be false")
 	}
@@ -79,7 +80,7 @@ func TestDetectForce(t *testing.T) {
 	}
 
 	argv = append(argv, "-force")
-	conf, force = resolveConfigForRetire(nil, argv)
+	conf, force = resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if !force {
 		t.Errorf("force should be true")
 	}
@@ -112,7 +113,7 @@ func TestResolveConfigForRetire(t *testing.T) {
 		"-role=hoge:fuga",
 	}
 
-	conf, force := resolveConfigForRetire(nil, argv)
+	conf, force := resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if force {
 		t.Errorf("force should be false")
 	}
@@ -196,7 +197,7 @@ func TestConfigTestOK(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	err = doConfigtest(nil, argv)
+	err = doConfigtest(&flag.FlagSet{}, argv)
 
 	if err != nil {
 		t.Errorf("configtest(ok) must be return nil")
@@ -216,7 +217,7 @@ func TestConfigTestNotFound(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name() + "xxx"}
-	err = doConfigtest(nil, argv)
+	err = doConfigtest(&flag.FlagSet{}, argv)
 
 	if err == nil {
 		t.Errorf("configtest(failed) must be return error")
@@ -238,7 +239,7 @@ command = "bar"
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	err = doConfigtest(nil, argv)
+	err = doConfigtest(&flag.FlagSet{}, argv)
 
 	if err == nil {
 		t.Errorf("configtest(failed) must be return error")
@@ -246,14 +247,14 @@ command = "bar"
 }
 
 func TestDoOnce(t *testing.T) {
-	err := doOnce(nil, []string{})
+	err := doOnce(&flag.FlagSet{}, []string{})
 	if err != nil {
 		t.Errorf("doOnce should return nil even if argv is empty, but returns %s", err)
 	}
 }
 
 func TestDoVersion(t *testing.T) {
-	err := doVersion(nil, []string{})
+	err := doVersion(&flag.FlagSet{}, []string{})
 	if err != nil {
 		t.Errorf("doVersion should return nil, but returns %s", err)
 	}
