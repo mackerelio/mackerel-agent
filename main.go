@@ -52,12 +52,14 @@ func main() {
 const mainProcess = ""
 
 // subcommands and processes of the mackerel-agent
-var commands = map[string](func([]string) int){
-	mainProcess:  doMain,
-	"version":    doVersion,
-	"retire":     doRetire,
-	"configtest": doConfigtest,
-	"once":       doOnce,
+func commands() map[string](func([]string) int) {
+	return map[string](func([]string) int){
+		mainProcess:  doMain,
+		"version":    doVersion,
+		"retire":     doRetire,
+		"configtest": doConfigtest,
+		"once":       doOnce,
+	}
 }
 
 func doVersion(_ []string) int {
@@ -176,12 +178,26 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 	return conf, isForce, nil
 }
 
+func printSubCommands() {
+	for c, _ := range commands() {
+		if c != mainProcess {
+			fmt.Fprintf(os.Stderr, "  %s\n", c)
+		}
+	}
+}
+
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
 func resolveConfig(argv []string) *config.Config {
 	conf := &config.Config{}
-	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
 
+	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of mackerel-agent:\n")
+		fs.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nSUB COMMANDS:\n")
+		printSubCommands()
+	}
 	var (
 		conffile      = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
 		apibase       = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
