@@ -69,8 +69,9 @@ func doVersion(_ []string) int {
 }
 
 func doConfigtest(argv []string) int {
-	conf := resolveConfig(argv)
-	if conf == nil {
+	conf, err := resolveConfig(argv)
+	if err != nil {
+		logger.Criticalf("faild to test config: %s", err)
 		return exitStatusError
 	}
 	fmt.Fprintf(os.Stderr, "%s Syntax OK\n", conf.Conffile)
@@ -78,8 +79,9 @@ func doConfigtest(argv []string) int {
 }
 
 func doMain(argv []string) int {
-	conf := resolveConfig(argv)
-	if conf == nil {
+	conf, err := resolveConfig(argv)
+	if err != nil {
+		logger.Criticalf("faild to load config: %s", err)
 		return exitStatusError
 	}
 	if conf.Verbose {
@@ -126,8 +128,9 @@ func doRetire(argv []string) int {
 func doOnce(argv []string) int {
 	// dirty hack `resolveConfig` required apikey so fill up
 	argvOpt := append(argv, "-apikey=dummy")
-	conf := resolveConfig(argvOpt)
-	if conf == nil {
+	conf, err := resolveConfig(argvOpt)
+	if err != nil {
+		logger.Criticalf("failed to load config: %s", err)
 		return exitStatusError
 	}
 	command.RunOnce(conf)
@@ -168,8 +171,9 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool) {
 		}
 		optArgs = append(optArgs, v)
 	}
-	conf := resolveConfig(optArgs)
-	if conf == nil {
+	conf, err := resolveConfig(optArgs)
+	if err != nil {
+		logger.Criticalf("failed to load config: %s", err)
 		printRetireUsage()
 	}
 	return conf, isForce
@@ -185,7 +189,7 @@ func printSubCommands() {
 
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
-func resolveConfig(argv []string) *config.Config {
+func resolveConfig(argv []string) (*config.Config, error) {
 	conf := &config.Config{}
 
 	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
@@ -217,8 +221,7 @@ func resolveConfig(argv []string) *config.Config {
 	conf, confErr := config.LoadConfig(*conffile)
 	conf.Conffile = *conffile
 	if confErr != nil {
-		logger.Criticalf("Failed to load the config file: %s", confErr)
-		return nil
+		return nil, fmt.Errorf("Failed to load the config file: %s", confErr)
 	}
 
 	// overwrite config from file by config from args
@@ -252,10 +255,9 @@ func resolveConfig(argv []string) *config.Config {
 	conf.Roles = r
 
 	if conf.Apikey == "" {
-		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		return nil
+		return nil, fmt.Errorf("Apikey must be specified in the config file (or by the DEPRECATED command-line flag)")
 	}
-	return conf
+	return conf, nil
 }
 
 func createPidFile(pidfile string) error {
