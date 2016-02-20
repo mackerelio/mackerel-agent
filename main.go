@@ -63,15 +63,11 @@ func printRetireUsage() {
 	os.Exit(2)
 }
 
-func resolveConfigForRetire(fs *flag.FlagSet, argv []string) (*config.Config, bool) {
+func resolveConfigForRetire(fs *flag.FlagSet, argv []string) (*config.Config, bool, error) {
 	var force = fs.Bool("force", false, "force retirement without prompting")
 	fs.Usage = printRetireUsage
 	conf, err := resolveConfig(fs, argv)
-	if err != nil {
-		logger.Criticalf("failed to load config: %s", err)
-		printRetireUsage()
-	}
-	return conf, *force
+	return conf, *force, err
 }
 
 // resolveConfig parses command line arguments and loads config file to

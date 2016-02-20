@@ -71,7 +71,7 @@ func TestDetectForce(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	conf, force := resolveConfigForRetire(&flag.FlagSet{}, argv)
+	conf, force, err := resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if force {
 		t.Errorf("force should be false")
 	}
@@ -80,7 +80,7 @@ func TestDetectForce(t *testing.T) {
 	}
 
 	argv = append(argv, "-force")
-	conf, force = resolveConfigForRetire(&flag.FlagSet{}, argv)
+	conf, force, err = resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if !force {
 		t.Errorf("force should be true")
 	}
@@ -113,7 +113,7 @@ func TestResolveConfigForRetire(t *testing.T) {
 		"-role=hoge:fuga",
 	}
 
-	conf, force := resolveConfigForRetire(&flag.FlagSet{}, argv)
+	conf, force, err := resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if force {
 		t.Errorf("force should be false")
 	}

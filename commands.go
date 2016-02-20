@@ -71,7 +71,10 @@ func doConfigtest(fs *flag.FlagSet, argv []string) error {
 retire the host
 */
 func doRetire(fs *flag.FlagSet, argv []string) error {
-	conf, force := resolveConfigForRetire(fs, argv)
+	conf, force, err := resolveConfigForRetire(fs, argv)
+	if err != nil {
+		return fmt.Errorf("failed to load config: %s", err)
+	}
 
 	hostID, err := conf.LoadHostID()
 	if err != nil {
