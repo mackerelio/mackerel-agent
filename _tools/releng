@@ -6,7 +6,7 @@ releng script for mackerel-agent
 
 =head SYNOPSIS
 
-    % tool/releng
+    % _tools/releng
 
 =head DEPENDENCY
 
