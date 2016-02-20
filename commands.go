@@ -23,7 +23,6 @@ main process of mackerel-agent
 func doMain(fs *flag.FlagSet, argv []string) error {
 	conf, err := resolveConfig(fs, argv)
 	if err != nil {
-		logger.Criticalf("faild to load config: %s", err)
 		return fmt.Errorf("failed to load config: %s", err)
 	}
 	if conf.Verbose {
@@ -59,7 +58,6 @@ do configtest
 func doConfigtest(fs *flag.FlagSet, argv []string) error {
 	conf, err := resolveConfig(fs, argv)
 	if err != nil {
-		logger.Criticalf("faild to test config: %s", err)
 		return fmt.Errorf("failed to test config: %s", err)
 	}
 	fmt.Fprintf(os.Stderr, "%s Syntax OK\n", conf.Conffile)
