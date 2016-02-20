@@ -244,3 +244,17 @@ command = "bar"
 		t.Errorf("configtest(failed) must be return exitStatusError")
 	}
 }
+
+func TestDoOnce(t *testing.T) {
+	r := doOnce([]string{})
+	if r != exitStatusOK {
+		t.Errorf("doOnce should return exitStatusOK even if argv is empty, but returns %d", r)
+	}
+}
+
+func TestDoVersion(t *testing.T) {
+	r := doVersion([]string{})
+	if r != exitStatusOK {
+		t.Errorf("doVersion should return exitStatusOK, but returns %d", r)
+	}
+}
