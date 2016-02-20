@@ -53,12 +53,10 @@ func main() {
 
 /* +command - mackerel-agent
 
-	mackerel-agent
-
 main process of mackerel-agent
 */
-func doMain(_ *flag.FlagSet, argv []string) error {
-	conf, err := resolveConfig(argv)
+func doMain(fs *flag.FlagSet, argv []string) error {
+	conf, err := resolveConfig(fs, argv)
 	if err != nil {
 		logger.Criticalf("faild to load config: %s", err)
 		return fmt.Errorf("failed to load config: %s", err)
@@ -93,8 +91,8 @@ func doVersion(_ *flag.FlagSet, _ []string) error {
 
 do configtest
 */
-func doConfigtest(_ *flag.FlagSet, argv []string) error {
-	conf, err := resolveConfig(argv)
+func doConfigtest(fs *flag.FlagSet, argv []string) error {
+	conf, err := resolveConfig(fs, argv)
 	if err != nil {
 		logger.Criticalf("faild to test config: %s", err)
 		return fmt.Errorf("failed to test config: %s", err)
@@ -109,8 +107,8 @@ func doConfigtest(_ *flag.FlagSet, argv []string) error {
 
 retire the host
 */
-func doRetire(_ *flag.FlagSet, argv []string) error {
-	conf, force := resolveConfigForRetire(argv)
+func doRetire(fs *flag.FlagSet, argv []string) error {
+	conf, force := resolveConfigForRetire(fs, argv)
 
 	hostID, err := conf.LoadHostID()
 	if err != nil {
@@ -146,8 +144,8 @@ func doRetire(_ *flag.FlagSet, argv []string) error {
 output metrics and meta data of the host one time.
 These data are only displayed and not posted to Mackerel.
 */
-func doOnce(_ *flag.FlagSet, argv []string) error {
-	conf, err := resolveConfig(argv)
+func doOnce(fs *flag.FlagSet, argv []string) error {
+	conf, err := resolveConfig(fs, argv)
 	if err != nil {
 		logger.Warningf("failed to load config (but `once` doesn't require conf): %s", err)
 		conf = &config.Config{}
@@ -177,7 +175,7 @@ func printRetireUsage() {
 var helpReg = regexp.MustCompile(`^--?h(?:elp)?$`)
 var forceReg = regexp.MustCompile(`^--?force$`)
 
-func resolveConfigForRetire(argv []string) (*config.Config, bool) {
+func resolveConfigForRetire(fs *flag.FlagSet, argv []string) (*config.Config, bool) {
 	optArgs := []string{}
 	isForce := false
 	for _, v := range argv {
@@ -190,7 +188,7 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool) {
 		}
 		optArgs = append(optArgs, v)
 	}
-	conf, err := resolveConfig(optArgs)
+	conf, err := resolveConfig(fs, optArgs)
 	if err != nil {
 		logger.Criticalf("failed to load config: %s", err)
 		printRetireUsage()
@@ -200,10 +198,12 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool) {
 
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
-func resolveConfig(argv []string) (*config.Config, error) {
+func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
+	if fs == nil {
+		fs = flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
+	}
 	conf := &config.Config{}
 
-	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
 	var (
 		conffile      = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
 		apibase       = fs.String("apibase", config.DefaultConfig.Apibase, "API base")

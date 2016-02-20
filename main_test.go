@@ -30,7 +30,7 @@ diagnostic=false
 	confFile.Sync()
 	confFile.Close()
 	defer os.Remove(confFile.Name())
-	mergedConfig, _ := resolveConfig([]string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
+	mergedConfig, _ := resolveConfig(nil, []string{"-conf=" + confFile.Name(), "-role=My-Service:default,INVALID#SERVICE", "-verbose", "-diagnostic"})
 
 	t.Logf("      apibase: %v", mergedConfig.Apibase)
 	t.Logf("       apikey: %v", mergedConfig.Apikey)
@@ -70,7 +70,7 @@ func TestDetectForce(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	conf, force := resolveConfigForRetire(argv)
+	conf, force := resolveConfigForRetire(nil, argv)
 	if force {
 		t.Errorf("force should be false")
 	}
@@ -79,7 +79,7 @@ func TestDetectForce(t *testing.T) {
 	}
 
 	argv = append(argv, "-force")
-	conf, force = resolveConfigForRetire(argv)
+	conf, force = resolveConfigForRetire(nil, argv)
 	if !force {
 		t.Errorf("force should be true")
 	}
@@ -112,7 +112,7 @@ func TestResolveConfigForRetire(t *testing.T) {
 		"-role=hoge:fuga",
 	}
 
-	conf, force := resolveConfigForRetire(argv)
+	conf, force := resolveConfigForRetire(nil, argv)
 	if force {
 		t.Errorf("force should be false")
 	}
