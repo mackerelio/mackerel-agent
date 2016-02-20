@@ -90,10 +90,7 @@ func doMain(argv []string) int {
 }
 
 func doRetire(argv []string) int {
-	conf, force, err := resolveConfigForRetire(argv)
-	if err != nil {
-		return exitStatusError
-	}
+	conf, force := resolveConfigForRetire(argv)
 
 	hostID, err := conf.LoadHostID()
 	if err != nil {
@@ -158,7 +155,7 @@ func printRetireUsage() {
 var helpReg = regexp.MustCompile(`^--?h(?:elp)?$`)
 var forceReg = regexp.MustCompile(`^--?force$`)
 
-func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
+func resolveConfigForRetire(argv []string) (*config.Config, bool) {
 	optArgs := []string{}
 	isForce := false
 	for _, v := range argv {
@@ -175,7 +172,7 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 	if conf == nil {
 		printRetireUsage()
 	}
-	return conf, isForce, nil
+	return conf, isForce
 }
 
 func printSubCommands() {
