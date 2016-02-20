@@ -196,10 +196,10 @@ func TestConfigTestOK(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	status := doConfigtest(argv)
+	err = doConfigtest(nil, argv)
 
-	if status != exitStatusOK {
-		t.Errorf("configtest(ok) must be return exitStatusOK")
+	if err != nil {
+		t.Errorf("configtest(ok) must be return nil")
 	}
 }
 
@@ -216,10 +216,10 @@ func TestConfigTestNotFound(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name() + "xxx"}
-	status := doConfigtest(argv)
+	err = doConfigtest(nil, argv)
 
-	if status != exitStatusError {
-		t.Errorf("configtest(failed) must be return existStatusError")
+	if err == nil {
+		t.Errorf("configtest(failed) must be return error")
 	}
 }
 
@@ -238,23 +238,23 @@ command = "bar"
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	status := doConfigtest(argv)
+	err = doConfigtest(nil, argv)
 
-	if status != exitStatusError {
-		t.Errorf("configtest(failed) must be return exitStatusError")
+	if err == nil {
+		t.Errorf("configtest(failed) must be return error")
 	}
 }
 
 func TestDoOnce(t *testing.T) {
-	r := doOnce([]string{})
-	if r != exitStatusOK {
-		t.Errorf("doOnce should return exitStatusOK even if argv is empty, but returns %d", r)
+	err := doOnce(nil, []string{})
+	if err != nil {
+		t.Errorf("doOnce should return nil even if argv is empty, but returns %s", err)
 	}
 }
 
 func TestDoVersion(t *testing.T) {
-	r := doVersion([]string{})
-	if r != exitStatusOK {
-		t.Errorf("doVersion should return exitStatusOK, but returns %d", r)
+	err := doVersion(nil, []string{})
+	if err != nil {
+		t.Errorf("doVersion should return nil, but returns %s", err)
 	}
 }
