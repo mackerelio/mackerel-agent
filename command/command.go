@@ -139,7 +139,7 @@ const (
 	loopStateTerminating
 )
 
-func loop(c *Context, termCh chan struct{}) int {
+func loop(c *Context, termCh chan struct{}) error {
 	quit := make(chan struct{})
 	defer close(quit) // broadcast terminating
 
@@ -154,7 +154,7 @@ func loop(c *Context, termCh chan struct{}) int {
 	logger.Debugf("wait %d seconds before initial posting.", initialDelay)
 	select {
 	case <-termCh:
-		return 0
+		return nil
 	case <-time.After(time.Duration(initialDelay) * time.Second):
 		c.Agent.InitPluginGenerators(c.API)
 	}
@@ -177,11 +177,11 @@ func loop(c *Context, termCh chan struct{}) int {
 		select {
 		case <-termMetricsCh:
 			if lState == loopStateTerminating {
-				return 1
+				return fmt.Errorf("received terminate instruction again. force return")
 			}
 			lState = loopStateTerminating
 			if len(postQueue) <= 0 {
-				return 0
+				return nil
 			}
 		case v := <-postQueue:
 			origPostValues := [](*postValue){v}
@@ -230,7 +230,7 @@ func loop(c *Context, termCh chan struct{}) int {
 				// nop
 			case <-termMetricsCh:
 				if lState == loopStateTerminating {
-					return 1
+					return fmt.Errorf("received terminate instruction again. force return")
 				}
 				lState = loopStateTerminating
 			}
@@ -267,7 +267,7 @@ func loop(c *Context, termCh chan struct{}) int {
 			logger.Debugf("Posting metrics succeeded.")
 
 			if lState == loopStateTerminating && len(postQueue) <= 0 {
-				return 0
+				return nil
 			}
 		}
 	}
@@ -548,18 +548,18 @@ func NewAgent(conf *config.Config) *agent.Agent {
 }
 
 // Run starts the main metric collecting logic and this function will never return.
-func Run(c *Context, termCh chan struct{}) int {
+func Run(c *Context, termCh chan struct{}) error {
 	logger.Infof("Start: apibase = %s, hostName = %s, hostID = %s", c.Config.Apibase, c.Host.Name, c.Host.ID)
 
-	exitCode := loop(c, termCh)
-	if exitCode == 0 && c.Config.HostStatus.OnStop != "" {
+	err := loop(c, termCh)
+	if err == nil && c.Config.HostStatus.OnStop != "" {
 		// TOOD error handling. supoprt retire(?)
-		err := c.API.UpdateHostStatus(c.Host.ID, c.Config.HostStatus.OnStop)
-		if err != nil {
-			logger.Errorf("Failed update host status on stop: %s", err)
+		e := c.API.UpdateHostStatus(c.Host.ID, c.Config.HostStatus.OnStop)
+		if e != nil {
+			logger.Errorf("Failed update host status on stop: %s", e)
 		}
 	}
-	return exitCode
+	return err
 }
 
 func createCheckers(conf *config.Config) []checks.Checker {

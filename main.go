@@ -187,11 +187,7 @@ func start(conf *config.Config, termCh chan struct{}) error {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go signalHandler(c, ctx, termCh)
 
-	exitCode := command.Run(ctx, termCh)
-	if exitCode != exitStatusOK {
-		return fmt.Errorf("failed to exit normally. exitCode: %d", exitCode)
-	}
-	return nil
+	return command.Run(ctx, termCh)
 }
 
 var maxTerminatingInterval = 30 * time.Second
