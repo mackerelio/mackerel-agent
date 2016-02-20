@@ -171,8 +171,11 @@ func removePidFile(pidfile string) {
 }
 
 func start(conf *config.Config, termCh chan struct{}) error {
-	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s",
-		version.VERSION, version.GITCOMMIT, conf.Apibase)
+	if conf.Verbose {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
+
 	if err := createPidFile(conf.Pidfile); err != nil {
 		return fmt.Errorf("createPidFile(%q) failed: %s", conf.Pidfile, err)
 	}
