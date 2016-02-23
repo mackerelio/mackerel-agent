@@ -12,7 +12,7 @@ func separateSub(argv []string) (string, []string) {
 
 func dispatch(argv []string) int {
 	subCmd, argv := separateSub(argv)
-	fn, ok := commands[subCmd]
+	fn, ok := commands()[subCmd]
 	if !ok {
 		logger.Errorf("subcommand: %s not found", subCmd)
 		return exitStatusError

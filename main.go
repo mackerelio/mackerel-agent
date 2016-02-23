@@ -37,11 +37,6 @@ func (r *roleFullnamesFlag) Set(input string) error {
 	return nil
 }
 
-type otherOptions struct {
-	printVersion bool
-	runOnce      bool
-}
-
 var logger = logging.GetLogger("main")
 
 const (
@@ -57,12 +52,14 @@ func main() {
 const mainProcess = ""
 
 // subcommands and processes of the mackerel-agent
-var commands = map[string](func([]string) int){
-	mainProcess:  doMain,
-	"version":    doVersion,
-	"retire":     doRetire,
-	"configtest": doConfigtest,
-	"once":       doOnce,
+func commands() map[string](func([]string) int) {
+	return map[string](func([]string) int){
+		mainProcess:  doMain,
+		"version":    doVersion,
+		"retire":     doRetire,
+		"configtest": doConfigtest,
+		"once":       doOnce,
+	}
 }
 
 func doVersion(_ []string) int {
@@ -72,8 +69,9 @@ func doVersion(_ []string) int {
 }
 
 func doConfigtest(argv []string) int {
-	conf, otherOpts := resolveConfig(argv)
-	if conf == nil || otherOpts != nil {
+	conf, err := resolveConfig(argv)
+	if err != nil {
+		logger.Criticalf("faild to test config: %s", err)
 		return exitStatusError
 	}
 	fmt.Fprintf(os.Stderr, "%s Syntax OK\n", conf.Conffile)
@@ -81,33 +79,20 @@ func doConfigtest(argv []string) int {
 }
 
 func doMain(argv []string) int {
-	conf, otherOpts := resolveConfig(argv)
-	if conf == nil {
+	conf, err := resolveConfig(argv)
+	if err != nil {
+		logger.Criticalf("faild to load config: %s", err)
 		return exitStatusError
 	}
-	if otherOpts != nil && otherOpts.printVersion {
-		return doVersion([]string{})
-	}
-
 	if conf.Verbose {
 		logging.SetLogLevel(logging.DEBUG)
 	}
-
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
-
-	if otherOpts != nil && otherOpts.runOnce {
-		command.RunOnce(conf)
-		return exitStatusOK
-	}
-
 	return start(conf)
 }
 
 func doRetire(argv []string) int {
-	conf, force, err := resolveConfigForRetire(argv)
-	if err != nil {
-		return exitStatusError
-	}
+	conf, force := resolveConfigForRetire(argv)
 
 	hostID, err := conf.LoadHostID()
 	if err != nil {
@@ -141,11 +126,10 @@ func doRetire(argv []string) int {
 }
 
 func doOnce(argv []string) int {
-	// dirty hack `resolveConfig` required apikey so fill up
-	argvOpt := append(argv, "-apikey=dummy")
-	conf, _ := resolveConfig(argvOpt)
-	if conf == nil {
-		return exitStatusError
+	conf, err := resolveConfig(argv)
+	if err != nil {
+		logger.Warningf("failed to load config (but `once` doesn't require conf): %s", err)
+		conf = &config.Config{}
 	}
 	command.RunOnce(conf)
 	return exitStatusOK
@@ -172,7 +156,7 @@ func printRetireUsage() {
 var helpReg = regexp.MustCompile(`^--?h(?:elp)?$`)
 var forceReg = regexp.MustCompile(`^--?force$`)
 
-func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
+func resolveConfigForRetire(argv []string) (*config.Config, bool) {
 	optArgs := []string{}
 	isForce := false
 	for _, v := range argv {
@@ -185,30 +169,34 @@ func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
 		}
 		optArgs = append(optArgs, v)
 	}
-	conf, otherOpts := resolveConfig(optArgs)
-	if conf == nil {
+	conf, err := resolveConfig(optArgs)
+	if err != nil {
+		logger.Criticalf("failed to load config: %s", err)
 		printRetireUsage()
 	}
+	return conf, isForce
+}
 
-	if otherOpts != nil {
-		msg := "can't use -vesion/-once option in retire"
-		logger.Errorf(msg)
-		return nil, isForce, fmt.Errorf(msg)
+func printSubCommands() {
+	for c := range commands() {
+		if c != mainProcess {
+			fmt.Fprintf(os.Stderr, "  %s\n", c)
+		}
 	}
-
-	return conf, isForce, nil
 }
 
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
-// As a special case, if `-version` flag is given it stops processing
-// and return true for the second return value.
-func resolveConfig(argv []string) (*config.Config, *otherOptions) {
+func resolveConfig(argv []string) (*config.Config, error) {
 	conf := &config.Config{}
-	otherOptions := &otherOptions{}
 
 	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
-
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of mackerel-agent:\n")
+		fs.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nSUB COMMANDS:\n")
+		printSubCommands()
+	}
 	var (
 		conffile      = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
 		apibase       = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
@@ -226,30 +214,12 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	// but we call it "role" here for ease.
 	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
 
-	// flags for otherOpts
-	var (
-		runOnce      = fs.Bool("once", false, "(DEPRECATED) Show spec and metrics to stdout once")
-		printVersion = fs.Bool("version", false, "(DEPRECATED) Prints version and exit")
-	)
 	fs.Parse(argv)
-
-	if *printVersion {
-		otherOptions.printVersion = true
-		logger.Warningf("-version option is deprecated. use subcommand (`%% mackerel-agent version`) instead")
-		return conf, otherOptions
-	}
-
-	if *runOnce {
-		otherOptions.runOnce = true
-		logger.Warningf("-once option is deprecated. use subcommand (`%% mackerel-agent once`) instead")
-		return conf, otherOptions
-	}
 
 	conf, confErr := config.LoadConfig(*conffile)
 	conf.Conffile = *conffile
 	if confErr != nil {
-		logger.Criticalf("Failed to load the config file: %s", confErr)
-		return nil, nil
+		return nil, fmt.Errorf("Failed to load the config file: %s", confErr)
 	}
 
 	// overwrite config from file by config from args
@@ -258,7 +228,6 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 		case "apibase":
 			conf.Apibase = *apibase
 		case "apikey":
-			logger.Warningf("-apikey option is deprecated. use config file instead")
 			conf.Apikey = *apikey
 		case "pidfile":
 			conf.Pidfile = *pidfile
@@ -284,8 +253,7 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	conf.Roles = r
 
 	if conf.Apikey == "" {
-		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		return nil, nil
+		return nil, fmt.Errorf("Apikey must be specified in the config file (or by the DEPRECATED command-line flag)")
 	}
 	return conf, nil
 }

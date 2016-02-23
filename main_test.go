@@ -57,30 +57,6 @@ diagnostic=false
 	}
 }
 
-func TestParseFlagsPrintVersion(t *testing.T) {
-	config, otherOptions := resolveConfig([]string{"-version"})
-
-	if config.Verbose != false {
-		t.Error("with -version args, variables of config should have default values")
-	}
-
-	if otherOptions.printVersion == false {
-		t.Error("with -version args, printVersion should be true")
-	}
-}
-
-func TestParseFlagsRunOnce(t *testing.T) {
-	config, otherOptions := resolveConfig([]string{"-once"})
-
-	if config.Verbose != false {
-		t.Error("with -version args, variables of config should have default values")
-	}
-
-	if otherOptions.runOnce == false {
-		t.Error("with -once args, RunOnce should be true")
-	}
-}
-
 func TestDetectForce(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
@@ -94,7 +70,7 @@ func TestDetectForce(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	conf, force, err := resolveConfigForRetire(argv)
+	conf, force := resolveConfigForRetire(argv)
 	if force {
 		t.Errorf("force should be false")
 	}
@@ -103,7 +79,7 @@ func TestDetectForce(t *testing.T) {
 	}
 
 	argv = append(argv, "-force")
-	conf, force, err = resolveConfigForRetire(argv)
+	conf, force = resolveConfigForRetire(argv)
 	if !force {
 		t.Errorf("force should be true")
 	}
@@ -136,7 +112,7 @@ func TestResolveConfigForRetire(t *testing.T) {
 		"-role=hoge:fuga",
 	}
 
-	conf, force, err := resolveConfigForRetire(argv)
+	conf, force := resolveConfigForRetire(argv)
 	if force {
 		t.Errorf("force should be false")
 	}
@@ -266,5 +242,19 @@ command = "bar"
 
 	if status != exitStatusError {
 		t.Errorf("configtest(failed) must be return exitStatusError")
+	}
+}
+
+func TestDoOnce(t *testing.T) {
+	r := doOnce([]string{})
+	if r != exitStatusOK {
+		t.Errorf("doOnce should return exitStatusOK even if argv is empty, but returns %d", r)
+	}
+}
+
+func TestDoVersion(t *testing.T) {
+	r := doVersion([]string{})
+	if r != exitStatusOK {
+		t.Errorf("doVersion should return exitStatusOK, but returns %d", r)
 	}
 }
