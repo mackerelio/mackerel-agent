@@ -128,7 +128,7 @@ func doRetire(argv []string) int {
 func doOnce(argv []string) int {
 	conf, err := resolveConfig(argv)
 	if err != nil {
-		logger.Warningf("failed to load config (but `once` must not required conf): %s", err)
+		logger.Warningf("failed to load config (but `once` doesn't require conf): %s", err)
 		conf = &config.Config{}
 	}
 	command.RunOnce(conf)
