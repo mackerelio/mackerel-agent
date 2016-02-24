@@ -37,11 +37,6 @@ func (r *roleFullnamesFlag) Set(input string) error {
 
 var logger = logging.GetLogger("main")
 
-const (
-	exitStatusOK = iota
-	exitStatusError
-)
-
 func main() {
 	cli.Run(os.Args[1:])
 }
