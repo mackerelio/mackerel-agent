@@ -10,7 +10,7 @@ func init() {
 			Name:   "",
 			Action: doMain,
 			Short:  "mackerel-agent",
-			Long:   "main process of mackerel-agent",
+			Long:   "mackerel-agent [options]\n\nmain process of mackerel-agent",
 		},
 	)
 

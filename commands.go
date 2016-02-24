@@ -16,7 +16,9 @@ import (
 	"github.com/mackerelio/mackerel-agent/version"
 )
 
-/* +command - mackerel-agent
+/* +main - mackerel-agent
+
+	mackerel-agent [options]
 
 main process of mackerel-agent
 */
