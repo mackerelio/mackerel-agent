@@ -25,6 +25,7 @@ build_script:
 test_script:
 - FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w
 - cd %CDUP%
+- go generate
 - go get -d -v -t ./...
 - go tool vet -all .
 - go test -short ./...
