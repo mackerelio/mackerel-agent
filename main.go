@@ -8,18 +8,15 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
-	"github.com/Songmu/prompter"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/mackerel"
-	"github.com/mackerelio/mackerel-agent/version"
+	"github.com/motemen/go-cli"
 )
 
 // allow options like -role=... -role=...
@@ -45,94 +42,7 @@ const (
 )
 
 func main() {
-	os.Exit(dispatch(os.Args[1:]))
-}
-
-// empty string is dealt with the key of main process
-const mainProcess = ""
-
-// subcommands and processes of the mackerel-agent
-func commands() map[string](func([]string) int) {
-	return map[string](func([]string) int){
-		mainProcess:  doMain,
-		"version":    doVersion,
-		"retire":     doRetire,
-		"configtest": doConfigtest,
-		"once":       doOnce,
-	}
-}
-
-func doVersion(_ []string) int {
-	fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
-		version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
-	return exitStatusOK
-}
-
-func doConfigtest(argv []string) int {
-	conf, err := resolveConfig(argv)
-	if err != nil {
-		logger.Criticalf("faild to test config: %s", err)
-		return exitStatusError
-	}
-	fmt.Fprintf(os.Stderr, "%s Syntax OK\n", conf.Conffile)
-	return exitStatusOK
-}
-
-func doMain(argv []string) int {
-	conf, err := resolveConfig(argv)
-	if err != nil {
-		logger.Criticalf("faild to load config: %s", err)
-		return exitStatusError
-	}
-	if conf.Verbose {
-		logging.SetLogLevel(logging.DEBUG)
-	}
-	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
-	return start(conf)
-}
-
-func doRetire(argv []string) int {
-	conf, force := resolveConfigForRetire(argv)
-
-	hostID, err := conf.LoadHostID()
-	if err != nil {
-		logger.Warningf("HostID file is not found")
-		return exitStatusError
-	}
-
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
-	if err != nil {
-		logger.Errorf("failed to create api client: %s", err)
-		return exitStatusError
-	}
-
-	if !force && !prompter.YN(fmt.Sprintf("retire this host? (hostID: %s)", hostID), false) {
-		logger.Infof("Retirement is canceled.")
-		return exitStatusError
-	}
-
-	err = api.RetireHost(hostID)
-	if err != nil {
-		logger.Errorf("failed to retire the host: %s", err)
-		return exitStatusError
-	}
-	logger.Infof("This host (hostID: %s) has been retired.", hostID)
-	// just to try to remove hostID file.
-	err = conf.DeleteSavedHostID()
-	if err != nil {
-		logger.Warningf("Failed to remove HostID file: %s", err)
-	}
-	return exitStatusOK
-}
-
-func doOnce(argv []string) int {
-	conf, err := resolveConfig(argv)
-	if err != nil {
-		logger.Warningf("failed to load config (but `once` doesn't require conf): %s", err)
-		conf = &config.Config{}
-	}
-	command.RunOnce(conf)
-	return exitStatusOK
+	cli.Run(os.Args[1:])
 }
 
 func printRetireUsage() {
@@ -145,7 +55,7 @@ func printRetireUsage() {
   -apibase string
         API base (default "%s")
   -apikey string
-        API key from mackerel.io web site`,
+        (DEPRECATED) API key from mackerel.io web site`,
 		config.DefaultConfig.Conffile,
 		config.DefaultConfig.Apibase)
 
@@ -153,50 +63,18 @@ func printRetireUsage() {
 	os.Exit(2)
 }
 
-var helpReg = regexp.MustCompile(`^--?h(?:elp)?$`)
-var forceReg = regexp.MustCompile(`^--?force$`)
-
-func resolveConfigForRetire(argv []string) (*config.Config, bool) {
-	optArgs := []string{}
-	isForce := false
-	for _, v := range argv {
-		if helpReg.MatchString(v) {
-			printRetireUsage()
-		}
-		if forceReg.MatchString(v) {
-			isForce = true
-			continue
-		}
-		optArgs = append(optArgs, v)
-	}
-	conf, err := resolveConfig(optArgs)
-	if err != nil {
-		logger.Criticalf("failed to load config: %s", err)
-		printRetireUsage()
-	}
-	return conf, isForce
-}
-
-func printSubCommands() {
-	for c := range commands() {
-		if c != mainProcess {
-			fmt.Fprintf(os.Stderr, "  %s\n", c)
-		}
-	}
+func resolveConfigForRetire(fs *flag.FlagSet, argv []string) (*config.Config, bool, error) {
+	var force = fs.Bool("force", false, "force retirement without prompting")
+	fs.Usage = printRetireUsage
+	conf, err := resolveConfig(fs, argv)
+	return conf, *force, err
 }
 
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
-func resolveConfig(argv []string) (*config.Config, error) {
+func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	conf := &config.Config{}
 
-	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
-	fs.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage of mackerel-agent:\n")
-		fs.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "\nSUB COMMANDS:\n")
-		printSubCommands()
-	}
 	var (
 		conffile      = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
 		apibase       = fs.String("apibase", config.DefaultConfig.Apibase, "API base")

@@ -30,7 +30,7 @@ deps:
 
 lint: deps
 	go tool vet -all .
-	tool/go-linter $(BUILD_OS_TARGETS)
+	_tools/go-linter $(BUILD_OS_TARGETS)
 
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
@@ -52,7 +52,7 @@ deb:
 	cd packaging/deb && debuild --no-tgz-check -rfakeroot -uc -us
 
 release:
-	tool/releng
+	_tools/releng
 
 clean:
 	rm -f build/$(BIN)

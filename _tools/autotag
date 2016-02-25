@@ -9,7 +9,7 @@ the merge commit is automatically tagged as `vN.N.N`.
 
 =head SYNOPSIS
 
-    % tool/autotag
+    % _tools/autotag
 
 =cut
 
