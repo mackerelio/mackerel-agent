@@ -54,10 +54,12 @@ deb:
 release:
 	_tools/releng
 
-command_gen.go:
+commands_gen.go: commands.go
+	go get github.com/motemen/go-cli/gen
 	go generate
 
-logging/level_string.go:
+logging/level_string.go: logging/level.go
+	go get golang.org/x/tools/cmd/stringer
 	go generate ./logging
 
 clean:
@@ -66,6 +68,6 @@ clean:
 	rm -f logging/level_string.go
 	rm -f commands_gen.go
 
-generate: command_gen.go logging/level_string.go
+generate: commands_gen.go logging/level_string.go
 
 .PHONY: test build run deps clean lint crossbuild cover rpm deb generate

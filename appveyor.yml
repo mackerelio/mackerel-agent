@@ -11,7 +11,7 @@ install:
   - md c:\mackerel-secure
   - ps: if ($env:CERT) { Set-Content c:\mackerel-secure\cert.p12.base64 $env:CERT }
   - ps: if ($env:CERTPASS) { Set-Content c:\mackerel-secure\certpass $env:CERTPASS }
-  - set PATH=c:\go\bin;c:\tools\ruby215\bin;%PATH%;C:\MinGW\bin
+  - set PATH=c:\go\bin;%GOPATH%\bin;c:\tools\ruby215\bin;%PATH%;C:\MinGW\bin
   - echo %Path%
   - choco install ruby
   - rd c:\go /s /q
@@ -21,11 +21,14 @@ install:
   - go env
   - set CERT= & set CERTPASS= & env
 build_script:
+  - go get github.com/motemen/go-cli/gen
+  - go generate
+  - go get golang.org/x/tools/cmd/stringer
+  - go generate ./logging
   - call wix\build.bat
 test_script:
 - FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w
 - cd %CDUP%
-- go generate
 - go get -d -v -t ./...
 - go tool vet -all .
 - go test -short ./...
