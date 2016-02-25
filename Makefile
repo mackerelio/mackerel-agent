@@ -11,7 +11,7 @@ BUILD_LDFLAGS = "\
 all: clean test build
 
 test: lint
-	go test $(TESTFLAGS) ./...
+	go test -v -short $(TESTFLAGS) ./...
 
 build: deps
 	go build -ldflags=$(BUILD_LDFLAGS) \
@@ -20,7 +20,7 @@ build: deps
 run: build
 	./build/$(BIN) $(ARGS)
 
-deps:
+deps: generate
 	go get -d -v -t ./...
 	go get golang.org/x/tools/cmd/vet
 	go get github.com/golang/lint/golint
@@ -54,8 +54,18 @@ deb:
 release:
 	_tools/releng
 
+command_gen.go:
+	go generate
+
+logging/level_string.go:
+	go generate ./logging
+
 clean:
 	rm -f build/$(BIN)
 	go clean
+	rm -f logging/level_string.go
+	rm -f commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb
+generate: command_gen.go logging/level_string.go
+
+.PHONY: test build run deps clean lint crossbuild cover rpm deb generate
