@@ -16,6 +16,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/version"
 	"github.com/motemen/go-cli"
 )
 
@@ -35,11 +36,6 @@ func (r *roleFullnamesFlag) Set(input string) error {
 }
 
 var logger = logging.GetLogger("main")
-
-const (
-	exitStatusOK = iota
-	exitStatusError
-)
 
 func main() {
 	cli.Run(os.Args[1:])
@@ -155,7 +151,6 @@ func createPidFile(pidfile string) error {
 	}
 	file, err := os.Create(pidfile)
 	if err != nil {
-		logger.Criticalf("Failed to create a pidfile: %s", err)
 		return err
 	}
 	defer file.Close()
@@ -170,19 +165,22 @@ func removePidFile(pidfile string) {
 	}
 }
 
-func start(conf *config.Config) int {
+func start(conf *config.Config, termCh chan struct{}) error {
+	if conf.Verbose {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
+
 	if err := createPidFile(conf.Pidfile); err != nil {
-		return exitStatusError
+		return fmt.Errorf("createPidFile(%q) failed: %s", conf.Pidfile, err)
 	}
 	defer removePidFile(conf.Pidfile)
 
 	ctx, err := command.Prepare(conf)
 	if err != nil {
-		logger.Criticalf(err.Error())
-		return exitStatusError
+		return fmt.Errorf("command.Prepare failed: %s", err)
 	}
 
-	termCh := make(chan struct{})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go signalHandler(c, ctx, termCh)

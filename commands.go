@@ -11,7 +11,6 @@ import (
 	"github.com/Songmu/prompter"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/version"
 )
@@ -27,16 +26,7 @@ func doMain(fs *flag.FlagSet, argv []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to load config: %s", err)
 	}
-	if conf.Verbose {
-		logging.SetLogLevel(logging.DEBUG)
-	}
-	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
-
-	exitCode := start(conf)
-	if exitCode != exitStatusOK {
-		return fmt.Errorf("failed to exit normally. exitCode: %d", exitCode)
-	}
-	return nil
+	return start(conf, make(chan struct{}))
 }
 
 /* +command version - display version of mackerel-agent
