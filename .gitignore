@@ -12,4 +12,3 @@ packaging/deb/debian/mackerel-agent.conf
 /mackerel-agent.conf
 
 commands_gen.go
-logging/level_string.go
