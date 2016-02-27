@@ -19,6 +19,9 @@ case "$1" in
   configure)
     update-rc.d mackerel-agent defaults
     update-rc.d mackerel-agent enable >/dev/null 2>&1
+    if [ ! -e /etc/mackerel-agent/mackerel-agent.conf ]; then
+      cp /etc/mackerel-agent/mackerel-agent.conf.example /etc/mackerel-agent/mackerel-agent.conf
+    fi
   ;;
 
   abort-upgrade|abort-remove|abort-deconfigure)
