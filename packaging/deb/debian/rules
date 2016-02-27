@@ -8,7 +8,7 @@ package=mackerel-agent
 
 override_dh_auto_install:
 	dh_auto_install
-	install    -m 655 debian/${package}.bin  debian/${package}/usr/local/bin/${package}
+	install    -m 755 debian/${package}.bin  debian/${package}/usr/local/bin/${package}
 	install    -m 644 debian/${package}.logrotate debian/${package}/etc/logrotate.d/${package}
 	install    -m 644 debian/${package}.conf debian/${package}/etc/mackerel-agent/${package}.conf.example
 

@@ -32,7 +32,7 @@ mackerel.io agent beta
 %install
 rm -rf %{buildroot}
 install -d -m 755 %{buildroot}/%{_localbindir}
-install    -m 655 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
+install    -m 755 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
 
 install -d -m 755 %{buildroot}/%{_localstatedir}/log/
 
