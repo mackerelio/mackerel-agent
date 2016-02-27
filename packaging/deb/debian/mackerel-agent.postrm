@@ -2,7 +2,7 @@
 set -e
 
 if [ "$1" = "purge" ]; then
-  rm -f /etc/mackerel-agent/mackerel-agent.conf
+  rm -rf /etc/mackerel-agent
   rm -f /var/log/mackerel-agent.log*
 fi
 rm -f /var/run/mackerel-agent.pid
