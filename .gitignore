@@ -8,7 +8,7 @@
 /wix/mackerel-agent.wxs
 /wix/mackerel-agent.wixobj
 packaging/rpm/src/mackerel-agent.conf
-packaging/deb/debian/mackerel-agent.conf
+packaging/deb/debian/mackerel-agent.conf.example
 /mackerel-agent.conf
 
 commands_gen.go

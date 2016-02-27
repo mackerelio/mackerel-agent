@@ -17,7 +17,7 @@ override_dh_auto_install:
 	install -d -m 755 debian/${package}/etc/default/
 	install    -m 644 debian/${package}.default debian/${package}/etc/default/${package}
 	install -d -m 755 debian/${package}/etc/mackerel-agent/
-	install    -m 644 debian/${package}.conf debian/${package}/etc/mackerel-agent/${package}.conf
+	install    -m 644 debian/${package}.conf.example debian/${package}/etc/mackerel-agent/${package}.conf.example
 
 override_dh_usrlocal:
 
