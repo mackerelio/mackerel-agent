@@ -10,4 +10,4 @@ Package: mackerel-agent
 Architecture: all
 Depends: ${misc:Depends}
 Description: mackerel.io agent
-
+ Server monitoring agent for https://mackerel.io (Monitoring SaaS)
