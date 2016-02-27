@@ -1,4 +1,4 @@
-mackerel-agent (0.28.1-1) stable; urgency=low
+mackerel-agent (0.28.1) stable; urgency=low
 
   * fix the exit status on stopping the agent in the init script of debian (by itchyny)
     <https://github.com/mackerelio/mackerel-agent/pull/192>
