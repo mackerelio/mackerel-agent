@@ -1,5 +1,8 @@
 #!/bin/sh
 set -e
+
+# This section is not automallically inserted by dh_installinit,
+# because `--no-start` option is specified in rules file.
 if [ -x "/etc/init.d/mackerel-agent" ]; then
   invoke-rc.d mackerel-agent stop || exit $?
 fi
