@@ -1,3 +1,2 @@
 etc/mackerel-agent
-etc/logrotate.d
 usr/local/bin
