@@ -47,8 +47,9 @@ rpm:
 
 deb:
 	GOOS=linux GOARCH=386 make build
-	cp build/$(BIN)        packaging/deb/debian/mackerel-agent.bin
-	cp mackerel-agent.sample.conf packaging/deb/debian/mackerel-agent.conf
+	cp build/$(BIN)                 packaging/deb/debian/mackerel-agent.bin
+	cp mackerel-agent.sample.conf   packaging/deb/debian/mackerel-agent.conf
+	cp packaging/dummy-empty.tar.gz packaging/mackerel-agent_0.28.1.orig.tar.gz
 	cd packaging/deb && debuild --no-tgz-check -uc -us
 
 release:
