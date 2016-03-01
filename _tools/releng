@@ -240,7 +240,7 @@ sub update_changelog {
     replace 'packaging/deb/debian/changelog' => sub {
         my $content = shift;
 
-        my $update = "mackerel-agent ($next_version) stable; urgency=low\n\n";
+        my $update = "mackerel-agent ($next_version-1) stable; urgency=low\n\n";
         for my $rel (@releases) {
             $update .= sprintf "  * %s (by %s)\n    <%s>\n", $rel->{title}, $rel->{user}, $rel->{url};
         }
