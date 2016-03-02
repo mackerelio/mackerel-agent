@@ -71,6 +71,10 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Mar 02 2016 <y.songmu@gmail.com> - 0.29.0-1
+- remove deprecated command line options (-version and -once) (by Songmu)
+- Report checker execution timeout as Unknown status (by hanazuki)
+
 * Thu Feb 18 2016 <stefafafan@hatena.ne.jp> - 0.28.1-1
 - fix the exit status on stopping the agent in the init script of debian (by itchyny)
 
