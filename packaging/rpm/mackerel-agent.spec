@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.28.0
+Version:   0.29.0
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -71,6 +71,13 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Wed Mar 02 2016 <y.songmu@gmail.com> - 0.29.0-1
+- remove deprecated command line options (-version and -once) (by Songmu)
+- Report checker execution timeout as Unknown status (by hanazuki)
+
+* Thu Feb 18 2016 <stefafafan@hatena.ne.jp> - 0.28.1-1
+- fix the exit status on stopping the agent in the init script of debian (by itchyny)
+
 * Thu Feb 04 2016 <y.songmu@gmail.com> - 0.28.0-1
 - add a configuration to ignore filesystems (by stanaka)
 - fix the code of extending the process's environment (by itchyny)

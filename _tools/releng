@@ -6,7 +6,7 @@ releng script for mackerel-agent
 
 =head SYNOPSIS
 
-    % tool/releng
+    % _tools/releng
 
 =head DEPENDENCY
 
@@ -20,7 +20,7 @@ use warnings;
 use utf8;
 use Carp;
 
-use HTTP::Tiny;
+use IPC::Cmd qw/run/;
 use JSON::PP;
 use ExtUtils::MakeMaker qw/prompt/;
 use Time::Piece;
@@ -53,6 +53,15 @@ sub _hub {
 }
 sub hub {
     unshift @_, _hub; goto \&command;
+}
+
+sub http_get {
+    my $url = shift;
+    my ($ok, $err, undef, $stdout) = run(command => [qw{curl -sf}, $url]);
+    return {
+        success => $ok,
+        content => join('', @$stdout),
+    };
 }
 
 # logger. steal from minilla
@@ -138,10 +147,9 @@ sub merged_prs {
     my @pull_nums = sort {$a <=> $b} map {m/Merge pull request #([0-9]+) /; $1 || ()  } `git log v$current_tag... --merges --oneline`;
 
     my @releases;
-    my $ua = HTTP::Tiny->new;
     for my $pull_num (@pull_nums) {
         my $url = sprintf "https://api.github.com/repos/mackerelio/mackerel-agent/pulls/%d?state=closed", $pull_num;
-        my $res = $ua->get($url);
+        my $res = http_get($url);
         unless ($res->{success}) {
             warnf "request to $url failed\n";
             exit;

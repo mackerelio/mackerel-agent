@@ -11,7 +11,7 @@ BUILD_LDFLAGS = "\
 all: clean test build
 
 test: lint
-	go test $(TESTFLAGS) ./...
+	go test -v -short $(TESTFLAGS) ./...
 
 build: deps
 	go build -ldflags=$(BUILD_LDFLAGS) \
@@ -20,7 +20,7 @@ build: deps
 run: build
 	./build/$(BIN) $(ARGS)
 
-deps:
+deps: generate
 	go get -d -v -t ./...
 	go get golang.org/x/tools/cmd/vet
 	go get github.com/golang/lint/golint
@@ -30,7 +30,7 @@ deps:
 
 lint: deps
 	go tool vet -all .
-	tool/go-linter $(BUILD_OS_TARGETS)
+	_tools/go-linter $(BUILD_OS_TARGETS)
 
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
@@ -52,10 +52,22 @@ deb:
 	cd packaging/deb && debuild --no-tgz-check -rfakeroot -uc -us
 
 release:
-	tool/releng
+	_tools/releng
+
+commands_gen.go: commands.go
+	go get github.com/motemen/go-cli/gen
+	go generate
+
+logging/level_string.go: logging/level.go
+	go get golang.org/x/tools/cmd/stringer
+	go generate ./logging
 
 clean:
 	rm -f build/$(BIN)
 	go clean
+	rm -f logging/level_string.go
+	rm -f commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb
+generate: commands_gen.go logging/level_string.go
+
+.PHONY: test build run deps clean lint crossbuild cover rpm deb generate

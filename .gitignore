@@ -10,3 +10,5 @@
 packaging/rpm/src/mackerel-agent.conf
 packaging/deb/debian/mackerel-agent.conf
 /mackerel-agent.conf
+
+commands_gen.go

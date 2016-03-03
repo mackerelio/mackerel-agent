@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.29.0 (2016-03-02)
+
+* remove deprecated command line options (-version and -once) #194 (Songmu)
+* Report checker execution timeout as Unknown status #197 (hanazuki)
+
+
+## 0.28.1 (2016-02-18)
+
+* fix the exit status on stopping the agent in the init script of debian #192 (itchyny)
+
+
 ## 0.28.0 (2016-02-04)
 
 * add a configuration to ignore filesystems #186 (stanaka)

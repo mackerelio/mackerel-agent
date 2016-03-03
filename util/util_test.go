@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	timeoutDuration = 1 * time.Second
+	TimeoutDuration = 1 * time.Second
 }
 
 func TestRunCommand(t *testing.T) {

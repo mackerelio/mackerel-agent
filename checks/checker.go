@@ -68,16 +68,18 @@ func (c Checker) Check() (*Report, error) {
 	if stderr != "" {
 		logger.Warningf("Checker %q output stderr: %s", c.Name, stderr)
 	}
-	if err != nil {
-		return nil, err
-	}
 
 	status := StatusUnknown
-	if s, ok := exitCodeToStatus[exitCode]; ok {
-		status = s
-	}
 
-	logger.Debugf("Checker %q status=%s message=%q", c.Name, status, message)
+	if err != nil {
+		message = err.Error()
+	} else {
+		if s, ok := exitCodeToStatus[exitCode]; ok {
+			status = s
+		}
+
+		logger.Debugf("Checker %q status=%s message=%q", c.Name, status, message)
+	}
 
 	return &Report{
 		Name:                 c.Name,
