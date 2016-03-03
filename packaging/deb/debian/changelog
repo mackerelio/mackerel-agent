@@ -1,3 +1,12 @@
+mackerel-agent (0.29.0-1) stable; urgency=low
+
+  * remove deprecated command line options (-version and -once) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/194>
+  * Report checker execution timeout as Unknown status (by hanazuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/197>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 02 Mar 2016 15:14:15 +0900
+
 mackerel-agent (0.28.1-1) stable; urgency=low
 
   * fix the exit status on stopping the agent in the init script of debian (by itchyny)
