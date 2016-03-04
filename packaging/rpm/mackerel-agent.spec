@@ -71,6 +71,8 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Fri Mar 04 2016 <y.songmu@gmail.com> - 0.29.1-1
+
 * Wed Mar 02 2016 <y.songmu@gmail.com> - 0.29.0-1
 - remove deprecated command line options (-version and -once) (by Songmu)
 - Report checker execution timeout as Unknown status (by hanazuki)

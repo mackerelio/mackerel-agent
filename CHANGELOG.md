@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.29.1 (2016-03-04)
+
+
+
 ## 0.29.0 (2016-03-02)
 
 * remove deprecated command line options (-version and -once) #194 (Songmu)
