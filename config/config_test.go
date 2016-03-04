@@ -24,10 +24,6 @@ post_metrics_retry_max = 5
 [plugin.metrics.mysql]
 command = "ruby /path/to/your/plugin/mysql.rb"
 
-[sensu.checks.memory] # for backward compatibility
-command = "ruby ../sensu/plugins/system/memory-metrics.rb"
-type = "metric"
-
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
 notification_interval = 60
@@ -179,12 +175,6 @@ func TestLoadConfigFile(t *testing.T) {
 	pluginConf := config.Plugin["metrics"]["mysql"]
 	if pluginConf.Command != "ruby /path/to/your/plugin/mysql.rb" {
 		t.Errorf("plugin conf command should be 'ruby /path/to/your/plugin/mysql.rb' but %v", pluginConf.Command)
-	}
-
-	// for backward compatibility
-	sensu := config.Plugin["metrics"]["DEPRECATED-sensu-memory"]
-	if sensu.Command != "ruby ../sensu/plugins/system/memory-metrics.rb" {
-		t.Error("sensu command should be 'ruby ../sensu/plugins/system/memory-metrics.rb'")
 	}
 
 	if config.Plugin["checks"] == nil {
