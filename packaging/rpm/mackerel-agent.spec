@@ -72,6 +72,7 @@ fi
 
 %changelog
 * Fri Mar 04 2016 <y.songmu@gmail.com> - 0.29.1-1
+- maintenance release
 
 * Wed Mar 02 2016 <y.songmu@gmail.com> - 0.29.0-1
 - remove deprecated command line options (-version and -once) (by Songmu)

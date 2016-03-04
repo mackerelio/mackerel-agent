@@ -1,5 +1,6 @@
 mackerel-agent (0.29.1-1) stable; urgency=low
 
+  * maintenance release
 
  -- Songmu <y.songmu@gmail.com>  Fri, 04 Mar 2016 19:00:38 +0900
 
