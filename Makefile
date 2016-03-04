@@ -65,9 +65,8 @@ logging/level_string.go: logging/level.go
 clean:
 	rm -f build/$(BIN)
 	go clean
-	rm -f logging/level_string.go
 	rm -f commands_gen.go
 
-generate: commands_gen.go logging/level_string.go
+generate: commands_gen.go
 
 .PHONY: test build run deps clean lint crossbuild cover rpm deb generate
