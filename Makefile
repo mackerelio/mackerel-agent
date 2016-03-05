@@ -54,6 +54,15 @@ deb:
 	  _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
+tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
+tgz:
+	GOOS=linux GOARCH=386 make build
+	rm -rf $(tgz_dir)
+	mkdir -p $(tgz_dir)
+	cp mackerel-agent.sample.conf $(tgz_dir)/$(MACKEREL_AGENT_NAME).conf
+	cp build/$(MACKEREL_AGENT_NAME) $(tgz_dir)/
+	tar cvfz build/$(MACKEREL_AGENT_NAME)-latest.tar.gz -C ./build/tgz ./$(MACKEREL_AGENT_NAME)
+
 release:
 	_tools/releng
 
@@ -72,4 +81,4 @@ clean:
 
 generate: commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb generate
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate
