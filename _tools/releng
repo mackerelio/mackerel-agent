@@ -220,12 +220,6 @@ sub update_versions {
         $content =~ s/^(Version:\s+)$cur_ver_reg/$1$next_version/ms;
         $content;
     };
-
-    replace 'Makefile' => sub {
-        my $content = shift;
-        $content =~ s/$cur_ver_reg(\.orig\.tar\.gz)/$next_version$1/ms;
-        $content;
-    };
 }
 
 sub update_changelog {
