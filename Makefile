@@ -1,4 +1,5 @@
-BIN = mackerel-agent
+MACKEREL_AGENT_NAME ?= "mackerel-agent"
+MACKEREL_API_BASE ?= "https://mackerel.io"
 ARGS = "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
 
@@ -15,10 +16,10 @@ test: lint
 
 build: deps
 	go build -ldflags=$(BUILD_LDFLAGS) \
-	-o build/$(BIN)
+	-o build/$(MACKEREL_AGENT_NAME)
 
 run: build
-	./build/$(BIN) $(ARGS)
+	./build/$(MACKEREL_AGENT_NAME) $(ARGS)
 
 deps: generate
 	go get -d -v -t ./...
@@ -35,7 +36,7 @@ lint: deps
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
-	    -os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . -n $(BIN)
+	    -os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . -n $(MACKEREL_AGENT_NAME)
 
 cover: deps
 	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
@@ -47,7 +48,7 @@ rpm:
 
 deb:
 	GOOS=linux GOARCH=386 make build
-	cp build/$(BIN)                 packaging/deb/debian/mackerel-agent.bin
+	cp build/$(MACKEREL_AGENT_NAME) packaging/deb/debian/mackerel-agent.bin
 	cp mackerel-agent.sample.conf   packaging/deb/debian/mackerel-agent.conf
 	cp packaging/dummy-empty.tar.gz packaging/mackerel-agent_0.28.1.orig.tar.gz
 	cd packaging/deb && debuild --no-tgz-check -uc -us
@@ -64,7 +65,7 @@ logging/level_string.go: logging/level.go
 	go generate ./logging
 
 clean:
-	rm -f build/$(BIN)
+	rm -f build/$(MACKEREL_AGENT_NAME)
 	go clean
 	rm -f commands_gen.go
 
