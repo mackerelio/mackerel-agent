@@ -1,9 +1,8 @@
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          mackerel-agent
-# Short-Description: 'mackerel.io agent beta'
-# Description:       'mackerel.io agent beta'
-# Author:            Hatena
+# Short-Description: 'mackerel.io agent'
+# Description:       'mackerel.io agent'
 # Required-Start:    $syslog $network $remote_fs
 # Required-Stop:     $syslog $network $remote_fs
 # Default-Start:     2 3 4 5
@@ -90,7 +89,7 @@ case "$1" in
     status)
         status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
         ;;
-    reload)
+    reload|force-reload)
         do_configtest || exit $?
         log_daemon_msg "Restarting $DESC" "$NAME"
         do_stop
