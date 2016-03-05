@@ -44,8 +44,9 @@ cover: deps
 
 rpm:
 	GOOS=linux GOARCH=386 make build
-	cp mackerel-agent.sample.conf packaging/rpm/src/mackerel-agent.conf
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm/src" --define "_builddir `pwd`/build" -ba packaging/rpm/mackerel-agent.spec
+	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	    -ba packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 deb:
 	GOOS=linux GOARCH=386 make build
