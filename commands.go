@@ -5,6 +5,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"runtime"
 
@@ -27,6 +28,55 @@ func doMain(fs *flag.FlagSet, argv []string) error {
 		return fmt.Errorf("failed to load config: %s", err)
 	}
 	return start(conf, make(chan struct{}))
+}
+
+/* +command init - initialize mackerel-agent.conf with apikey
+
+	init -apikey=xxxxxxxxxxx [-conf=mackerel-agent.conf]
+
+initialize mackerel-agent.conf with api key. Set the apikey to conf file.
+
+- The conf file doesn't exist:
+    create new file and set the apikey
+- The conf file exists and apikey is unset:
+    set the apikey
+- The conf file exists and apikey already set:
+    skip initializing. Don't overwrite apikey and exit normally.
+- The conf file exists, but the contents of it is invalid toml:
+    exit with error.
+*/
+func doInit(fs *flag.FlagSet, argv []string) error {
+	var (
+		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path")
+		apikey = fs.String("apikey", "", "API key from mackerel.io web site")
+	)
+	fs.Parse(argv)
+
+	if *apikey == "" {
+		// Setting apikey via environment variable should be supported or not?
+		return fmt.Errorf("-apikey option is required")
+	}
+	_, err := os.Stat(*conffile)
+	confExists := err == nil
+	if confExists {
+		conf, err := config.LoadConfig(*conffile)
+		if err != nil {
+			return fmt.Errorf("Failed to load the config file: %s", err)
+		}
+		if conf.Apikey != "" {
+			logger.Infof("apikey already set. skip initializing")
+			return nil
+		}
+	}
+	contents := []byte(fmt.Sprintf("apikey = %q\n", *apikey))
+	if confExists {
+		cBytes, err := ioutil.ReadFile(*conffile)
+		if err != nil {
+			return err
+		}
+		contents = append(contents, cBytes...)
+	}
+	return ioutil.WriteFile(*conffile, contents, 0644)
 }
 
 /* +command version - display version of mackerel-agent
