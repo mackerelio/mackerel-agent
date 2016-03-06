@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.29.1 (2016-03-04)
+
+* maintenance release
+
+## 0.29.0 (2016-03-02)
+
+* remove deprecated command line options (-version and -once) #194 (Songmu)
+* Report checker execution timeout as Unknown status #197 (hanazuki)
+
+
+## 0.28.1 (2016-02-18)
+
+* fix the exit status on stopping the agent in the init script of debian #192 (itchyny)
+
+
+## 0.28.0 (2016-02-04)
+
+* add a configuration to ignore filesystems #186 (stanaka)
+* fix the code of extending the process's environment #187 (itchyny)
+* s{code.google.com/p/winsvc}{golang.org/x/sys/windows/svc} #188 (Songmu)
+* Max check attempts option for check plugin #189 (mechairoi)
+
+
+## 0.27.1 (2016-01-08)
+
+* [bugfix] fix timeout interval when calling `df` #184 (Songmu)
+
+
+## 0.27.0 (2016-01-06)
+
+* use timeout when calling `df` #180 (Songmu)
+* Notification Interval for check monitoring #181 (itchyny)
+
+
+## 0.26.2 (2015-12-10)
+
+* output success message to stderr when configtest succeed #178 (Songmu)
+
+
+## 0.26.1 (2015-12-09)
+
+* fix deprecate message #176 (Songmu)
+
+
+## 0.26.0 (2015-12-08)
+
+* Make HostID storage replacable #167 (motemen)
+* Publicize command.Context's fields #168 (motemen)
+* Configtest #169 (fujiwara)
+* Refactor config loading and check if Apikey exists in configtest #171 (Songmu)
+* fix exit status of debian init script. #172 (fujiwara)
+* Deprecate version and once option #173 (Songmu)
+
+
 ## 0.25.1 (2015-11-25)
 
 * Go 1.5.1 #164 (Songmu)

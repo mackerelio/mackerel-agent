@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.25.1
+Version:   0.29.1
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -32,7 +32,7 @@ mackerel.io agent beta
 %install
 rm -rf %{buildroot}
 install -d -m 755 %{buildroot}/%{_localbindir}
-install    -m 655 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
+install    -m 755 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
 
 install -d -m 755 %{buildroot}/%{_localstatedir}/log/
 
@@ -71,6 +71,43 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Fri Mar 04 2016 <y.songmu@gmail.com> - 0.29.1-1
+- maintenance release
+
+* Wed Mar 02 2016 <y.songmu@gmail.com> - 0.29.0-1
+- remove deprecated command line options (-version and -once) (by Songmu)
+- Report checker execution timeout as Unknown status (by hanazuki)
+
+* Thu Feb 18 2016 <stefafafan@hatena.ne.jp> - 0.28.1-1
+- fix the exit status on stopping the agent in the init script of debian (by itchyny)
+
+* Thu Feb 04 2016 <y.songmu@gmail.com> - 0.28.0-1
+- add a configuration to ignore filesystems (by stanaka)
+- fix the code of extending the process's environment (by itchyny)
+- s{code.google.com/p/winsvc}{golang.org/x/sys/windows/svc} (by Songmu)
+- Max check attempts option for check plugin (by mechairoi)
+
+* Fri Jan 08 2016 <y.songmu@gmail.com> - 0.27.1-1
+- [bugfix] fix timeout interval when calling `df` (by Songmu)
+
+* Wed Jan 06 2016 <y.songmu@gmail.com> - 0.27.0-1
+- use timeout when calling `df` (by Songmu)
+- Notification Interval for check monitoring (by itchyny)
+
+* Thu Dec 10 2015 <y.songmu@gmail.com> - 0.26.2-1
+- output success message to stderr when configtest succeed (by Songmu)
+
+* Wed Dec 09 2015 <y.songmu@gmail.com> - 0.26.1-1
+- fix deprecate message (by Songmu)
+
+* Tue Dec 08 2015 <y.songmu@gmail.com> - 0.26.0-1
+- Make HostID storage replacable (by motemen)
+- Publicize command.Context's fields (by motemen)
+- Configtest (by fujiwara)
+- Refactor config loading and check if Apikey exists in configtest (by Songmu)
+- fix exit status of debian init script. (by fujiwara)
+- Deprecate version and once option (by Songmu)
+
 * Wed Nov 25 2015 <y.songmu@gmail.com> - 0.25.1-1
 - Go 1.5.1 (by Songmu)
 - logging STDERR of checker command (by Songmu)

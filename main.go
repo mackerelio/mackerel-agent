@@ -8,18 +8,16 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
-	"github.com/Songmu/prompter"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/version"
+	"github.com/motemen/go-cli"
 )
 
 // allow options like -role=... -role=...
@@ -37,117 +35,10 @@ func (r *roleFullnamesFlag) Set(input string) error {
 	return nil
 }
 
-type otherOptions struct {
-	printVersion bool
-	runOnce      bool
-}
-
 var logger = logging.GetLogger("main")
 
-const (
-	exitStatusOK = iota
-	exitStatusError
-)
-
 func main() {
-	os.Exit(dispatch(os.Args[1:]))
-}
-
-// empty string is dealt with the key of main process
-const mainProcess = ""
-
-// subcommands and processes of the mackerel-agent
-var commands = map[string](func([]string) int){
-	mainProcess:  doMain,
-	"version":    doVersion,
-	"retire":     doRetire,
-	"configtest": doConfigtest,
-	"once":       doOnce,
-}
-
-func doVersion(_ []string) int {
-	fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
-		version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
-	return exitStatusOK
-}
-
-func doConfigtest(argv []string) int {
-	conf, otherOpts := resolveConfig(argv)
-	if conf == nil || otherOpts != nil {
-		return exitStatusError
-	}
-	return exitStatusOK
-}
-
-func doMain(argv []string) int {
-	conf, otherOpts := resolveConfig(argv)
-	if conf == nil {
-		return exitStatusError
-	}
-	if otherOpts != nil && otherOpts.printVersion {
-		return doVersion([]string{})
-	}
-
-	if conf.Verbose {
-		logging.SetLogLevel(logging.DEBUG)
-	}
-
-	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
-
-	if otherOpts != nil && otherOpts.runOnce {
-		command.RunOnce(conf)
-		return exitStatusOK
-	}
-
-	return start(conf)
-}
-
-func doRetire(argv []string) int {
-	conf, force, err := resolveConfigForRetire(argv)
-	if err != nil {
-		return exitStatusError
-	}
-
-	hostID, err := conf.LoadHostID()
-	if err != nil {
-		logger.Warningf("HostID file is not found")
-		return exitStatusError
-	}
-
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
-	if err != nil {
-		logger.Errorf("failed to create api client: %s", err)
-		return exitStatusError
-	}
-
-	if !force && !prompter.YN(fmt.Sprintf("retire this host? (hostID: %s)", hostID), false) {
-		logger.Infof("Retirement is canceled.")
-		return exitStatusError
-	}
-
-	err = api.RetireHost(hostID)
-	if err != nil {
-		logger.Errorf("failed to retire the host: %s", err)
-		return exitStatusError
-	}
-	logger.Infof("This host (hostID: %s) has been retired.", hostID)
-	// just to try to remove hostID file.
-	err = conf.DeleteSavedHostID()
-	if err != nil {
-		logger.Warningf("Failed to remove HostID file: %s", err)
-	}
-	return exitStatusOK
-}
-
-func doOnce(argv []string) int {
-	// dirty hack `resolveConfig` required apikey so fill up
-	argvOpt := append(argv, "-apikey=dummy")
-	conf, _ := resolveConfig(argvOpt)
-	if conf == nil {
-		return exitStatusError
-	}
-	command.RunOnce(conf)
-	return exitStatusOK
+	cli.Run(os.Args[1:])
 }
 
 func printRetireUsage() {
@@ -160,7 +51,7 @@ func printRetireUsage() {
   -apibase string
         API base (default "%s")
   -apikey string
-        API key from mackerel.io web site`,
+        (DEPRECATED) API key from mackerel.io web site`,
 		config.DefaultConfig.Conffile,
 		config.DefaultConfig.Apibase)
 
@@ -168,45 +59,17 @@ func printRetireUsage() {
 	os.Exit(2)
 }
 
-var helpReg = regexp.MustCompile(`^--?h(?:elp)?$`)
-var forceReg = regexp.MustCompile(`^--?force$`)
-
-func resolveConfigForRetire(argv []string) (*config.Config, bool, error) {
-	optArgs := []string{}
-	isForce := false
-	for _, v := range argv {
-		if helpReg.MatchString(v) {
-			printRetireUsage()
-		}
-		if forceReg.MatchString(v) {
-			isForce = true
-			continue
-		}
-		optArgs = append(optArgs, v)
-	}
-	conf, otherOpts := resolveConfig(optArgs)
-	if conf == nil {
-		printRetireUsage()
-	}
-
-	if otherOpts != nil {
-		msg := "can't use -vesion/-once option in retire"
-		logger.Errorf(msg)
-		return nil, isForce, fmt.Errorf(msg)
-	}
-
-	return conf, isForce, nil
+func resolveConfigForRetire(fs *flag.FlagSet, argv []string) (*config.Config, bool, error) {
+	var force = fs.Bool("force", false, "force retirement without prompting")
+	fs.Usage = printRetireUsage
+	conf, err := resolveConfig(fs, argv)
+	return conf, *force, err
 }
 
 // resolveConfig parses command line arguments and loads config file to
 // return config.Config information.
-// As a special case, if `-version` flag is given it stops processing
-// and return true for the second return value.
-func resolveConfig(argv []string) (*config.Config, *otherOptions) {
+func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	conf := &config.Config{}
-	otherOptions := &otherOptions{}
-
-	fs := flag.NewFlagSet("mackerel-agent", flag.ExitOnError)
 
 	var (
 		conffile      = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
@@ -225,29 +88,12 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	// but we call it "role" here for ease.
 	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
 
-	// flags for otherOpts
-	var (
-		runOnce      = fs.Bool("once", false, "(DEPRECATED) Show spec and metrics to stdout once")
-		printVersion = fs.Bool("version", false, "(DEPRECATED) Prints version and exit")
-	)
 	fs.Parse(argv)
 
-	if *printVersion {
-		otherOptions.printVersion = true
-		logger.Warningf("-print option is deprecated. use subcommand instead")
-		return conf, otherOptions
-	}
-
-	if *runOnce {
-		otherOptions.runOnce = true
-		logger.Warningf("-once option is deprecated. use subcommand instead")
-		return conf, otherOptions
-	}
-
 	conf, confErr := config.LoadConfig(*conffile)
+	conf.Conffile = *conffile
 	if confErr != nil {
-		logger.Criticalf("Failed to load the config file: %s", confErr)
-		return nil, nil
+		return nil, fmt.Errorf("Failed to load the config file: %s", confErr)
 	}
 
 	// overwrite config from file by config from args
@@ -256,7 +102,6 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 		case "apibase":
 			conf.Apibase = *apibase
 		case "apikey":
-			logger.Warningf("-apikey option is deprecated. use config file instead")
 			conf.Apikey = *apikey
 		case "pidfile":
 			conf.Pidfile = *pidfile
@@ -282,8 +127,7 @@ func resolveConfig(argv []string) (*config.Config, *otherOptions) {
 	conf.Roles = r
 
 	if conf.Apikey == "" {
-		logger.Criticalf("Apikey must be specified in the command-line flag or in the config file")
-		return nil, nil
+		return nil, fmt.Errorf("Apikey must be specified in the config file (or by the DEPRECATED command-line flag)")
 	}
 	return conf, nil
 }
@@ -307,7 +151,6 @@ func createPidFile(pidfile string) error {
 	}
 	file, err := os.Create(pidfile)
 	if err != nil {
-		logger.Criticalf("Failed to create a pidfile: %s", err)
 		return err
 	}
 	defer file.Close()
@@ -322,19 +165,22 @@ func removePidFile(pidfile string) {
 	}
 }
 
-func start(conf *config.Config) int {
+func start(conf *config.Config, termCh chan struct{}) error {
+	if conf.Verbose {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
+
 	if err := createPidFile(conf.Pidfile); err != nil {
-		return exitStatusError
+		return fmt.Errorf("createPidFile(%q) failed: %s", conf.Pidfile, err)
 	}
 	defer removePidFile(conf.Pidfile)
 
 	ctx, err := command.Prepare(conf)
 	if err != nil {
-		logger.Criticalf(err.Error())
-		return exitStatusError
+		return fmt.Errorf("command.Prepare failed: %s", err)
 	}
 
-	termCh := make(chan struct{})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go signalHandler(c, ctx, termCh)

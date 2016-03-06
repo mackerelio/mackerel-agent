@@ -1,9 +1,8 @@
 #!/bin/sh
 ### BEGIN INIT INFO
 # Provides:          mackerel-agent
-# Short-Description: 'mackerel.io agent beta'
-# Description:       'mackerel.io agent beta'
-# Author:            Hatena
+# Short-Description: 'mackerel.io agent'
+# Description:       'mackerel.io agent'
 # Required-Start:    $syslog $network $remote_fs
 # Required-Stop:     $syslog $network $remote_fs
 # Default-Start:     2 3 4 5
@@ -79,7 +78,9 @@ case "$1" in
         log_daemon_msg "Stopping $DESC" "$NAME"
         do_stop
         retval=$?
-        [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && do_retire || exit $?
+        if [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ]; then
+          do_retire || retval=$?
+        fi
         case "$retval" in
             0|1) log_end_msg 0 ;;
             *)   log_end_msg 1; exit $retval ;;
@@ -88,7 +89,7 @@ case "$1" in
     status)
         status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
         ;;
-    reload)
+    reload|force-reload)
         do_configtest || exit $?
         log_daemon_msg "Restarting $DESC" "$NAME"
         do_stop

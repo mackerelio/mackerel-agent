@@ -1,3 +1,85 @@
+mackerel-agent (0.29.1-1) stable; urgency=low
+
+  * maintenance release
+
+ -- Songmu <y.songmu@gmail.com>  Fri, 04 Mar 2016 19:00:38 +0900
+
+mackerel-agent (0.29.0-1) stable; urgency=low
+
+  * remove deprecated command line options (-version and -once) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/194>
+  * Report checker execution timeout as Unknown status (by hanazuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/197>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 02 Mar 2016 15:14:15 +0900
+
+mackerel-agent (0.28.1-1) stable; urgency=low
+
+  * fix the exit status on stopping the agent in the init script of debian (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/192>
+
+ -- Stefan Utamaru <stefafafan@hatena.ne.jp>  Thu, 18 Feb 2016 17:06:18 +0900
+
+mackerel-agent (0.28.0-1) stable; urgency=low
+
+  * add a configuration to ignore filesystems (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/186>
+  * fix the code of extending the process's environment (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/187>
+  * s{code.google.com/p/winsvc}{golang.org/x/sys/windows/svc} (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/188>
+  * Max check attempts option for check plugin (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/189>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 04 Feb 2016 11:31:56 +0900
+
+mackerel-agent (0.27.1-1) stable; urgency=low
+
+  * [bugfix] fix timeout interval when calling `df` (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/184>
+
+ -- Songmu <y.songmu@gmail.com>  Fri, 08 Jan 2016 15:20:24 +0900
+
+mackerel-agent (0.27.0-1) stable; urgency=low
+
+  * use timeout when calling `df` (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/180>
+  * Notification Interval for check monitoring (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/181>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 06 Jan 2016 13:41:53 +0900
+
+mackerel-agent (0.26.2-1) stable; urgency=low
+
+  * output success message to stderr when configtest succeed (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/178>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 10 Dec 2015 11:15:21 +0900
+
+mackerel-agent (0.26.1-1) stable; urgency=low
+
+  * fix deprecate message (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/176>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 09 Dec 2015 15:20:47 +0900
+
+mackerel-agent (0.26.0-1) stable; urgency=low
+
+  * Make HostID storage replacable (by motemen)
+    <https://github.com/mackerelio/mackerel-agent/pull/167>
+  * Publicize command.Context's fields (by motemen)
+    <https://github.com/mackerelio/mackerel-agent/pull/168>
+  * Configtest (by fujiwara)
+    <https://github.com/mackerelio/mackerel-agent/pull/169>
+  * Refactor config loading and check if Apikey exists in configtest (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/171>
+  * fix exit status of debian init script. (by fujiwara)
+    <https://github.com/mackerelio/mackerel-agent/pull/172>
+  * Deprecate version and once option (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/173>
+
+ -- Songmu <y.songmu@gmail.com>  Tue, 08 Dec 2015 11:17:07 +0900
+
 mackerel-agent (0.25.1-1) stable; urgency=low
 
   * Go 1.5.1 (by Songmu)

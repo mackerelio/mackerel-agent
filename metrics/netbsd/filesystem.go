@@ -12,6 +12,7 @@ import (
 
 // FilesystemGenerator XXX
 type FilesystemGenerator struct {
+	IgnoreRegexp *regexp.Regexp
 }
 
 var logger = logging.GetLogger("metrics.filesystem")
@@ -30,6 +31,9 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, values := range filesystems {
+		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
+			continue
+		}
 		if matches := regexp.MustCompile(`^/dev/(.*)$`).FindStringSubmatch(name); matches != nil {
 			device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(matches[1], "_")
 			for key, value := range values {

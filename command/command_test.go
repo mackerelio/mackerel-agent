@@ -309,7 +309,7 @@ func TestLoop(t *testing.T) {
 	host := &mackerel.Host{ID: "xyzabc12345"}
 
 	termCh := make(chan struct{})
-	exitCh := make(chan int)
+	exitCh := make(chan error)
 	c := &Context{
 		Agent:  ag,
 		Config: &conf,
@@ -338,8 +338,8 @@ func TestLoop(t *testing.T) {
 	}
 
 	termCh <- struct{}{}
-	exitCode := <-exitCh
-	if exitCode != 0 {
-		t.Errorf("exit code should be 0, got: %d", exitCode)
+	exitErr := <-exitCh
+	if exitErr != nil {
+		t.Errorf("exitErr should be nil, got: %s", exitErr)
 	}
 }

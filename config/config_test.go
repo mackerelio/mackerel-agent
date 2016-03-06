@@ -14,6 +14,9 @@ apikey = "abcde"
 display_name = "fghij"
 diagnostic = true
 
+[filesystems]
+ignore = "/dev/ram.*"
+
 [connection]
 post_metrics_retry_delay_seconds = 600
 post_metrics_retry_max = 5
@@ -27,6 +30,8 @@ type = "metric"
 
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
+notification_interval = 60
+max_check_attempts = 3
 `
 
 func TestLoadConfig(t *testing.T) {
@@ -112,6 +117,29 @@ func TestLoadConfigWithHostStatus(t *testing.T) {
 	}
 }
 
+var sampleConfigWithInvalidIgnoreRegexp = `
+apikey = "abcde"
+display_name = "fghij"
+
+[filesystems]
+ignore = "**"
+`
+
+func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
+	tmpFile, err := ioutil.TempFile("", "")
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfigWithInvalidIgnoreRegexp), 0644); err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: %v", err)
+	}
+}
+
 func TestLoadConfigFile(t *testing.T) {
 	tmpFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
@@ -165,6 +193,12 @@ func TestLoadConfigFile(t *testing.T) {
 	checks := config.Plugin["checks"]["heartbeat"]
 	if checks.Command != "heartbeat.sh" {
 		t.Error("sensu command should be 'heartbeat.sh'")
+	}
+	if *checks.NotificationInterval != 60 {
+		t.Error("notification_interval should be 60")
+	}
+	if *checks.MaxCheckAttempts != 3 {
+		t.Error("max_check_attempts should be 3")
 	}
 }
 
