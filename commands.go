@@ -48,7 +48,7 @@ initialize mackerel-agent.conf with api key. Set the apikey to conf file.
 func doInit(fs *flag.FlagSet, argv []string) error {
 	var (
 		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path")
-		apikey = fs.String("apikey", "", "API key from mackerel.io web site")
+		apikey   = fs.String("apikey", "", "API key from mackerel.io web site")
 	)
 	fs.Parse(argv)
 
