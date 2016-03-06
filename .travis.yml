@@ -1,10 +1,16 @@
+sudo: false
 language: go
 go:
 - 1.5
-env: PATH=/home/travis/gopath/bin:$PATH
+env: PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
+sudo: false
+addons:
+  apt:
+    packages:
+      - rpm
+      - devscripts
+      - debhelper
 install:
-- sudo apt-get update
-- DEBIAN_FRONTEND=noninteractive sudo apt-get install -y rpm devscripts debhelper
 - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
 - make lint
