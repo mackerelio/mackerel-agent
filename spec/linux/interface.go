@@ -45,7 +45,7 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 		if iface["encap"] == nil || iface["encap"] == "Loopback" {
 			continue
 		}
-		if iface["ipAddress"] == nil && iface["ipv6Address"] == nil {
+		if len(iface["ipv4Addresses"].([]string)) == 0 && len(iface["ipv6Addresses"].([]string)) == 0 {
 			continue
 		}
 		iface["name"] = key
@@ -72,6 +72,8 @@ func (g *InterfaceGenerator) generateByIPCommand() (map[string]map[string]interf
 			if matches := regexp.MustCompile(`^(\d+): ([0-9a-zA-Z@:\.\-_]*?)(@[0-9a-zA-Z]+|):\s`).FindStringSubmatch(line); matches != nil {
 				name = matches[2]
 				interfaces[name] = make(map[string]interface{}, 0)
+				interfaces[name]["ipv4Addresses"] = []string{}
+				interfaces[name]["ipv6Addresses"] = []string{}
 			}
 
 			// ex.) link/ether 12:34:56:78:9a:bc brd ff:ff:ff:ff:ff:ff
@@ -82,14 +84,12 @@ func (g *InterfaceGenerator) generateByIPCommand() (map[string]map[string]interf
 
 			// ex.) inet 10.0.4.7/24 brd 10.0.5.255 scope global eth0
 			if matches := regexp.MustCompile(`inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/(\d{1,2}))?`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipAddress"] = matches[1]
-				interfaces[name]["netmask"] = matches[3]
+				interfaces[name]["ipv4Addresses"] = append(interfaces[name]["ipv4Addresses"].([]string), matches[1])
 			}
 
 			//inet6 fe80::44b3:b3ff:fe1c:d17c/64 scope link
 			if matches := regexp.MustCompile(`inet6 ([a-f0-9\:]+)\/(\d+) scope (\w+)`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipv6Address"] = matches[1]
-				interfaces[name]["v6netmask"] = matches[2]
+				interfaces[name]["ipv6Addresses"] = append(interfaces[name]["ipv6Addresses"].([]string), matches[1])
 			}
 		}
 	}
