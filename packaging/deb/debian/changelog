@@ -1,3 +1,10 @@
+mackerel-agent (0.29.2-1) stable; urgency=low
+
+  * Don't overwrite mackerel-agent.conf when updating deb package (Fix deb packaging) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/199>
+
+ -- Songmu <y.songmu@gmail.com>  Mon, 07 Mar 2016 19:35:05 +0900
+
 mackerel-agent (0.29.1-1) stable; urgency=low
 
   * maintenance release

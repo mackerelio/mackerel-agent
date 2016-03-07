@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.29.2 (2016-03-07)
+
+* Don't overwrite mackerel-agent.conf when updating deb package (Fix deb packaging) #199 (Songmu)
+
+
 ## 0.29.1 (2016-03-04)
 
 * maintenance release
