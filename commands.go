@@ -5,7 +5,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"runtime"
 
@@ -46,37 +45,12 @@ initialize mackerel-agent.conf with api key. Set the apikey to conf file.
     exit with error.
 */
 func doInit(fs *flag.FlagSet, argv []string) error {
-	var (
-		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path")
-		apikey   = fs.String("apikey", "", "API key from mackerel.io web site")
-	)
-	fs.Parse(argv)
-
-	if *apikey == "" {
-		// Setting apikey via environment variable should be supported or not?
-		return fmt.Errorf("-apikey option is required")
+	err := doInitialize(fs, argv)
+	if _, ok := err.(apikeyAlreadySetError); ok {
+		logger.Infof("%s", err)
+		return nil
 	}
-	_, err := os.Stat(*conffile)
-	confExists := err == nil
-	if confExists {
-		conf, err := config.LoadConfig(*conffile)
-		if err != nil {
-			return fmt.Errorf("Failed to load the config file: %s", err)
-		}
-		if conf.Apikey != "" {
-			logger.Infof("apikey already set. skip initializing")
-			return nil
-		}
-	}
-	contents := []byte(fmt.Sprintf("apikey = %q\n", *apikey))
-	if confExists {
-		cBytes, err := ioutil.ReadFile(*conffile)
-		if err != nil {
-			return err
-		}
-		contents = append(contents, cBytes...)
-	}
-	return ioutil.WriteFile(*conffile, contents, 0644)
+	return err
 }
 
 /* +command version - display version of mackerel-agent
