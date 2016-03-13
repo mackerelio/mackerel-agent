@@ -2,7 +2,7 @@
 # rpmbuild -ba ~/rpmbuild/SPECS/mackerel-agent.spec
 
 %define _binaries_in_noarch_packages_terminate_build   0
-%define _localbindir /usr/local/bin
+%define _localbindir /usr/bin
 
 Name:      mackerel-agent
 Version:   0.30.0
