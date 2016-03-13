@@ -33,12 +33,12 @@ func doMain(fs *flag.FlagSet, argv []string) error {
 
 	init -apikey=xxxxxxxxxxx [-conf=mackerel-agent.conf]
 
-initialize mackerel-agent.conf with api key. Set the apikey to conf file.
+Initialize mackerel-agent.conf with api key.
 
 - The conf file doesn't exist:
-    create new file and set the apikey
+    create new file and set the apikey.
 - The conf file exists and apikey is unset:
-    set the apikey
+    set the apikey.
 - The conf file exists and apikey already set:
     skip initializing. Don't overwrite apikey and exit normally.
 - The conf file exists, but the contents of it is invalid toml:

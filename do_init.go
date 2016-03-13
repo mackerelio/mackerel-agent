@@ -12,7 +12,7 @@ import (
 func doInitialize(fs *flag.FlagSet, argv []string) error {
 	var (
 		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path")
-		apikey   = fs.String("apikey", "", "API key from mackerel.io web site")
+		apikey   = fs.String("apikey", "", "API key from mackerel.io web site (Required)")
 	)
 	fs.Parse(argv)
 
