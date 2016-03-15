@@ -45,7 +45,9 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 		if iface["encap"] == nil || iface["encap"] == "Loopback" {
 			continue
 		}
-		if len(iface["ipv4Addresses"].([]string)) == 0 && len(iface["ipv6Addresses"].([]string)) == 0 {
+		ipv4s, okv4 := iface["ipv4Addresses"].([]string)
+		ipv6s, okv6 := iface["ipv6Addresses"].([]string)
+		if !okv4 || !okv6 || (len(ipv4s) == 0 && len(ipv6s) == 0) {
 			continue
 		}
 		iface["name"] = key
