@@ -182,7 +182,7 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	checks := config.Plugin["checks"]["heartbeat"]
 	if checks.Command != "heartbeat.sh" {
-		t.Error("sensu command should be 'heartbeat.sh'")
+		t.Error("check command should be 'heartbeat.sh'")
 	}
 	if *checks.NotificationInterval != 60 {
 		t.Error("notification_interval should be 60")
