@@ -3,10 +3,8 @@
 package linux
 
 import (
-	"net"
 	"os/exec"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -45,7 +43,9 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 		if iface["encap"] == nil || iface["encap"] == "Loopback" {
 			continue
 		}
-		if iface["ipAddress"] == nil && iface["ipv6Address"] == nil {
+		ipv4s, okv4 := iface["ipv4Addresses"].([]string)
+		ipv6s, okv6 := iface["ipv6Addresses"].([]string)
+		if !okv4 || !okv6 || (len(ipv4s) == 0 && len(ipv6s) == 0) {
 			continue
 		}
 		iface["name"] = key
@@ -72,6 +72,8 @@ func (g *InterfaceGenerator) generateByIPCommand() (map[string]map[string]interf
 			if matches := regexp.MustCompile(`^(\d+): ([0-9a-zA-Z@:\.\-_]*?)(@[0-9a-zA-Z]+|):\s`).FindStringSubmatch(line); matches != nil {
 				name = matches[2]
 				interfaces[name] = make(map[string]interface{}, 0)
+				interfaces[name]["ipv4Addresses"] = []string{}
+				interfaces[name]["ipv6Addresses"] = []string{}
 			}
 
 			// ex.) link/ether 12:34:56:78:9a:bc brd ff:ff:ff:ff:ff:ff
@@ -82,14 +84,12 @@ func (g *InterfaceGenerator) generateByIPCommand() (map[string]map[string]interf
 
 			// ex.) inet 10.0.4.7/24 brd 10.0.5.255 scope global eth0
 			if matches := regexp.MustCompile(`inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/(\d{1,2}))?`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipAddress"] = matches[1]
-				interfaces[name]["netmask"] = matches[3]
+				interfaces[name]["ipv4Addresses"] = append(interfaces[name]["ipv4Addresses"].([]string), matches[1])
 			}
 
 			//inet6 fe80::44b3:b3ff:fe1c:d17c/64 scope link
 			if matches := regexp.MustCompile(`inet6 ([a-f0-9\:]+)\/(\d+) scope (\w+)`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipv6Address"] = matches[1]
-				interfaces[name]["v6netmask"] = matches[2]
+				interfaces[name]["ipv6Addresses"] = append(interfaces[name]["ipv6Addresses"].([]string), matches[1])
 			}
 		}
 	}
@@ -150,6 +150,8 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 			if matches := regexp.MustCompile(`^([0-9a-zA-Z@\.\:\-_]+)\s+`).FindStringSubmatch(line); matches != nil {
 				name = matches[1]
 				interfaces[name] = make(map[string]interface{}, 0)
+				interfaces[name]["ipv4Addresses"] = []string{}
+				interfaces[name]["ipv6Addresses"] = []string{}
 			}
 			// ex.) eth0      Link encap:Ethernet  HWaddr 12:34:56:78:9a:bc
 			if matches := regexp.MustCompile(`Link encap:(Local Loopback)|Link encap:(.+?)\s`).FindStringSubmatch(line); matches != nil {
@@ -165,17 +167,11 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 			}
 			// ex.) inet addr:10.0.4.7  Bcast:10.0.5.255  Mask:255.255.255.0
 			if matches := regexp.MustCompile(`inet addr:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipAddress"] = matches[1]
+				interfaces[name]["ipv4Addresses"] = append(interfaces[name]["ipv4Addresses"].([]string), matches[1])
 			}
 			// ex.) inet6 addr: fe80::44b3:b3ff:fe1c:d17c/64 Scope:Link
 			if matches := regexp.MustCompile(`inet6 addr: ([a-f0-9\:]+)\/(\d+) Scope:(\w+)`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipv6Address"] = matches[1]
-				interfaces[name]["v6netmask"] = matches[2]
-			}
-			// ex.) inet addr:10.0.4.7  Bcast:10.0.5.255  Mask:255.255.255.0
-			if matches := regexp.MustCompile(`Mask:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`).FindStringSubmatch(line); matches != nil {
-				netmask, _ := net.ParseIP(matches[1]).DefaultMask().Size()
-				interfaces[name]["netmask"] = strconv.Itoa(netmask)
+				interfaces[name]["ipv6Addresses"] = append(interfaces[name]["ipv6Addresses"].([]string), matches[1])
 			}
 		}
 	}

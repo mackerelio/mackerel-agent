@@ -33,17 +33,15 @@ func TestInterfaceGenerate(t *testing.T) {
 
 	if len(interfaces) == 0 {
 		t.Error("should have at least 1 interface")
+		return
 	}
 
 	iface := interfaces[0]
-	if _, ok := iface["ipAddress"]; !ok {
-		t.Error("interface should have ipAddress")
+	if addrs, ok := iface["ipv4Addresses"]; !ok || len(addrs.([]string)) <= 0 {
+		t.Error("interface should have ipv4Addresses")
 	}
 	if _, ok := iface["macAddress"]; !ok {
 		t.Error("interface should have macAddress")
-	}
-	if _, ok := iface["netmask"]; !ok {
-		t.Error("interface should have netmask")
 	}
 	if _, ok := iface["address"]; !ok {
 		t.Error("interface should have address")
@@ -71,23 +69,18 @@ func TestGenerateByIpCommand(t *testing.T) {
 	name := "eth0"
 	if _, ok := interfaces[name]; !ok {
 		t.Error("should have interfaces")
+		return
 	}
 
 	iface := interfaces[name]
 	if len(iface) == 0 {
 		t.Error("should have item")
 	}
-	if _, ok := iface["ipAddress"]; !ok {
-		t.Error("interface should have ipAddress")
+	if addrs, ok := iface["ipv4Addresses"]; !ok || len(addrs.([]string)) <= 0 {
+		t.Error("interface should have ipv4Addresses")
 	}
 	if _, ok := iface["macAddress"]; !ok {
 		t.Error("interface should have macAddress")
-	}
-	if _, ok := iface["netmask"]; !ok {
-		t.Error("interface should have netmask")
-	}
-	if _, ok := iface["address"]; !ok {
-		t.Error("interface should have address")
 	}
 	if _, ok := iface["defaultGateway"]; !ok {
 		t.Error("interface should have defaultGateway")
@@ -110,8 +103,8 @@ func TestGenerateByIfconfigCommand(t *testing.T) {
 	if len(iface) == 0 {
 		t.Log("Skip: should have item")
 	}
-	if _, ok := iface["ipAddress"]; !ok {
-		t.Log("Skip: interface should have ipAddress")
+	if addrs, ok := iface["ipv4Addresses"]; !ok || len(addrs.([]string)) <= 0 {
+		t.Log("Skip: interface should have ipv4Addresses")
 	}
 	if _, ok := iface["macAddress"]; !ok {
 		t.Log("Skip: interface should have macAddress")
