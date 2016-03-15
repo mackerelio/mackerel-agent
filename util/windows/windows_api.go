@@ -75,7 +75,6 @@ var (
 
 	RegGetValue                 = modadvapi32.NewProc("RegGetValueW")
 	GetSystemInfo               = modkernel32.NewProc("GetSystemInfo")
-	GetTickCount                = modkernel32.NewProc("GetTickCount")
 	GetDiskFreeSpaceEx          = modkernel32.NewProc("GetDiskFreeSpaceExW")
 	GetLogicalDriveStrings      = modkernel32.NewProc("GetLogicalDriveStringsW")
 	GetDriveType                = modkernel32.NewProc("GetDriveTypeW")
