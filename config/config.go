@@ -53,8 +53,7 @@ type Config struct {
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
 	Plugin map[string]PluginConfigs
 
-	DeprecatedSensu map[string]PluginConfigs `toml:"sensu"` // DEPRECATED this is for backward compatibility
-	Include         string
+	Include string
 
 	// Cannot exist in configuration files
 	HostIDStorage HostIDStorage
@@ -173,23 +172,6 @@ func loadConfigFile(file string) (*Config, error) {
 			return config, err
 		}
 	}
-
-	// for backward compatibility
-	// merges sensu configs to plugin configs
-	if _, ok := config.DeprecatedSensu["checks"]; ok {
-		configLogger.Warningf("'sensu.checks.*' config format is DEPRECATED. Please use 'plugin.metrics.*' format.")
-
-		if config.Plugin == nil {
-			config.Plugin = map[string]PluginConfigs{}
-		}
-		if _, ok := config.Plugin["metrics"]; !ok {
-			config.Plugin["metrics"] = PluginConfigs{}
-		}
-		for k, v := range config.DeprecatedSensu["checks"] {
-			config.Plugin["metrics"]["DEPRECATED-sensu-"+k] = v
-		}
-	}
-
 	return config, nil
 }
 
