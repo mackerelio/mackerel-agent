@@ -2,6 +2,8 @@
 
 package netbsd
 
+import "github.com/mackerelio/mackerel-agent/spec"
+
 // InterfaceGenerator XXX
 type InterfaceGenerator struct {
 }
@@ -12,10 +14,7 @@ func (g *InterfaceGenerator) Key() string {
 }
 
 // Generate XXX
-func (g *InterfaceGenerator) Generate() (interface{}, error) {
-	var interfaces map[string]map[string]interface{}
-
+func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
 	// TODO
-
-	return interfaces, nil
+	return []spec.NetInterface{}, nil
 }
