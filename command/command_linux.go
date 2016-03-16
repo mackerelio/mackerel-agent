@@ -18,7 +18,7 @@ func specGenerators() []spec.Generator {
 	}
 }
 
-func interfaceGenerator() spec.Generator {
+func interfaceGenerator() spec.InterfaceGenerator {
 	return &specLinux.InterfaceGenerator{}
 }
 

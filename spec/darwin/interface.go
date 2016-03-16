@@ -7,8 +7,10 @@ import (
 	"bytes"
 	"os/exec"
 	"regexp"
+	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/spec"
 )
 
 // InterfaceGenerator XXX
@@ -23,31 +25,39 @@ func (g *InterfaceGenerator) Key() string {
 var interfaceLogger = logging.GetLogger("spec.interface")
 
 // Generate XXX
-func (g *InterfaceGenerator) Generate() (interface{}, error) {
-	var interfaces map[string]map[string]interface{}
+func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
+	var interfaces spec.NetInterfaces
 
 	interfaces, err := g.generateByIfconfigCommand()
 	if err != nil {
 		return nil, err
 	}
-
-	var results []map[string]interface{}
-	for key, iface := range interfaces {
-		if iface["loopback"] != nil {
+	var results []spec.NetInterface
+	for _, iface := range interfaces {
+		if iface.Encap == "Loopback" {
 			continue
 		}
-		if iface["ipAddress"] == nil && iface["ipv6Address"] == nil {
+		if len(iface.IPv4Addresses) == 0 && len(iface.IPv6Addresses) == 0 {
 			continue
 		}
-		iface["name"] = key
 		results = append(results, iface)
 	}
-
 	return results, nil
 }
 
-func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]interface{}, error) {
-	interfaces := make(map[string]map[string]interface{})
+var (
+	// ex.) en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+	nameReg = regexp.MustCompile(`^([0-9a-zA-Z@\-_]+):\s+`)
+	// ex.) ether 10:93:00:00:00:00
+	macReg = regexp.MustCompile(`^\s*ether\s+([0-9a-f:]+)`)
+	// ex.) inet 10.0.3.1 netmask 0xffffff00 broadcast 10.0.3.255
+	ipv4Reg = regexp.MustCompile(`^\s*inet\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+netmask\s+(0x[0-9a-f]+)`)
+	// ex.) inet6 2001:268:c044:1111:1111:1111:1111:1111 prefixlen 64 autoconf
+	ipv6Reg = regexp.MustCompile(`^\s*inet6\s+([0-9a-f:]+)\s+prefixlen\s+(\d+)`)
+)
+
+func (g *InterfaceGenerator) generateByIfconfigCommand() (spec.NetInterfaces, error) {
+	interfaces := make(spec.NetInterfaces)
 
 	{
 		// ifconfig -a
@@ -61,28 +71,22 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 		name := ""
 		for lineScanner.Scan() {
 			line := lineScanner.Text()
-			// ex.) en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
-			if matches := regexp.MustCompile(`^([0-9a-zA-Z@\-_]+):\s+`).FindStringSubmatch(line); matches != nil {
+			if matches := nameReg.FindStringSubmatch(line); matches != nil {
 				name = matches[1]
-				interfaces[name] = make(map[string]interface{}, 0)
 			}
 			// ex.) lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu 16384
-			if regexp.MustCompile(`LOOPBACK`).MatchString(line) {
-				interfaces[name]["loopback"] = true
+			if strings.Contains(line, "LOOPBACK") {
+				interfaces.SetEncap(name, "Loopback")
 			}
-			// ex.) ether 10:93:00:00:00:00
-			if matches := regexp.MustCompile(`^\s*ether\s+([0-9a-f:]+)`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["macAddress"] = matches[1]
+			if matches := macReg.FindStringSubmatch(line); matches != nil {
+				interfaces.SetMacAddress(name, matches[1])
 			}
-			// ex.) inet 10.0.3.1 netmask 0xffffff00 broadcast 10.0.3.255
-			if matches := regexp.MustCompile(`^\s*inet\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+netmask\s+(0x[0-9a-f]+)`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipAddress"] = matches[1]
-				interfaces[name]["netmask"] = matches[2]
+			if matches := ipv4Reg.FindStringSubmatch(line); matches != nil {
+				interfaces.AppendIPv4Address(name, matches[1])
 			}
 			// ex.) inet6 2001:268:c044:1111:1111:1111:1111:1111 prefixlen 64 autoconf
-			if matches := regexp.MustCompile(`^\s*inet6\s+([0-9a-f:]+)\s+prefixlen\s+(\d+)`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipv6Address"] = matches[1]
-				interfaces[name]["v6netmask"] = matches[2]
+			if matches := ipv6Reg.FindStringSubmatch(line); matches != nil {
+				interfaces.AppendIPv6Address(name, matches[1])
 			}
 		}
 	}
@@ -94,26 +98,31 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 			interfaceLogger.Errorf("Failed to run netstat command (skip this spec): %s", err)
 			return interfaces, err
 		}
-		routeRegexp := regexp.MustCompile(`^default\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`)
-		lineScanner := bufio.NewScanner(bytes.NewReader(out))
-		// ex.)
-		// Routing tables
+		name, gateway := retrieveDefaultGateway(out)
+		interfaces.SetDefaultGateway(name, gateway)
+	}
+	return interfaces, nil
+}
 
-		// Internet:
-		// Destination        Gateway            Flags        Refs      Use   Netif Expire
-		// default            10.0.3.1      UGSc           25        0     en0
-		for lineScanner.Scan() {
-			line := lineScanner.Text()
-			if routeRegexp.FindStringSubmatch(line) != nil {
-				routeResults := regexp.MustCompile(`[ \t]+`).Split(line, 6)
-				if len(routeResults) < 6 || interfaces[routeResults[5]] == nil {
-					continue
-				}
-				interfaces[routeResults[5]]["defaultGateway"] = routeResults[1]
-				break
+var routeRegexp = regexp.MustCompile(`^default\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`)
+
+func retrieveDefaultGateway(out []byte) (name, gateway string) {
+	lineScanner := bufio.NewScanner(bytes.NewReader(out))
+	// ex.)
+	// Routing tables
+
+	// Internet:
+	// Destination        Gateway            Flags        Refs      Use   Netif Expire
+	// default            10.0.3.1      UGSc           25        0     en0
+	for lineScanner.Scan() {
+		line := lineScanner.Text()
+		if routeRegexp.MatchString(line) {
+			routeResults := strings.Fields(line)
+			if len(routeResults) < 6 {
+				continue
 			}
+			return routeResults[5], routeResults[1]
 		}
 	}
-
-	return interfaces, nil
+	return
 }
