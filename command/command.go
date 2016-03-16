@@ -424,7 +424,7 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
-func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{}, error) {
+func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
@@ -437,13 +437,10 @@ func collectHostSpecs() (string, map[string]interface{}, []map[string]interface{
 	}
 	meta := spec.Collect(specGens)
 
-	interfacesSpec, err := interfaceGenerator().Generate()
+	interfaces, err := interfaceGenerator().Generate()
 	if err != nil {
 		return "", nil, nil, fmt.Errorf("failed to collect interfaces: %s", err.Error())
 	}
-
-	interfaces, _ := interfacesSpec.([]map[string]interface{})
-
 	return hostname, meta, interfaces, nil
 }
 
