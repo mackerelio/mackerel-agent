@@ -16,27 +16,24 @@ func TestInterfaceKey(t *testing.T) {
 
 func TestInterfaceGenerate(t *testing.T) {
 	g := &InterfaceGenerator{}
-	value, err := g.Generate()
+	interfaces, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	interfaces, typeOk := value.([]map[string]interface{})
-	if !typeOk {
-		t.Errorf("value should be slice of map. %+v", value)
-	}
 	if len(interfaces) == 0 {
-		t.Error("should have at least 1 interface")
+		t.Skipf("testing environment has no interface")
+		return
 	}
 
 	iface := interfaces[0]
-	if _, ok := iface["name"]; !ok {
+	if iface.Name == "" {
 		t.Error("interface should have name")
 	}
-	if _, ok := iface["ipAddress"]; !ok {
-		t.Error("interface should have ipAddress")
+	if len(iface.IPv4Addresses) == 0 {
+		t.Error("interface should have IPv4Addresses")
 	}
-	if _, ok := iface["macAddress"]; !ok {
+	if iface.MacAddress == "" {
 		t.Error("interface should have macAddress")
 	}
 }
