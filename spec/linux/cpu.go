@@ -60,8 +60,6 @@ func (g *CPUGenerator) generate(file io.Reader) (interface{}, error) {
 			cur["mhz"] = matches[1]
 		} else if matches := regexp.MustCompile(`^cache size\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
 			cur["cache_size"] = matches[1]
-		} else if matches := regexp.MustCompile(`^flags\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["flags"] = regexp.MustCompile(` `).Split(matches[1], -1)
 		}
 	}
 	if err := scanner.Err(); err != nil {
