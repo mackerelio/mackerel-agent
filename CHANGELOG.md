@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.30.0 (2016-03-17)
+
+* remove uptime metrics generator #161 (Songmu)
+* Remove deprecated-sensu feature #202 (Songmu)
+* Send all IP addresses of each interface (linux only) #205 (mechairoi)
+* add `init` subcommand #207 (Songmu)
+* Refactor net interface (multi ip support and bugfix) #208 (Songmu)
+* Stop to fetch flags of cpu in spec/linux/cpu #209 (Songmu)
+
+
 ## 0.29.2 (2016-03-07)
 
 * Don't overwrite mackerel-agent.conf when updating deb package (Fix deb packaging) #199 (Songmu)

@@ -5,7 +5,7 @@
 %define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.29.2
+Version:   0.30.0
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -71,6 +71,14 @@ fi
 %{_sysconfdir}/logrotate.d/%{name}
 
 %changelog
+* Thu Mar 17 2016 <y.songmu@gmail.com> - 0.30.0-1
+- remove uptime metrics generator (by Songmu)
+- Remove deprecated-sensu feature (by Songmu)
+- Send all IP addresses of each interface (linux only) (by mechairoi)
+- add `init` subcommand (by Songmu)
+- Refactor net interface (multi ip support and bugfix) (by Songmu)
+- Stop to fetch flags of cpu in spec/linux/cpu (by Songmu)
+
 * Mon Mar 07 2016 <y.songmu@gmail.com> - 0.29.2-1
 - Don't overwrite mackerel-agent.conf when updating deb package (Fix deb packaging) (by Songmu)
 
