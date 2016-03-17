@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"io"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -22,7 +21,6 @@ func (g *CPUGenerator) Key() string {
 }
 
 var cpuLogger = logging.GetLogger("spec.cpu")
-var cpuinfoLineReg = regexp.MustCompile(`^([^:]+?)\s+:\s+(.*)$`)
 
 func (g *CPUGenerator) generate(file io.Reader) (interface{}, error) {
 	scanner := bufio.NewScanner(file)
@@ -33,27 +31,29 @@ func (g *CPUGenerator) generate(file io.Reader) (interface{}, error) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		if matches := cpuinfoLineReg.FindStringSubmatch(line); matches != nil {
-			key := matches[1]
-			val := matches[2]
-			switch key {
-			case "processor":
-				cur = make(map[string]interface{})
-				if modelName != "" {
-					cur["model_name"] = modelName
-				}
-				results = append(results, cur)
-			case "Processor":
-				modelName = val
-			case "vendor_id", "model", "stepping", "physical id", "core id", "model name", "cache size":
-				cur[strings.Replace(key, " ", "_", -1)] = val
-			case "cpu family":
-				cur["family"] = val
-			case "cpu cores":
-				cur["cores"] = val
-			case "cpu MHz":
-				cur["mhz"] = val
+		kv := strings.SplitN(line, ":", 2)
+		if len(kv) < 2 {
+			continue
+		}
+		key := strings.TrimSpace(kv[0])
+		val := strings.TrimSpace(kv[1])
+		switch key {
+		case "processor":
+			cur = make(map[string]interface{})
+			if modelName != "" {
+				cur["model_name"] = modelName
 			}
+			results = append(results, cur)
+		case "Processor":
+			modelName = val
+		case "vendor_id", "model", "stepping", "physical id", "core id", "model name", "cache size":
+			cur[strings.Replace(key, " ", "_", -1)] = val
+		case "cpu family":
+			cur["family"] = val
+		case "cpu cores":
+			cur["cores"] = val
+		case "cpu MHz":
+			cur["mhz"] = val
 		}
 	}
 	if err := scanner.Err(); err != nil {
