@@ -29,6 +29,30 @@ func doMain(fs *flag.FlagSet, argv []string) error {
 	return start(conf, make(chan struct{}))
 }
 
+/* +command init - initialize mackerel-agent.conf with apikey
+
+	init -apikey=xxxxxxxxxxx [-conf=mackerel-agent.conf]
+
+Initialize mackerel-agent.conf with api key.
+
+- The conf file doesn't exist:
+    create new file and set the apikey.
+- The conf file exists and apikey is unset:
+    set the apikey.
+- The conf file exists and apikey already set:
+    skip initializing. Don't overwrite apikey and exit normally.
+- The conf file exists, but the contents of it is invalid toml:
+    exit with error.
+*/
+func doInit(fs *flag.FlagSet, argv []string) error {
+	err := doInitialize(fs, argv)
+	if _, ok := err.(apikeyAlreadySetError); ok {
+		logger.Infof("%s", err)
+		return nil
+	}
+	return err
+}
+
 /* +command version - display version of mackerel-agent
 
 	version

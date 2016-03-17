@@ -19,7 +19,7 @@ install:
   - 7z x go1.5.1.windows-386.zip -oC:\ >nul
   - go version
   - go env
-  - set CERT= & set CERTPASS= & env
+  - set CERT= & set CERTPASS= & set
 build_script:
   - go get github.com/motemen/go-cli/gen
   - go generate

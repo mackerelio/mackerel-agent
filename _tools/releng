@@ -220,7 +220,6 @@ sub update_versions {
         $content =~ s/^(Version:\s+)$cur_ver_reg/$1$next_version/ms;
         $content;
     };
-
 }
 
 sub update_changelog {

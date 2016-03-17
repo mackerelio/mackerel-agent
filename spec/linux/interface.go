@@ -3,13 +3,12 @@
 package linux
 
 import (
-	"net"
 	"os/exec"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/spec"
 )
 
 // InterfaceGenerator XXX
@@ -24,8 +23,8 @@ func (g *InterfaceGenerator) Key() string {
 var interfaceLogger = logging.GetLogger("spec.interface")
 
 // Generate XXX
-func (g *InterfaceGenerator) Generate() (interface{}, error) {
-	var interfaces map[string]map[string]interface{}
+func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
+	var interfaces spec.NetInterfaces
 	_, err := exec.LookPath("ip")
 	// has ip command
 	if err == nil {
@@ -39,26 +38,33 @@ func (g *InterfaceGenerator) Generate() (interface{}, error) {
 			return nil, err
 		}
 	}
-
-	var results []map[string]interface{}
-	for key, iface := range interfaces {
-		if iface["encap"] == nil || iface["encap"] == "Loopback" {
+	var results []spec.NetInterface
+	for _, iface := range interfaces {
+		if iface.Encap == "" || iface.Encap == "Loopback" {
 			continue
 		}
-		if iface["ipAddress"] == nil && iface["ipv6Address"] == nil {
+		if len(iface.IPv4Addresses) == 0 && len(iface.IPv6Addresses) == 0 {
 			continue
 		}
-		iface["name"] = key
 		results = append(results, iface)
 	}
-
 	return results, nil
 }
 
-func (g *InterfaceGenerator) generateByIPCommand() (map[string]map[string]interface{}, error) {
-	interfaces := make(map[string]map[string]interface{})
-	name := ""
+var (
+	// ex.) 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
+	ipCmdNameReg = regexp.MustCompile(`^(\d+): ([0-9a-zA-Z@:\.\-_]*?)(@[0-9a-zA-Z]+|):\s`)
+	// ex.) link/ether 12:34:56:78:9a:bc brd ff:ff:ff:ff:ff:ff
+	ipCmdEncapReg = regexp.MustCompile(`link\/(\w+) ([\da-f\:]+) `)
+	// ex.) inet 10.0.4.7/24 brd 10.0.5.255 scope global eth0
+	ipCmdIPv4Reg = regexp.MustCompile(`inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/(\d{1,2}))?`)
+	//inet6 fe80::44b3:b3ff:fe1c:d17c/64 scope link
+	ipCmdIPv6Reg = regexp.MustCompile(`inet6 ([a-f0-9\:]+)\/(\d+) scope (\w+)`)
+)
 
+func (g *InterfaceGenerator) generateByIPCommand() (spec.NetInterfaces, error) {
+	interfaces := make(spec.NetInterfaces)
+	name := ""
 	{
 		// ip addr
 		out, err := exec.Command("ip", "addr").Output()
@@ -66,30 +72,19 @@ func (g *InterfaceGenerator) generateByIPCommand() (map[string]map[string]interf
 			interfaceLogger.Errorf("Failed to run ip command (skip this spec): %s", err)
 			return nil, err
 		}
-
 		for _, line := range strings.Split(string(out), "\n") {
-			// ex.) 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP qlen 1000
-			if matches := regexp.MustCompile(`^(\d+): ([0-9a-zA-Z@:\.\-_]*?)(@[0-9a-zA-Z]+|):\s`).FindStringSubmatch(line); matches != nil {
+			if matches := ipCmdNameReg.FindStringSubmatch(line); matches != nil {
 				name = matches[2]
-				interfaces[name] = make(map[string]interface{}, 0)
 			}
-
-			// ex.) link/ether 12:34:56:78:9a:bc brd ff:ff:ff:ff:ff:ff
-			if matches := regexp.MustCompile(`link\/(\w+) ([\da-f\:]+) `).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["encap"] = g.translateEncap(matches[1])
-				interfaces[name]["macAddress"] = matches[2]
+			if matches := ipCmdEncapReg.FindStringSubmatch(line); matches != nil {
+				interfaces.SetEncap(name, translateEncap(matches[1]))
+				interfaces.SetMacAddress(name, matches[2])
 			}
-
-			// ex.) inet 10.0.4.7/24 brd 10.0.5.255 scope global eth0
-			if matches := regexp.MustCompile(`inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/(\d{1,2}))?`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipAddress"] = matches[1]
-				interfaces[name]["netmask"] = matches[3]
+			if matches := ipCmdIPv4Reg.FindStringSubmatch(line); matches != nil {
+				interfaces.AppendIPv4Address(name, matches[1])
 			}
-
-			//inet6 fe80::44b3:b3ff:fe1c:d17c/64 scope link
-			if matches := regexp.MustCompile(`inet6 ([a-f0-9\:]+)\/(\d+) scope (\w+)`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipv6Address"] = matches[1]
-				interfaces[name]["v6netmask"] = matches[2]
+			if matches := ipCmdIPv6Reg.FindStringSubmatch(line); matches != nil {
+				interfaces.AppendIPv6Address(name, matches[1])
 			}
 		}
 	}
@@ -101,40 +96,75 @@ func (g *InterfaceGenerator) generateByIPCommand() (map[string]map[string]interf
 			interfaceLogger.Errorf("Failed to run ip command (skip this spec): %s", err)
 			return interfaces, err
 		}
-
 		for _, line := range strings.Split(string(out), "\n") {
-			// ex.) 10.0.3.0/24 dev eth0  proto kernel  scope link  src 10.0.4.7
-			// ex.) fe80::/64 dev eth0  proto kernel  metric 256
-			if matches := regexp.MustCompile(`^([^\s]+)\s(.*)$`).FindStringSubmatch(line); matches != nil {
-				if matches := regexp.MustCompile(`\bdev\s+([^\s]+)\b`).FindStringSubmatch(matches[2]); matches != nil {
-					name = matches[1]
-				} else {
-					continue
-				}
-
-				// ex.) 10.0.3.0/24
-				if matches := regexp.MustCompile(`(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/(\d{1,2}))?`).FindStringSubmatch(matches[1]); matches != nil {
-					interfaces[name]["address"] = matches[1]
-				}
-
-				// ex.) fe80::/64
-				if matches := regexp.MustCompile(`([a-f0-9\:]+)\/(\d+)`).FindStringSubmatch(matches[1]); matches != nil {
-					interfaces[name]["v6address"] = matches[1]
-				}
-
-				// ex.) default via 10.0.3.1 dev eth0
-				if matches := regexp.MustCompile(`\bvia\s+([^\s]+)\b`).FindStringSubmatch(matches[2]); matches != nil {
-					interfaces[name]["defaultGateway"] = matches[1]
-				}
+			name, addr, v6addr, defaultGateway := parseIProuteLine(line)
+			if name == "" {
+				continue
+			}
+			if addr != "" {
+				interfaces.SetAddress(name, addr)
+			}
+			if v6addr != "" {
+				interfaces.SetV6Address(name, v6addr)
+			}
+			if defaultGateway != "" {
+				interfaces.SetDefaultGateway(name, defaultGateway)
 			}
 		}
 	}
-
 	return interfaces, nil
 }
 
-func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]interface{}, error) {
-	interfaces := make(map[string]map[string]interface{})
+var (
+	// ex.) 10.0.3.0/24 dev eth0  proto kernel  scope link  src 10.0.4.7
+	// ex.) fe80::/64 dev eth0  proto kernel  metric 256
+	ipRouteLineReg   = regexp.MustCompile(`^([^\s]+)\s(.*)$`)
+	ipRouteDeviceReg = regexp.MustCompile(`\bdev\s+([^\s]+)\b`)
+	// ex.) 10.0.3.0/24
+	ipRouteIPv4Reg = regexp.MustCompile(`(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/(\d{1,2}))?`)
+	// ex.) fe80::/64
+	ipRouteIPv6Reg = regexp.MustCompile(`([a-f0-9\:]+)\/(\d+)`)
+	// ex.) default via 10.0.3.1 dev eth0
+	ipRouteDefaultGatewayReg = regexp.MustCompile(`\bvia\s+([^\s]+)\b`)
+)
+
+func parseIProuteLine(line string) (name, addr, v6addr, defaultGateway string) {
+	matches := ipRouteLineReg.FindStringSubmatch(line)
+	if matches == nil && len(matches) < 3 {
+		return
+	}
+	if matches := ipRouteDeviceReg.FindStringSubmatch(matches[2]); matches != nil {
+		name = matches[1]
+	} else {
+		return
+	}
+	if matches := ipRouteIPv4Reg.FindStringSubmatch(matches[1]); matches != nil {
+		addr = matches[1]
+	}
+	if matches := ipRouteIPv6Reg.FindStringSubmatch(matches[1]); matches != nil {
+		v6addr = matches[1]
+	}
+	if matches := ipRouteDefaultGatewayReg.FindStringSubmatch(matches[2]); matches != nil {
+		defaultGateway = matches[1]
+	}
+	return
+}
+
+var (
+	// ex.) eth0      Link encap:Ethernet  HWaddr 12:34:56:78:9a:bc
+	ifconfigNameReg = regexp.MustCompile(`^([0-9a-zA-Z@\.\:\-_]+)\s+`)
+	// ex.) eth0      Link encap:Ethernet  HWaddr 12:34:56:78:9a:bc
+	ifconfigEncapReg = regexp.MustCompile(`Link encap:(Local Loopback)|Link encap:(.+?)\s`)
+	// ex.) eth0      Link encap:Ethernet  HWaddr 00:16:3e:4f:f3:41
+	ifconfigMacAddrReg = regexp.MustCompile(`HWaddr (.+?)\s`)
+	// ex.) inet addr:10.0.4.7  Bcast:10.0.5.255  Mask:255.255.255.0
+	ifconfigV4AddrReg = regexp.MustCompile(`inet addr:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`)
+	// ex.) inet6 addr: fe80::44b3:b3ff:fe1c:d17c/64 Scope:Link
+	ifconfigV6AddrReg = regexp.MustCompile(`inet6 addr: ([a-f0-9\:]+)\/(\d+) Scope:(\w+)`)
+)
+
+func (g *InterfaceGenerator) generateByIfconfigCommand() (spec.NetInterfaces, error) {
+	interfaces := make(spec.NetInterfaces)
 	name := ""
 
 	{
@@ -144,38 +174,25 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 			interfaceLogger.Errorf("Failed to run ifconfig command (skip this spec): %s", err)
 			return nil, err
 		}
-
 		for _, line := range strings.Split(string(out), "\n") {
-			// ex.) eth0      Link encap:Ethernet  HWaddr 12:34:56:78:9a:bc
-			if matches := regexp.MustCompile(`^([0-9a-zA-Z@\.\:\-_]+)\s+`).FindStringSubmatch(line); matches != nil {
+			if matches := ifconfigNameReg.FindStringSubmatch(line); matches != nil {
 				name = matches[1]
-				interfaces[name] = make(map[string]interface{}, 0)
 			}
-			// ex.) eth0      Link encap:Ethernet  HWaddr 12:34:56:78:9a:bc
-			if matches := regexp.MustCompile(`Link encap:(Local Loopback)|Link encap:(.+?)\s`).FindStringSubmatch(line); matches != nil {
-				if matches[1] != "" {
-					interfaces[name]["encap"] = g.translateEncap(matches[1])
-				} else {
-					interfaces[name]["encap"] = g.translateEncap(matches[2])
+			if matches := ifconfigEncapReg.FindStringSubmatch(line); matches != nil {
+				encap := matches[1]
+				if encap == "" {
+					encap = matches[2]
 				}
+				interfaces.SetEncap(name, translateEncap(encap))
 			}
-			// ex.) eth0      Link encap:Ethernet  HWaddr 00:16:3e:4f:f3:41
-			if matches := regexp.MustCompile(`HWaddr (.+?)\s`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["macAddress"] = matches[1]
+			if matches := ifconfigMacAddrReg.FindStringSubmatch(line); matches != nil {
+				interfaces.SetMacAddress(name, matches[1])
 			}
-			// ex.) inet addr:10.0.4.7  Bcast:10.0.5.255  Mask:255.255.255.0
-			if matches := regexp.MustCompile(`inet addr:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipAddress"] = matches[1]
+			if matches := ifconfigV4AddrReg.FindStringSubmatch(line); matches != nil {
+				interfaces.AppendIPv4Address(name, matches[1])
 			}
-			// ex.) inet6 addr: fe80::44b3:b3ff:fe1c:d17c/64 Scope:Link
-			if matches := regexp.MustCompile(`inet6 addr: ([a-f0-9\:]+)\/(\d+) Scope:(\w+)`).FindStringSubmatch(line); matches != nil {
-				interfaces[name]["ipv6Address"] = matches[1]
-				interfaces[name]["v6netmask"] = matches[2]
-			}
-			// ex.) inet addr:10.0.4.7  Bcast:10.0.5.255  Mask:255.255.255.0
-			if matches := regexp.MustCompile(`Mask:(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`).FindStringSubmatch(line); matches != nil {
-				netmask, _ := net.ParseIP(matches[1]).DefaultMask().Size()
-				interfaces[name]["netmask"] = strconv.Itoa(netmask)
+			if matches := ifconfigV6AddrReg.FindStringSubmatch(line); matches != nil {
+				interfaces.AppendIPv6Address(name, matches[1])
 			}
 		}
 	}
@@ -187,18 +204,12 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 			interfaceLogger.Errorf("Failed to run route command (skip this spec): %s", err)
 			return interfaces, err
 		}
-
-		routeRegexp := regexp.MustCompile(`^0\.0\.0\.0`)
 		for _, line := range strings.Split(string(out), "\n") {
-			// Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-			// 0.0.0.0         10.0.3.1        0.0.0.0         UG    0      0        0 eth0
-			if routeRegexp.FindStringSubmatch(line) != nil {
-				routeResults := regexp.MustCompile(`[ \t]+`).Split(line, 8)
-				if len(routeResults) < 8 || interfaces[routeResults[7]] == nil {
-					continue
-				}
-				interfaces[routeResults[7]]["defaultGateway"] = routeResults[1]
+			name, defaultGateway := parseRouteLine(line)
+			if name == "" {
+				continue
 			}
+			interfaces.SetDefaultGateway(name, defaultGateway)
 		}
 	}
 
@@ -209,23 +220,41 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (map[string]map[string]
 			interfaceLogger.Errorf("Failed to run arp command (skip this spec): %s", err)
 			return interfaces, err
 		}
-
-		arpRegexp := regexp.MustCompile(`^\S+ \((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\) at ([a-fA-F0-9\:]+) \[(\w+)\] on ([0-9a-zA-Z\.\:\-]+)`)
 		for _, line := range strings.Split(string(out), "\n") {
-			// ex.) ? (10.0.3.2) at 01:23:45:67:89:ab [ether] on eth0
-			if matches := arpRegexp.FindStringSubmatch(line); matches != nil {
-				if interfaces[matches[4]] == nil {
-					continue
-				}
-				interfaces[matches[4]]["address"] = matches[1]
+			name, addr := parseArpLine(line)
+			if name == "" {
+				continue
 			}
+			interfaces.SetAddress(name, addr)
 		}
 	}
-
 	return interfaces, nil
 }
 
-func (g *InterfaceGenerator) translateEncap(encap string) string {
+// Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+// 0.0.0.0         10.0.3.1        0.0.0.0         UG    0      0        0 eth0
+func parseRouteLine(line string) (name, defaultGateway string) {
+	if !strings.HasPrefix(line, "0.0.0.0") {
+		return
+	}
+	routeResults := strings.Fields(line)
+	if len(routeResults) < 8 {
+		return
+	}
+	return routeResults[7], routeResults[1]
+}
+
+// ex.) ? (10.0.3.2) at 01:23:45:67:89:ab [ether] on eth0
+var arpRegexp = regexp.MustCompile(`^\S+ \((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\) at ([a-fA-F0-9\:]+) \[(\w+)\] on ([0-9a-zA-Z\.\:\-]+)`)
+
+func parseArpLine(line string) (name, addr string) {
+	if matches := arpRegexp.FindStringSubmatch(line); matches != nil {
+		return matches[4], matches[1]
+	}
+	return
+}
+
+func translateEncap(encap string) string {
 	switch encap {
 	case "Local Loopback", "loopback":
 		return "Loopback"

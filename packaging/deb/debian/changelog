@@ -1,3 +1,27 @@
+mackerel-agent (0.30.0-1) stable; urgency=low
+
+  * remove uptime metrics generator (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/161>
+  * Remove deprecated-sensu feature (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/202>
+  * Send all IP addresses of each interface (linux only) (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/205>
+  * add `init` subcommand (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/207>
+  * Refactor net interface (multi ip support and bugfix) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/208>
+  * Stop to fetch flags of cpu in spec/linux/cpu (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/209>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 17 Mar 2016 01:39:41 +0900
+
+mackerel-agent (0.29.2-1) stable; urgency=low
+
+  * Don't overwrite mackerel-agent.conf when updating deb package (Fix deb packaging) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/199>
+
+ -- Songmu <y.songmu@gmail.com>  Mon, 07 Mar 2016 19:35:05 +0900
+
 mackerel-agent (0.29.1-1) stable; urgency=low
 
   * maintenance release

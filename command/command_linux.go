@@ -18,7 +18,7 @@ func specGenerators() []spec.Generator {
 	}
 }
 
-func interfaceGenerator() spec.Generator {
+func interfaceGenerator() spec.InterfaceGenerator {
 	return &specLinux.InterfaceGenerator{}
 }
 
@@ -27,7 +27,6 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsLinux.Loadavg5Generator{},
 		&metricsLinux.CPUUsageGenerator{Interval: metricsInterval},
 		&metricsLinux.MemoryGenerator{},
-		&metricsLinux.UptimeGenerator{},
 		&metricsLinux.InterfaceGenerator{Interval: metricsInterval},
 		&metricsLinux.DiskGenerator{Interval: metricsInterval},
 		&metricsLinux.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp},
