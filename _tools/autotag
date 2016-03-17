@@ -16,11 +16,20 @@ the merge commit is automatically tagged as `vN.N.N`.
 use 5.014;
 use warnings;
 
-use HTTP::Tiny;
+use IPC::Cmd qw/run/;
 use JSON::PP;
 
 my $OWNER = 'mackerelio';
 my $REPO  = 'mackerel-agent';
+
+sub http_get {
+    my $url = shift;
+    my ($ok, $err, undef, $stdout) = run(command => [qw{curl -sf}, $url]);
+    return {
+        success => $ok,
+        content => join('', @$stdout),
+    };
+}
 
 sub get_branch_from_msg {
     my $msg = shift;
@@ -28,7 +37,7 @@ sub get_branch_from_msg {
     my ($pr_num, $branch) = $msg =~ /^[a-f0-9]{7} Merge pull request #([0-9]+) from (.*)$/;
     return unless $pr_num;
 
-    my $res = HTTP::Tiny->new->get(
+    my $res = http_get(
         sprintf 'https://api.github.com/repos/%s/%s/pulls/%d?state=closed', $OWNER, $REPO, $pr_num
     );
     unless ($res->{success}) {
