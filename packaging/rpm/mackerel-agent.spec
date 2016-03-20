@@ -30,7 +30,7 @@ mackerel.io agent
 
 %install
 %{__rm} -rf %{buildroot}
-%{__install} -Dp -m0755 %{_builddir}/%{name}             %{buildroot}%{_bindir}
+%{__install} -Dp -m0755 %{_builddir}/%{name}             %{buildroot}%{_bindir}/%{name}
 %{__install} -d  -m0755                                  %{buildroot}/%{_localstatedir}/log/
 %{__install} -Dp -m0755 %{_sourcedir}/%{name}.initd      %{buildroot}/%{_initrddir}/%{name}
 %{__install} -Dp -m0644 %{_sourcedir}/%{name}.sysconfig  %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
