@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "/usr/local/bin/mackerel-agent is deprecated. Use /usr/bin/mackerel-agent instead." 1>&2
+exec /usr/bin/mackerel-agent "$@"
