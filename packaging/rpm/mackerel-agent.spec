@@ -4,7 +4,7 @@
 %define _binaries_in_noarch_packages_terminate_build   0
 
 Name:      mackerel-agent
-Version:   0.30.0
+Version:   0.30.1
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Fri Mar 25 2016 <y.songmu@gmail.com> - 0.30.1-1
+- deprecate /usr/local/bin (by Songmu)
+- use GOARCH=amd64 for now (by Songmu)
+
 * Thu Mar 17 2016 <y.songmu@gmail.com> - 0.30.0-1
 - remove uptime metrics generator (by Songmu)
 - Remove deprecated-sensu feature (by Songmu)

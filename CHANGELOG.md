@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.30.1 (2016-03-25)
+
+* deprecate /usr/local/bin #211 (Songmu)
+* use GOARCH=amd64 for now #213 (Songmu)
+
+
 ## 0.30.0 (2016-03-17)
 
 * remove uptime metrics generator #161 (Songmu)
