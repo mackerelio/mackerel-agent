@@ -2,6 +2,7 @@
 # rpmbuild -ba ~/rpmbuild/SPECS/mackerel-agent.spec
 
 %define _binaries_in_noarch_packages_terminate_build   0
+%define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
 Version:   0.30.1
@@ -22,29 +23,38 @@ Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
 
 %description
-mackerel.io agent
+mackerel.io agent beta
 
 %prep
 
 %build
 
 %install
-%{__rm} -rf %{buildroot}
-%{__install} -Dp -m0755 %{_builddir}/%{name}             %{buildroot}%{_bindir}/%{name}
-%{__install} -d  -m0755                                  %{buildroot}/%{_localstatedir}/log/
-%{__install} -Dp -m0755 %{_sourcedir}/%{name}.initd      %{buildroot}/%{_initrddir}/%{name}
-%{__install} -Dp -m0644 %{_sourcedir}/%{name}.sysconfig  %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
-%{__install} -Dp -m0644 %{_sourcedir}/%{name}.logrotate  %{buildroot}/%{_sysconfdir}/logrotate.d/%{name}
-%{__install} -Dp -m0644 %{_sourcedir}/%{name}.conf       %{buildroot}/%{_sysconfdir}/%{name}/%{name}.conf
-%{__install} -Dp -m0755 %{_sourcedir}/%{name}.deprecated %{buildroot}/usr/local/bin/%{name}
+rm -rf %{buildroot}
+install -d -m 755 %{buildroot}/%{_localbindir}
+install    -m 755 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
+
+install -d -m 755 %{buildroot}/%{_localstatedir}/log/
+
+install -d -m 755 %{buildroot}/%{_initrddir}
+install    -m 755 %{_sourcedir}/%{name}.initd        %{buildroot}/%{_initrddir}/%{name}
+
+install -d -m 755 %{buildroot}/%{_sysconfdir}/sysconfig/
+install    -m 644 %{_sourcedir}/%{name}.sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
+
+install -d -m 755 %{buildroot}/%{_sysconfdir}/logrotate.d/
+install    -m 644 %{_sourcedir}/%{name}.logrotate %{buildroot}/%{_sysconfdir}/logrotate.d/%{name}
+
+install -d -m 755 %{buildroot}/%{_sysconfdir}/mackerel-agent/
+install    -m 644 %{_sourcedir}/%{name}.conf %{buildroot}/%{_sysconfdir}/mackerel-agent/%{name}.conf
 
 %clean
-%{__rm} -rf %{buildroot}
+rm -f %{buildroot}%{_bindir}/${name}
 
 %pre
 
 %post
-/sbin/chkconfig --add %{name}
+chkconfig --add %{name}
 
 %preun
 if [ $1 = 0 ]; then
@@ -55,11 +65,10 @@ fi
 %files
 %defattr(-,root,root)
 %{_initrddir}/%{name}
-%{_bindir}/%{name}
+%{_localbindir}/%{name}
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
+%config(noreplace) %{_sysconfdir}/mackerel-agent/%{name}.conf
 %{_sysconfdir}/logrotate.d/%{name}
-/usr/local/bin/%{name}
 
 %changelog
 * Fri Mar 25 2016 <y.songmu@gmail.com> - 0.30.1-1
