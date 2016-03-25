@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.30.2 (2016-03-25)
+
+* Revert "Merge pull request #211 from mackerelio/usr-bin" #215 (Songmu)
+
+
 ## 0.30.1 (2016-03-25)
 
 * deprecate /usr/local/bin #211 (Songmu)
