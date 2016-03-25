@@ -4,7 +4,7 @@
 %define _binaries_in_noarch_packages_terminate_build   0
 
 Name:      mackerel-agent
-Version:   0.30.0
+Version:   0.30.1
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
