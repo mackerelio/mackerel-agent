@@ -6,7 +6,7 @@ pwd=`dirname $0`
 . "$pwd/common.sh"
 
 MACKEREL_AGENT_NAME=${MACKEREL_AGENT_NAME:-mackerel-agent}
-MACKEREL_AGENT_VERSION=$(grep -o -e "[0-9]\+.[0-9]\+.[0-9]\+-[0-9]" packaging/deb/debian/changelog | head -1 | sed 's/-.*$//')
+MACKEREL_AGENT_VERSION=${MACKEREL_AGENT_VERSION:-0.0.0}
 
 orig_dir="packaging/deb"
 build_dir="packaging/deb-build"
