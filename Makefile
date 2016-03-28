@@ -43,20 +43,19 @@ cover: deps
 	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
 
 rpm:
-	GOOS=linux GOARCH=amd64 make build
+	GOOS=linux GOARCH=386 make build
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
 	    -ba packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 deb:
-	GOOS=linux GOARCH=amd64 make build
-	MACKEREL_AGENT_VERSION=$(MACKEREL_AGENT_VERSION) MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) \
-	  _tools/packaging/prepare-deb-build.sh
+	GOOS=linux GOARCH=386 make build
+	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
 tgz:
-	GOOS=linux GOARCH=amd64 make build
+	GOOS=linux GOARCH=386 make build
 	rm -rf $(tgz_dir)
 	mkdir -p $(tgz_dir)
 	cp mackerel-agent.sample.conf $(tgz_dir)/$(MACKEREL_AGENT_NAME).conf

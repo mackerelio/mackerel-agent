@@ -1,2 +1,3 @@
-etc/mackerel-agent
+usr/bin
 usr/local/bin
+etc/mackerel-agent
