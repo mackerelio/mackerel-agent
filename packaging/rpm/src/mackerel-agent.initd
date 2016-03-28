@@ -20,7 +20,7 @@ prog="mackerel-agent"
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
-BIN=${BIN:="/usr/local/bin/$prog"}
+BIN=${BIN:="/usr/bin/$prog"}
 LOGFILE=${LOGILE:="/var/log/$prog.log"}
 PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
 ROOT=${ROOT:="/var/lib/$prog"}

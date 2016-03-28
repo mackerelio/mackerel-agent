@@ -50,8 +50,7 @@ rpm:
 
 deb:
 	GOOS=linux GOARCH=amd64 make build
-	MACKEREL_AGENT_VERSION=$(MACKEREL_AGENT_VERSION) MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) \
-	  _tools/packaging/prepare-deb-build.sh
+	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
