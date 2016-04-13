@@ -359,7 +359,7 @@ sub build_pull_request_body {
 }
 
 sub upload_to_github_release {
-    my $ret = github_release_with_exit_code qw/release --user/, "stanaka",
+    my $ret = github_release_with_exit_code qw/release --user/, "mackerelio",
         qw/--repo/, $REPO,
         qw/--tag/, "v". next_version(),
         qw/--name/, $REPO ."-" . next_version(),
@@ -378,13 +378,13 @@ sub upload_to_github_release {
     for my $path (@filepaths){
         my $filename = basename($path);
         $description .= "* $filename\n";
-        github_release qw/upload --user/, "stanaka",
+        github_release qw/upload --user/, "mackerelio",
             qw/--repo/, $REPO,
             qw/--tag/, "v". next_version(),
             qw/--name/, $filename,
             qw/--file/, $path;
     }
-    github_release qw/edit --user/, "stanaka",
+    github_release qw/edit --user/, "mackerelio",
         qw/--repo/, $REPO,
         qw/--tag/, "v". next_version(),
         qw/--description/, $description;
