@@ -3,12 +3,20 @@ MACKEREL_API_BASE ?= "https://mackerel.io"
 MACKEREL_AGENT_VERSION ?= $(shell git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/[-+].*$$//')
 ARGS = "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
+CURRENT_VERSION = $(shell git log --merges --oneline | perl -ne 'if(m/^.+Merge pull request \#[0-9]+ from .+\/bump-version-([0-9\.]+)/){print $$1;exit}')
+
 
 BUILD_LDFLAGS = "\
 	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT=`git rev-parse --short HEAD` \
 	  -X github.com/mackerelio/mackerel-agent/version.VERSION=$(MACKEREL_AGENT_VERSION) \
 	  -X github.com/mackerelio/mackerel-agent/config.agentName=$(MACKEREL_AGENT_NAME) \
 	  -X github.com/mackerelio/mackerel-agent/config.apibase=$(MACKEREL_API_BASE)"
+
+check-variables:
+	echo "CURRENT_VERSION: ${CURRENT_VERSION}"
+	echo "MACKEREL_AGENT_NAME: ${MACKEREL_AGENT_NAME}"
+	echo "MACKEREL_AGENT_VERSION: ${MACKEREL_AGENT_VERSION}"
+	echo "MACKEREL_API_BASE: ${MACKEREL_API_BASE}"
 
 all: clean test build
 
@@ -24,7 +32,6 @@ run: build
 
 deps: generate
 	go get -d -v -t ./...
-	go get golang.org/x/tools/cmd/vet
 	go get github.com/golang/lint/golint
 	go get github.com/pierrre/gotestcover
 	go get github.com/laher/goxc
@@ -46,12 +53,36 @@ rpm:
 	GOOS=linux GOARCH=386 make build
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
-	    -ba packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
+	      --define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
+				-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
+	GOOS=linux GOARCH=amd64 make build
+	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 deb:
 	GOOS=linux GOARCH=386 make build
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
+
+rpm-kcps:
+	MACKEREL_AGENT_NAME=mackerel-agent-kcps GOOS=linux GOARCH=386 make build
+	MACKEREL_API_BASE=http://198.18.0.16 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+			--define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
+			-bb packaging/rpm-build/mackerel-agent-kcps.spec
+	MACKEREL_AGENT_NAME=mackerel-agent-kcps GOOS=linux GOARCH=amd64 make build
+	MACKEREL_API_BASE=http://198.18.0.16 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+			-bb packaging/rpm-build/mackerel-agent-kcps.spec
+
+deb-kcps:
+	MACKEREL_AGENT_NAME=mackerel-agent-kcps GOOS=linux GOARCH=386 make build
+	MACKEREL_API_BASE=http://198.18.0.16 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-deb-build.sh
+	cd packaging/deb-build && debuild --no-tgz-check -uc -us
+
 
 tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
 tgz:
