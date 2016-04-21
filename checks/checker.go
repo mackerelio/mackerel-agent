@@ -38,9 +38,9 @@ var exitCodeToStatus = map[int]Status{
 type Checker struct {
 	Name string
 	// NOTE(motemen): We make use of config.PluginConfig as it happens
-	// to have Command field which was used by metrics.pluginGenerator.
-	// If the configuration of checks.Checker and metrics.pluginGenerator goes different ones,
-	// we should reconcider using config.PluginConfig.
+	// to have the Command field which was used by metrics.pluginGenerator.
+	// If the configuration of checks.Checker and/or metrics.pluginGenerator changes,
+	// we should reconsider using config.PluginConfig.
 	Config config.PluginConfig
 }
 
