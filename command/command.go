@@ -215,7 +215,7 @@ func loop(c *Context, termCh chan struct{}) error {
 				}
 			}
 
-			// determin next loopState before sleeping
+			// determine next loopState before sleeping
 			if lState != loopStateTerminating {
 				if len(postQueue) > 0 {
 					lState = loopStateQueued
@@ -550,7 +550,7 @@ func Run(c *Context, termCh chan struct{}) error {
 
 	err := loop(c, termCh)
 	if err == nil && c.Config.HostStatus.OnStop != "" {
-		// TOOD error handling. supoprt retire(?)
+		// TODO error handling. support retire(?)
 		e := c.API.UpdateHostStatus(c.Host.ID, c.Config.HostStatus.OnStop)
 		if e != nil {
 			logger.Errorf("Failed update host status on stop: %s", e)
