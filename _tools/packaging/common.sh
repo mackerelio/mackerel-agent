@@ -4,7 +4,8 @@ convert_for_alternative() {
   if [ "$agent_name" != "mackerel-agent" ]; then
     # rename and replace files for alternative build. ex. mackerel-agent-stage, mackerel-agent-kcps
     for f in $(find $target_dir -type f); do
-      cat $f | (rm $f; sed "s/mackerel-agent/$agent_name/g" > $f)
+      sed -i.bak "s/mackerel-agent/$agent_name/g" $f
+      rm $f.bak
       if expr "$f" : '.*mackerel-agent' > /dev/null; then
         dest=$(echo $f | sed "s/mackerel-agent/$agent_name/")
         mv "$f" "$dest"
