@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"time"
 
 	"github.com/Songmu/prompter"
+	"github.com/Songmu/retry"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
@@ -106,7 +108,9 @@ func doRetire(fs *flag.FlagSet, argv []string) error {
 		return fmt.Errorf("Retirement is canceled.")
 	}
 
-	err = api.RetireHost(hostID)
+	err = retry.Retry(10, 3*time.Second, func() error {
+		return api.RetireHost(hostID)
+	})
 	if err != nil {
 		return fmt.Errorf("faild to retire the host: %s", err)
 	}
