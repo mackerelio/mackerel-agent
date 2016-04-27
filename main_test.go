@@ -231,8 +231,7 @@ func TestConfigTestInvalidFormat(t *testing.T) {
 		t.Fatalf("Could not create temprary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
-[plugin.checks.foo ]
-command = "bar"
+invalid!!!
 `)
 	confFile.Sync()
 	confFile.Close()
