@@ -221,8 +221,11 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 	os.Setenv(pluginConfigurationEnvName, "")
 	stdout, stderr, _, err := util.RunCommand(command)
 
+	if stderr != "" {
+		pluginLogger.Infof("command %q outputted to STDERR: %q", stderr)
+	}
 	if err != nil {
-		pluginLogger.Errorf("Failed to execute command \"%s\" (skip these metrics):\n%s", command, stderr)
+		pluginLogger.Errorf("Failed to execute command %q (skip these metrics):\n", command)
 		return nil, err
 	}
 
