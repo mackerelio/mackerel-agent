@@ -7,6 +7,7 @@
 * Fix comments #222 (stefafafan)
 * Remove go get cmd/vet #223 (itchyny)
 * retry retirement when api request failed #224 (Songmu)
+* output plugin stderr to log #226 (Songmu)
 
 
 ## 0.30.2 (2016-03-25)

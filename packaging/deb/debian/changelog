@@ -10,6 +10,8 @@ mackerel-agent (0.30.3-1) stable; urgency=low
     <https://github.com/mackerelio/mackerel-agent/pull/223>
   * retry retirement when api request failed (by Songmu)
     <https://github.com/mackerelio/mackerel-agent/pull/224>
+  * output plugin stderr to log (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/226>
 
  -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 02 May 2016 04:47:48 +0000
 

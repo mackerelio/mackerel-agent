@@ -68,6 +68,7 @@ fi
 - Fix comments (by stefafafan)
 - Remove go get cmd/vet (by itchyny)
 - retry retirement when api request failed (by Songmu)
+- output plugin stderr to log (by Songmu)
 
 * Fri Apr 08 2016 <mackerel-developers@hatena.ne.jp> - 0.30.5-1
 - Feature some3 (by stanaka)
