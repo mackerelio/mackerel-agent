@@ -1,11 +1,11 @@
 sudo: false
 language: go
 go:
-- 1.5
+- 1.6
 env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
-  - secure: "qKQZENPP6MpcmebY62vTV5XWmj+ju/hr9NLYvYQw6fNsWyvF5LtSUlf4juQV9ErxUMasD8URy4esdRv2OCO/kYCB+VK3ZHk7Ew/0lr27znod0O3KKyIuR3VIojir/BUEYyw/t+kP7Jm9BCQ0yv3ps47VGfUGYazO+8qdgohATlNVmJfHC5jgEm9WaxJLVccUrZHddi4jjPh0CenhKpQAlYyRR3JYIStFFcJifp0Q0hUN4Igs+lBjnMb7wwVEynjrb2MRobVDY4Vsl7M4cYekdLICpHll8otKkVr5ta4maGiaK4S+cYKMGczFyQAB8oXYmKFGDXT87sc6zuLF2L5//RZ9YxxzeJ9zqXmSnHqDYQcb+D+UarcYuS2mnp+OnwgtFM3Plgvmcac88qH5t+w/Ta8ZHLgksNYNr9B2pdbpC9A7djsekoGgCBmC9igS5uPtpF0B6WWFjx4lKWKcMEuvXA894aD3lu3P2t1XCn/LxOW2wv8YFmqQut83nTI5ZflBaikiJN+aL5Q7CR5nOFkKn4mlo17laZpuY1VLXN6ogpPNalKpTnbl2u1p9c48BTlfSiY4P4tWnQ/VI8RWQAlNkGM+LcvZZAtiA71INSHJJKIsz2lbjGn2m5m/fz8MggfJXis2XkpvlCsjaMROttf7i22WPZIf4M3QUgzxJk6CYFM="
+  - secure: "B34YsRebWxyx/UAHNAL5YWOgx2RE13TVfDC8FCCc7gAlogJcyAcPnC88fe8ECChHQC3GNnsHSi+GqgxTxzfoVkV+LUAFgHWbcF5O4O/4qHztKj7//72RwO+gXVr4U1Laz45bBr2r68XW0llj5tIlaEYxROJNLSAVDE4yDzmAHgc="
 sudo: false
 addons:
   apt:

@@ -62,6 +62,14 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Mon May 02 2016 <mackerel-developers@hatena.ne.jp> - 0.30.3-1
+- Remove usr local bin again (by Songmu)
+- Fix typo (by yukiyan)
+- Fix comments (by stefafafan)
+- Remove go get cmd/vet (by itchyny)
+- retry retirement when api request failed (by Songmu)
+- output plugin stderr to log (by Songmu)
+
 * Fri Apr 08 2016 <mackerel-developers@hatena.ne.jp> - 0.30.5-1
 - Feature some3 (by stanaka)
 

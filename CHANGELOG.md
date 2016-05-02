@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.30.3 (2016-05-02)
+
+* Remove usr local bin again #217 (Songmu)
+* Fix typo #221 (yukiyan)
+* Fix comments #222 (stefafafan)
+* Remove go get cmd/vet #223 (itchyny)
+* retry retirement when api request failed #224 (Songmu)
+* output plugin stderr to log #226 (Songmu)
+
+
 ## 0.30.2 (2016-03-25)
 
 * Revert "Merge pull request #211 from mackerelio/usr-bin" #215 (Songmu)

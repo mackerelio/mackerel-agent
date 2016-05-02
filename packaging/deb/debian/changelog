@@ -1,3 +1,20 @@
+mackerel-agent (0.30.3-1) stable; urgency=low
+
+  * Remove usr local bin again (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/217>
+  * Fix typo (by yukiyan)
+    <https://github.com/mackerelio/mackerel-agent/pull/221>
+  * Fix comments (by stefafafan)
+    <https://github.com/mackerelio/mackerel-agent/pull/222>
+  * Remove go get cmd/vet (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/223>
+  * retry retirement when api request failed (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/224>
+  * output plugin stderr to log (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/226>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 02 May 2016 04:47:48 +0000
+
 mackerel-agent (0.30.2-1) stable; urgency=low
 
   * Revert "Merge pull request #211 from mackerelio/usr-bin" (by Songmu)
