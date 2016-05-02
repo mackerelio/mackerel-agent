@@ -4,7 +4,7 @@
 %define _binaries_in_noarch_packages_terminate_build   0
 
 Name:      mackerel-agent
-Version:   0.30.2
+Version:   %{_version}
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -15,7 +15,7 @@ Source1:   %{name}.sysconfig
 Source2:   %{name}.logrotate
 Source3:   %{name}.conf
 Packager:  Hatena
-BuildArch: noarch
+BuildArch: %{buildarch}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(post): /sbin/chkconfig
 Requires(preun): /sbin/chkconfig, /sbin/service
@@ -62,6 +62,19 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Fri Apr 08 2016 <mackerel-developers@hatena.ne.jp> - 0.30.5-1
+- Feature some3 (by stanaka)
+
+* Fri Apr 08 2016 <mackerel-developers@hatena.ne.jp> - 0.30.4-1
+- update (by stanaka)
+- update (by stanaka)
+- Feature some2 (by stanaka)
+- update (by stanaka)
+
+* Fri Apr 08 2016 <mackerel-developers@hatena.ne.jp> - 0.30.3-1
+- update README.md (by stanaka)
+- update (by stanaka)
+
 * Fri Mar 25 2016 <y.songmu@gmail.com> - 0.30.2-1
 - Revert "Merge pull request #211 from mackerelio/usr-bin" (by Songmu)
 
