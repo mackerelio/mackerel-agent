@@ -90,7 +90,12 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 	lineScanner := bufio.NewScanner(bufio.NewReader(file))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
-		cols := strings.Fields(lineScanner.Text())
+		text := lineScanner.Text()
+		cols := strings.Fields(text)
+		if len(cols) < 3 {
+			diskLogger.Warningf("Failed to parse disk metrics: %s", text)
+			continue
+		}
 		device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(cols[2], "_")
 		values := cols[3:]
 
