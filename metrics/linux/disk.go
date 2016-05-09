@@ -4,8 +4,9 @@ package linux
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"regexp"
 	"strconv"
 	"strings"
@@ -81,13 +82,16 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 }
 
 func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
-	file, err := os.Open("/proc/diskstats")
+	out, err := ioutil.ReadAll("/proc/diskstats")
 	if err != nil {
 		diskLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
+	return parseDiskStats(out)
+}
 
-	lineScanner := bufio.NewScanner(bufio.NewReader(file))
+func parseDiskStats(out []byte) (metrics.Values, error) {
+	lineScanner := bufio.NewScanner(bytes.NewReader(out))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
 		text := lineScanner.Text()
