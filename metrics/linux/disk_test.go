@@ -42,3 +42,50 @@ func TestDiskGenerator(t *testing.T) {
 		}
 	}
 }
+
+// var diskMetricsNames = []string{
+// 	"reads", "readsMerged", "sectorsRead", "readTime",
+// 	"writes", "writesMerged", "sectorsWritten", "writeTime",
+// 	"ioInProgress", "ioTime", "ioTimeWeighted",
+// }
+
+
+func TestParseDiskStats(t *testing.T) {
+
+	out := []byte(`202       1 xvda1 750193 3037 28116978 368712 16600606 7233846 424712632 23987908 0 2355636 24345740
+
+202       2 xvda2 1641 9310 87552 1252 6365 3717 80664 24192 0 15040 25428`)
+
+	result, err := parseDiskStats(out)
+	if err != nil {
+		t.Errorf("error should be nil but: %s", err)
+	}
+
+	expect := metrics.Values(map[string]float64{
+		"disk.xvda1.reads": 750193,
+		"disk.xvda1.readsMerged": 3037,
+		"disk.xvda1.sectorsRead": 28116978,
+		"disk.xvda1.readTime": 368712,
+		"disk.xvda1.writes": 16600606,
+		"disk.xvda1.writesMerged": 7233846,
+		"disk.xvda1.sectorsWritten": 424712632,
+		"disk.xvda1.writeTime": 23987908,
+		"disk.xvda1.ioInProgress": 0,
+		"disk.xvda1.ioTime": 2355636,
+		"disk.xvda1.ioTimeWeighted": 24345740,
+		"disk.xvda2.reads": 1641,
+		"disk.xvda2.readsMerged": 9310,
+		"disk.xvda2.sectorsRead": 87552,
+		"disk.xvda2.readTime": 1252,
+		"disk.xvda2.writes": 6365,
+		"disk.xvda2.writesMerged": 3717,
+		"disk.xvda2.sectorsWritten": 80664,
+		"disk.xvda2.writeTime": 24192,
+		"disk.xvda2.ioInProgress": 0,
+		"disk.xvda2.ioTime": 15040,
+		"disk.xvda2.ioTimeWeighted": 25428,
+	})
+	if !reflect.DeepEqual(result, expect) {
+		t.Errorf("result is not expected one: %+v", result)
+	}
+}
