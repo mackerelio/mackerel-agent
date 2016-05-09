@@ -4,8 +4,11 @@ package linux
 
 import (
 	"os"
+	"reflect"
 	"testing"
 	"time"
+
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 func TestDiskGenerator(t *testing.T) {
@@ -43,15 +46,8 @@ func TestDiskGenerator(t *testing.T) {
 	}
 }
 
-// var diskMetricsNames = []string{
-// 	"reads", "readsMerged", "sectorsRead", "readTime",
-// 	"writes", "writesMerged", "sectorsWritten", "writeTime",
-// 	"ioInProgress", "ioTime", "ioTimeWeighted",
-// }
-
-
 func TestParseDiskStats(t *testing.T) {
-
+	// insert empty line intentionally
 	out := []byte(`202       1 xvda1 750193 3037 28116978 368712 16600606 7233846 424712632 23987908 0 2355636 24345740
 
 202       2 xvda2 1641 9310 87552 1252 6365 3717 80664 24192 0 15040 25428`)
