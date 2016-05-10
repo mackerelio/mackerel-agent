@@ -38,4 +38,5 @@ type Generator interface {
 type PluginGenerator interface {
 	Generate() (Values, error)
 	PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error)
+	CustomIdentifier() *string
 }

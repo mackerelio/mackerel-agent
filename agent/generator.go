@@ -9,17 +9,17 @@ import (
 
 var logger = logging.GetLogger("agent")
 
-func generateValues(generators []metrics.Generator) chan metrics.Values {
-	processed := make(chan metrics.Values)
+func generateValues(generators []metrics.Generator) chan []metrics.ValuesCustomIdentifier {
+	processed := make(chan metrics.ValuesCustomIdentifier)
 	finish := make(chan bool)
-	result := make(chan metrics.Values)
+	result := make(chan []metrics.ValuesCustomIdentifier)
 
 	go func() {
-		allValues := metrics.Values(make(map[string]float64))
+		allValues := []metrics.ValuesCustomIdentifier{}
 		for {
 			select {
 			case values := <-processed:
-				allValues.Merge(values)
+				allValues = metrics.MergeValuesCustomIdentifiers(allValues, values)
 			case <-finish:
 				result <- allValues
 				return
@@ -44,7 +44,11 @@ func generateValues(generators []metrics.Generator) chan metrics.Values {
 					logger.Errorf("Failed to generate value in %T (skip this metric): %s", g, err.Error())
 					return
 				}
-				processed <- values
+				var customIdentifier *string
+				if pluginGenerator, ok := g.(metrics.PluginGenerator); ok {
+					customIdentifier = pluginGenerator.CustomIdentifier()
+				}
+				processed <- metrics.ValuesCustomIdentifier{values, customIdentifier}
 			}(g)
 		}
 		wg.Wait()
