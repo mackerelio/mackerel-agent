@@ -102,7 +102,10 @@ func TestRunOncePayload(t *testing.T) {
 		t.Errorf("first check name should be check1")
 	}
 
-	if metrics.Values["custom.dice.d20"] == 0 {
+	if len(metrics.Values) != 1 {
+		t.Errorf("there must be some metric values")
+	}
+	if metrics.Values[0].Values["custom.dice.d20"] == 0 {
 		t.Errorf("custom.dice.d20 name should be set")
 	}
 
