@@ -114,10 +114,11 @@ func delayByHost(host *mackerel.Host) int {
 
 // Context context object
 type Context struct {
-	Agent  *agent.Agent
-	Config *config.Config
-	Host   *mackerel.Host
-	API    *mackerel.API
+	Agent                 *agent.Agent
+	Config                *config.Config
+	Host                  *mackerel.Host
+	API                   *mackerel.API
+	CustomIdentifierHosts map[string]*mackerel.Host
 }
 
 type postValue struct {
