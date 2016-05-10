@@ -318,21 +318,31 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 		case result := <-metricsResult:
 			created := float64(result.Created.Unix())
 			creatingValues := [](*mackerel.CreatingMetricsValue){}
-			for name, value := range (map[string]float64)(result.Values) {
-				if math.IsNaN(value) || math.IsInf(value, 0) {
-					logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", c.Host.ID, name, value)
-					continue
+			for _, values := range result.Values {
+				hostID := c.Host.ID
+				if values.CustomIdentifier != nil {
+					if host, ok := c.CustomIdentifierHosts[*values.CustomIdentifier]; ok {
+						hostID = host.ID
+					} else {
+						continue
+					}
 				}
+				for name, value := range (map[string]float64)(values.Values) {
+					if math.IsNaN(value) || math.IsInf(value, 0) {
+						logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", hostID, name, value)
+						continue
+					}
 
-				creatingValues = append(
-					creatingValues,
-					&mackerel.CreatingMetricsValue{
-						HostID: c.Host.ID,
-						Name:   name,
-						Time:   created,
-						Value:  value,
-					},
-				)
+					creatingValues = append(
+						creatingValues,
+						&mackerel.CreatingMetricsValue{
+							HostID: hostID,
+							Name:   name,
+							Time:   created,
+							Value:  value,
+						},
+					)
+				}
 			}
 			logger.Debugf("Enqueuing task to post metrics.")
 			postQueue <- newPostValue(creatingValues)
