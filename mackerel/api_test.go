@@ -43,11 +43,11 @@ func TestUrlFor(t *testing.T) {
 		true,
 	)
 
-	if api.urlFor("/").String() != "http://example.com/" {
+	if api.urlFor("/", "").String() != "http://example.com/" {
 		t.Error("should return http://example.com/")
 	}
 
-	if api.urlFor("/path/to/api").String() != "http://example.com/path/to/api" {
+	if api.urlFor("/path/to/api", "").String() != "http://example.com/path/to/api" {
 		t.Error("should return http://example.com/path/to/api")
 	}
 }
@@ -87,7 +87,7 @@ func TestDo(t *testing.T) {
 		false,
 	)
 
-	req, _ := http.NewRequest("GET", api.urlFor("/").String(), nil)
+	req, _ := http.NewRequest("GET", api.urlFor("/", "").String(), nil)
 	api.do(req)
 }
 
