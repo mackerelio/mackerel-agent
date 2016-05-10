@@ -104,6 +104,29 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 	return result, nil
 }
 
+// prepareCustomIdentiferHosts collects the host information based on the
+// configuration of the custom_identifier fields.
+func prepareCustomIdentiferHosts(conf *config.Config, api *mackerel.API) map[string]*mackerel.Host {
+	customIdentifierHosts := make(map[string]*mackerel.Host)
+	customIdentifiers := make(map[string]bool) // use a map to make them unique
+	for _, pluginConfigs := range conf.Plugin {
+		for _, pluginConfig := range pluginConfigs {
+			if pluginConfig.CustomIdentifier != nil {
+				customIdentifiers[*pluginConfig.CustomIdentifier] = true
+			}
+		}
+	}
+	for customIdentifier := range customIdentifiers {
+		host, err := api.FindHostByCustomIdentifier(customIdentifier)
+		if err != nil {
+			logger.Warningf("Failed to retrieve the host of custom_identifier: %s, %s", customIdentifier, err)
+			continue
+		}
+		customIdentifierHosts[customIdentifier] = host
+	}
+	return customIdentifierHosts
+}
+
 // Interval between each updating host specs.
 var specsUpdateInterval = 1 * time.Hour
 
@@ -489,6 +512,7 @@ func Prepare(conf *config.Config) (*Context, error) {
 		Config: conf,
 		Host:   host,
 		API:    api,
+		CustomIdentifierHosts: prepareCustomIdentiferHosts(conf, api),
 	}, nil
 }
 
