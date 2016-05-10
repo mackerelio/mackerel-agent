@@ -131,6 +131,34 @@ func (api *API) FindHost(id string) (*Host, error) {
 	return data.Host, err
 }
 
+// FindHostByCustomIdentifier find the host by the custom identifier
+func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*Host, error) {
+	v := url.Values{}
+	v.Set("customIdentifier", customIdentifier)
+	resp, err := api.get("/api/v0/hosts", v.Encode())
+	defer closeResp(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, apiError(resp.StatusCode, "status code is not 200")
+	}
+
+	var data struct {
+		Hosts []*Host `json:"hosts"`
+	}
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(data.Hosts) == 0 {
+		return nil, fmt.Errorf("No host was found for the custom identifier: %s", customIdentifier)
+	}
+	return data.Hosts[0], err
+}
+
 // CreateHost register the host to mackerel
 func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces interface{}, roleFullnames []string, displayName string) (string, error) {
 	resp, err := api.postJSON("/api/v0/hosts", map[string]interface{}{
