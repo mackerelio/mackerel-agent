@@ -32,7 +32,12 @@ func generateValues(generators []metrics.Generator) chan metrics.Values {
 		for _, g := range generators {
 			wg.Add(1)
 			go func(g metrics.Generator) {
-				defer wg.Done()
+				defer func() {
+					if r := recover(); r != nil {
+						logger.Errorf("Panic: generating value in %T (skip this metric): %s", g, r)
+					}
+					wg.Done()
+				}()
 
 				values, err := g.Generate()
 				if err != nil {
