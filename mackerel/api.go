@@ -66,9 +66,10 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	return &API{u, apiKey, verbose}, nil
 }
 
-func (api *API) urlFor(path string) *url.URL {
+func (api *API) urlFor(path string, query string) *url.URL {
 	newURL, _ := url.Parse(api.BaseURL.String())
 	newURL.Path = path
+	newURL.RawQuery = query
 	return newURL
 }
 
@@ -110,7 +111,7 @@ func closeResp(resp *http.Response) {
 
 // FindHost find the host
 func (api *API) FindHost(id string) (*Host, error) {
-	resp, err := api.get(fmt.Sprintf("/api/v0/hosts/%s", id))
+	resp, err := api.get(fmt.Sprintf("/api/v0/hosts/%s", id), "")
 	defer closeResp(resp)
 	if err != nil {
 		return nil, err
@@ -236,8 +237,8 @@ func (api *API) RetireHost(hostID string) error {
 	return nil
 }
 
-func (api *API) get(path string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", api.urlFor(path).String(), nil)
+func (api *API) get(path string, query string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", api.urlFor(path, query).String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +254,7 @@ func (api *API) requestJSON(method, path string, payload interface{}) (*http.Res
 	}
 	logger.Debugf("%s %s %s", method, path, body.String())
 
-	req, err := http.NewRequest(method, api.urlFor(path).String(), &body)
+	req, err := http.NewRequest(method, api.urlFor(path, "").String(), &body)
 	if err != nil {
 		return nil, err
 	}
