@@ -21,7 +21,9 @@ type ValuesCustomIdentifier struct {
 // MergeValuesCustomIdentifiers merges the metric values and custom identifiers
 func MergeValuesCustomIdentifiers(values []ValuesCustomIdentifier, newValue ValuesCustomIdentifier) []ValuesCustomIdentifier {
 	for _, value := range values {
-		if value.CustomIdentifier == newValue.CustomIdentifier {
+		if value.CustomIdentifier == newValue.CustomIdentifier ||
+			(value.CustomIdentifier != nil && newValue.CustomIdentifier != nil &&
+				*value.CustomIdentifier == *newValue.CustomIdentifier) {
 			value.Values.Merge(newValue.Values)
 			return values
 		}
