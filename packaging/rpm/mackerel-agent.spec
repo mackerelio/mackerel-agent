@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue May 10 2016 <mackerel-developers@hatena.ne.jp> - 0.30.4-1
+- Recover from panic while processing generators (by stanaka)
+- check length of cols just to be safe in metrics/linux/disk.go (by Songmu)
+
 * Mon May 02 2016 <mackerel-developers@hatena.ne.jp> - 0.30.3-1
 - Remove usr local bin again (by Songmu)
 - Fix typo (by yukiyan)

@@ -1,3 +1,12 @@
+mackerel-agent (0.30.4-1) stable; urgency=low
+
+  * Recover from panic while processing generators (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/228>
+  * check length of cols just to be safe in metrics/linux/disk.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/229>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 10 May 2016 09:19:28 +0000
+
 mackerel-agent (0.30.3-1) stable; urgency=low
 
   * Remove usr local bin again (by Songmu)
