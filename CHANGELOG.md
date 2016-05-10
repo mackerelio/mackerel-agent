@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.30.4 (2016-05-10)
+
+* Recover from panic while processing generators #228 (stanaka)
+* check length of cols just to be safe in metrics/linux/disk.go #229 (Songmu)
+
+
 ## 0.30.3 (2016-05-02)
 
 * Remove usr local bin again #217 (Songmu)

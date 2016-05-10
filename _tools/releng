@@ -129,7 +129,7 @@ sub github_release_with_exit_code {
 
 sub http_get {
     my $url = shift;
-    my ($ok, $err, undef, $stdout) = run(command => [qw{curl -sf}, $url]);
+    my ($ok, $err, undef, $stdout, $stderr) = run(command => [qw{curl -sf}, $url]);
     return {
         success => $ok,
         content => join('', @$stdout),
@@ -247,7 +247,7 @@ sub merged_prs {
     say "Pull Requests: " . join(", ", @pull_nums);
     my @releases;
     for my $pull_num (@pull_nums) {
-        my $url = sprintf "https://api.github.com/repos/%s/pulls/%d?state=closed", $REPO_NAME, $pull_num;
+        my $url = sprintf "https://api.github.com/repos/%s/pulls/%d", $REPO_NAME, $pull_num;
         my $res = http_get($url);
         unless ($res->{success}) {
             warnf "request to $url failed\n";
@@ -403,7 +403,7 @@ sub create_pull_request {
     }
 
     # return if last commit is updating specs and changelogs
-    my $last_commitlog = `git log -1 --oneline | cut -d ' ' -f2-`;
+    my $last_commitlog = `git log --oneline master..HEAD | cut -d ' ' -f2-`;
     if($last_commitlog =~ /update changelogs/){
         infof "skip to update changelogs because the last commit is 'update changelogs'.\n";
         return;
@@ -418,10 +418,10 @@ sub create_pull_request {
         infof "skip to update changelogs because no merged pull request is found after the last release.\n"
     }
     if($ret || git_with_exit_code qw/diff --exit-code/){
-        git qw/commit -am/, "update changelogs";
         git qw/config --global push.default matching/;
         git qw/config user.email/, 'mackerel-developers@hatena.ne.jp';
         git qw/config user.name/, 'mackerel';
+        git qw/commit -am/, "update changelogs";
         git qw/push -u/, "https://$ENV{GITHUB_TOKEN}\@github.com/$REPO_NAME.git";
         infof "Difference is pushed to GitHub.\n";
     }
