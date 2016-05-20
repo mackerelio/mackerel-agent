@@ -1,29 +1,28 @@
-// +build darwin
+// +build !windows
 
-package darwin
+package metrics
 
 import (
 	"regexp"
 
 	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/util"
 )
 
-// FilesystemGenerator XXX
+// FilesystemGenerator is common filesystem metrics generator on unix os.
 type FilesystemGenerator struct {
 	IgnoreRegexp *regexp.Regexp
 }
 
-var logger = logging.GetLogger("metrics.filesystem")
+var logger = logging.GetLogger("metrics")
 
 var dfColumnSpecs = []util.DfColumnSpec{
 	util.DfColumnSpec{Name: "size", IsInt: true},
 	util.DfColumnSpec{Name: "used", IsInt: true},
 }
 
-// Generate XXX
-func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
+// Generate the metrics of filesystems
+func (g *FilesystemGenerator) Generate() (Values, error) {
 	filesystems, err := util.CollectDfValues(dfColumnSpecs)
 	if err != nil {
 		return nil, err
@@ -31,7 +30,9 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, values := range filesystems {
-		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
+		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
+		if regexp.MustCompile(`^/dev/mapper/docker-`).FindStringSubmatch(name) != nil ||
+			(g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name)) {
 			continue
 		}
 		if matches := regexp.MustCompile(`^/dev/(.*)$`).FindStringSubmatch(name); matches != nil {
@@ -46,5 +47,5 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 		}
 	}
 
-	return metrics.Values(ret), nil
+	return Values(ret), nil
 }
