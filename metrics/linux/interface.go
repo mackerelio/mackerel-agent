@@ -50,14 +50,14 @@ var interfaceLogger = logging.GetLogger("metrics.interface")
 
 // Generate XXX
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
-	prevValues, err := g.collectIntarfacesValues()
+	prevValues, err := g.collectInterfacesValues()
 	if err != nil {
 		return nil, err
 	}
 
 	time.Sleep(g.Interval)
 
-	currValues, err := g.collectIntarfacesValues()
+	currValues, err := g.collectInterfacesValues()
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	return metrics.Values(ret), nil
 }
 
-func (g *InterfaceGenerator) collectIntarfacesValues() (metrics.Values, error) {
+func (g *InterfaceGenerator) collectInterfacesValues() (metrics.Values, error) {
 	file, err := os.Open("/proc/net/dev")
 	if err != nil {
 		interfaceLogger.Errorf("Failed (skip these metrics): %s", err)
