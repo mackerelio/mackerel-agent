@@ -22,10 +22,7 @@ var dfColumnSpecs = []util.DfColumnSpec{
 	util.DfColumnSpec{Name: "used", IsInt: true},
 }
 
-var (
-	devDirReg    = regexp.MustCompile(`^/dev/(.*)$`)
-	sanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
-)
+var sanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
 
 // Generate the metrics of filesystems
 func (g *FilesystemGenerator) Generate() (Values, error) {
@@ -41,8 +38,8 @@ func (g *FilesystemGenerator) Generate() (Values, error) {
 			(g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name)) {
 			continue
 		}
-		if matches := devdirReg.FindStringSubmatch(name); matches != nil {
-			device := sanitizerReg.ReplaceAllString(matches[1], "_")
+		if device := strings.TrimPrefix(name, "/dev/"); name != device {
+			device = sanitizerReg.ReplaceAllString(device, "_")
 			for key, value := range values {
 				intValue, valueTypeOk := value.(int64)
 				if valueTypeOk {
