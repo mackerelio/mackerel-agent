@@ -4,6 +4,7 @@ package metrics
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/util"
@@ -21,6 +22,11 @@ var dfColumnSpecs = []util.DfColumnSpec{
 	util.DfColumnSpec{Name: "used", IsInt: true},
 }
 
+var (
+	devDirReg    = regexp.MustCompile(`^/dev/(.*)$`)
+	sanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
+)
+
 // Generate the metrics of filesystems
 func (g *FilesystemGenerator) Generate() (Values, error) {
 	filesystems, err := util.CollectDfValues(dfColumnSpecs)
@@ -31,12 +37,12 @@ func (g *FilesystemGenerator) Generate() (Values, error) {
 	ret := make(map[string]float64)
 	for name, values := range filesystems {
 		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
-		if regexp.MustCompile(`^/dev/mapper/docker-`).FindStringSubmatch(name) != nil ||
+		if strings.HasPrefix(name, "/dev/mapper/docker-") ||
 			(g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name)) {
 			continue
 		}
-		if matches := regexp.MustCompile(`^/dev/(.*)$`).FindStringSubmatch(name); matches != nil {
-			device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(matches[1], "_")
+		if matches := devdirReg.FindStringSubmatch(name); matches != nil {
+			device := sanitizerReg.ReplaceAllString(matches[1], "_")
 			for key, value := range values {
 				intValue, valueTypeOk := value.(int64)
 				if valueTypeOk {
