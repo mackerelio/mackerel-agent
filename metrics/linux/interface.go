@@ -4,8 +4,9 @@ package linux
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"regexp"
 	"strconv"
 	"time"
@@ -77,13 +78,16 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 }
 
 func (g *InterfaceGenerator) collectInterfacesValues() (metrics.Values, error) {
-	file, err := os.Open("/proc/net/dev")
+	out, err := ioutil.ReadFile("/proc/net/dev")
 	if err != nil {
 		interfaceLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
+	return parseNetdev(out)
+}
 
-	lineScanner := bufio.NewScanner(bufio.NewReader(file))
+func parseNetdev(out []byte) (metrics.Values, error) {
+	lineScanner := bufio.NewScanner(bytes.NewReader(out))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
 		line := lineScanner.Text()
