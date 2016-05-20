@@ -15,8 +15,6 @@ type FilesystemGenerator struct {
 	IgnoreRegexp *regexp.Regexp
 }
 
-var logger = logging.GetLogger("metrics")
-
 var dfColumnSpecs = []util.DfColumnSpec{
 	util.DfColumnSpec{Name: "size", IsInt: true},
 	util.DfColumnSpec{Name: "used", IsInt: true},
