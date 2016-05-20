@@ -24,7 +24,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	var errRet error
 	outBytes, err := exec.Command("top", "-bn", "1").Output()
 	if err != nil {
-		memorylogger.Warningf("'top -bn 1' command exited with a non-zero status: '%s'", err)
+		memoryLogger.Warningf("'top -bn 1' command exited with a non-zero status: '%s'", err)
 		errRet = err
 	}
 	ret := make(map[string]float64)
