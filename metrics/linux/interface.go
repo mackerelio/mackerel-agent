@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -38,7 +39,7 @@ var interfaceMetrics = []string{
 }
 
 // metrics for posting to Mackerel
-var postInterfaceMetricsRegexp = regexp.MustCompile(`^interface\..+\.(rxBytes|txBytes)$`)
+var postInterfaceMetricsRegexp = regexp.MustCompile(`^interface\..+\.(?:rxBytes|txBytes)$`)
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
@@ -79,26 +80,28 @@ func (g *InterfaceGenerator) collectInterfacesValues() (metrics.Values, error) {
 	return parseNetdev(out)
 }
 
+var sanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
+
 func parseNetdev(out []byte) (metrics.Values, error) {
 	lineScanner := bufio.NewScanner(bytes.NewReader(out))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
 		line := lineScanner.Text()
-		if matches := regexp.MustCompile(`^\s*([^:]+):\s*(.*)$`).FindStringSubmatch(line); matches != nil {
-			name := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(matches[1], "_")
+		if kv := strings.SplitN(line, ":", 2); len(kv) == 2 {
+			name := sanitizerReg.ReplaceAllString(strings.TrimSpace(kv[0]), "_")
 			if name == "lo" {
 				continue
 			}
 
-			cols := regexp.MustCompile(`\s+`).Split(matches[2], len(interfaceMetrics))
+			cols := strings.Fields(kv[1])
 			if len(cols) < len(interfaceMetrics) {
 				continue
 			}
 
 			interfaceResult := make(map[string]float64)
 			hasNonZeroValue := false
-			for i := range interfaceMetrics {
-				key := fmt.Sprintf("interface.%s.%s", name, interfaceMetrics[i])
+			for i, metricName := range interfaceMetrics {
+				key := fmt.Sprintf("interface.%s.%s", name, metricName)
 				value, err := strconv.ParseFloat(cols[i], 64)
 				if err != nil {
 					interfaceLogger.Warningf("Failed to parse host interfaces: %s", err)
