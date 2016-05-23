@@ -407,8 +407,8 @@ sub upload_to_github_release {
     github_release qw/edit --user/, $REPO_USER,
         qw/--repo/, $REPO,
         qw/--tag/, $tag,
-        qw/--description/, $description,
-	($erase_if_exist ? qw/--pre-release/, '');
+        qw/--description/, $description;
+        ($erase_if_exist ? "--pre-release": "");
 }
 
 sub create_pull_request {
@@ -524,7 +524,7 @@ sub main {
         return;
     } elsif($task && $task eq "upload-master-to-github-release"){
         infof "Upload files on master branch to GitHub Release.\n";
-        upload_to_github_release("master", "master", 1);
+        upload_to_github_release("staging", "staging", 1);
         return;
     }
     help();
