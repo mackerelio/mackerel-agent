@@ -36,12 +36,7 @@ before_deploy:
 - git fetch --tags --depth=1000 || true
 deploy:
 - provider: script
-  script: _tools/releng --task=upload-to-github-release -v
-  skip_cleanup: true
-  on:
-    branch: master
-- provider: script
-  script: _tools/releng --task=upload-master-to-github-release -v
+  script: _tools/releng --task=upload-to-github-release -v && _tools/releng --task=upload-master-to-github-release -v
   skip_cleanup: true
   on:
     branch: master
