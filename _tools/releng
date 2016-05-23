@@ -41,6 +41,8 @@ chomp(my $REPO_NAME = `git rev-parse --show-toplevel`);
 $REPO_NAME =~ s|^.+/([^/]+/[^/]+)$|$1|;
 $REPO_NAME =~ m!/([^/]+)$!;
 my $REPO = $1;
+$REPO_NAME =~ m!^([^/]+)!;
+my $REPO_USER = $1;
 my $dry_run;
 my $verbose;
 my $next_version;
@@ -359,17 +361,35 @@ sub build_pull_request_body {
 }
 
 sub upload_to_github_release {
-    my $ret = github_release_with_exit_code qw/release --user/, "mackerelio",
-        qw/--repo/, $REPO,
-        qw/--tag/, "v". next_version(),
-        qw/--name/, $REPO ."-" . next_version(),
-        qw/--description/, "pre-release",
-        qw/--pre-release/;
+    my $tag = shift || "v" . next_version();
+    my $name = shift || $REPO ."-" . next_version();
+    my $erase_if_exist = shift || 0;
+    my $cont = 0;
+    do {
+        $cont = 0;
+        my $ret = github_release_with_exit_code qw/release --user/, $REPO_USER,
+            qw/--repo/, $REPO,
+            qw/--tag/, $tag,
+            qw/--name/, $name,
+            qw/--description/, "pre-release",
+            qw/--pre-release/;
 
-    if($ret != 0){
-        infof "The release of this version has already existed at GitHub Release, so skip the process.\n";
-        return;
-    }
+        if($ret != 0){
+            if($erase_if_exist){
+                $ret = github_release_with_exit_code qw/delete --user/, $REPO_USER,
+                    qw/--repo/, $REPO,
+                    qw/--tag/, $tag;
+                if($ret != 0){
+                    infof "The release of this version has already existed at GitHub Release, and cannot be erased.\n";
+                    return;
+                }
+                $cont = 1;
+            } else {
+                infof "The release of this version has already existed at GitHub Release, so skip the process.\n";
+                return;
+            }
+        }
+    } while($cont);
 
     # upload files
     my $description = "";
@@ -378,15 +398,15 @@ sub upload_to_github_release {
     for my $path (@filepaths){
         my $filename = basename($path);
         $description .= "* $filename\n";
-        github_release qw/upload --user/, "mackerelio",
+        github_release qw/upload --user/, $REPO_USER,
             qw/--repo/, $REPO,
-            qw/--tag/, "v". next_version(),
+            qw/--tag/, $tag,
             qw/--name/, $filename,
             qw/--file/, $path;
     }
-    github_release qw/edit --user/, "mackerelio",
+    github_release qw/edit --user/, $REPO_USER,
         qw/--repo/, $REPO,
-        qw/--tag/, "v". next_version(),
+        qw/--tag/, $tag,
         qw/--description/, $description;
 }
 
@@ -460,7 +480,9 @@ sub help {
   print <<EOS;
 $0
   --help
-  --task=<task>            # 'create-pullrequest' or 'github-release'
+  --task=<task>            # 'create-pullrequest'
+                           # or 'upload-to-github-release'
+                           # or 'upload-master-to-github-release'
   --next-version=<version> # specify next version. if not specified, a
                            # value derived from the branch name is used.
   --package-name=<name>    # target package name. if not specified,
@@ -476,7 +498,7 @@ sub main {
     my $task;
     my $current_branch;
     GetOptions ("help" => \$help,
-        "task=s"   => \$task,  # create-pullrequest, upload_to_github_release
+        "task=s"   => \$task,  # create-pullrequest, upload-to-github-release
         "verbose"  => \$verbose,
         "dry-run" => \$dry_run,
         "current-branch=s" => \$current_branch,
@@ -491,15 +513,20 @@ sub main {
     # check command
     _git;_hub;
 
-    if($task eq "create-pullrequest"){
+    if($task && $task eq "create-pullrequest"){
         infof "Create a Pull Request for version up.\n";
         create_pull_request($current_branch);
         return;
-    } elsif($task eq "upload-to-github-release"){
+    } elsif($task && $task eq "upload-to-github-release"){
         infof "Upload files to GitHub Release.\n";
         upload_to_github_release();
         return;
+    } elsif($task && $task eq "upload-master-to-github-release"){
+        infof "Upload files on master branch to GitHub Release.\n";
+        upload_to_github_release("master", "master", 1);
+        return;
     }
+    help();
 }
 
 sub run_tests {
