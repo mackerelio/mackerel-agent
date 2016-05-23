@@ -48,7 +48,10 @@ func generateValues(generators []metrics.Generator) chan []metrics.ValuesCustomI
 				if pluginGenerator, ok := g.(metrics.PluginGenerator); ok {
 					customIdentifier = pluginGenerator.CustomIdentifier()
 				}
-				processed <- metrics.ValuesCustomIdentifier{values, customIdentifier}
+				processed <- metrics.ValuesCustomIdentifier{
+					Values:           values,
+					CustomIdentifier: customIdentifier,
+				}
 			}(g)
 		}
 		wg.Wait()
