@@ -83,6 +83,17 @@ deb-kcps:
 	MACKEREL_API_BASE=http://198.18.0.16 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
+rpm-stage:
+	make build MACKEREL_AGENT_NAME=mackerel-agent-stage GOOS=linux GOARCH=386
+	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	      --define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
+				-bb packaging/rpm-build/mackerel-agent-stage.spec
+
+deb-stage:
+	make build MACKEREL_AGENT_NAME=mackerel-agent-stage GOOS=linux GOARCH=386
+	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-deb-build.sh
+	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
 tgz:
