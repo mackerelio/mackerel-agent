@@ -27,7 +27,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsDarwin.CPUUsageGenerator{},
 		&metricsDarwin.MemoryGenerator{},
 		&metricsDarwin.SwapGenerator{},
-		&metricsDarwin.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp},
+		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp},
 		&metricsDarwin.InterfaceGenerator{Interval: metricsInterval},
 	}
 

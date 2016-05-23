@@ -1,6 +1,6 @@
-// +build netbsd
+// +build !windows
 
-package netbsd
+package metrics
 
 import (
 	"testing"

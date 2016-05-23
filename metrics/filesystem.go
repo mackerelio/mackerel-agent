@@ -1,29 +1,28 @@
-// +build darwin
+// +build !windows
 
-package darwin
+package metrics
 
 import (
 	"regexp"
+	"strings"
 
-	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/util"
 )
 
-// FilesystemGenerator XXX
+// FilesystemGenerator is common filesystem metrics generator on unix os.
 type FilesystemGenerator struct {
 	IgnoreRegexp *regexp.Regexp
 }
-
-var logger = logging.GetLogger("metrics.filesystem")
 
 var dfColumnSpecs = []util.DfColumnSpec{
 	util.DfColumnSpec{Name: "size", IsInt: true},
 	util.DfColumnSpec{Name: "used", IsInt: true},
 }
 
-// Generate XXX
-func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
+var sanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
+
+// Generate the metrics of filesystems
+func (g *FilesystemGenerator) Generate() (Values, error) {
 	filesystems, err := util.CollectDfValues(dfColumnSpecs)
 	if err != nil {
 		return nil, err
@@ -31,11 +30,13 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 
 	ret := make(map[string]float64)
 	for name, values := range filesystems {
-		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
+		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
+		if strings.HasPrefix(name, "/dev/mapper/docker-") ||
+			(g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name)) {
 			continue
 		}
-		if matches := regexp.MustCompile(`^/dev/(.*)$`).FindStringSubmatch(name); matches != nil {
-			device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(matches[1], "_")
+		if device := strings.TrimPrefix(name, "/dev/"); name != device {
+			device = sanitizerReg.ReplaceAllString(device, "_")
 			for key, value := range values {
 				intValue, valueTypeOk := value.(int64)
 				if valueTypeOk {
@@ -46,5 +47,5 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 		}
 	}
 
-	return metrics.Values(ret), nil
+	return Values(ret), nil
 }

@@ -29,7 +29,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsLinux.MemoryGenerator{},
 		&metricsLinux.InterfaceGenerator{Interval: metricsInterval},
 		&metricsLinux.DiskGenerator{Interval: metricsInterval},
-		&metricsLinux.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp},
+		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp},
 	}
 
 	return generators
