@@ -68,6 +68,10 @@ func (g *pluginGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload,
 	return payload, nil
 }
 
+func (g *pluginGenerator) CustomIdentifier() *string {
+	return g.Config.CustomIdentifier
+}
+
 // loadPluginMeta obtains plugin information (e.g. graph visuals, metric
 // namespaces, etc) from the command specified.
 // mackerel-agent runs the command with MACKEREL_AGENT_PLUGIN_META
