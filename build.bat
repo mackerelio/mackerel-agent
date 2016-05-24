@@ -1,6 +1,12 @@
+echo on
+
 FOR /F "usebackq" %%w IN (`git rev-parse --short HEAD`) DO SET COMMIT=%%w
 
-FOR /F "usebackq" %%w IN (`git describe --tags --abbrev^=0`) DO SET VERSION=%%w
+FOR /F "usebackq" %%w IN (`git tag -l --sort=-version:refname "v*"`) DO (
+  IF NOT DEFINED VERSION (
+    SET VERSION=%%w
+  )
+)
 
 set VERSION=%VERSION:v=%
 

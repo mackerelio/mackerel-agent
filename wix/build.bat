@@ -15,7 +15,11 @@ go build -o ..\build\wrapper.exe wrapper\wrapper_windows.go
 go build -o ..\build\replace.exe replace\replace_windows.go
 
 REM retrieve numeric version from git tag
-FOR /F "usebackq" %%w IN (`git describe --tags --abbrev^=0`) DO SET VERSION=%%w
+FOR /F "usebackq" %%w IN (`git tag -l --sort=-version:refname "v*"`) DO (
+  IF NOT DEFINED VERSION (
+    SET VERSION=%%w
+  )
+)
 set VERSION=%VERSION:v=%
 FOR /F "tokens=1 delims=-+" %%w IN ('ECHO %%VERSION%%') DO SET VERSION=%%w
 IF "%VERSION%"=="staging" (
