@@ -1,3 +1,5 @@
+echo on
+
 go get -d -v -t ./...
 
 pushd %0\..\..
@@ -16,6 +18,9 @@ REM retrieve numeric version from git tag
 FOR /F "usebackq" %%w IN (`git describe --tags --abbrev^=0`) DO SET VERSION=%%w
 set VERSION=%VERSION:v=%
 FOR /F "tokens=1 delims=-+" %%w IN ('ECHO %%VERSION%%') DO SET VERSION=%%w
+IF "%VERSION%"=="staging" (
+  EXIT /B
+)
 
 del /F mackerel-agent.wxs
 ..\build\replace.exe mackerel-agent.wxs.template mackerel-agent.wxs "___VERSION___" "%VERSION%"
