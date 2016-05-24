@@ -38,7 +38,7 @@ deps: generate
 	go get github.com/mattn/goveralls
 
 lint: deps
-	go tool vet -all .
+	go tool vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
 	_tools/go-linter $(BUILD_OS_TARGETS)
 
 crossbuild: deps

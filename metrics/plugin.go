@@ -226,7 +226,7 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 	stdout, stderr, _, err := util.RunCommand(command)
 
 	if stderr != "" {
-		pluginLogger.Infof("command %q outputted to STDERR: %q", stderr)
+		pluginLogger.Infof("command %q outputted to STDERR: %q", command, stderr)
 	}
 	if err != nil {
 		pluginLogger.Errorf("Failed to execute command %q (skip these metrics):\n", command)
