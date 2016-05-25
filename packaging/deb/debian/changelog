@@ -1,3 +1,18 @@
+mackerel-agent (0.31.0-1) stable; urgency=low
+
+  * Post the custom metrics to the hosts specified by custom identifiers (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/231>
+  * refactor FilesystemGenerator (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/233>
+  * Refactor metrics/linux/interface.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/234>
+  * remove regexp from spec/linux/cpu (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/235>
+  * Fix missing printf args (by shogo82148)
+    <https://github.com/mackerelio/mackerel-agent/pull/237>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 25 May 2016 04:13:19 +0000
+
 mackerel-agent (0.30.4-1) stable; urgency=low
 
   * Recover from panic while processing generators (by stanaka)
