@@ -5,6 +5,7 @@ go get -d -v -t ./...
 pushd %0\..\..
 
 call build.bat
+call build-k.bat
 
 pushd %0\..
 
@@ -31,10 +32,13 @@ del /F mackerel-agent.wxs
 
 "%WIX%bin\candle.exe" mackerel-agent.wxs
 "%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
+"%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent-k.msi" mackerel-agent.wixobj
 
 REM code signing if build on tags
 if defined APPVEYOR_REPO_TAG_NAME (
   certutil -f -decode c:\mackerel-secure\cert.p12.base64 c:\mackerel-secure\cert.p12
 
   FOR /F "usebackq" %%w IN (`type c:\mackerel-secure\certpass`) DO "%SIGNTOOL%" sign /fd sha256 /t "http://timestamp.verisign.com/scripts/timestamp.dll" /f "c:\mackerel-secure\cert.p12" /p "%%w" /v "..\build\mackerel-agent.msi"
+
+  FOR /F "usebackq" %%w IN (`type c:\mackerel-secure\certpass`) DO "%SIGNTOOL%" sign /fd sha256 /t "http://timestamp.verisign.com/scripts/timestamp.dll" /f "c:\mackerel-secure\cert.p12" /p "%%w" /v "..\build\mackerel-agent-k.msi"
 )
