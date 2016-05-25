@@ -271,6 +271,25 @@ sub merged_prs {
     @releases;
 }
 
+sub find_latest_release_pullrequest {
+    my $url = sprintf "https://api.github.com/repos/%s/pulls?state=close&sort=updated&direction=desc", $REPO_NAME;
+    my $res = http_get($url);
+    unless ($res->{success}) {
+        warnf "request to $url failed\n";
+        return; #exit;
+    }
+    my $data = eval { decode_json $res->{content} };
+    if ($@) {
+        warnf "parse json failed. url: $url\n";
+        return;
+    }
+    for my $pull (@$data){
+        if($pull->{head}->{ref} =~ /bump-version-[0-9\.]+/){
+            return $pull;
+        }
+    }
+}
+
 sub parse_version {
     my $ver = shift;
     my ($major, $minor, $patch) = $ver =~ /^([0-9]+)\.([0-9]+)\.([0-9]+)$/;
@@ -392,12 +411,12 @@ sub upload_to_github_release {
     } while($cont);
 
     # upload files
-    my $description = "";
+    my $latest_release_pullrequest = find_latest_release_pullrequest();
+    my $description = $latest_release_pullrequest->{body};
     my @filepaths = glob("~/rpmbuild/RPMS/*/*.rpm packaging/*.deb snapshot/*.zip snapshot/*.tar.gz");
     infof "uploading following files:\n" . join("\n", @filepaths). "\n";
     for my $path (@filepaths){
         my $filename = basename($path);
-        $description .= "* $filename\n";
         github_release qw/upload --user/, $REPO_USER,
             qw/--repo/, $REPO,
             qw/--tag/, $tag,
