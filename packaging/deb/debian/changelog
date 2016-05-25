@@ -1,3 +1,9 @@
+mackerel-agent (0.31.1-1) stable; urgency=low
+
+  * embed right version number
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 25 May 2016 10:10:13 +0000
+
 mackerel-agent (0.31.0-1) stable; urgency=low
 
   * Post the custom metrics to the hosts specified by custom identifiers (by itchyny)
