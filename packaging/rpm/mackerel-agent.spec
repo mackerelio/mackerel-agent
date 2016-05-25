@@ -62,6 +62,15 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed May 25 2016 <mackerel-developers@hatena.ne.jp> - 0.31.0-1
+- Post the custom metrics to the hosts specified by custom identifiers (by itchyny)
+- Make appveyor build both versions of orginal and kcps (by stanaka)
+- refactor FilesystemGenerator (by Songmu)
+- Refactor metrics/linux/interface.go (by Songmu)
+- remove regexp from spec/linux/cpu (by Songmu)
+- Upload outputs of building master branch to GitHub Releases (by stanaka)
+- Fix missing printf args (by shogo82148)
+
 * Tue May 10 2016 <mackerel-developers@hatena.ne.jp> - 0.30.4-1
 - Recover from panic while processing generators (by stanaka)
 - check length of cols just to be safe in metrics/linux/disk.go (by Songmu)
