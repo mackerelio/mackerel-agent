@@ -67,20 +67,20 @@ deb:
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 rpm-kcps:
-	MACKEREL_AGENT_NAME=mackerel-agent-kcps GOOS=linux GOARCH=386 make build
-	MACKEREL_API_BASE=http://198.18.0.16 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
+	make build MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16 GOOS=linux GOARCH=386
+	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
 			--define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
 			-bb packaging/rpm-build/mackerel-agent-kcps.spec
-	MACKEREL_AGENT_NAME=mackerel-agent-kcps GOOS=linux GOARCH=amd64 make build
-	MACKEREL_API_BASE=http://198.18.0.16 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
+	make build MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16 GOOS=linux GOARCH=amd64
+	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
 			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 			-bb packaging/rpm-build/mackerel-agent-kcps.spec
 
 deb-kcps:
-	MACKEREL_AGENT_NAME=mackerel-agent-kcps GOOS=linux GOARCH=386 make build
-	MACKEREL_API_BASE=http://198.18.0.16 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-deb-build.sh
+	make build MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16 GOOS=linux GOARCH=386
+	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 rpm-stage:
