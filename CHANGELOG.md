@@ -3,11 +3,9 @@
 ## 0.31.0 (2016-05-25)
 
 * Post the custom metrics to the hosts specified by custom identifiers #231 (itchyny)
-* Make appveyor build both versions of orginal and kcps #232 (stanaka)
 * refactor FilesystemGenerator #233 (Songmu)
 * Refactor metrics/linux/interface.go #234 (Songmu)
 * remove regexp from spec/linux/cpu #235 (Songmu)
-* Upload outputs of building master branch to GitHub Releases #236 (stanaka)
 * Fix missing printf args #237 (shogo82148)
 
 
