@@ -32,6 +32,7 @@ del /F mackerel-agent.wxs
 
 "%WIX%bin\candle.exe" mackerel-agent.wxs
 "%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
+copy ..\build\mackerel-agent-kcps.exe ..\build\mackerel-agent.exe
 "%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent-k.msi" mackerel-agent.wixobj
 
 REM code signing if build on tags
