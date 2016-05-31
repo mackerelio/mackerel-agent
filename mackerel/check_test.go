@@ -64,7 +64,7 @@ func TestReportCheckMonitors(t *testing.T) {
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	err := api.ReportCheckMonitors("9rxGOHfVF8F", []*checks.Report{
-		&checks.Report{
+		{
 			Name:       "sabasaba",
 			Status:     checks.StatusOK,
 			Message:    "mesmes",

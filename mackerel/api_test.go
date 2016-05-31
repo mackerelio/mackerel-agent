@@ -365,12 +365,12 @@ func TestFindHost(t *testing.T) {
 		}
 
 		respJSON, _ := json.Marshal(map[string]map[string]interface{}{
-			"host": map[string]interface{}{
+			"host": {
 				"id":     "9rxGOHfVF8F",
 				"name":   "mydb001",
 				"status": "working",
 				"memo":   "memo",
-				"roles":  map[string][]string{"My-Service": []string{"db-master", "db-slave"}},
+				"roles":  map[string][]string{"My-Service": {"db-master", "db-slave"}},
 			},
 		})
 
@@ -407,13 +407,13 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 		}
 
 		respJSON, _ := json.Marshal(map[string][]map[string]interface{}{
-			"hosts": []map[string]interface{}{{
+			"hosts": {{
 				"id":               "9rxGOHfVF8F",
 				"CustomIdentifier": "foo-bar",
 				"name":             "mydb001",
 				"status":           "working",
 				"memo":             "memo",
-				"roles":            map[string][]string{"My-Service": []string{"db-master", "db-slave"}},
+				"roles":            map[string][]string{"My-Service": {"db-master", "db-slave"}},
 			}},
 		})
 
@@ -487,7 +487,7 @@ func TestPostHostMetricValues(t *testing.T) {
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 	err := api.PostMetricsValues([]*CreatingMetricsValue{
-		&CreatingMetricsValue{
+		{
 			HostID: "9rxGOHfVF8F",
 			Name:   "custom.metric.mysql.connections",
 			Time:   123456789,
@@ -550,17 +550,17 @@ func TestCreateGraphDefs(t *testing.T) {
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 	err := api.CreateGraphDefs([]CreateGraphDefsPayload{
-		CreateGraphDefsPayload{
+		{
 			Name:        "mackerel",
 			DisplayName: "HorseMackerel",
 			Unit:        "percentage",
 			Metrics: []CreateGraphDefsPayloadMetric{
-				CreateGraphDefsPayloadMetric{
+				{
 					Name:        "saba1",
 					DisplayName: "aji1",
 					IsStacked:   false,
 				},
-				CreateGraphDefsPayloadMetric{
+				{
 					Name:        "saba2",
 					DisplayName: "aji2",
 					IsStacked:   false,
