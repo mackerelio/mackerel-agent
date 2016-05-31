@@ -107,3 +107,75 @@ DirectMap2M:     2088960 kB
 		t.Errorf("result is not expected one: %#v", result)
 	}
 }
+
+func TestParseMeminfoWithMemAvailable(t *testing.T) {
+	out := []byte(`
+MemTotal: 32767512 kB
+MemFree: 263928 kB
+MemAvailable: 29702072 kB
+Buffers: 342100 kB
+Cached: 5376976 kB
+SwapCached: 104 kB
+Active: 4945908 kB
+Inactive: 2857752 kB
+Active(anon): 2047984 kB
+Inactive(anon): 70596 kB
+Active(file): 2897924 kB
+Inactive(file): 2787156 kB
+Unevictable: 0 kB
+Mlocked: 0 kB
+SwapTotal: 2097148 kB
+SwapFree: 2096476 kB
+Dirty: 188 kB
+Writeback: 0 kB
+AnonPages: 2084328 kB
+Mapped: 121500 kB
+Shmem: 33996 kB
+Slab: 24165452 kB
+SReclaimable: 24006480 kB
+SUnreclaim: 158972 kB
+KernelStack: 11616 kB
+PageTables: 258528 kB
+NFS_Unstable: 0 kB
+Bounce: 0 kB
+WritebackTmp: 0 kB
+CommitLimit: 18480904 kB
+Committed_AS: 7728616 kB
+VmallocTotal: 34359738367 kB
+VmallocUsed: 328548 kB
+VmallocChunk: 34359384060 kB
+HardwareCorrupted: 0 kB
+AnonHugePages: 22528 kB
+HugePages_Total: 0
+HugePages_Free: 0
+HugePages_Rsvd: 0
+HugePages_Surp: 0
+Hugepagesize: 2048 kB
+DirectMap4k: 181700 kB
+DirectMap2M: 11339776 kB
+DirectMap1G: 24117248 kB
+`)
+
+	result, err := parseMeminfo(out)
+	if err != nil {
+		t.Errorf("error should be nil but: %s", err)
+	}
+
+	expect := metrics.Values{
+		"memory.active":      5064609792,
+		"memory.swap_total":  2147479552,
+		"memory.used":        3139010560,
+		"memory.total":       33553932288,
+		"memory.buffers":     350310400,
+		"memory.cached":      5506023424,
+		"memory.swap_cached": 106496,
+		"memory.inactive":    2926338048,
+		"memory.swap_free":   2146791424,
+		"memory.free":        270262272,
+		"memory.available":   30414921728,
+	}
+
+	if !reflect.DeepEqual(result, expect) {
+		t.Errorf("result is not expected one: %#v", result)
+	}
+}

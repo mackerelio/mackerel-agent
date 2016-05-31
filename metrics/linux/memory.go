@@ -97,9 +97,9 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 		return nil, err
 	}
 	if total > float64(0) && available > float64(0) {
-		ret["memory.used"] = ( total - available ) * 1024
+		ret["memory.used"] = (total - available) * 1024
 	} else if usedCnt == 4 { // 4 is free, buffers, cached and total
-		ret["memory.used"] = ( total - unused ) * 1024
+		ret["memory.used"] = (total - unused) * 1024
 	}
 
 	return metrics.Values(ret), nil
