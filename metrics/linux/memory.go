@@ -6,8 +6,8 @@ import (
 	"bufio"
 	"bytes"
 	"io/ioutil"
+	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
@@ -53,6 +53,8 @@ var memItems = map[string]string{
 	"SwapFree":     "swap_free",
 }
 
+var memReg = regexp.MustCompile(`^([A-Za-z]+):\s+([0-9]+)\s+kB`)
+
 func parseMeminfo(out []byte) (metrics.Values, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(out))
 
@@ -62,34 +64,23 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		// ex.) MemTotal:        3916792 kB
-		kvAndUnit := strings.Fields(line)
-		if len(kvAndUnit) < 3 {
-			continue
-		}
-		name := strings.TrimRight(kvAndUnit[0], ":")
-		k, ok := memItems[name]
-		if !ok {
-			continue
-		}
-		if kvAndUnit[2] != "kB" {
-			memoryLogger.Warningf("/proc/meminfo contains an invalid unit: %s", k)
-			continue
-		}
-		value, err := strconv.ParseFloat(kvAndUnit[1], 64)
-		if err != nil {
-			memoryLogger.Warningf("Failed to parse memory metrics: %s", err)
-			continue
-		}
-		ret["memory."+k] = value * 1024
-		switch k {
-		case "free", "buffers", "cached":
-			unused += value
-			usedCnt++
-		case "total":
-			total = value
-			usedCnt++
-		case "available":
-			available = value
+		if match := memReg.FindStringSubmatch(line); len(match) == 3 {
+			k, ok := memItems[match[1]]
+			if !ok {
+				continue
+			}
+			value, _ := strconv.ParseFloat(match[2], 64)
+			ret["memory."+k] = value * 1024
+			switch k {
+			case "free", "buffers", "cached":
+				unused += value
+				usedCnt++
+			case "total":
+				total = value
+				usedCnt++
+			case "available":
+				available = value
+			}
 		}
 	}
 	if err := scanner.Err(); err != nil {
