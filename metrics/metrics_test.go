@@ -6,41 +6,41 @@ import (
 )
 
 func TestMerge(t *testing.T) {
-	var v = Values(map[string]float64{
+	var v = Values{
 		"aa": 10,
-	})
-	var vv = Values(map[string]float64{
+	}
+	var vv = Values{
 		"bb": 20,
 		"cc": 30,
-	})
+	}
 
 	v.Merge(vv)
 
-	if !reflect.DeepEqual(v, Values(map[string]float64{
+	if !reflect.DeepEqual(v, Values{
 		"aa": 10,
 		"bb": 20,
 		"cc": 30,
-	})) {
+	}) {
 		t.Errorf("somthing went wrong")
 	}
 }
 
 func TestMergeValuesCustomIdentifiers(t *testing.T) {
-	var v0 = Values(map[string]float64{
+	var v0 = Values{
 		"aa": 10,
-	})
-	var v1 = Values(map[string]float64{
+	}
+	var v1 = Values{
 		"bb": 20,
 		"cc": 30,
-	})
-	var v2 = Values(map[string]float64{
+	}
+	var v2 = Values{
 		"dd": 40,
 		"ee": 50,
-	})
-	var v3 = Values(map[string]float64{
+	}
+	var v3 = Values{
 		"ff": 60,
 		"gg": 70,
-	})
+	}
 
 	v := MergeValuesCustomIdentifiers([]ValuesCustomIdentifier{
 		ValuesCustomIdentifier{Values: v0},
@@ -48,11 +48,11 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 
 	if !reflect.DeepEqual(v, []ValuesCustomIdentifier{
 		ValuesCustomIdentifier{
-			Values: Values(map[string]float64{
+			Values: Values{
 				"aa": 10,
 				"bb": 20,
 				"cc": 30,
-			}),
+			},
 			CustomIdentifier: nil,
 		}}) {
 		t.Errorf("somthing went wrong")
@@ -63,18 +63,18 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 
 	if !reflect.DeepEqual(v, []ValuesCustomIdentifier{
 		ValuesCustomIdentifier{
-			Values: Values(map[string]float64{
+			Values: Values{
 				"aa": 10,
 				"bb": 20,
 				"cc": 30,
-			}),
+			},
 			CustomIdentifier: nil,
 		},
 		ValuesCustomIdentifier{
-			Values: Values(map[string]float64{
+			Values: Values{
 				"dd": 40,
 				"ee": 50,
-			}),
+			},
 			CustomIdentifier: &customIdentifiers,
 		},
 	}) {
@@ -86,20 +86,20 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 
 	if !reflect.DeepEqual(v, []ValuesCustomIdentifier{
 		ValuesCustomIdentifier{
-			Values: Values(map[string]float64{
+			Values: Values{
 				"aa": 10,
 				"bb": 20,
 				"cc": 30,
-			}),
+			},
 			CustomIdentifier: nil,
 		},
 		ValuesCustomIdentifier{
-			Values: Values(map[string]float64{
+			Values: Values{
 				"dd": 40,
 				"ee": 50,
 				"ff": 60,
 				"gg": 70,
-			}),
+			},
 			CustomIdentifier: &customIdentifiers,
 		},
 	}) {
