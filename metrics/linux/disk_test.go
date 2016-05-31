@@ -57,7 +57,7 @@ func TestParseDiskStats(t *testing.T) {
 		t.Errorf("error should be nil but: %s", err)
 	}
 
-	expect := metrics.Values(map[string]float64{
+	expect := metrics.Values{
 		"disk.xvda1.reads":          750193,
 		"disk.xvda1.readsMerged":    3037,
 		"disk.xvda1.sectorsRead":    28116978,
@@ -80,7 +80,7 @@ func TestParseDiskStats(t *testing.T) {
 		"disk.xvda2.ioInProgress":   0,
 		"disk.xvda2.ioTime":         15040,
 		"disk.xvda2.ioTimeWeighted": 25428,
-	})
+	}
 	if !reflect.DeepEqual(result, expect) {
 		t.Errorf("result is not expected one: %+v", result)
 	}
