@@ -59,7 +59,7 @@ docker0: 250219988  333736    0    0    0     0          0         0 2024726607 
 		t.Errorf("error should be nil but: %s", err)
 	}
 
-	expect := metrics.Values(map[string]float64{
+	expect := metrics.Values{
 		"interface.eth0.rxBytes":         5461472598,
 		"interface.eth0.rxPackets":       24386569,
 		"interface.eth0.rxErrors":        0,
@@ -92,7 +92,7 @@ docker0: 250219988  333736    0    0    0     0          0         0 2024726607 
 		"interface.docker0.txColls":      0,
 		"interface.docker0.txCarrier":    0,
 		"interface.docker0.txCompressed": 0,
-	})
+	}
 
 	if !reflect.DeepEqual(result, expect) {
 		t.Errorf("result is not expected one: %+v", result)

@@ -15,8 +15,8 @@ type FilesystemGenerator struct {
 }
 
 var dfColumnSpecs = []util.DfColumnSpec{
-	util.DfColumnSpec{Name: "size", IsInt: true},
-	util.DfColumnSpec{Name: "used", IsInt: true},
+	{Name: "size", IsInt: true},
+	{Name: "used", IsInt: true},
 }
 
 var sanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
