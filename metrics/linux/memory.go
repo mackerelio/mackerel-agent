@@ -4,7 +4,8 @@ package linux
 
 import (
 	"bufio"
-	"os"
+	"bytes"
+	"io/ioutil"
 	"regexp"
 	"strconv"
 
@@ -43,12 +44,16 @@ var memoryLogger = logging.GetLogger("metrics.memory")
 
 // Generate generate metrics values
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
-	file, err := os.Open("/proc/meminfo")
+	out, err := ioutil.ReadFile("/proc/meminfo")
 	if err != nil {
 		memoryLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
-	scanner := bufio.NewScanner(file)
+	return parseMeminfo(out)
+}
+
+func parseMeminfo(out []byte) (metrics.Values, error) {
+	scanner := bufio.NewScanner(bytes.NewReader(out))
 
 	ret := make(map[string]float64)
 	used := float64(0)
