@@ -16,6 +16,7 @@ import (
 var memItems = map[string]*regexp.Regexp{
 	"total":       regexp.MustCompile(`^MemTotal:\s+(\d+) (.+)$`),
 	"free":        regexp.MustCompile(`^MemFree:\s+(\d+) (.+)$`),
+	"available":   regexp.MustCompile(`^MemAvailable:\s+(\d+) (.+)$`),
 	"buffers":     regexp.MustCompile(`^Buffers:\s+(\d+) (.+)$`),
 	"cached":      regexp.MustCompile(`^Cached:\s+(\d+) (.+)$`),
 	"active":      regexp.MustCompile(`^Active:\s+(\d+) (.+)$`),
@@ -56,7 +57,9 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(out))
 
 	ret := make(map[string]float64)
-	used := float64(0)
+	total := float64(0)
+	unused := float64(0)
+	available := float64(0)
 	usedCnt := 0
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -75,12 +78,15 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 				}
 				ret["memory."+k] = value * 1024
 				if k == "free" || k == "buffers" || k == "cached" {
-					used -= value
+					unused += value
 					usedCnt++
 				}
 				if k == "total" {
-					used += value
+					total = value
 					usedCnt++
+				}
+				if k == "available" {
+					available = value
 				}
 				break
 			}
@@ -90,8 +96,10 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 		memoryLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
-	if usedCnt == 4 { // 4 is free, buffers, cached and total
-		ret["memory.used"] = used * 1024
+	if total > float64(0) && available > float64(0) {
+		ret["memory.used"] = ( total - available ) * 1024
+	} else if usedCnt == 4 { // 4 is free, buffers, cached and total
+		ret["memory.used"] = ( total - unused ) * 1024
 	}
 
 	return metrics.Values(ret), nil
