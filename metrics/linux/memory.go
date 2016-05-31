@@ -73,12 +73,12 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 		}
 		if kvAndUnit[2] != "kB" {
 			memoryLogger.Warningf("/proc/meminfo contains an invalid unit: %s", k)
-			break
+			continue
 		}
 		value, err := strconv.ParseFloat(kvAndUnit[1], 64)
 		if err != nil {
 			memoryLogger.Warningf("Failed to parse memory metrics: %s", err)
-			break
+			continue
 		}
 		ret["memory."+k] = value * 1024
 		switch k {
