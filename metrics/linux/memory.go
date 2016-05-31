@@ -6,25 +6,12 @@ import (
 	"bufio"
 	"bytes"
 	"io/ioutil"
-	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
-
-var memItems = map[string]*regexp.Regexp{
-	"total":       regexp.MustCompile(`^MemTotal:\s+(\d+) (.+)$`),
-	"free":        regexp.MustCompile(`^MemFree:\s+(\d+) (.+)$`),
-	"available":   regexp.MustCompile(`^MemAvailable:\s+(\d+) (.+)$`),
-	"buffers":     regexp.MustCompile(`^Buffers:\s+(\d+) (.+)$`),
-	"cached":      regexp.MustCompile(`^Cached:\s+(\d+) (.+)$`),
-	"active":      regexp.MustCompile(`^Active:\s+(\d+) (.+)$`),
-	"inactive":    regexp.MustCompile(`^Inactive:\s+(\d+) (.+)$`),
-	"swap_cached": regexp.MustCompile(`^SwapCached:\s+(\d+) (.+)$`),
-	"swap_total":  regexp.MustCompile(`^SwapTotal:\s+(\d+) (.+)$`),
-	"swap_free":   regexp.MustCompile(`^SwapFree:\s+(\d+) (.+)$`),
-}
 
 /*
 MemoryGenerator collect memory usage
@@ -53,50 +40,64 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	return parseMeminfo(out)
 }
 
+var memItems = map[string]string{
+	"MemTotal":     "total",
+	"MemFree":      "free",
+	"MemAvailable": "available",
+	"Buffers":      "buffers",
+	"Cached":       "cached",
+	"Active":       "active",
+	"Inactive":     "inactive",
+	"SwapCached":   "swap_cached",
+	"SwapTotal":    "swap_total",
+	"SwapFree":     "swap_free",
+}
+
 func parseMeminfo(out []byte) (metrics.Values, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(out))
 
 	ret := make(map[string]float64)
-	total := float64(0)
-	unused := float64(0)
-	available := float64(0)
+	var total, unused, available float64
 	usedCnt := 0
 	for scanner.Scan() {
 		line := scanner.Text()
-		for k, regexp := range memItems {
-			if matches := regexp.FindStringSubmatch(line); matches != nil {
-				// ex.) MemTotal:        3916792 kB
-				// matches[1] = 3916792, matches[2] = kB
-				if matches[2] != "kB" {
-					memoryLogger.Warningf("/proc/meminfo contains an invalid unit: %s", k)
-					break
-				}
-				value, err := strconv.ParseFloat(matches[1], 64)
-				if err != nil {
-					memoryLogger.Warningf("Failed to parse memory metrics: %s", err)
-					break
-				}
-				ret["memory."+k] = value * 1024
-				if k == "free" || k == "buffers" || k == "cached" {
-					unused += value
-					usedCnt++
-				}
-				if k == "total" {
-					total = value
-					usedCnt++
-				}
-				if k == "available" {
-					available = value
-				}
-				break
-			}
+		// ex.) MemTotal:        3916792 kB
+		kvAndUnit := strings.Fields(line)
+		if len(kvAndUnit) < 3 {
+			continue
+		}
+		name := strings.TrimRight(kvAndUnit[0], ":")
+		k, ok := memItems[name]
+		if !ok {
+			continue
+		}
+		if kvAndUnit[2] != "kB" {
+			memoryLogger.Warningf("/proc/meminfo contains an invalid unit: %s", k)
+			break
+		}
+		value, err := strconv.ParseFloat(kvAndUnit[1], 64)
+		if err != nil {
+			memoryLogger.Warningf("Failed to parse memory metrics: %s", err)
+			break
+		}
+		ret["memory."+k] = value * 1024
+		if k == "free" || k == "buffers" || k == "cached" {
+			unused += value
+			usedCnt++
+		}
+		if k == "total" {
+			total = value
+			usedCnt++
+		}
+		if k == "available" {
+			available = value
 		}
 	}
 	if err := scanner.Err(); err != nil {
 		memoryLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
-	if total > float64(0) && available > float64(0) {
+	if total > 0 && available > 0 {
 		ret["memory.used"] = (total - available) * 1024
 	} else if usedCnt == 4 { // 4 is free, buffers, cached and total
 		ret["memory.used"] = (total - unused) * 1024
