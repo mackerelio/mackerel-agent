@@ -13,12 +13,13 @@ import (
 )
 
 var memItems = map[string]*regexp.Regexp{
-	"total":    regexp.MustCompile(`^MemTotal:\s+(\d+) (.+)$`),
-	"free":     regexp.MustCompile(`^MemFree:\s+(\d+) (.+)$`),
-	"buffers":  regexp.MustCompile(`^Buffers:\s+(\d+) (.+)$`),
-	"cached":   regexp.MustCompile(`^Cached:\s+(\d+) (.+)$`),
-	"active":   regexp.MustCompile(`^Active:\s+(\d+) (.+)$`),
-	"inactive": regexp.MustCompile(`^Inactive:\s+(\d+) (.+)$`),
+	"total":       regexp.MustCompile(`^MemTotal:\s+(\d+) (.+)$`),
+	"free":        regexp.MustCompile(`^MemFree:\s+(\d+) (.+)$`),
+	"available":   regexp.MustCompile(`^MemAvailable:\s+(\d+) (.+)$`),
+	"buffers":     regexp.MustCompile(`^Buffers:\s+(\d+) (.+)$`),
+	"cached":      regexp.MustCompile(`^Cached:\s+(\d+) (.+)$`),
+	"active":      regexp.MustCompile(`^Active:\s+(\d+) (.+)$`),
+	"inactive":    regexp.MustCompile(`^Inactive:\s+(\d+) (.+)$`),
 	// "high_total":       regexp.MustCompile(`^HighTotal:\s+(\d+) (.+)$`),
 	// "high_free":        regexp.MustCompile(`^HighFree:\s+(\d+) (.+)$`),
 	// "low_total":        regexp.MustCompile(`^LowTotal:\s+(\d+) (.+)$`),
@@ -70,7 +71,9 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	scanner := bufio.NewScanner(file)
 
 	ret := make(map[string]float64)
-	used := float64(0)
+	total := float64(0)
+	unused := float64(0)
+	available := float64(0)
 	usedCnt := 0
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -89,12 +92,15 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 				}
 				ret["memory."+k] = value * 1024
 				if k == "free" || k == "buffers" || k == "cached" {
-					used -= value
+					unused += value
 					usedCnt++
 				}
 				if k == "total" {
-					used += value
+					total = value
 					usedCnt++
+				}
+				if k == "available" {
+					available = value
 				}
 				break
 			}
@@ -104,8 +110,10 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		memoryLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
-	if usedCnt == 4 { // 4 is free, buffers, cached and total
-		ret["memory.used"] = used * 1024
+	if total > float64(0) && available > float64(0) {
+		ret["memory.used"] = ( total - available ) * 1024
+	} else if usedCnt == 4 { // 4 is free, buffers, cached and total
+		ret["memory.used"] = ( total - unused ) * 1024
 	}
 
 	return metrics.Values(ret), nil
