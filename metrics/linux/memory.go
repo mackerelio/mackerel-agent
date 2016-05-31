@@ -81,15 +81,14 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 			break
 		}
 		ret["memory."+k] = value * 1024
-		if k == "free" || k == "buffers" || k == "cached" {
+		switch k {
+		case "free", "buffers", "cached":
 			unused += value
 			usedCnt++
-		}
-		if k == "total" {
+		case "total":
 			total = value
 			usedCnt++
-		}
-		if k == "available" {
+		case "available":
 			available = value
 		}
 	}
