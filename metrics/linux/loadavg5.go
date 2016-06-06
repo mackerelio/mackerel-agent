@@ -41,5 +41,5 @@ func (g *Loadavg5Generator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	return metrics.Values(map[string]float64{"loadavg5": f}), nil
+	return metrics.Values{"loadavg5": f}, nil
 }

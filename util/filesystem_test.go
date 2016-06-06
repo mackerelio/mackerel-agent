@@ -9,11 +9,11 @@ import (
 
 func TestCollectDfValues(t *testing.T) {
 	dfColumnSpecs := []DfColumnSpec{
-		DfColumnSpec{"kb_size", true},
-		DfColumnSpec{"kb_used", true},
-		DfColumnSpec{"kb_available", true},
-		DfColumnSpec{"percent_used", false},
-		DfColumnSpec{"mount", false},
+		{"kb_size", true},
+		{"kb_used", true},
+		{"kb_available", true},
+		{"percent_used", false},
+		{"mount", false},
 	}
 
 	filesystems, err := CollectDfValues(dfColumnSpecs)
