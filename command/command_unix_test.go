@@ -26,12 +26,12 @@ func TestRunOnce(t *testing.T) {
 	conf := &config.Config{
 		Plugin: map[string]config.PluginConfigs{
 			"metrics": map[string]config.PluginConfig{
-				"metric1": config.PluginConfig{
+				"metric1": {
 					Command: diceCommand,
 				},
 			},
 			"checks": map[string]config.PluginConfig{
-				"check1": config.PluginConfig{
+				"check1": {
 					Command: "echo 1",
 				},
 			},
@@ -59,12 +59,12 @@ func TestRunOncePayload(t *testing.T) {
 	conf := &config.Config{
 		Plugin: map[string]config.PluginConfigs{
 			"metrics": map[string]config.PluginConfig{
-				"metric1": config.PluginConfig{
+				"metric1": {
 					Command: diceCommand,
 				},
 			},
 			"checks": map[string]config.PluginConfig{
-				"check1": config.PluginConfig{
+				"check1": {
 					Command: "echo 1",
 				},
 			},
@@ -80,12 +80,12 @@ func TestRunOncePayload(t *testing.T) {
 		DisplayName: "My Dice",
 		Unit:        "integer",
 		Metrics: []mackerel.CreateGraphDefsPayloadMetric{
-			mackerel.CreateGraphDefsPayloadMetric{
+			{
 				Name:        "custom.dice.d6",
 				DisplayName: "Die (d6)",
 				IsStacked:   false,
 			},
-			mackerel.CreateGraphDefsPayloadMetric{
+			{
 				Name:        "custom.dice.d20",
 				DisplayName: "Die (d20)",
 				IsStacked:   false,
