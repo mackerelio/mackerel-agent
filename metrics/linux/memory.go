@@ -13,18 +13,6 @@ import (
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
-var memItems = map[string]*regexp.Regexp{
-	"total":       regexp.MustCompile(`^MemTotal:\s+(\d+) (.+)$`),
-	"free":        regexp.MustCompile(`^MemFree:\s+(\d+) (.+)$`),
-	"buffers":     regexp.MustCompile(`^Buffers:\s+(\d+) (.+)$`),
-	"cached":      regexp.MustCompile(`^Cached:\s+(\d+) (.+)$`),
-	"active":      regexp.MustCompile(`^Active:\s+(\d+) (.+)$`),
-	"inactive":    regexp.MustCompile(`^Inactive:\s+(\d+) (.+)$`),
-	"swap_cached": regexp.MustCompile(`^SwapCached:\s+(\d+) (.+)$`),
-	"swap_total":  regexp.MustCompile(`^SwapTotal:\s+(\d+) (.+)$`),
-	"swap_free":   regexp.MustCompile(`^SwapFree:\s+(\d+) (.+)$`),
-}
-
 /*
 MemoryGenerator collect memory usage
 
@@ -52,37 +40,44 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	return parseMeminfo(out)
 }
 
+var memReg = regexp.MustCompile(`^([A-Za-z]+):\s+([0-9]+)\s+kB`)
+
+var memItems = map[string]string{
+	"MemTotal":     "total",
+	"MemFree":      "free",
+	"MemAvailable": "available",
+	"Buffers":      "buffers",
+	"Cached":       "cached",
+	"Active":       "active",
+	"Inactive":     "inactive",
+	"SwapCached":   "swap_cached",
+	"SwapTotal":    "swap_total",
+	"SwapFree":     "swap_free",
+}
+
 func parseMeminfo(out []byte) (metrics.Values, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(out))
 
-	ret := make(map[string]float64)
+	ret := metrics.Values{}
 	used := float64(0)
 	usedCnt := 0
 	for scanner.Scan() {
 		line := scanner.Text()
-		for k, regexp := range memItems {
-			if matches := regexp.FindStringSubmatch(line); matches != nil {
-				// ex.) MemTotal:        3916792 kB
-				// matches[1] = 3916792, matches[2] = kB
-				if matches[2] != "kB" {
-					memoryLogger.Warningf("/proc/meminfo contains an invalid unit: %s", k)
-					break
-				}
-				value, err := strconv.ParseFloat(matches[1], 64)
-				if err != nil {
-					memoryLogger.Warningf("Failed to parse memory metrics: %s", err)
-					break
-				}
-				ret["memory."+k] = value * 1024
-				if k == "free" || k == "buffers" || k == "cached" {
-					used -= value
-					usedCnt++
-				}
-				if k == "total" {
-					used += value
-					usedCnt++
-				}
-				break
+		// ex.) MemTotal:        3916792 kB
+		if matches := memReg.FindStringSubmatch(line); len(matches) == 3 {
+			k, ok := memItems[matches[1]]
+			if !ok {
+				continue
+			}
+			value, _ := strconv.ParseFloat(matches[2], 64)
+			ret["memory."+k] = value * 1024
+			switch k {
+			case "free", "buffers", "cached":
+				used -= value
+				usedCnt++
+			case "total":
+				used += value
+				usedCnt++
 			}
 		}
 	}
@@ -94,5 +89,5 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 		ret["memory.used"] = used * 1024
 	}
 
-	return metrics.Values(ret), nil
+	return ret, nil
 }
