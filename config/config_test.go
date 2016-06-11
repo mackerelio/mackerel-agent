@@ -296,3 +296,36 @@ func TestConfig_HostIDStorage(t *testing.T) {
 	assert(t, ok, "Default hostIDStorage must be *FileSystemHostIDStorage")
 	assert(t, storage.Root == "test-root", "FileSystemHostIDStorage must have the same Root of Config")
 }
+
+func newTempFileWithContent(content string) (*os.File, error) {
+	tmpf, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		return nil, err
+	}
+	if _, err := tmpf.WriteString(content); err != nil {
+		os.Remove(tmpf.Name())
+		return nil, err
+	}
+	tmpf.Sync()
+	tmpf.Close()
+	return tmpf, nil
+}
+
+func TestLoadConfigWithSilent(t *testing.T) {
+	conff, err := newTempFileWithContent(`
+apikey = "abcde"
+silent = true
+`)
+	if err != nil {
+		t.Fatalf("should not raise error: %s", err)
+	}
+	defer os.Remove(conff.Name())
+
+	config, err := loadConfigFile(conff.Name())
+	assertNoError(t, err)
+
+	if !config.Silent {
+		t.Error("silent should be ture")
+	}
+}
+
