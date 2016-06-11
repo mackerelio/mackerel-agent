@@ -126,6 +126,10 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	}
 	conf.Roles = r
 
+	if conf.Verbose && conf.Silent {
+		logger.Warningf("both of `verbose` and `silent` option are specified. In this case, `verbose` get preference over `silent`")
+	}
+
 	if conf.Apikey == "" {
 		return nil, fmt.Errorf("Apikey must be specified in the config file (or by the DEPRECATED command-line flag)")
 	}
@@ -166,6 +170,9 @@ func removePidFile(pidfile string) {
 }
 
 func start(conf *config.Config, termCh chan struct{}) error {
+	if conf.Silent {
+		logging.SetLogLevel(logging.ERROR)
+	}
 	if conf.Verbose {
 		logging.SetLogLevel(logging.DEBUG)
 	}

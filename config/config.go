@@ -43,6 +43,7 @@ type Config struct {
 	Conffile    string
 	Roles       []string
 	Verbose     bool
+	Silent      bool
 	Diagnostic  bool `toml:"diagnostic"`
 	Connection  ConnectionConfig
 	DisplayName string      `toml:"display_name"`
