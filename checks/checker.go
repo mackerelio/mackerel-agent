@@ -25,6 +25,8 @@ const (
 	StatusUnknown   Status = "UNKNOWN"
 )
 
+const defaultExecutionInterval = 1 * time.Minute
+
 var exitCodeToStatus = map[int]Status{
 	0: StatusOK,
 	1: StatusWarning,
@@ -94,5 +96,8 @@ func (c Checker) Check() (*Report, error) {
 // Interval is the interval where the command is invoked.
 // (Will be configurable in the future)
 func (c Checker) Interval() time.Duration {
-	return 1 * time.Minute
+	if c.Config.ExecutionInterval != nil {
+		return time.Duration(*c.Config.ExecutionInterval) * time.Minute
+	}
+	return defaultExecutionInterval
 }

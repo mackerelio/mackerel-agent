@@ -68,6 +68,7 @@ type PluginConfigs map[string]PluginConfig
 type PluginConfig struct {
 	Command              string
 	NotificationInterval *int32  `toml:"notification_interval"`
+	ExecutionInterval    *int32  `toml:"execution_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
