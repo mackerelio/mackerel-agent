@@ -3,10 +3,11 @@
 package windows
 
 import (
+	"regexp"
+
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/util/windows"
-	"regexp"
 )
 
 // FilesystemGenerator XXX

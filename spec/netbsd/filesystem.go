@@ -19,11 +19,11 @@ func (g *FilesystemGenerator) Key() string {
 var logger = logging.GetLogger("spec.filesystem")
 
 var dfColumnSpecs = []util.DfColumnSpec{
-	util.DfColumnSpec{Name: "kb_size", IsInt: true},
-	util.DfColumnSpec{Name: "kb_used", IsInt: true},
-	util.DfColumnSpec{Name: "kb_available", IsInt: true},
-	util.DfColumnSpec{Name: "percent_used", IsInt: false},
-	util.DfColumnSpec{Name: "mount", IsInt: false},
+	{Name: "kb_size", IsInt: true},
+	{Name: "kb_used", IsInt: true},
+	{Name: "kb_available", IsInt: true},
+	{Name: "percent_used", IsInt: false},
+	{Name: "mount", IsInt: false},
 }
 
 // Generate XXX

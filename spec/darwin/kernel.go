@@ -29,10 +29,10 @@ var kernelLogger = logging.GetLogger("spec.kernel")
 // Generate XXX
 func (g *KernelGenerator) Generate() (interface{}, error) {
 	unameArgs := map[string][]string{
-		"release": []string{"-r"},
-		"version": []string{"-v"},
-		"machine": []string{"-m"},
-		"os":      []string{"-s"},
+		"release": {"-r"},
+		"version": {"-v"},
+		"machine": {"-m"},
+		"os":      {"-s"},
 	}
 
 	results := make(map[string]string, len(unameArgs)+1)

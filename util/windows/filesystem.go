@@ -4,10 +4,11 @@ package windows
 
 import (
 	"fmt"
-	"github.com/mackerelio/mackerel-agent/logging"
 	"strings"
 	"syscall"
 	"unsafe"
+
+	"github.com/mackerelio/mackerel-agent/logging"
 )
 
 // FilesystemInfo XXX

@@ -23,11 +23,11 @@ var kernelLogger = logging.GetLogger("spec.kernel")
 // Generate XXX
 func (g *KernelGenerator) Generate() (interface{}, error) {
 	commands := map[string][]string{
-		"name":    []string{"uname", "-s"},
-		"release": []string{"uname", "-r"},
-		"version": []string{"uname", "-v"},
-		"machine": []string{"uname", "-m"},
-		"os":      []string{"uname", "-o"},
+		"name":    {"uname", "-s"},
+		"release": {"uname", "-r"},
+		"version": {"uname", "-v"},
+		"machine": {"uname", "-m"},
+		"os":      {"uname", "-o"},
 	}
 
 	results := make(map[string]string)
