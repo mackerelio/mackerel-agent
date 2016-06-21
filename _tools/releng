@@ -413,7 +413,7 @@ sub upload_to_github_release {
     # upload files
     my $latest_release_pullrequest = find_latest_release_pullrequest();
     my $description = $latest_release_pullrequest->{body};
-    my @filepaths = glob("~/rpmbuild/RPMS/*/*.rpm packaging/*.deb snapshot/*.zip snapshot/*.tar.gz");
+    my @filepaths = glob("~/rpmbuild/RPMS/*/*.rpm packaging/*.deb snapshot/*.zip snapshot/*.tar.gz build/*.tar.gz");
     infof "uploading following files:\n" . join("\n", @filepaths). "\n";
     for my $path (@filepaths){
         my $filename = basename($path);

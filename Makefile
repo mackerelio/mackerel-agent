@@ -44,8 +44,7 @@ lint: deps
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
-		-os="darwin freebsd netbsd" -arch="amd64"	 -d . -n $(MACKEREL_AGENT_NAME)
-		#		-os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . -n $(MACKEREL_AGENT_NAME)
+		-os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . -n $(MACKEREL_AGENT_NAME)
 
 cover: deps
 	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
