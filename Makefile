@@ -8,7 +8,7 @@ CURRENT_VERSION = $(shell git log --merges --oneline | perl -ne 'if(m/^.+Merge p
 
 BUILD_LDFLAGS = "\
 	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT=`git rev-parse --short HEAD` \
-	  -X github.com/mackerelio/mackerel-agent/version.VERSION=$(MACKEREL_AGENT_VERSION) \
+	  -X github.com/mackerelio/mackerel-agent/version.VERSION=$(CURRENT_VERSION) \
 	  -X github.com/mackerelio/mackerel-agent/config.agentName=$(MACKEREL_AGENT_NAME) \
 	  -X github.com/mackerelio/mackerel-agent/config.apibase=$(MACKEREL_API_BASE)"
 
