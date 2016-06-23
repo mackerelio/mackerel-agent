@@ -1,3 +1,18 @@
+mackerel-agent (0.31.2-1) stable; urgency=low
+
+  * Refactor around metrics/linux/memory (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/242>
+  * Don't stop mackerel-agent process on upgrading by debian package (by karupanerura)
+    <https://github.com/mackerelio/mackerel-agent/pull/243>
+  * add `silent` configuration key for suppressing log output (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/244>
+  * change log level ERROR to WARNING in spec/spec.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/246>
+  * remove /usr/local/bin from sample.conf (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/248>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 23 Jun 2016 06:12:22 +0000
+
 mackerel-agent (0.31.1-1) stable; urgency=low
 
   * embed right version number

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.31.2 (2016-06-23)
+
+* Refactor around metrics/linux/memory #242 (Songmu)
+* Don't stop mackerel-agent process on upgrading by debian package #243 (karupanerura)
+* add `silent` configuration key for suppressing log output #244 (Songmu)
+* change log level ERROR to WARNING in spec/spec.go #246 (Songmu)
+* remove /usr/local/bin from sample.conf #248 (Songmu)
+
+
 ## 0.31.0 (2016-05-25)
 
 * Post the custom metrics to the hosts specified by custom identifiers #231 (itchyny)

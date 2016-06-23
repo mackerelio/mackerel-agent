@@ -62,6 +62,13 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Jun 23 2016 <mackerel-developers@hatena.ne.jp> - 0.31.2-1
+- Refactor around metrics/linux/memory (by Songmu)
+- Don't stop mackerel-agent process on upgrading by debian package (by karupanerura)
+- add `silent` configuration key for suppressing log output (by Songmu)
+- change log level ERROR to WARNING in spec/spec.go (by Songmu)
+- remove /usr/local/bin from sample.conf (by Songmu)
+
 * Wed May 25 2016 <mackerel-developers@hatena.ne.jp> - 0.31.0-1
 - Post the custom metrics to the hosts specified by custom identifiers (by itchyny)
 - refactor FilesystemGenerator (by Songmu)
