@@ -97,7 +97,13 @@ func (c Checker) Check() (*Report, error) {
 // (Will be configurable in the future)
 func (c Checker) Interval() time.Duration {
 	if c.Config.ExecutionInterval != nil {
-		return time.Duration(*c.Config.ExecutionInterval) * time.Minute
+		interval := time.Duration(*c.Config.ExecutionInterval) * time.Minute
+		if interval < 1 * time.Second {
+			interval = 1 * time.Second
+		} else if interval > 60 * time.Second {
+			interval = 60 * time.Second
+		}
+		return interval
 	}
 	return defaultExecutionInterval
 }
