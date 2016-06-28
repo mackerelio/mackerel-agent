@@ -98,10 +98,10 @@ func (c Checker) Check() (*Report, error) {
 func (c Checker) Interval() time.Duration {
 	if c.Config.ExecutionInterval != nil {
 		interval := time.Duration(*c.Config.ExecutionInterval) * time.Minute
-		if interval < 1*time.Second {
-			interval = 1 * time.Second
-		} else if interval > 60*time.Second {
-			interval = 60 * time.Second
+		if interval < 1*time.Minute {
+			interval = 1 * time.Minute
+		} else if interval > 60*time.Minute {
+			interval = 60 * time.Minute
 		}
 		return interval
 	}
