@@ -67,6 +67,7 @@ type PluginConfigs map[string]PluginConfig
 // `MaxCheckAttempts` option is used with check monitoring plugins. Custom metrics plugins ignore this option.
 type PluginConfig struct {
 	Command              string
+	UserName             *string `toml:"user_name"`
 	NotificationInterval *int32  `toml:"notification_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`

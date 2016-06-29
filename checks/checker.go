@@ -55,6 +55,9 @@ type Report struct {
 }
 
 func (c Checker) String() string {
+	if c.Config.UserName != nil {
+		return fmt.Sprintf("checker %q command=[sudo -u %s %s]", c.Name, *c.Config.UserName, c.Config.Command)
+	}
 	return fmt.Sprintf("checker %q command=[%s]", c.Name, c.Config.Command)
 }
 
@@ -62,7 +65,12 @@ func (c Checker) String() string {
 func (c Checker) Check() (*Report, error) {
 	now := time.Now()
 
-	command := c.Config.Command
+	var command string
+	if c.Config.UserName != nil {
+		command = fmt.Sprintf("sudo -u %s %s", *c.Config.UserName, c.Config.Command)
+	} else {
+		command = c.Config.Command
+	}
 	logger.Debugf("Checker %q executing command %q", c.Name, command)
 	message, stderr, exitCode, err := util.RunCommand(command)
 	if stderr != "" {
