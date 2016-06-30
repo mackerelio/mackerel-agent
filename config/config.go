@@ -65,10 +65,11 @@ type Config struct {
 type PluginConfigs map[string]PluginConfig
 
 // PluginConfig represents a section of [plugin.*].
-// `MaxCheckAttempts` option is used with check monitoring plugins. Custom metrics plugins ignore this option.
+// `MaxCheckAttempts`, `NotificationInterval` and `CheckInterval` options are used with check monitoring plugins. Custom metrics plugins ignore these options.
 type PluginConfig struct {
 	Command              string
 	NotificationInterval *int32  `toml:"notification_interval"`
+	CheckInterval        *int32  `toml:"check_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
