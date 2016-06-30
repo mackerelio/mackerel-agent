@@ -65,11 +65,9 @@ func (c Checker) String() string {
 func (c Checker) Check() (*Report, error) {
 	now := time.Now()
 
-	var command string
+	command := c.Config.Command
 	if c.Config.UserName != nil {
 		command = fmt.Sprintf("sudo -u %s %s", *c.Config.UserName, c.Config.Command)
-	} else {
-		command = c.Config.Command
 	}
 	logger.Debugf("Checker %q executing command %q", c.Name, command)
 	message, stderr, exitCode, err := util.RunCommand(command)

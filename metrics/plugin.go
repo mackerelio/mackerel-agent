@@ -121,11 +121,9 @@ func (g *pluginGenerator) CustomIdentifier() *string {
 // 	  }
 // 	}
 func (g *pluginGenerator) loadPluginMeta() error {
-	var command string
+	command := g.Config.Command
 	if g.Config.UserName != nil {
 		command = fmt.Sprintf("sudo -u %s %s", *g.Config.UserName, g.Config.Command)
-	} else {
-		command = g.Config.Command
 	}
 	pluginLogger.Debugf("Obtaining plugin configuration: %q", command)
 
@@ -224,11 +222,9 @@ func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 var delimReg = regexp.MustCompile(`[\s\t]+`)
 
 func (g *pluginGenerator) collectValues() (Values, error) {
-	var command string
+	command := g.Config.Command
 	if g.Config.UserName != nil {
 		command = fmt.Sprintf("sudo -u %s %s", *g.Config.UserName, g.Config.Command)
-	} else {
-		command = g.Config.Command
 	}
 	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
 
