@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Jun 30 2016 <mackerel-developers@hatena.ne.jp> - 0.32.0-1
+- Added plugin check interval option (by karupanerura)
+
 * Thu Jun 23 2016 <mackerel-developers@hatena.ne.jp> - 0.31.2-1
 - Refactor around metrics/linux/memory (by Songmu)
 - Don't stop mackerel-agent process on upgrading by debian package (by karupanerura)

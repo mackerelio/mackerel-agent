@@ -1,3 +1,10 @@
+mackerel-agent (0.32.0-1) stable; urgency=low
+
+  * Added plugin check interval option (by karupanerura)
+    <https://github.com/mackerelio/mackerel-agent/pull/245>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 30 Jun 2016 08:38:51 +0000
+
 mackerel-agent (0.31.2-1) stable; urgency=low
 
   * Refactor around metrics/linux/memory (by Songmu)
