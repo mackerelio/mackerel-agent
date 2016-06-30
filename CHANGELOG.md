@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.32.0 (2016-06-30)
+
+* Added plugin check interval option #245 (karupanerura)
+
+
 ## 0.31.2 (2016-06-23)
 
 * Refactor around metrics/linux/memory #242 (Songmu)
