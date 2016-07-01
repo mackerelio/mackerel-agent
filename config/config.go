@@ -73,6 +73,14 @@ type PluginConfig struct {
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
 
+// ExecuteCommand return executing command.
+func (p *PluginConfig) ExecuteCommand() string {
+	if p.UserName != nil {
+		return fmt.Sprintf("sudo -u %s %s", p.UserName, p.Command)
+	}
+	return p.Command
+}
+
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
 const postMetricsRetryDelaySecondsMax = 3 * 60 // max delay seconds for retrying a request that caused errors
 
