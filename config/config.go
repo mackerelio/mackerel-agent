@@ -76,7 +76,7 @@ type PluginConfig struct {
 // ExecuteCommand return executing command.
 func (p *PluginConfig) ExecuteCommand() string {
 	if p.UserName != nil {
-		return fmt.Sprintf("sudo -u %s %s", p.UserName, p.Command)
+		return fmt.Sprintf("sudo -u %s %s", *p.UserName, p.Command)
 	}
 	return p.Command
 }
