@@ -65,20 +65,13 @@ type PluginConfigs map[string]PluginConfig
 
 // PluginConfig represents a section of [plugin.*].
 // `MaxCheckAttempts` option is used with check monitoring plugins. Custom metrics plugins ignore this option.
+// `User` option is ignore in windows
 type PluginConfig struct {
 	Command              string
-	UserName             *string `toml:"user_name"`
+	User                 string
 	NotificationInterval *int32  `toml:"notification_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
-}
-
-// ExecuteCommand return executing command.
-func (p *PluginConfig) ExecuteCommand() string {
-	if p.UserName != nil {
-		return fmt.Sprintf("sudo -u %s %s", *p.UserName, p.Command)
-	}
-	return p.Command
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue

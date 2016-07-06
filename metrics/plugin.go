@@ -121,14 +121,14 @@ func (g *pluginGenerator) CustomIdentifier() *string {
 // 	  }
 // 	}
 func (g *pluginGenerator) loadPluginMeta() error {
-	command := g.Config.ExecuteCommand()
+	command := g.Config.Command
 	pluginLogger.Debugf("Obtaining plugin configuration: %q", command)
 
 	// Set environment variable to make the plugin command generate its configuration
 	os.Setenv(pluginConfigurationEnvName, "1")
 	defer os.Setenv(pluginConfigurationEnvName, "")
 
-	stdout, stderr, exitCode, err := util.RunCommand(command)
+	stdout, stderr, exitCode, err := util.RunCommand(command, g.Config.User)
 	if err != nil {
 		return fmt.Errorf("running %q failed: %s, exit=%d stderr=%q", command, err, exitCode, stderr)
 	}
@@ -219,11 +219,11 @@ func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 var delimReg = regexp.MustCompile(`[\s\t]+`)
 
 func (g *pluginGenerator) collectValues() (Values, error) {
-	command := g.Config.ExecuteCommand()
+	command := g.Config.Command
 	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
 
 	os.Setenv(pluginConfigurationEnvName, "")
-	stdout, stderr, _, err := util.RunCommand(command)
+	stdout, stderr, _, err := util.RunCommand(command, g.Config.User)
 
 	if stderr != "" {
 		pluginLogger.Infof("command %q outputted to STDERR: %q", command, stderr)

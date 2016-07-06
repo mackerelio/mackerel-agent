@@ -19,10 +19,14 @@ var TimeoutDuration = 30 * time.Second
 // TimeoutKillAfter is option of `RunCommand()` set waiting limit to `kill -kill` after terminating the command.
 var TimeoutKillAfter = 10 * time.Second
 
-// RunCommand runs command (in one string) and returns stdout, stderr strings and its exit code.
-func RunCommand(command string) (string, string, int, error) {
+// RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
+func RunCommand(command, user string) (string, string, int, error) {
+	cmd := exec.Command("/bin/sh", "-c", command)
+	if user != "" {
+		cmd = exec.Command("sudo", "-u", user, "/bin/sh", "-c", command)
+	}
 	tio := &timeout.Timeout{
-		Cmd:       exec.Command("/bin/sh", "-c", command),
+		Cmd:       cmd,
 		Duration:  TimeoutDuration,
 		KillAfter: TimeoutKillAfter,
 	}

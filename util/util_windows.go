@@ -8,10 +8,14 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+
+	"github.com/mackerelio/mackerel-agent/logging"
 )
 
+var utilLogger = logging.GetLogger("util")
+
 // RunCommand XXX
-func RunCommand(command string) (string, string, int, error) {
+func RunCommand(command, user string) (string, string, int, error) {
 	var outBuffer, errBuffer bytes.Buffer
 
 	wd, err := os.Getwd()
@@ -19,6 +23,9 @@ func RunCommand(command string) (string, string, int, error) {
 		return "", "", -1, err
 	}
 	cmd := exec.Command("cmd", "/c", "pushd "+wd+" & "+command)
+	if user != "" {
+		utilLogger.Warningf("RunCommand ignore option: user = %q", user)
+	}
 	cmd.Stdout = &outBuffer
 	cmd.Stderr = &errBuffer
 

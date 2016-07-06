@@ -55,16 +55,16 @@ type Report struct {
 }
 
 func (c Checker) String() string {
-	return fmt.Sprintf("checker %q command=[%s]", c.Name, c.Config.ExecuteCommand())
+	return fmt.Sprintf("checker %q command=[%s]", c.Name, c.Config.Command)
 }
 
 // Check invokes the command and transforms its result to a Report.
 func (c Checker) Check() (*Report, error) {
 	now := time.Now()
 
-	command := c.Config.ExecuteCommand()
+	command := c.Config.Command
 	logger.Debugf("Checker %q executing command %q", c.Name, command)
-	message, stderr, exitCode, err := util.RunCommand(command)
+	message, stderr, exitCode, err := util.RunCommand(command, c.Config.User)
 	if stderr != "" {
 		logger.Warningf("Checker %q output stderr: %s", c.Name, stderr)
 	}
