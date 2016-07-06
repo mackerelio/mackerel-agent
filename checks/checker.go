@@ -66,7 +66,7 @@ func (c Checker) Check() (*Report, error) {
 
 	command := c.Config.Command
 	logger.Debugf("Checker %q executing command %q", c.Name, command)
-	message, stderr, exitCode, err := util.RunCommand(command)
+	message, stderr, exitCode, err := util.RunCommand(command, c.Config.User)
 	if stderr != "" {
 		logger.Warningf("Checker %q output stderr: %s", c.Name, stderr)
 	}

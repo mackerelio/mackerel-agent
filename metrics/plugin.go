@@ -128,7 +128,7 @@ func (g *pluginGenerator) loadPluginMeta() error {
 	os.Setenv(pluginConfigurationEnvName, "1")
 	defer os.Setenv(pluginConfigurationEnvName, "")
 
-	stdout, stderr, exitCode, err := util.RunCommand(command)
+	stdout, stderr, exitCode, err := util.RunCommand(command, g.Config.User)
 	if err != nil {
 		return fmt.Errorf("running %q failed: %s, exit=%d stderr=%q", command, err, exitCode, stderr)
 	}
@@ -223,7 +223,7 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
 
 	os.Setenv(pluginConfigurationEnvName, "")
-	stdout, stderr, _, err := util.RunCommand(command)
+	stdout, stderr, _, err := util.RunCommand(command, g.Config.User)
 
 	if stderr != "" {
 		pluginLogger.Infof("command %q outputted to STDERR: %q", command, stderr)

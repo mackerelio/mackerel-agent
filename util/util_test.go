@@ -12,7 +12,7 @@ func init() {
 }
 
 func TestRunCommand(t *testing.T) {
-	stdout, stderr, exitCode, err := RunCommand("echo 1")
+	stdout, stderr, exitCode, err := RunCommand("echo 1", "")
 	if stdout != "1\n" {
 		t.Errorf("stdout shoud be 1")
 	}
@@ -28,7 +28,7 @@ func TestRunCommand(t *testing.T) {
 }
 
 func TestRunCommandWithTimeout(t *testing.T) {
-	stdout, stderr, _, err := RunCommand("sleep 2")
+	stdout, stderr, _, err := RunCommand("sleep 2", "")
 	if stdout != "" {
 		t.Errorf("stdout shoud be empty")
 	}

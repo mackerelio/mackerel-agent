@@ -23,9 +23,11 @@ post_metrics_retry_max = 5
 
 [plugin.metrics.mysql]
 command = "ruby /path/to/your/plugin/mysql.rb"
+user = "mysql"
 
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
+user = "xyz"
 notification_interval = 60
 max_check_attempts = 3
 `
@@ -165,6 +167,9 @@ func TestLoadConfigFile(t *testing.T) {
 	if pluginConf.Command != "ruby /path/to/your/plugin/mysql.rb" {
 		t.Errorf("plugin conf command should be 'ruby /path/to/your/plugin/mysql.rb' but %v", pluginConf.Command)
 	}
+	if pluginConf.User != "mysql" {
+		t.Errorf("plugin user_name should be 'mysql'")
+	}
 
 	if config.Plugin["checks"] == nil {
 		t.Error("plugin should have checks")
@@ -172,6 +177,9 @@ func TestLoadConfigFile(t *testing.T) {
 	checks := config.Plugin["checks"]["heartbeat"]
 	if checks.Command != "heartbeat.sh" {
 		t.Error("check command should be 'heartbeat.sh'")
+	}
+	if checks.User != "xyz" {
+		t.Error("check user_name should be 'xyz'")
 	}
 	if *checks.NotificationInterval != 60 {
 		t.Error("notification_interval should be 60")
