@@ -33,13 +33,11 @@ max_check_attempts = 3
 `
 
 func TestLoadConfig(t *testing.T) {
-	tmpFile, err := ioutil.TempFile("", "")
+	tmpFile, err := newTempFileWithContent(sampleConfig)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfig), 0644); err != nil {
-		t.Errorf("should not raise error: %v", err)
-	}
+	defer os.Remove(tmpFile.Name())
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -85,13 +83,11 @@ on_stop  = "poweroff"
 `
 
 func TestLoadConfigWithHostStatus(t *testing.T) {
-	tmpFile, err := ioutil.TempFile("", "")
+	tmpFile, err := newTempFileWithContent(sampleConfigWithHostStatus)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfigWithHostStatus), 0644); err != nil {
-		t.Errorf("should not raise error: %v", err)
-	}
+	defer os.Remove(tmpFile.Name())
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -124,13 +120,11 @@ ignore = "**"
 `
 
 func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
-	tmpFile, err := ioutil.TempFile("", "")
+	tmpFile, err := newTempFileWithContent(sampleConfigWithInvalidIgnoreRegexp)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfigWithInvalidIgnoreRegexp), 0644); err != nil {
-		t.Errorf("should not raise error: %v", err)
-	}
+	defer os.Remove(tmpFile.Name())
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
@@ -139,15 +133,10 @@ func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
 }
 
 func TestLoadConfigFile(t *testing.T) {
-	tmpFile, err := ioutil.TempFile("", "mackerel-config-test")
+	tmpFile, err := newTempFileWithContent(sampleConfig)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	if _, err := tmpFile.WriteString(sampleConfig); err != nil {
-		t.Fatal("should not raise error")
-	}
-	tmpFile.Sync()
-	tmpFile.Close()
 	defer os.Remove(tmpFile.Name())
 
 	config, err := loadConfigFile(tmpFile.Name())
@@ -223,11 +212,10 @@ var tomlQuotedReplacer = strings.NewReplacer(
 func TestLoadConfigFileInclude(t *testing.T) {
 	configDir, err := ioutil.TempDir("", "mackerel-config-test")
 	assertNoError(t, err)
-
-	configFile, err := ioutil.TempFile("", "mackerel-config-test")
-	assertNoError(t, err)
+	defer os.RemoveAll(configDir)
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub1.conf"))
+	assertNoError(t, err)
 
 	configContent := fmt.Sprintf(`
 apikey = "not overwritten"
@@ -242,6 +230,10 @@ command = "foo1"
 command = "this wille be overwritten"
 `, tomlQuotedReplacer.Replace(configDir))
 
+	configFile, err := newTempFileWithContent(configContent)
+	assertNoError(t, err)
+	defer os.Remove(configFile.Name())
+
 	includedContent := `
 roles = [ "Service:role" ]
 
@@ -252,16 +244,9 @@ command = "foo2"
 command = "bar"
 `
 
-	_, err = configFile.WriteString(configContent)
-	assertNoError(t, err)
-
 	_, err = includedFile.WriteString(includedContent)
 	assertNoError(t, err)
-
-	configFile.Close()
 	includedFile.Close()
-	defer os.Remove(configFile.Name())
-	defer os.Remove(includedFile.Name())
 
 	config, err := loadConfigFile(configFile.Name())
 	assertNoError(t, err)
@@ -303,4 +288,36 @@ func TestConfig_HostIDStorage(t *testing.T) {
 	storage, ok := conf.hostIDStorage().(*FileSystemHostIDStorage)
 	assert(t, ok, "Default hostIDStorage must be *FileSystemHostIDStorage")
 	assert(t, storage.Root == "test-root", "FileSystemHostIDStorage must have the same Root of Config")
+}
+
+func TestLoadConfigWithSilent(t *testing.T) {
+	conff, err := newTempFileWithContent(`
+apikey = "abcde"
+silent = true
+`)
+	if err != nil {
+		t.Fatalf("should not raise error: %s", err)
+	}
+	defer os.Remove(conff.Name())
+
+	config, err := loadConfigFile(conff.Name())
+	assertNoError(t, err)
+
+	if !config.Silent {
+		t.Error("silent should be ture")
+	}
+}
+
+func newTempFileWithContent(content string) (*os.File, error) {
+	tmpf, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		return nil, err
+	}
+	if _, err := tmpf.WriteString(content); err != nil {
+		os.Remove(tmpf.Name())
+		return nil, err
+	}
+	tmpf.Sync()
+	tmpf.Close()
+	return tmpf, nil
 }

@@ -23,7 +23,7 @@ script:
 after_script:
 - goveralls -coverprofile=.profile.cov
 before_deploy:
-- make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage
+- make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
 - go get github.com/aktau/github-release
 - mkdir -p ~/bin
 - git clone https://github.com/github/hub.git && cd hub && script/build -o ~/bin/hub && cd ..

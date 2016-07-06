@@ -43,6 +43,7 @@ type Config struct {
 	Conffile    string
 	Roles       []string
 	Verbose     bool
+	Silent      bool
 	Diagnostic  bool `toml:"diagnostic"`
 	Connection  ConnectionConfig
 	DisplayName string      `toml:"display_name"`
@@ -64,12 +65,13 @@ type Config struct {
 type PluginConfigs map[string]PluginConfig
 
 // PluginConfig represents a section of [plugin.*].
-// `MaxCheckAttempts` option is used with check monitoring plugins. Custom metrics plugins ignore this option.
+// `MaxCheckAttempts`, `NotificationInterval` and `CheckInterval` options are used with check monitoring plugins. Custom metrics plugins ignore these options.
 // `User` option is ignore in windows
 type PluginConfig struct {
 	Command              string
 	User                 string
 	NotificationInterval *int32  `toml:"notification_interval"`
+	CheckInterval        *int32  `toml:"check_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
