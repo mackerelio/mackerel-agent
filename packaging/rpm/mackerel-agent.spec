@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Jul 07 2016 <mackerel-developers@hatena.ne.jp> - 0.32.1-1
+- Add user for executing a plugin (by y-kuno)
+
 * Thu Jun 30 2016 <mackerel-developers@hatena.ne.jp> - 0.32.0-1
 - Added plugin check interval option (by karupanerura)
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.32.1 (2016-07-07)
+
+* Add user for executing a plugin #250 (y-kuno)
+
+
 ## 0.32.0 (2016-06-30)
 
 * Added plugin check interval option #245 (karupanerura)

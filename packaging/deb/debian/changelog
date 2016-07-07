@@ -1,3 +1,10 @@
+mackerel-agent (0.32.1-1) stable; urgency=low
+
+  * Add user for executing a plugin (by y-kuno)
+    <https://github.com/mackerelio/mackerel-agent/pull/250>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 07 Jul 2016 08:45:14 +0000
+
 mackerel-agent (0.32.0-1) stable; urgency=low
 
   * Added plugin check interval option (by karupanerura)
