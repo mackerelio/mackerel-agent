@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -38,6 +39,9 @@ func (r *roleFullnamesFlag) Set(input string) error {
 var logger = logging.GetLogger("main")
 
 func main() {
+	if os.Getenv("GOMAXPROCS") == "" {
+		runtime.GOMAXPROCS(1)
+	}
 	cli.Run(os.Args[1:])
 }
 
