@@ -39,6 +39,9 @@ func (r *roleFullnamesFlag) Set(input string) error {
 var logger = logging.GetLogger("main")
 
 func main() {
+	// mackerel-agent rarely rarely panics because of race condition
+	// in multi-threaded environment on some OS/Arch.
+	// So fix GOMAXPROCS to 1 just to be safe.
 	if os.Getenv("GOMAXPROCS") == "" {
 		runtime.GOMAXPROCS(1)
 	}
