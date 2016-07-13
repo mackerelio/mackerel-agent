@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -38,6 +39,12 @@ func (r *roleFullnamesFlag) Set(input string) error {
 var logger = logging.GetLogger("main")
 
 func main() {
+	// although the possibility is very low, mackerel-agent may panic because of
+	// a race condition in multi-threaded environment on some OS/Arch.
+	// So fix GOMAXPROCS to 1 just to be safe.
+	if os.Getenv("GOMAXPROCS") == "" {
+		runtime.GOMAXPROCS(1)
+	}
 	cli.Run(os.Args[1:])
 }
 
