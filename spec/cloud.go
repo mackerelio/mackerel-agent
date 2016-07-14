@@ -26,6 +26,7 @@ type CloudGenerator struct {
 // CloudMetaGenerator interface of metadata generator for each cloud platform
 type CloudMetaGenerator interface {
 	Generate() (interface{}, error)
+	SuggestCustomIdentifier() (*string, error)
 }
 
 // Key is a root key for the generator.
@@ -153,6 +154,30 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 	return results, nil
 }
 
+// SuggestCustomIdentifier suggests the identifier of the EC2 instance
+func (g *EC2Generator) SuggestCustomIdentifier() (*string, error) {
+	client := http.Client{Timeout: timeout}
+	key := "instance-id"
+	resp, err := client.Get(g.baseURL.String() + "/" + key)
+	if err != nil {
+		return nil, fmt.Errorf("Error while retrieving instance-id.")
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("Failed to request instance-id. response code: %d", resp.StatusCode)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("Results of requesting instance-id cannot be read: '%s'", err)
+	}
+	instanceID := string(body)
+	if instanceID == "" {
+		return nil, fmt.Errorf("Invalid instance id")
+	}
+	customIdentifier := instanceID + ".ec2.amazonaws.com"
+	return &customIdentifier, nil
+}
+
 // GCEGenerator generate for GCE
 type GCEGenerator struct {
 	metaURL *url.URL
@@ -214,4 +239,9 @@ func (g gceMeta) toGeneratorResults() interface{} {
 	results["metadata"] = g.toGeneratorMeta()
 
 	return results
+}
+
+// SuggestCustomIdentifier for GCE is not implemented yet
+func (g *GCEGenerator) SuggestCustomIdentifier() (*string, error) {
+	return nil, nil
 }
