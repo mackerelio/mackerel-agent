@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Jul 14 2016 <mackerel-developers@hatena.ne.jp> - 0.32.2-1
+- fix GOMAXPROCS to 1 for avoiding rare panics (by Songmu)
+
 * Thu Jul 07 2016 <mackerel-developers@hatena.ne.jp> - 0.32.1-1
 - Add user for executing a plugin (by y-kuno)
 

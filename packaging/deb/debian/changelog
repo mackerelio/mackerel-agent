@@ -1,3 +1,10 @@
+mackerel-agent (0.32.2-1) stable; urgency=low
+
+  * fix GOMAXPROCS to 1 for avoiding rare panics (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/253>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 14 Jul 2016 05:26:48 +0000
+
 mackerel-agent (0.32.1-1) stable; urgency=low
 
   * Add user for executing a plugin (by y-kuno)

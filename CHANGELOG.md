@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.32.2 (2016-07-14)
+
+* fix GOMAXPROCS to 1 for avoiding rare panics #253 (Songmu)
+
+
 ## 0.32.1 (2016-07-07)
 
 * Add user for executing a plugin #250 (y-kuno)
