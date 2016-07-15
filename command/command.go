@@ -68,7 +68,14 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 
 		if result == nil {
 			doRetry(func() error {
-				hostID, lastErr = api.CreateHost(hostname, meta, interfaces, conf.Roles, conf.DisplayName, customIdentifier)
+				hostID, lastErr = api.CreateHost(mackerel.HostSpec{
+					Name:             hostname,
+					Meta:             meta,
+					Interfaces:       interfaces,
+					RoleFullnames:    conf.Roles,
+					DisplayName:      conf.DisplayName,
+					CustomIdentifier: customIdentifier,
+				})
 				return filterErrorForRetry(lastErr)
 			})
 
