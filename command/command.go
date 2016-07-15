@@ -56,13 +56,25 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 	if hostID, err := conf.LoadHostID(); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
 
-		doRetry(func() error {
-			hostID, lastErr = api.CreateHost(hostname, meta, interfaces, conf.Roles, conf.DisplayName)
-			return filterErrorForRetry(lastErr)
-		})
+		if customIdentifier != nil {
+			doRetry(func() error {
+				result, lastErr = api.FindHostByCustomIdentifier(*customIdentifier)
+				return filterErrorForRetry(lastErr)
+			})
+			if result != nil {
+				hostID = result.ID
+			}
+		}
 
-		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to register this host: %s", lastErr.Error())
+		if result == nil {
+			doRetry(func() error {
+				hostID, lastErr = api.CreateHost(hostname, meta, interfaces, conf.Roles, conf.DisplayName, customIdentifier)
+				return filterErrorForRetry(lastErr)
+			})
+
+			if lastErr != nil {
+				return nil, fmt.Errorf("Failed to register this host: %s", lastErr.Error())
+			}
 		}
 
 		doRetry(func() error {
