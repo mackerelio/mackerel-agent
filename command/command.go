@@ -509,12 +509,13 @@ func (c *Context) UpdateHostSpecs() {
 	}
 
 	err = c.API.UpdateHost(c.Host.ID, mackerel.HostSpec{
-		Name:          hostname,
-		Meta:          meta,
-		Interfaces:    interfaces,
-		RoleFullnames: c.Config.Roles,
-		Checks:        c.Config.CheckNames(),
-		DisplayName:   c.Config.DisplayName,
+		Name:             hostname,
+		Meta:             meta,
+		Interfaces:       interfaces,
+		RoleFullnames:    c.Config.Roles,
+		Checks:           c.Config.CheckNames(),
+		DisplayName:      c.Config.DisplayName,
+		CustomIdentifier: customIdentifier,
 	})
 
 	if err != nil {
@@ -581,12 +582,13 @@ func runOncePayload(conf *config.Config) ([]mackerel.CreateGraphDefsPayload, *ma
 	graphdefs := ag.CollectGraphDefsOfPlugins()
 	metrics := ag.CollectMetrics(time.Now())
 	return graphdefs, &mackerel.HostSpec{
-		Name:          hostname,
-		Meta:          meta,
-		Interfaces:    interfaces,
-		RoleFullnames: conf.Roles,
-		Checks:        conf.CheckNames(),
-		DisplayName:   conf.DisplayName,
+		Name:             hostname,
+		Meta:             meta,
+		Interfaces:       interfaces,
+		RoleFullnames:    conf.Roles,
+		Checks:           conf.CheckNames(),
+		DisplayName:      conf.DisplayName,
+		CustomIdentifier: customIdentifier,
 	}, metrics, nil
 }
 
