@@ -135,6 +135,9 @@ func (api *API) FindHost(id string) (*Host, error) {
 func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*Host, error) {
 	v := url.Values{}
 	v.Set("customIdentifier", customIdentifier)
+	for _, status := range []string{"working", "standby", "maintenance", "poweroff"} {
+		v.Add("status", status)
+	}
 	resp, err := api.get("/api/v0/hosts", v.Encode())
 	defer closeResp(resp)
 	if err != nil {
