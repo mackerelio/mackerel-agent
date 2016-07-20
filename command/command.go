@@ -82,14 +82,14 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 			if lastErr != nil {
 				return nil, fmt.Errorf("Failed to register this host: %s", lastErr.Error())
 			}
-		}
 
-		doRetry(func() error {
-			result, lastErr = api.FindHost(hostID)
-			return filterErrorForRetry(lastErr)
-		})
-		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
+			doRetry(func() error {
+				result, lastErr = api.FindHost(hostID)
+				return filterErrorForRetry(lastErr)
+			})
+			if lastErr != nil {
+				return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
+			}
 		}
 	} else { // check the hostID is valid or not
 		doRetry(func() error {
