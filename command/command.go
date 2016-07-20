@@ -54,7 +54,6 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 
 	var result *mackerel.Host
 	if hostID, err := conf.LoadHostID(); err != nil { // create
-		logger.Debugf("Registering new host on mackerel...")
 
 		if customIdentifier != "" {
 			doRetry(func() error {
@@ -67,6 +66,8 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 		}
 
 		if result == nil {
+			logger.Debugf("Registering new host on mackerel...")
+
 			doRetry(func() error {
 				hostID, lastErr = api.CreateHost(mackerel.HostSpec{
 					Name:             hostname,
