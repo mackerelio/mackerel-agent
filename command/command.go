@@ -56,9 +56,9 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 	if hostID, err := conf.LoadHostID(); err != nil { // create
 		logger.Debugf("Registering new host on mackerel...")
 
-		if customIdentifier != nil {
+		if customIdentifier != "" {
 			doRetry(func() error {
-				result, lastErr = api.FindHostByCustomIdentifier(*customIdentifier)
+				result, lastErr = api.FindHostByCustomIdentifier(customIdentifier)
 				return filterErrorForRetry(lastErr)
 			})
 			if result != nil {
@@ -477,10 +477,10 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta", "interfaces" and "customIdentifier" fields in API v0)
-func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, *string, error) {
+func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
-		return "", nil, nil, nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
+		return "", nil, nil, "", fmt.Errorf("failed to obtain hostname: %s", err.Error())
 	}
 
 	specGens := specGenerators()
@@ -490,7 +490,7 @@ func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, *s
 	}
 	meta := spec.Collect(specGens)
 
-	var customIdentifier *string
+	var customIdentifier string
 	if cGen != nil {
 		customIdentifier, err = cGen.SuggestCustomIdentifier()
 		if err != nil {
@@ -500,7 +500,7 @@ func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, *s
 
 	interfaces, err := interfaceGenerator().Generate()
 	if err != nil {
-		return "", nil, nil, nil, fmt.Errorf("failed to collect interfaces: %s", err.Error())
+		return "", nil, nil, "", fmt.Errorf("failed to collect interfaces: %s", err.Error())
 	}
 	return hostname, meta, interfaces, customIdentifier, nil
 }

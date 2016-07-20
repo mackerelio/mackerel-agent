@@ -166,7 +166,7 @@ func TestCreateHost(t *testing.T) {
 		Interfaces:       interfaces,
 		RoleFullnames:    []string{"My-Service:app-default"},
 		DisplayName:      "my-display-name",
-		CustomIdentifier: nil,
+		CustomIdentifier: "",
 	}
 	hostID, err := api.CreateHost(hostSpec)
 

@@ -16,5 +16,5 @@ type HostSpec struct {
 	RoleFullnames    []string               `json:"roleFullnames"`
 	Checks           []string               `json:"checks"`
 	DisplayName      string                 `json:"displayName,omitempty"`
-	CustomIdentifier *string                `json:"customIdentifier,omitempty"`
+	CustomIdentifier string                 `json:"customIdentifier,omitempty"`
 }
