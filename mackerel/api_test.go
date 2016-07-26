@@ -158,9 +158,17 @@ func TestCreateHost(t *testing.T) {
 		"macAddress": "01:23:45:67:89:ab",
 		"encap":      "Ethernet",
 	})
-	hostID, err := api.CreateHost("dummy", map[string]interface{}{
-		"memo": "hello",
-	}, interfaces, []string{"My-Service:app-default"}, "label")
+	hostSpec := HostSpec{
+		Name: "dummy",
+		Meta: map[string]interface{}{
+			"memo": "hello",
+		},
+		Interfaces:       interfaces,
+		RoleFullnames:    []string{"My-Service:app-default"},
+		DisplayName:      "my-display-name",
+		CustomIdentifier: "",
+	}
+	hostID, err := api.CreateHost(hostSpec)
 
 	if err != nil {
 		t.Error("should not raise error: ", err)
@@ -214,7 +222,10 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	// with nil args
-	hostID, err := api.CreateHost("nilsome", nil, nil, nil, "")
+	hostSpec := HostSpec{
+		Name: "nilsome",
+	}
+	hostID, err := api.CreateHost(hostSpec)
 	if err != nil {
 		t.Error("should not return error but got: ", err)
 	}
@@ -291,8 +302,6 @@ func TestUpdateHost(t *testing.T) {
 		"encap":      "Ethernet",
 	})
 
-	var checkNames = []string{}
-
 	hostSpec := HostSpec{
 		Name: "dummy",
 		Meta: map[string]interface{}{
@@ -300,7 +309,7 @@ func TestUpdateHost(t *testing.T) {
 		},
 		Interfaces:    interfaces,
 		RoleFullnames: []string{"My-Service:app-default"},
-		Checks:        checkNames,
+		Checks:        []string{},
 	}
 
 	err := api.UpdateHost("ABCD123", hostSpec)

@@ -135,6 +135,9 @@ func (api *API) FindHost(id string) (*Host, error) {
 func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*Host, error) {
 	v := url.Values{}
 	v.Set("customIdentifier", customIdentifier)
+	for _, status := range []string{"working", "standby", "maintenance", "poweroff"} {
+		v.Add("status", status)
+	}
 	resp, err := api.get("/api/v0/hosts", v.Encode())
 	defer closeResp(resp)
 	if err != nil {
@@ -160,16 +163,8 @@ func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*Host, erro
 }
 
 // CreateHost register the host to mackerel
-func (api *API) CreateHost(name string, meta map[string]interface{}, interfaces interface{}, roleFullnames []string, displayName string) (string, error) {
-	resp, err := api.postJSON("/api/v0/hosts", map[string]interface{}{
-		"name":          name,
-		"type":          "unknown",
-		"status":        "working",
-		"meta":          meta,
-		"interfaces":    interfaces,
-		"roleFullnames": roleFullnames,
-		"displayName":   displayName,
-	})
+func (api *API) CreateHost(hostSpec HostSpec) (string, error) {
+	resp, err := api.postJSON("/api/v0/hosts", hostSpec)
 	defer closeResp(resp)
 	if err != nil {
 		return "", err

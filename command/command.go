@@ -47,30 +47,50 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 		return err
 	}
 
-	hostname, meta, interfaces, lastErr := collectHostSpecs()
+	hostname, meta, interfaces, customIdentifier, lastErr := collectHostSpecs()
 	if lastErr != nil {
 		return nil, fmt.Errorf("error while collecting host specs: %s", lastErr.Error())
 	}
 
 	var result *mackerel.Host
 	if hostID, err := conf.LoadHostID(); err != nil { // create
-		logger.Debugf("Registering new host on mackerel...")
 
-		doRetry(func() error {
-			hostID, lastErr = api.CreateHost(hostname, meta, interfaces, conf.Roles, conf.DisplayName)
-			return filterErrorForRetry(lastErr)
-		})
-
-		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to register this host: %s", lastErr.Error())
+		if customIdentifier != "" {
+			doRetry(func() error {
+				result, lastErr = api.FindHostByCustomIdentifier(customIdentifier)
+				return filterErrorForRetry(lastErr)
+			})
+			if result != nil {
+				hostID = result.ID
+			}
 		}
 
-		doRetry(func() error {
-			result, lastErr = api.FindHost(hostID)
-			return filterErrorForRetry(lastErr)
-		})
-		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
+		if result == nil {
+			logger.Debugf("Registering new host on mackerel...")
+
+			doRetry(func() error {
+				hostID, lastErr = api.CreateHost(mackerel.HostSpec{
+					Name:             hostname,
+					Meta:             meta,
+					Interfaces:       interfaces,
+					RoleFullnames:    conf.Roles,
+					DisplayName:      conf.DisplayName,
+					CustomIdentifier: customIdentifier,
+				})
+				return filterErrorForRetry(lastErr)
+			})
+
+			if lastErr != nil {
+				return nil, fmt.Errorf("Failed to register this host: %s", lastErr.Error())
+			}
+
+			doRetry(func() error {
+				result, lastErr = api.FindHost(hostID)
+				return filterErrorForRetry(lastErr)
+			})
+			if lastErr != nil {
+				return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
+			}
 		}
 	} else { // check the hostID is valid or not
 		doRetry(func() error {
@@ -457,11 +477,11 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 	}
 }
 
-// collectHostSpecs collects host specs (correspond to "name", "meta" and "interfaces" fields in API v0)
-func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, error) {
+// collectHostSpecs collects host specs (correspond to "name", "meta", "interfaces" and "customIdentifier" fields in API v0)
+func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
+		return "", nil, nil, "", fmt.Errorf("failed to obtain hostname: %s", err.Error())
 	}
 
 	specGens := specGenerators()
@@ -471,30 +491,39 @@ func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, er
 	}
 	meta := spec.Collect(specGens)
 
+	var customIdentifier string
+	if cGen != nil {
+		customIdentifier, err = cGen.SuggestCustomIdentifier()
+		if err != nil {
+			logger.Warningf("Error while suggesting custom identifier. err: %s", err.Error())
+		}
+	}
+
 	interfaces, err := interfaceGenerator().Generate()
 	if err != nil {
-		return "", nil, nil, fmt.Errorf("failed to collect interfaces: %s", err.Error())
+		return "", nil, nil, "", fmt.Errorf("failed to collect interfaces: %s", err.Error())
 	}
-	return hostname, meta, interfaces, nil
+	return hostname, meta, interfaces, customIdentifier, nil
 }
 
 // UpdateHostSpecs updates the host information that is already registered on Mackerel.
 func (c *Context) UpdateHostSpecs() {
 	logger.Debugf("Updating host specs...")
 
-	hostname, meta, interfaces, err := collectHostSpecs()
+	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs()
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
 		return
 	}
 
 	err = c.API.UpdateHost(c.Host.ID, mackerel.HostSpec{
-		Name:          hostname,
-		Meta:          meta,
-		Interfaces:    interfaces,
-		RoleFullnames: c.Config.Roles,
-		Checks:        c.Config.CheckNames(),
-		DisplayName:   c.Config.DisplayName,
+		Name:             hostname,
+		Meta:             meta,
+		Interfaces:       interfaces,
+		RoleFullnames:    c.Config.Roles,
+		Checks:           c.Config.CheckNames(),
+		DisplayName:      c.Config.DisplayName,
+		CustomIdentifier: customIdentifier,
 	})
 
 	if err != nil {
@@ -546,7 +575,7 @@ func RunOnce(conf *config.Config) error {
 }
 
 func runOncePayload(conf *config.Config) ([]mackerel.CreateGraphDefsPayload, *mackerel.HostSpec, *agent.MetricsResult, error) {
-	hostname, meta, interfaces, err := collectHostSpecs()
+	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs()
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
 		return nil, nil, nil, err
@@ -561,12 +590,13 @@ func runOncePayload(conf *config.Config) ([]mackerel.CreateGraphDefsPayload, *ma
 	graphdefs := ag.CollectGraphDefsOfPlugins()
 	metrics := ag.CollectMetrics(time.Now())
 	return graphdefs, &mackerel.HostSpec{
-		Name:          hostname,
-		Meta:          meta,
-		Interfaces:    interfaces,
-		RoleFullnames: conf.Roles,
-		Checks:        conf.CheckNames(),
-		DisplayName:   conf.DisplayName,
+		Name:             hostname,
+		Meta:             meta,
+		Interfaces:       interfaces,
+		RoleFullnames:    conf.Roles,
+		Checks:           conf.CheckNames(),
+		DisplayName:      conf.DisplayName,
+		CustomIdentifier: customIdentifier,
 	}, metrics, nil
 }
 

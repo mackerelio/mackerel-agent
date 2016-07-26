@@ -10,10 +10,11 @@ type Host struct {
 
 // HostSpec is host specifications sent Mackerel server per hour
 type HostSpec struct {
-	Name          string                 `json:"name"`
-	Meta          map[string]interface{} `json:"meta"`
-	Interfaces    interface{}            `json:"interfaces"`
-	RoleFullnames []string               `json:"roleFullnames"`
-	Checks        []string               `json:"checks"`
-	DisplayName   string                 `json:"displayName,omitempty"`
+	Name             string                 `json:"name"`
+	Meta             map[string]interface{} `json:"meta"`
+	Interfaces       interface{}            `json:"interfaces"`
+	RoleFullnames    []string               `json:"roleFullnames"`
+	Checks           []string               `json:"checks"`
+	DisplayName      string                 `json:"displayName,omitempty"`
+	CustomIdentifier string                 `json:"customIdentifier,omitempty"`
 }
