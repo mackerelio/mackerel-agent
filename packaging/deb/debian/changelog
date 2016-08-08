@@ -1,3 +1,10 @@
+mackerel-agent (0.33.0-1) stable; urgency=low
+
+  * Fill the customIdentifier in EC2 (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/255>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 08 Aug 2016 07:17:56 +0000
+
 mackerel-agent (0.32.2-1) stable; urgency=low
 
   * fix GOMAXPROCS to 1 for avoiding rare panics (by Songmu)
