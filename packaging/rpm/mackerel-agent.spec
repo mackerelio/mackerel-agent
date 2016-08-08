@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Mon Aug 08 2016 <mackerel-developers@hatena.ne.jp> - 0.33.0-1
+- Fill the customIdentifier in EC2 (by itchyny)
+
 * Thu Jul 14 2016 <mackerel-developers@hatena.ne.jp> - 0.32.2-1
 - fix GOMAXPROCS to 1 for avoiding rare panics (by Songmu)
 

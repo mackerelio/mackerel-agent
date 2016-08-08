@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.33.0 (2016-08-08)
+
+* Fill the customIdentifier in EC2 #255 (itchyny)
+
+
 ## 0.32.2 (2016-07-14)
 
 * fix GOMAXPROCS to 1 for avoiding rare panics #253 (Songmu)
