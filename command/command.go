@@ -56,7 +56,7 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 	if hostID, err := conf.LoadHostID(); err != nil { // create
 
 		if customIdentifier != "" {
-			doRetry(func() error {
+			retry.Retry(3, 2*time.Second, func() error {
 				result, lastErr = api.FindHostByCustomIdentifier(customIdentifier)
 				return filterErrorForRetry(lastErr)
 			})
