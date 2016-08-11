@@ -380,8 +380,8 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 	lastStatus := checks.StatusUndefined
 	lastMessage := ""
 	interval := checker.Interval()
-	nextInterval := interval
-	nextTime := time.Now().Add(nextInterval)
+	nextInterval := time.Duration(0)
+	nextTime := time.Now()
 
 	for {
 		select {
