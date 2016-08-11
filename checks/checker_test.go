@@ -20,10 +20,7 @@ func TestChecker_Check(t *testing.T) {
 	}
 
 	{
-		report, err := checkerOK.Check()
-		if err != nil {
-			t.Errorf("err should be nil: %v", err)
-		}
+		report := checkerOK.Check()
 		if report.Status != StatusOK {
 			t.Errorf("status should be OK: %v", report.Status)
 		}
@@ -33,10 +30,7 @@ func TestChecker_Check(t *testing.T) {
 	}
 
 	{
-		report, err := checkerWarning.Check()
-		if err != nil {
-			t.Errorf("err should be nil: %v", err)
-		}
+		report := checkerWarning.Check()
 		if report.Status != StatusWarning {
 			t.Errorf("status should be WARNING: %v", report.Status)
 		}

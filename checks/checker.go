@@ -61,7 +61,7 @@ func (c Checker) String() string {
 }
 
 // Check invokes the command and transforms its result to a Report.
-func (c Checker) Check() (*Report, error) {
+func (c Checker) Check() *Report {
 	now := time.Now()
 
 	command := c.Config.Command
@@ -90,7 +90,7 @@ func (c Checker) Check() (*Report, error) {
 		OccurredAt:           now,
 		NotificationInterval: c.Config.NotificationInterval,
 		MaxCheckAttempts:     c.Config.MaxCheckAttempts,
-	}, nil
+	}
 }
 
 // Interval is the interval where the command is invoked.

@@ -386,18 +386,14 @@ func runChecker(checker checks.Checker, checkReportCh chan *checks.Report, repor
 	for {
 		select {
 		case <-time.After(nextInterval):
-			report, err := checker.Check()
+			report := checker.Check()
+			logger.Debugf("checker %q: report=%v", checker.Name, report)
+
 			// It is possible that `now` is much bigger than `nextTime` because of
 			// laptop sleep mode or any reason.
 			now := time.Now()
 			nextInterval = interval - (now.Sub(nextTime) % interval)
 			nextTime = now.Add(nextInterval)
-			if err != nil {
-				logger.Errorf("checker %v: %s", checker, err)
-				return
-			}
-			logger.Debugf("checker %q: report=%v", checker.Name, report)
-
 
 			if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
 				// Do not report if nothing has changed
