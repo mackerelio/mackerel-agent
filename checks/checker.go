@@ -94,7 +94,6 @@ func (c *Checker) Check() *Report {
 }
 
 // Interval is the interval where the command is invoked.
-// (Will be configurable in the future)
 func (c *Checker) Interval() time.Duration {
 	if c.Config.CheckInterval != nil {
 		interval := time.Duration(*c.Config.CheckInterval) * time.Minute
