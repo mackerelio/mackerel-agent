@@ -377,51 +377,53 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 	}
 }
 
+func runChecker(checker checks.Checker, checkReportCh chan *checks.Report, reportImmediateCh chan struct{}, quit <-chan struct{}) {
+	var (
+		lastStatus  = checks.StatusUndefined
+		lastMessage = ""
+	)
+
+	util.Periodically(
+		func() {
+			report, err := checker.Check()
+			if err != nil {
+				logger.Errorf("checker %v: %s", checker, err)
+				return
+			}
+
+			logger.Debugf("checker %q: report=%v", checker.Name, report)
+
+			if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
+				// Do not report if nothing has changed
+				return
+			}
+
+			checkReportCh <- report
+
+			// If status has changed, send it immediately
+			// but if the status was OK and it's first invocation of a check, do not
+			if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
+				logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
+				reportImmediateCh <- struct{}{}
+			}
+
+			lastStatus = report.Status
+			lastMessage = report.Message
+		},
+		checker.Interval(),
+		quit,
+	)
+}
+
 // runCheckersLoop generates "checker" goroutines
 // which run for each checker commands and one for HTTP POSTing
 // the reports to Mackerel API.
 func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
 	checkReportCh := make(chan *checks.Report)
-	reportCheckImmediateCh := make(chan struct{})
+	reportImmediateCh := make(chan struct{})
 
 	for _, checker := range c.Agent.Checkers {
-		go func(checker checks.Checker) {
-			var (
-				lastStatus  = checks.StatusUndefined
-				lastMessage = ""
-			)
-
-			util.Periodically(
-				func() {
-					report, err := checker.Check()
-					if err != nil {
-						logger.Errorf("checker %v: %s", checker, err)
-						return
-					}
-
-					logger.Debugf("checker %q: report=%v", checker.Name, report)
-
-					if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
-						// Do not report if nothing has changed
-						return
-					}
-
-					checkReportCh <- report
-
-					// If status has changed, send it immediately
-					// but if the status was OK and it's first invocation of a check, do not
-					if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
-						logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
-						reportCheckImmediateCh <- struct{}{}
-					}
-
-					lastStatus = report.Status
-					lastMessage = report.Message
-				},
-				checker.Interval(),
-				quit,
-			)
-		}(checker)
+		go runChecker(checker, checkReportCh, reportImmediateCh, quit)
 	}
 
 	exit := false
@@ -431,7 +433,7 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 		case <-termCheckerCh:
 			logger.Debugf("received 'term' chan")
 			exit = true
-		case <-reportCheckImmediateCh:
+		case <-reportImmediateCh:
 			logger.Debugf("received 'immediate' chan")
 		}
 
