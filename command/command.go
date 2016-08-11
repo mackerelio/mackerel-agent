@@ -16,7 +16,6 @@ import (
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/spec"
-	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var logger = logging.GetLogger("command")
@@ -378,41 +377,50 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 }
 
 func runChecker(checker checks.Checker, checkReportCh chan *checks.Report, reportImmediateCh chan struct{}, quit <-chan struct{}) {
-	var (
-		lastStatus  = checks.StatusUndefined
-		lastMessage = ""
-	)
+	lastStatus := checks.StatusUndefined
+	lastMessage := ""
+	interval := checker.Interval()
+	// The precision is 1/100 of the interval.
+	checkInterval := interval / 100
+	nextTime := time.Now().Add(interval)
 
-	util.Periodically(
-		func() {
-			report, err := checker.Check()
-			if err != nil {
-				logger.Errorf("checker %v: %s", checker, err)
-				return
+	ticker := time.NewTicker(checkInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case t := <-ticker.C:
+			if t.After(nextTime) {
+				nextTime = nextTime.Add(interval)
+				report, err := checker.Check()
+				if err != nil {
+					logger.Errorf("checker %v: %s", checker, err)
+					return
+				}
+
+				logger.Debugf("checker %q: report=%v", checker.Name, report)
+
+				if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
+					// Do not report if nothing has changed
+					return
+				}
+
+				checkReportCh <- report
+
+				// If status has changed, send it immediately
+				// but if the status was OK and it's first invocation of a check, do not
+				if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
+					logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
+					reportImmediateCh <- struct{}{}
+				}
+
+				lastStatus = report.Status
+				lastMessage = report.Message
 			}
-
-			logger.Debugf("checker %q: report=%v", checker.Name, report)
-
-			if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
-				// Do not report if nothing has changed
-				return
-			}
-
-			checkReportCh <- report
-
-			// If status has changed, send it immediately
-			// but if the status was OK and it's first invocation of a check, do not
-			if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
-				logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
-				reportImmediateCh <- struct{}{}
-			}
-
-			lastStatus = report.Status
-			lastMessage = report.Message
-		},
-		checker.Interval(),
-		quit,
-	)
+		case <-quit:
+			return
+		}
+	}
 }
 
 // runCheckersLoop generates "checker" goroutines
