@@ -203,18 +203,25 @@ func loop(c *Context, termCh chan struct{}) error {
 		c.Agent.InitPluginGenerators(c.API)
 	}
 
-	termCheckerCh := make(chan struct{})
 	termMetricsCh := make(chan struct{})
+	var termCheckerCh chan struct{}
 
+	hasChecks := len(c.Agent.Checkers) > 0
+	if hasChecks {
+		termCheckerCh = make(chan struct{})
+	}
 	// fan-out termCh
 	go func() {
 		for range termCh {
-			termCheckerCh <- struct{}{}
 			termMetricsCh <- struct{}{}
+			if termCheckerCh != nil {
+				termCheckerCh <- struct{}{}
+			}
 		}
 	}()
-
-	runCheckersLoop(c, termCheckerCh, quit)
+	if hasChecks {
+		go runCheckersLoop(c, termCheckerCh, quit)
+	}
 
 	lState := loopStateFirst
 	for {
@@ -374,16 +381,10 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 // which run for each checker commands and one for HTTP POSTing
 // the reports to Mackerel API.
 func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
-	var (
-		checkReportCh          chan *checks.Report
-		reportCheckImmediateCh chan struct{}
-	)
-	for _, checker := range c.Agent.Checkers {
-		if checkReportCh == nil {
-			checkReportCh = make(chan *checks.Report)
-			reportCheckImmediateCh = make(chan struct{})
-		}
+	checkReportCh := make(chan *checks.Report)
+	reportCheckImmediateCh := make(chan struct{})
 
+	for _, checker := range c.Agent.Checkers {
 		go func(checker checks.Checker) {
 			var (
 				lastStatus  = checks.StatusUndefined
@@ -422,58 +423,49 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 			)
 		}(checker)
 	}
-	if checkReportCh != nil {
-		go func() {
-			exit := false
-			for !exit {
-				select {
-				case <-time.After(1 * time.Minute):
-				case <-termCheckerCh:
-					logger.Debugf("received 'term' chan")
-					exit = true
-				case <-reportCheckImmediateCh:
-					logger.Debugf("received 'immediate' chan")
-				}
 
-				reports := []*checks.Report{}
-			DrainCheckReport:
-				for {
-					select {
-					case report := <-checkReportCh:
-						reports = append(reports, report)
-					default:
-						break DrainCheckReport
-					}
-				}
+	exit := false
+	for !exit {
+		select {
+		case <-time.After(1 * time.Minute):
+		case <-termCheckerCh:
+			logger.Debugf("received 'term' chan")
+			exit = true
+		case <-reportCheckImmediateCh:
+			logger.Debugf("received 'immediate' chan")
+		}
 
-				for i, report := range reports {
-					logger.Debugf("reports[%d]: %#v", i, report)
-				}
-
-				if len(reports) == 0 {
-					continue
-				}
-
-				err := c.API.ReportCheckMonitors(c.Host.ID, reports)
-				if err != nil {
-					logger.Errorf("ReportCheckMonitors: %s", err)
-
-					// queue back the reports
-					go func() {
-						for _, report := range reports {
-							logger.Debugf("queue back report: %#v", report)
-							checkReportCh <- report
-						}
-					}()
-				}
+		reports := []*checks.Report{}
+	DrainCheckReport:
+		for {
+			select {
+			case report := <-checkReportCh:
+				reports = append(reports, report)
+			default:
+				break DrainCheckReport
 			}
-		}()
-	} else {
-		// consume termCheckerCh
-		go func() {
-			for range termCheckerCh {
-			}
-		}()
+		}
+
+		if len(reports) == 0 {
+			continue
+		}
+
+		for i, report := range reports {
+			logger.Debugf("reports[%d]: %#v", i, report)
+		}
+
+		err := c.API.ReportCheckMonitors(c.Host.ID, reports)
+		if err != nil {
+			logger.Errorf("ReportCheckMonitors: %s", err)
+
+			// queue back the reports
+			go func() {
+				for _, report := range reports {
+					logger.Debugf("queue back report: %#v", report)
+					checkReportCh <- report
+				}
+			}()
+		}
 	}
 }
 
