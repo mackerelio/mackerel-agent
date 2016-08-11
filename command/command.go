@@ -380,43 +380,40 @@ func runChecker(checker checks.Checker, checkReportCh chan *checks.Report, repor
 	lastStatus := checks.StatusUndefined
 	lastMessage := ""
 	interval := checker.Interval()
-	// The precision is 1/100 of the interval.
-	checkInterval := interval / 100
-	nextTime := time.Now().Add(interval)
-
-	ticker := time.NewTicker(checkInterval)
-	defer ticker.Stop()
+	nextInterval := interval
+	nextTime := time.Now().Add(nextInterval)
 
 	for {
 		select {
-		case t := <-ticker.C:
-			if t.After(nextTime) {
-				nextTime = nextTime.Add(interval)
-				report, err := checker.Check()
-				if err != nil {
-					logger.Errorf("checker %v: %s", checker, err)
-					return
-				}
-
-				logger.Debugf("checker %q: report=%v", checker.Name, report)
-
-				if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
-					// Do not report if nothing has changed
-					return
-				}
-
-				checkReportCh <- report
-
-				// If status has changed, send it immediately
-				// but if the status was OK and it's first invocation of a check, do not
-				if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
-					logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
-					reportImmediateCh <- struct{}{}
-				}
-
-				lastStatus = report.Status
-				lastMessage = report.Message
+		case <-time.After(nextInterval):
+			report, err := checker.Check()
+			// It is possible that `now` is much bigger than `nextTime` because of
+			// laptop sleep mode or any reason.
+			now := time.Now()
+			nextInterval = interval - (now.Sub(nextTime) % interval)
+			nextTime = now.Add(nextInterval)
+			if err != nil {
+				logger.Errorf("checker %v: %s", checker, err)
+				return
 			}
+			logger.Debugf("checker %q: report=%v", checker.Name, report)
+
+
+			if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
+				// Do not report if nothing has changed
+				continue
+			}
+			checkReportCh <- report
+
+			// If status has changed, send it immediately
+			// but if the status was OK and it's first invocation of a check, do not
+			if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
+				logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
+				reportImmediateCh <- struct{}{}
+			}
+
+			lastStatus = report.Status
+			lastMessage = report.Message
 		case <-quit:
 			return
 		}
