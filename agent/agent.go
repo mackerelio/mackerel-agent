@@ -13,7 +13,7 @@ import (
 type Agent struct {
 	MetricsGenerators []metrics.Generator
 	PluginGenerators  []metrics.PluginGenerator
-	Checkers          []checks.Checker
+	Checkers          []*checks.Checker
 }
 
 // MetricsResult XXX

@@ -376,7 +376,7 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 	}
 }
 
-func runChecker(checker checks.Checker, checkReportCh chan *checks.Report, reportImmediateCh chan struct{}, quit <-chan struct{}) {
+func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, reportImmediateCh chan struct{}, quit <-chan struct{}) {
 	lastStatus := checks.StatusUndefined
 	lastMessage := ""
 	interval := checker.Interval()
@@ -619,11 +619,11 @@ func Run(c *Context, termCh chan struct{}) error {
 	return err
 }
 
-func createCheckers(conf *config.Config) []checks.Checker {
-	checkers := []checks.Checker{}
+func createCheckers(conf *config.Config) []*checks.Checker {
+	checkers := []*checks.Checker{}
 
 	for name, pluginConfig := range conf.Plugin["checks"] {
-		checker := checks.Checker{
+		checker := &checks.Checker{
 			Name:   name,
 			Config: pluginConfig,
 		}
