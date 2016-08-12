@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/xml"
 	"flag"
 	"io"
@@ -171,11 +172,31 @@ func parseTemplate(n string) (*Node, error) {
 	return v, nil
 }
 
+func readIgnoreListFile(n string) (map[string]bool, error) {
+	if n == "" {
+		return nil, nil
+	}
+	f, err := os.Open(n)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	ignoreFiles := make(map[string]bool)
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		ignoreFiles[scanner.Text()] = true
+	}
+	return ignoreFiles, nil
+}
+
 var (
 	buildDir       = flag.String("buildDir", "", "build directory")
 	productVersion = flag.String("productVersion", "", "product version")
 	templateFile   = flag.String("templateFile", "", "path to template file")
 	outputFile     = flag.String("outputFile", "", "path to output file")
+	ignoreListFile = flag.String("ignoreFile", "", "path to ignore list file")
 )
 
 func main() {
@@ -191,6 +212,11 @@ func main() {
 	}
 
 	v, err := parseTemplate(*templateFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ignoreFiles, err := readIgnoreListFile(*ignoreListFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -221,6 +247,9 @@ func main() {
 	installDir.Children = append(installDir.Children, component)
 	for _, name := range names {
 		if !strings.HasPrefix(name, "check-") {
+			continue
+		}
+		if _, ignore := ignoreFiles[name]; ignore {
 			continue
 		}
 		id := toCamelCase(name)
