@@ -13,7 +13,7 @@ func specGenerators() []spec.Generator {
 		&specDarwin.KernelGenerator{},
 		&specDarwin.MemoryGenerator{},
 		&specDarwin.CPUGenerator{},
-		&specDarwin.FilesystemGenerator{},
+		&spec.FilesystemGenerator{},
 	}
 }
 

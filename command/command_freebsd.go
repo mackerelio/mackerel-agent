@@ -13,7 +13,7 @@ func specGenerators() []spec.Generator {
 		&specFreebsd.KernelGenerator{},
 		&specFreebsd.MemoryGenerator{},
 		&specFreebsd.CPUGenerator{},
-		&specFreebsd.FilesystemGenerator{},
+		&spec.FilesystemGenerator{},
 	}
 }
 

@@ -13,7 +13,7 @@ func specGenerators() []spec.Generator {
 		&specNetbsd.KernelGenerator{},
 		&specNetbsd.MemoryGenerator{},
 		&specNetbsd.CPUGenerator{},
-		&specNetbsd.FilesystemGenerator{},
+		&spec.FilesystemGenerator{},
 	}
 }
 
