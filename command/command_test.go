@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sort"
+	"sync"
 	"testing"
 	"time"
 
@@ -205,9 +206,12 @@ func TestCollectHostSpecs(t *testing.T) {
 
 type counterGenerator struct {
 	counter int
+	sync.Mutex
 }
 
 func (g *counterGenerator) Generate() (metrics.Values, error) {
+	g.Lock()
+	defer g.Unlock()
 	g.counter = g.counter + 1
 	return map[string]float64{"dummy.a": float64(g.counter)}, nil
 }
