@@ -7,6 +7,13 @@ import (
 	"testing"
 )
 
+func TestCollectDfValues(t *testing.T) {
+	_, err := CollectDfValues()
+	if err != nil {
+		t.Errorf("err should be nil but: %s", err)
+	}
+}
+
 func TestParseDfLines(t *testing.T) {
 	dfout := `Filesystem     1024-blocks     Used Available Capacity Mounted on
 /dev/sda1           19734388 16868164 1863772  91% /
