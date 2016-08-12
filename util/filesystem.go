@@ -57,7 +57,7 @@ func init() {
 	}
 }
 
-// CollectDfValues XXX
+// CollectDfValues collects disk free statistics from df command
 func CollectDfValues() ([]*DfStat, error) {
 	cmd := exec.Command("df", dfOpt...)
 	cmd.Env = append(os.Environ(), "LANG=C")
@@ -74,8 +74,11 @@ func CollectDfValues() ([]*DfStat, error) {
 		logger.Warningf("'df %s' command exited with a non-zero status: '%s'", strings.Join(dfOpt, " "), err)
 		return nil, nil
 	}
+	return parseDfLines(stdout), nil
+}
 
-	lineScanner := bufio.NewScanner(strings.NewReader(stdout))
+func parseDfLines(out string) []*DfStat {
+	lineScanner := bufio.NewScanner(strings.NewReader(out))
 	var filesystems []*DfStat
 	for lineScanner.Scan() {
 		line := lineScanner.Text()
@@ -89,7 +92,7 @@ func CollectDfValues() ([]*DfStat, error) {
 		}
 		filesystems = append(filesystems, dfstat)
 	}
-	return filesystems, nil
+	return filesystems
 }
 
 var dfColumnsPattern = regexp.MustCompile(`^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)%\s+(.+)$`)
