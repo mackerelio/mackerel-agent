@@ -1,54 +1,47 @@
-<?xml version='1.0' encoding='windows-1252'?>
-<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+<?xml version="1.0" encoding="windows-1252"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
-  <Product Name='mackerel-agent' Id='*' UpgradeCode='1EF11651-A09E-47A3-BFE3-5877E22F7D26'
-    Language='1033' Codepage='1252' Version='___VERSION___' Manufacturer='Hatena'>
+  <Product Name='mackerel-agent' Id='*' UpgradeCode='1EF11651-A09E-47A3-BFE3-5877E22F7D26' Language='1033' Codepage='1252' Version='___VERSION___' Manufacturer='Hatena'>
 
-    <Package Id='*' Keywords='Installer' Description="Mackerel Agent Installer"
-      Comments='Mackerel Agent sends metrics to https://mackerel.io' Manufacturer='Hatena'
-      InstallerVersion='100' Languages='1033' Compressed='yes' SummaryCodepage='1252' />
-    <WixVariable Id="WixUILicenseRtf" Value="..\LICENSE.rtf" />
-    <Media Id="1" Cabinet="MackerelAgent.cab" EmbedCab="yes" CompressionLevel="high"/>
-    <Directory Id='TARGETDIR' Name='SourceDir'>
-      <Directory Id='ProgramFilesFolder' Name='PFiles'>
-        <Directory Id='Mackerel' Name='Mackerel'>
-          <Directory Id='INSTALLDIR' Name='mackerel-agent'>
-            <Component Id='ServiceWrapperExe'>
-              <File Id='MackerelAgentServiceExe' Name='wrapper.exe' DiskId='1' Source='..\build\wrapper.exe' KeyPath='yes' />
-              <ServiceInstall
-                Id='ServiceInstaller' Type='ownProcess' Name='mackerel-agent' Description='Send metrics to https://mackerel.io'
-                Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]"
-                Start='auto' ErrorControl='normal' Vital='yes' Interactive='no' />
-              <ServiceControl Id="StartService" Start='install' Stop="both" Remove="uninstall" Name="mackerel-agent" Wait="yes" />
+    <Package Id="*" Keywords="Installer" Description="Mackerel Agent Installer" Comments="Mackerel Agent sends metrics to https://mackerel.io" Manufacturer="Hatena" InstallerVersion="100" Languages="1033" Compressed="yes" SummaryCodepage="1252"></Package>
+    <WixVariable Id="WixUILicenseRtf" Value="..\LICENSE.rtf"></WixVariable>
+    <Media Id="1" Cabinet="MackerelAgent.cab" EmbedCab="yes" CompressionLevel="high"></Media>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="Mackerel" Name="Mackerel">
+          <Directory Id="INSTALLDIR" Name="mackerel-agent">
+            <Component Id="ServiceWrapperExe">
+              <File Id="MackerelAgentServiceExe" Name="wrapper.exe" DiskId="1" Source="..\build\wrapper.exe" KeyPath="yes"></File>
+              <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="mackerel-agent" Description="Send metrics to https://mackerel.io" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Start="auto" ErrorControl="normal" Vital="yes" Interactive="no"></ServiceInstall>
+              <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="mackerel-agent" Wait="yes"></ServiceControl>
             </Component>
-            <Component Id='AgentExe'>
-              <File Id='MackerelAgentExe' Name='mackerel-agent.exe' DiskId='1' Source='..\build\mackerel-agent.exe' KeyPath='yes' />
+            <Component Id="AgentExe">
+              <File Id="MackerelAgentExe" Name="mackerel-agent.exe" DiskId="1" Source="..\build\mackerel-agent.exe" KeyPath="yes"></File>
             </Component>
-            <Component Id='SampleConfig'>
-              <File Id='MackerelAgentSampleConfig' Name='mackerel-agent.sample.conf' DiskId='1' Source='mackerel-agent.sample.conf' KeyPath='yes' />
+            <Component Id="SampleConfig">
+              <File Id="MackerelAgentSampleConfig" Name="mackerel-agent.sample.conf" DiskId="1" Source="mackerel-agent.sample.conf" KeyPath="yes"></File>
             </Component>
           </Directory>
         </Directory>
       </Directory>
     </Directory>
 
-    <Binary Id="ReplaceExe" SourceFile="..\build\replace.exe" />
-    <CustomAction Id="FillApiKey" BinaryKey="ReplaceExe"
-      ExeCommand='"[INSTALLDIR]\mackerel-agent.sample.conf" "[INSTALLDIR]\mackerel-agent.conf" "___YOUR_API_KEY___" "[APIKEY]"'
-      Execute="deferred" Return="check" Impersonate="no" />
+    <Binary Id="ReplaceExe" SourceFile="..\build\replace.exe"></Binary>
+    <CustomAction Id="FillApiKey" BinaryKey="ReplaceExe" ExeCommand="&quot;[INSTALLDIR]\mackerel-agent.sample.conf&quot; &quot;[INSTALLDIR]\mackerel-agent.conf&quot; &quot;___YOUR_API_KEY___&quot; &quot;[APIKEY]&quot;" Execute="deferred" Return="check" Impersonate="no"></CustomAction>
 
-    <Feature Id='Complete' Level='1'>
-      <ComponentRef Id='ServiceWrapperExe' />
-      <ComponentRef Id='AgentExe' />
-      <ComponentRef Id='SampleConfig' />
+    <Feature Id="Complete" Level="1">
+      <ComponentRef Id="ServiceWrapperExe"></ComponentRef>
+      <ComponentRef Id="AgentExe"></ComponentRef>
+      <ComponentRef Id="SampleConfig"></ComponentRef>
+      <ComponentRef Id="Plugins"></ComponentRef>
     </Feature>
 
     <InstallExecuteSequence>
       <Custom Action="FillApiKey" Before="StartServices">Not Installed</Custom>
     </InstallExecuteSequence>
-    <MajorUpgrade AllowDowngrades="yes" />
+    <MajorUpgrade AllowDowngrades="yes"></MajorUpgrade>
 
-    <UIRef Id="WixUI_Minimal" />
+    <UIRef Id="WixUI_Minimal"></UIRef>
     <UI>
       <Dialog Id="ApiKeyDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="Title" Type="Text" X="16" Y="16" Width="300" Height="15" Transparent="yes" NoPrefix="yes">
@@ -56,7 +49,7 @@
         </Control>
         <Control Id="ApiKeyEdit" Type="Edit" X="16" Y="48" Height="17" Width="300" Property="APIKEY" Indirect="no" Text="[APIKEY]"/>
         <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Install">
-          <Publish Event="EndDialog" Value="Return" />
+          <Publish Event="EndDialog" Value="Return"></Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
           <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>

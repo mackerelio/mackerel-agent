@@ -1,18 +1,25 @@
 echo on
 
-go get -d -v -t ./...
+cd %~dp0\..
 
-pushd %0\..\..
+go get -d -v -t ./...
 
 call build.bat
 call build-k.bat
 
-pushd %0\..
+go get -d github.com/mackerelio/go-check-plugins
+FOR /F "usebackq" %%w IN (`dir /b ..\go-check-plugins\check-*`) DO (
+  go build -o .\build\%%w.exe github.com/mackerelio/go-check-plugins/%%w
+)
+
+cd %~dp0
 
 go get github.com/mackerelio/mackerel-agent/wix/wrapper
+go get github.com/mackerelio/mackerel-agent/wix/replace
 go get github.com/mackerelio/mackerel-agent/wix/generate_wxs
 
 go build -o ..\build\wrapper.exe wrapper\wrapper_windows.go
+go build -o ..\build\replace.exe replace\replace_windows.go
 go build -o ..\build\generate_wxs.exe generate_wxs\generate_wxs.go
 
 REM retrieve numeric version from git tag
@@ -27,8 +34,8 @@ IF "%VERSION%"=="staging" (
   EXIT /B
 )
 
-del /F mackerel-agent.wxs
-..\build\generate_wxs.exe -templateFile mackerel-agent.wxs.template -outputFile mackerel-agent.wxs -pluginDir ..\..\go-check-plugins\build\ -productVersion "%VERSION%"
+if exist mackerel-agent.wxs del /F mackerel-agent.wxs
+..\build\generate_wxs.exe -templateFile mackerel-agent.wxs.template -outputFile mackerel-agent.wxs -buildDir ..\build\ -productVersion "%VERSION%"
 
 "%WIX%bin\candle.exe" mackerel-agent.wxs
 "%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj

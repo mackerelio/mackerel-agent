@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode"
 
 	"github.com/mattn/go-encoding"
 )
@@ -75,20 +76,29 @@ func hasAttr(node *Node, name, value string) bool {
 	return false
 }
 
-func findPackage(node *Node) *Node {
+func toCamelCase(name string) string {
+	out := ""
+	rs := []rune(name)
+	out += string(unicode.ToUpper(rs[0]))
+	for i := 1; i < len(rs); i++ {
+		if i < len(rs)-1 && (rs[i] == '.' || rs[i] == '-') {
+			i++
+			out += string(unicode.ToUpper(rs[i]))
+		} else {
+			out += string(rs[i])
+		}
+	}
+	return out
+}
+
+func findProduct(node *Node) *Node {
 	var ok bool
 	for _, n := range node.Children {
 		node, ok = n.(*Node)
 		if !ok || node.Name.Local != "Product" {
 			continue
 		}
-		for _, n := range node.Children {
-			node, ok = n.(*Node)
-			if !ok || node.Name.Local != "Package" {
-				continue
-			}
-			return node
-		}
+		return node
 	}
 	return nil
 }
@@ -162,7 +172,7 @@ func parseTemplate(n string) (*Node, error) {
 }
 
 var (
-	pluginDir      = flag.String("pluginDir", "", "plugin directory")
+	buildDir       = flag.String("buildDir", "", "build directory")
 	productVersion = flag.String("productVersion", "", "product version")
 	templateFile   = flag.String("templateFile", "", "path to template file")
 	outputFile     = flag.String("outputFile", "", "path to output file")
@@ -170,12 +180,12 @@ var (
 
 func main() {
 	flag.Parse()
-	if *pluginDir == "" || *productVersion == "" {
+	if *buildDir == "" || *productVersion == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
 
-	names, err := fileNames(*pluginDir)
+	names, err := fileNames(*buildDir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -186,47 +196,47 @@ func main() {
 	}
 
 	// update __VERSION__ to specified *productVersion
-	pkg := findPackage(v)
-	if pkg == nil {
+	product := findProduct(v)
+	if product == nil {
 		log.Fatal("__VERSION__ not found")
 	}
-	for _, attr := range pkg.Attr {
-		if attr.Name.Local == "Version" {
-			attr.Value = *productVersion
+	for i, _ := range product.Attr {
+		if product.Attr[i].Name.Local == "Version" {
+			product.Attr[i].Value = *productVersion
 		}
 	}
 
-	// generate Component/File(s) from listing plugins on *pluginDir.
+	// generate Component/File(s) from listing plugins on *buildDir.
 	installDir := findInstallDir(v)
 	if installDir == nil {
 		log.Fatal("INSTALLDIR not found")
 	}
 	installDir.Children = append(installDir.Children, xml.CharData("  "))
+
 	component := new(Node)
 	component.Name = xml.Name{Local: "Component", Space: ""}
 	component.Attr = []xml.Attr{
 		{Name: xml.Name{Local: "Id", Space: ""}, Value: "Plugins"},
 	}
-	component.Children = append(component.Children, xml.CharData("\n            "))
+	installDir.Children = append(installDir.Children, component)
 	for _, name := range names {
 		if !strings.HasPrefix(name, "check-") {
 			continue
 		}
-		fname := filepath.Join(*pluginDir, name)
-		component.Children = append(component.Children, xml.CharData("  "))
+		id := toCamelCase(name)
+		fname := filepath.Join(*buildDir, name)
 		file := new(Node)
 		file.Name = xml.Name{Local: "File", Space: ""}
 		file.Attr = []xml.Attr{
-			{Name: xml.Name{Local: "Id", Space: ""}, Value: name},
+			{Name: xml.Name{Local: "Id", Space: ""}, Value: "Plugin" + id},
 			{Name: xml.Name{Local: "Name", Space: ""}, Value: name},
 			{Name: xml.Name{Local: "DiskId", Space: ""}, Value: "1"},
 			{Name: xml.Name{Local: "Source", Space: ""}, Value: fname},
-			{Name: xml.Name{Local: "KeyPath", Space: ""}, Value: "yes"},
 		}
+		component.Children = append(component.Children, xml.CharData("\n              "))
 		component.Children = append(component.Children, file)
-		component.Children = append(component.Children, xml.CharData("\n            "))
 	}
-	installDir.Children = append(installDir.Children, component)
+	component.Children = append(component.Children, xml.CharData("\n            "))
 	installDir.Children = append(installDir.Children, xml.CharData("\n          "))
 
 	f, err := os.Create(*outputFile)
@@ -234,6 +244,8 @@ func main() {
 		log.Fatal(err)
 	}
 	defer f.Close()
+
+	f.Write([]byte("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\n"))
 	err = xml.NewEncoder(f).Encode(v)
 	if err != nil {
 		log.Fatal(err)
