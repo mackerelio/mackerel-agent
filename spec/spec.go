@@ -7,13 +7,13 @@ import (
 
 var logger = logging.GetLogger("spec")
 
-// Generator XXX
+// Generator interface for generating spec values
 type Generator interface {
 	Key() string
 	Generate() (interface{}, error)
 }
 
-// Collect XXX
+// Collect spec values
 func Collect(specGenerators []Generator) map[string]interface{} {
 	specs := make(map[string]interface{})
 	for _, g := range specGenerators {
