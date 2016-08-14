@@ -1,13 +1,15 @@
 package main
 
 import (
-	"bufio"
+	"crypto/md5"
 	"encoding/xml"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"unicode"
 
@@ -172,31 +174,11 @@ func parseTemplate(n string) (*Node, error) {
 	return v, nil
 }
 
-func readIgnoreListFile(n string) (map[string]bool, error) {
-	if n == "" {
-		return nil, nil
-	}
-	f, err := os.Open(n)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	ignoreFiles := make(map[string]bool)
-
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		ignoreFiles[scanner.Text()] = true
-	}
-	return ignoreFiles, nil
-}
-
 var (
 	buildDir       = flag.String("buildDir", "", "build directory")
 	productVersion = flag.String("productVersion", "", "product version")
 	templateFile   = flag.String("templateFile", "", "path to template file")
 	outputFile     = flag.String("outputFile", "", "path to output file")
-	ignoreListFile = flag.String("ignoreFile", "", "path to ignore list file")
 )
 
 func main() {
@@ -212,11 +194,6 @@ func main() {
 	}
 
 	v, err := parseTemplate(*templateFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ignoreFiles, err := readIgnoreListFile(*ignoreListFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -241,15 +218,10 @@ func main() {
 
 	component := new(Node)
 	component.Name = xml.Name{Local: "Component", Space: ""}
-	component.Attr = []xml.Attr{
-		{Name: xml.Name{Local: "Id", Space: ""}, Value: "Plugins"},
-	}
+	idlist := []string{}
 	installDir.Children = append(installDir.Children, component)
 	for _, name := range names {
-		if !strings.HasPrefix(name, "check-") {
-			continue
-		}
-		if _, ignore := ignoreFiles[name]; ignore {
+		if !strings.HasPrefix(name, "check-") && !strings.HasPrefix(name, "mackerel-plugin-") {
 			continue
 		}
 		id := toCamelCase(name)
@@ -257,13 +229,20 @@ func main() {
 		file := new(Node)
 		file.Name = xml.Name{Local: "File", Space: ""}
 		file.Attr = []xml.Attr{
-			{Name: xml.Name{Local: "Id", Space: ""}, Value: "Plugin" + id},
+			{Name: xml.Name{Local: "Id", Space: ""}, Value: id},
 			{Name: xml.Name{Local: "Name", Space: ""}, Value: name},
 			{Name: xml.Name{Local: "DiskId", Space: ""}, Value: "1"},
 			{Name: xml.Name{Local: "Source", Space: ""}, Value: fname},
 		}
 		component.Children = append(component.Children, xml.CharData("\n              "))
 		component.Children = append(component.Children, file)
+		idlist = append(idlist, id)
+	}
+	sort.Strings(idlist)
+	b := md5.Sum([]byte(strings.Join(idlist, "\n")))
+	component.Attr = []xml.Attr{
+		{Name: xml.Name{Local: "Id", Space: ""}, Value: "Plugins"},
+		{Name: xml.Name{Local: "Guid", Space: ""}, Value: fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])},
 	}
 	component.Children = append(component.Children, xml.CharData("\n            "))
 	installDir.Children = append(installDir.Children, xml.CharData("\n          "))

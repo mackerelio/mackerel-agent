@@ -1,18 +1,25 @@
 echo on
 
-cd %~dp0\..
+IF NOT DEFINED WIX (
+  ECHO Environment variable "WIX" not set
+  EXIT /B
+)
+
+CD %~dp0\..
 
 go get -d -v -t ./...
 
-call build.bat
-call build-k.bat
+CALL build.bat
+CALL build-k.bat
 
-go get -d github.com/mackerelio/go-check-plugins
-FOR /F "usebackq" %%w IN (`dir /b ..\go-check-plugins\check-*`) DO (
-  go build -o .\build\%%w.exe github.com/mackerelio/go-check-plugins/%%w
+go get -d github.com/mackerelio/go-check-plugins/...
+go get -d github.com/mackerelio/mackerel-agent-plugins/...
+
+FOR /F %%w in (.\wix\pluginlist.txt) DO (
+  echo go build -o ..\build\%%~nw.exe %%w
 )
 
-cd %~dp0
+CD %~dp0
 
 go get github.com/mackerelio/mackerel-agent/wix/wrapper
 go get github.com/mackerelio/mackerel-agent/wix/replace
@@ -37,10 +44,10 @@ IF "%VERSION%"=="staging" (
 if exist mackerel-agent.wxs del /F mackerel-agent.wxs
 ..\build\generate_wxs.exe -templateFile mackerel-agent.wxs.template -outputFile mackerel-agent.wxs -buildDir ..\build\ -productVersion "%VERSION%"
 
-"%WIX%bin\candle.exe" mackerel-agent.wxs
-"%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
+"%WIX%\bin\candle.exe" mackerel-agent.wxs
+"%WIX%\bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent.msi" mackerel-agent.wixobj
 copy ..\build\mackerel-agent-kcps.exe ..\build\mackerel-agent.exe
-"%WIX%bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent-k.msi" mackerel-agent.wixobj
+"%WIX%\bin\light.exe" -ext WixUIExtension -out "..\build\mackerel-agent-k.msi" mackerel-agent.wixobj
 
 REM code signing if build on tags
 if defined APPVEYOR_REPO_TAG_NAME (
