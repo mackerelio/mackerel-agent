@@ -1,11 +1,8 @@
-// +build netbsd
+// +build !windows
 
-package netbsd
+package spec
 
-import (
-	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/util"
-)
+import "github.com/mackerelio/mackerel-agent/util"
 
 // FilesystemGenerator XXX
 type FilesystemGenerator struct {
@@ -15,8 +12,6 @@ type FilesystemGenerator struct {
 func (g *FilesystemGenerator) Key() string {
 	return "filesystem"
 }
-
-var logger = logging.GetLogger("spec.filesystem")
 
 var dfColumnSpecs = []util.DfColumnSpec{
 	{Name: "kb_size", IsInt: true},

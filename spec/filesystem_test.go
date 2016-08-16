@@ -1,6 +1,6 @@
-// +build darwin
+// +build !windows
 
-package darwin
+package spec
 
 import (
 	"reflect"

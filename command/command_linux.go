@@ -14,7 +14,7 @@ func specGenerators() []spec.Generator {
 		&specLinux.CPUGenerator{},
 		&specLinux.MemoryGenerator{},
 		&specLinux.BlockDeviceGenerator{},
-		&specLinux.FilesystemGenerator{},
+		&spec.FilesystemGenerator{},
 	}
 }
 
