@@ -2,26 +2,36 @@
 
 package spec
 
-import "github.com/mackerelio/mackerel-agent/util"
+import (
+	"fmt"
 
-// FilesystemGenerator XXX
+	"github.com/mackerelio/mackerel-agent/util"
+)
+
+// FilesystemGenerator generator for filesystems implements spec.Generator interface
 type FilesystemGenerator struct {
 }
 
-// Key XXX
+// Key key name of the generator for satisfying spec.Generator interface
 func (g *FilesystemGenerator) Key() string {
 	return "filesystem"
 }
 
-var dfColumnSpecs = []util.DfColumnSpec{
-	{Name: "kb_size", IsInt: true},
-	{Name: "kb_used", IsInt: true},
-	{Name: "kb_available", IsInt: true},
-	{Name: "percent_used", IsInt: false},
-	{Name: "mount", IsInt: false},
-}
-
-// Generate XXX
+// Generate specs of filesystems
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
-	return util.CollectDfValues(dfColumnSpecs)
+	filesystems, err := util.CollectDfValues()
+	if err != nil {
+		return nil, err
+	}
+	ret := make(map[string]map[string]interface{})
+	for _, v := range filesystems {
+		ret[v.Name] = map[string]interface{}{
+			"kb_size":      v.Blocks,
+			"kb_used":      v.Used,
+			"kb_available": v.Available,
+			"percent_used": fmt.Sprintf("%d%%", v.Capacity),
+			"mount":        v.Mounted,
+		}
+	}
+	return ret, nil
 }

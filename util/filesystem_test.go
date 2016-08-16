@@ -8,45 +8,55 @@ import (
 )
 
 func TestCollectDfValues(t *testing.T) {
-	dfColumnSpecs := []DfColumnSpec{
-		{"kb_size", true},
-		{"kb_used", true},
-		{"kb_available", true},
-		{"percent_used", false},
-		{"mount", false},
-	}
-
-	filesystems, err := CollectDfValues(dfColumnSpecs)
+	_, err := CollectDfValues()
 	if err != nil {
-		t.Skipf("collectValues() failed: %s", err)
+		t.Errorf("err should be nil but: %s", err)
 	}
+}
 
-	// tmpfs may be exists
-	tmpfs, hasTmpfsEntry := filesystems["tmpfs"]
-
-	if hasTmpfsEntry {
-		for _, spec := range dfColumnSpecs {
-			value, hasColumn := tmpfs[spec.Name]
-
-			if hasColumn {
-				t.Logf("Value '%s' collected: %#v", spec.Name, value)
-
-				valueType := reflect.TypeOf(value).Name()
-				var expectedType string
-				if spec.IsInt {
-					expectedType = "int64"
-				} else {
-					expectedType = "string"
-				}
-
-				if valueType != expectedType {
-					t.Errorf("Type mismatch of value '%s': expected %s but got %s", spec.Name, expectedType, valueType)
-				}
-			} else {
-				t.Errorf("Value '%s' should be collected", spec.Name)
-			}
-		}
-	} else {
-		t.Log("Could not detect filesystem tmpfs")
+func TestParseDfLines(t *testing.T) {
+	dfout := `Filesystem     1024-blocks     Used Available Capacity Mounted on
+/dev/sda1           19734388 16868164 1863772  91% /
+tmpfs                 517224        0  517224   0% /lib/init/rw
+udev                  512780       96  512684   1% /dev
+tmpfs                 517224        4  517220   1% /dev/shm
+`
+	expect := []*DfStat{
+		{
+			Name:      "/dev/sda1",
+			Blocks:    19734388,
+			Used:      16868164,
+			Available: 1863772,
+			Capacity:  91,
+			Mounted:   "/",
+		},
+		{
+			Name:      "tmpfs",
+			Blocks:    517224,
+			Used:      0,
+			Available: 517224,
+			Capacity:  0,
+			Mounted:   "/lib/init/rw",
+		},
+		{
+			Name:      "udev",
+			Blocks:    512780,
+			Used:      96,
+			Available: 512684,
+			Capacity:  1,
+			Mounted:   "/dev",
+		},
+		{
+			Name:      "tmpfs",
+			Blocks:    517224,
+			Used:      4,
+			Available: 517220,
+			Capacity:  1,
+			Mounted:   "/dev/shm",
+		},
+	}
+	ret := parseDfLines(dfout)
+	if !reflect.DeepEqual(ret, expect) {
+		t.Errorf("dfvalues are not expected: %#v", ret)
 	}
 }
