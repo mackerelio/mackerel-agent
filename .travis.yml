@@ -1,7 +1,7 @@
 sudo: false
 language: go
 go:
-- 1.6.2
+- 1.7.0
 env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
