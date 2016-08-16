@@ -12,4 +12,4 @@ set VERSION=%VERSION:v=%
 
 echo %VERSION%
 
-go build -o build/mackerel-agent.exe -ldflags="-X github.com/mackerelio/mackerel-agent/version.GITCOMMIT %COMMIT% -X github.com/mackerelio/mackerel-agent/version.VERSION %VERSION% " github.com/mackerelio/mackerel-agent
+go build -o build/mackerel-agent.exe -ldflags="-X github.com/mackerelio/mackerel-agent/version.GITCOMMIT=%COMMIT% -X github.com/mackerelio/mackerel-agent/version.VERSION=%VERSION% " github.com/mackerelio/mackerel-agent
