@@ -38,6 +38,7 @@ func (agent *Agent) Watch() chan *MetricsResult {
 
 	metricsResult := make(chan *MetricsResult)
 	ticker := make(chan time.Time)
+	interval := config.PostMetricsInterval
 
 	go func() {
 		c := time.Tick(1 * time.Second)
@@ -49,7 +50,7 @@ func (agent *Agent) Watch() chan *MetricsResult {
 			// Fire an event at 0 second per minute.
 			// Because ticks may not be accurate,
 			// fire an event if t - last is more than 1 minute
-			if t.Second()%int(config.PostMetricsInterval.Seconds()) == 0 || t.After(last.Add(config.PostMetricsInterval)) {
+			if t.Second()%int(interval.Seconds()) == 0 || t.After(last.Add(interval)) {
 				last = t
 				ticker <- t
 			}
