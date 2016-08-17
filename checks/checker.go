@@ -41,7 +41,7 @@ type Checker struct {
 	Name string
 	// NOTE(motemen): We make use of config.PluginConfig as it happens
 	// to have the Command field which was used by metrics.pluginGenerator.
-	// If the configuration of checks.Checker and/or metrics.pluginGenerator changes,
+	// If the configuration of *checks.Checker and/or metrics.pluginGenerator changes,
 	// we should reconsider using config.PluginConfig.
 	Config config.PluginConfig
 }
@@ -56,12 +56,12 @@ type Report struct {
 	MaxCheckAttempts     *int32
 }
 
-func (c Checker) String() string {
+func (c *Checker) String() string {
 	return fmt.Sprintf("checker %q command=[%s]", c.Name, c.Config.Command)
 }
 
 // Check invokes the command and transforms its result to a Report.
-func (c Checker) Check() (*Report, error) {
+func (c *Checker) Check() *Report {
 	now := time.Now()
 
 	command := c.Config.Command
@@ -90,12 +90,11 @@ func (c Checker) Check() (*Report, error) {
 		OccurredAt:           now,
 		NotificationInterval: c.Config.NotificationInterval,
 		MaxCheckAttempts:     c.Config.MaxCheckAttempts,
-	}, nil
+	}
 }
 
 // Interval is the interval where the command is invoked.
-// (Will be configurable in the future)
-func (c Checker) Interval() time.Duration {
+func (c *Checker) Interval() time.Duration {
 	if c.Config.CheckInterval != nil {
 		interval := time.Duration(*c.Config.CheckInterval) * time.Minute
 		if interval < 1*time.Minute {

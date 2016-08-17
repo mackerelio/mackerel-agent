@@ -32,7 +32,7 @@ func (h monitorTargetHost) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// ReportCheckMonitors sends reports of checks.Checker() to Mackrel API server.
+// ReportCheckMonitors sends reports of *checks.Checker() to Mackrel API server.
 func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) error {
 	payload := &monitoringChecksPayload{
 		Reports: make([]*checkReport, len(reports)),

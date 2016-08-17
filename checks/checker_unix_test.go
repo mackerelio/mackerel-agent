@@ -24,10 +24,7 @@ func TestChecker_CheckTimeout(t *testing.T) {
 	}
 
 	{
-		report, err := checkerTimeout.Check()
-		if err != nil {
-			t.Errorf("err should be nil: %v", err)
-		}
+		report := checkerTimeout.Check()
 		if report.Status != StatusUnknown {
 			t.Errorf("status should be UNKNOWN: %v", report.Status)
 		}
