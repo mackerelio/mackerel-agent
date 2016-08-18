@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.34.0 (2016-08-18)
+
+* Reduce retry count on finding a host by the custom identifier #258 (itchyny)
+* suppress checker flooding when resuming from sleep mode #260 (Songmu)
+* truncate checker message up to 1024 characters #261 (Songmu)
+* commonalize spec.FilesystemGenerator around unix OSs #262 (Songmu)
+* define type DfStat,	remove dfColumnSpecs and refactor #263 (Songmu)
+
+
 ## 0.33.0 (2016-08-08)
 
 * Fill the customIdentifier in EC2 #255 (itchyny)

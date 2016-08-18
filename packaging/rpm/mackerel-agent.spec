@@ -62,6 +62,13 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Aug 18 2016 <mackerel-developers@hatena.ne.jp> - 0.34.0-1
+- Reduce retry count on finding a host by the custom identifier (by itchyny)
+- suppress checker flooding when resuming from sleep mode (by Songmu)
+- truncate checker message up to 1024 characters (by Songmu)
+- commonalize spec.FilesystemGenerator around unix OSs (by Songmu)
+- define type DfStat,	remove dfColumnSpecs and refactor (by Songmu)
+
 * Mon Aug 08 2016 <mackerel-developers@hatena.ne.jp> - 0.33.0-1
 - Fill the customIdentifier in EC2 (by itchyny)
 
