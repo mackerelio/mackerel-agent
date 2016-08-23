@@ -7,7 +7,7 @@ type Values map[string]float64
 
 // Merge XXX
 func (vs *Values) Merge(other Values) {
-	for k, v := range (map[string]float64)(other) {
+	for k, v := range other {
 		(*vs)[k] = v
 	}
 }

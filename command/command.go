@@ -353,7 +353,7 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 						continue
 					}
 				}
-				for name, value := range (map[string]float64)(values.Values) {
+				for name, value := range values.Values {
 					if math.IsNaN(value) || math.IsInf(value, 0) {
 						logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", hostID, name, value)
 						continue
