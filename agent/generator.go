@@ -9,7 +9,7 @@ import (
 
 var logger = logging.GetLogger("agent")
 
-func generateValues(generators []metrics.Generator) chan []metrics.ValuesCustomIdentifier {
+func generateValues(generators []metrics.Generator) []metrics.ValuesCustomIdentifier {
 	processed := make(chan metrics.ValuesCustomIdentifier)
 	finish := make(chan struct{})
 	result := make(chan []metrics.ValuesCustomIdentifier)
@@ -58,5 +58,5 @@ func generateValues(generators []metrics.Generator) chan []metrics.ValuesCustomI
 		finish <- struct{}{} // processed all jobs
 	}()
 
-	return result
+	return <-result
 }

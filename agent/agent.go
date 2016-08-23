@@ -28,8 +28,7 @@ func (agent *Agent) CollectMetrics(collectedTime time.Time) *MetricsResult {
 	for _, g := range agent.PluginGenerators {
 		generators = append(generators, g)
 	}
-	result := generateValues(generators)
-	values := <-result
+	values := generateValues(generators)
 	return &MetricsResult{Created: collectedTime, Values: values}
 }
 
