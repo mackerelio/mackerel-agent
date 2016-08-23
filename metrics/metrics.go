@@ -2,7 +2,7 @@ package metrics
 
 import "github.com/mackerelio/mackerel-agent/mackerel"
 
-// Values XXX
+// Values represents metric values
 type Values map[string]float64
 
 func merge(v1, v2 Values) Values {
@@ -31,14 +31,14 @@ func MergeValuesCustomIdentifiers(values []*ValuesCustomIdentifier, newValue *Va
 	return append(values, newValue)
 }
 
-// Generator XXX
+// Generator generates metrics
 type Generator interface {
 	Generate() (Values, error)
 }
 
-// PluginGenerator XXX
+// PluginGenerator generates metrics of plugin
 type PluginGenerator interface {
-	Generate() (Values, error)
+	Generator
 	PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error)
 	CustomIdentifier() *string
 }
