@@ -5,26 +5,6 @@ import (
 	"testing"
 )
 
-func TestMerge(t *testing.T) {
-	var v = Values{
-		"aa": 10,
-	}
-	var vv = Values{
-		"bb": 20,
-		"cc": 30,
-	}
-
-	v.Merge(vv)
-
-	if !reflect.DeepEqual(v, Values{
-		"aa": 10,
-		"bb": 20,
-		"cc": 30,
-	}) {
-		t.Errorf("somthing went wrong")
-	}
-}
-
 func TestMergeValuesCustomIdentifiers(t *testing.T) {
 	var v0 = Values{
 		"aa": 10,

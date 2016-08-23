@@ -5,11 +5,11 @@ import "github.com/mackerelio/mackerel-agent/mackerel"
 // Values XXX
 type Values map[string]float64
 
-// Merge XXX
-func (vs *Values) Merge(other Values) {
-	for k, v := range other {
-		(*vs)[k] = v
+func merge(v1, v2 Values) Values {
+	for k, v := range v2 {
+		v1[k] = v
 	}
+	return v1
 }
 
 // ValuesCustomIdentifier holds the metric values with the optional custom identifier
@@ -24,7 +24,7 @@ func MergeValuesCustomIdentifiers(values []*ValuesCustomIdentifier, newValue *Va
 		if value.CustomIdentifier == newValue.CustomIdentifier ||
 			(value.CustomIdentifier != nil && newValue.CustomIdentifier != nil &&
 				*value.CustomIdentifier == *newValue.CustomIdentifier) {
-			value.Values.Merge(newValue.Values)
+			value.Values = merge(value.Values, newValue.Values)
 			return values
 		}
 	}
