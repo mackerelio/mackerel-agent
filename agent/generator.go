@@ -11,7 +11,7 @@ var logger = logging.GetLogger("agent")
 
 func generateValues(generators []metrics.Generator) chan []metrics.ValuesCustomIdentifier {
 	processed := make(chan metrics.ValuesCustomIdentifier)
-	finish := make(chan bool)
+	finish := make(chan struct{})
 	result := make(chan []metrics.ValuesCustomIdentifier)
 
 	go func() {
@@ -55,7 +55,7 @@ func generateValues(generators []metrics.Generator) chan []metrics.ValuesCustomI
 			}(g)
 		}
 		wg.Wait()
-		finish <- true // processed all jobs
+		finish <- struct{}{} // processed all jobs
 	}()
 
 	return result
