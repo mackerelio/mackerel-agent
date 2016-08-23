@@ -19,7 +19,7 @@ type ValuesCustomIdentifier struct {
 }
 
 // MergeValuesCustomIdentifiers merges the metric values and custom identifiers
-func MergeValuesCustomIdentifiers(values []ValuesCustomIdentifier, newValue ValuesCustomIdentifier) []ValuesCustomIdentifier {
+func MergeValuesCustomIdentifiers(values []*ValuesCustomIdentifier, newValue *ValuesCustomIdentifier) []*ValuesCustomIdentifier {
 	for _, value := range values {
 		if value.CustomIdentifier == newValue.CustomIdentifier ||
 			(value.CustomIdentifier != nil && newValue.CustomIdentifier != nil &&

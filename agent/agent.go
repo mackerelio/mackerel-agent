@@ -19,7 +19,7 @@ type Agent struct {
 // MetricsResult XXX
 type MetricsResult struct {
 	Created time.Time
-	Values  []metrics.ValuesCustomIdentifier
+	Values  []*metrics.ValuesCustomIdentifier
 }
 
 // CollectMetrics collects metrics with generators.

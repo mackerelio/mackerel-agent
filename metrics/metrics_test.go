@@ -42,11 +42,11 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 		"gg": 70,
 	}
 
-	v := MergeValuesCustomIdentifiers([]ValuesCustomIdentifier{
+	v := MergeValuesCustomIdentifiers([]*ValuesCustomIdentifier{
 		{Values: v0},
-	}, ValuesCustomIdentifier{Values: v1})
+	}, &ValuesCustomIdentifier{Values: v1})
 
-	if !reflect.DeepEqual(v, []ValuesCustomIdentifier{
+	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
 		{
 			Values: Values{
 				"aa": 10,
@@ -59,9 +59,9 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 	}
 
 	customIdentifiers := "foo-bar"
-	v = MergeValuesCustomIdentifiers(v, ValuesCustomIdentifier{Values: v2, CustomIdentifier: &customIdentifiers})
+	v = MergeValuesCustomIdentifiers(v, &ValuesCustomIdentifier{Values: v2, CustomIdentifier: &customIdentifiers})
 
-	if !reflect.DeepEqual(v, []ValuesCustomIdentifier{
+	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
 		{
 			Values: Values{
 				"aa": 10,
@@ -82,9 +82,9 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 	}
 
 	sameCustomIdentifiers := "foo-bar"
-	v = MergeValuesCustomIdentifiers(v, ValuesCustomIdentifier{Values: v3, CustomIdentifier: &sameCustomIdentifiers})
+	v = MergeValuesCustomIdentifiers(v, &ValuesCustomIdentifier{Values: v3, CustomIdentifier: &sameCustomIdentifiers})
 
-	if !reflect.DeepEqual(v, []ValuesCustomIdentifier{
+	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
 		{
 			Values: Values{
 				"aa": 10,
