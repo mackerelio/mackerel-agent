@@ -46,10 +46,15 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 		return nil, err
 	}
 
+	first := ai
+
 	for _, ifi := range ifs {
-		for ; ai != nil; ai = ai.Next {
+		for ai = first; ai != nil; ai = ai.Next {
 			if ifi.Index == int(ai.Index) {
-				name := windows.BytePtrToString(&ai.Description[0])
+				name, err := windows.AnsiBytePtrToString(&ai.Description[0])
+				if err != nil {
+					name = windows.BytePtrToString(&ai.Description[0])
+				}
 				name = strings.Replace(name, "(", "[", -1)
 				name = strings.Replace(name, ")", "]", -1)
 				name = strings.Replace(name, "#", "_", -1)
