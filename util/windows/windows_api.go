@@ -83,6 +83,7 @@ var (
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
 	GetModuleFileName           = modkernel32.NewProc("GetModuleFileNameW")
 	GetLastError                = modkernel32.NewProc("GetLastError")
+	MultiByteToWideChar         = modkernel32.NewProc("MultiByteToWideChar")
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
 	PdhAddCounter               = modpdh.NewProc("PdhAddCounterW")
 	PdhCollectQueryData         = modpdh.NewProc("PdhCollectQueryData")
@@ -213,6 +214,28 @@ func BytePtrToString(p *uint8) string {
 		i++
 	}
 	return string(a[:i])
+}
+
+const (
+	CP_ACP = 0
+)
+
+func AnsiBytePtrToString(p *uint8) (string, error) {
+	a := (*[10000]uint8)(unsafe.Pointer(p))
+	i := 0
+	for a[i] != 0 {
+		i++
+	}
+	n, _, _ := MultiByteToWideChar.Call(CP_ACP, 0, uintptr(unsafe.Pointer(p)), uintptr(i), uintptr(0), 0)
+	if n <= 0 {
+		return "", syscall.GetLastError()
+	}
+	us := make([]uint16, n)
+	r, _, _ := MultiByteToWideChar.Call(CP_ACP, 0, uintptr(unsafe.Pointer(p)), uintptr(i), uintptr(unsafe.Pointer(&us[0])), n)
+	if r == 0 {
+		return "", syscall.GetLastError()
+	}
+	return syscall.UTF16ToString(us), nil
 }
 
 // ExecPath returns path of executable file (self).
