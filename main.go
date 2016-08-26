@@ -140,6 +140,10 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	if conf.Apikey == "" {
 		return nil, fmt.Errorf("Apikey must be specified in the config file (or by the DEPRECATED command-line flag)")
 	}
+
+	if conf.HTTPProxy != "" {
+		os.Setenv("HTTP_PROXY", conf.HTTPProxy)
+	}
 	return conf, nil
 }
 
