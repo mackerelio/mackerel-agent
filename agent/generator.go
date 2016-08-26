@@ -9,13 +9,13 @@ import (
 
 var logger = logging.GetLogger("agent")
 
-func generateValues(generators []metrics.Generator) chan []metrics.ValuesCustomIdentifier {
-	processed := make(chan metrics.ValuesCustomIdentifier)
-	finish := make(chan bool)
-	result := make(chan []metrics.ValuesCustomIdentifier)
+func generateValues(generators []metrics.Generator) []*metrics.ValuesCustomIdentifier {
+	processed := make(chan *metrics.ValuesCustomIdentifier)
+	finish := make(chan struct{})
+	result := make(chan []*metrics.ValuesCustomIdentifier)
 
 	go func() {
-		allValues := []metrics.ValuesCustomIdentifier{}
+		allValues := []*metrics.ValuesCustomIdentifier{}
 		for {
 			select {
 			case values := <-processed:
@@ -48,15 +48,15 @@ func generateValues(generators []metrics.Generator) chan []metrics.ValuesCustomI
 				if pluginGenerator, ok := g.(metrics.PluginGenerator); ok {
 					customIdentifier = pluginGenerator.CustomIdentifier()
 				}
-				processed <- metrics.ValuesCustomIdentifier{
+				processed <- &metrics.ValuesCustomIdentifier{
 					Values:           values,
 					CustomIdentifier: customIdentifier,
 				}
 			}(g)
 		}
 		wg.Wait()
-		finish <- true // processed all jobs
+		finish <- struct{}{} // processed all jobs
 	}()
 
-	return result
+	return <-result
 }

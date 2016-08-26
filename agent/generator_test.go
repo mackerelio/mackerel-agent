@@ -24,8 +24,7 @@ func TestGenerateValues(t *testing.T) {
 	tg := &testGenerator{}
 	tpg := &testPanicGenerator{}
 	generators := []metrics.Generator{tg, tpg}
-	result := generateValues(generators)
-	values := <-result
+	values := generateValues(generators)
 
 	if len(values) != 1 {
 		t.Errorf("Num of results should be 1, but %d", len(values))

@@ -19,7 +19,7 @@ type Agent struct {
 // MetricsResult XXX
 type MetricsResult struct {
 	Created time.Time
-	Values  []metrics.ValuesCustomIdentifier
+	Values  []*metrics.ValuesCustomIdentifier
 }
 
 // CollectMetrics collects metrics with generators.
@@ -28,8 +28,7 @@ func (agent *Agent) CollectMetrics(collectedTime time.Time) *MetricsResult {
 	for _, g := range agent.PluginGenerators {
 		generators = append(generators, g)
 	}
-	result := generateValues(generators)
-	values := <-result
+	values := generateValues(generators)
 	return &MetricsResult{Created: collectedTime, Values: values}
 }
 
@@ -62,10 +61,10 @@ func (agent *Agent) Watch() chan *MetricsResult {
 	go func() {
 		// Start collectMetrics concurrently
 		// so that it does not prevent runnnig next collectMetrics.
-		sem := make(chan uint, collectMetricsWorkerMax)
+		sem := make(chan struct{}, collectMetricsWorkerMax)
 		for tickedTime := range ticker {
 			ti := tickedTime
-			sem <- 1
+			sem <- struct{}{}
 			go func() {
 				metricsResult <- agent.CollectMetrics(ti)
 				<-sem
