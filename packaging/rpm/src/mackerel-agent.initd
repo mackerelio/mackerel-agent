@@ -25,6 +25,10 @@ LOGFILE=${LOGILE:="/var/log/$prog.log"}
 PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
 ROOT=${ROOT:="/var/lib/$prog"}
 
+if [ "$HTTP_PROXY" != "" ]; then
+    export HTTP_PROXY=$HTTP_PROXY
+fi
+
 lockfile=/var/lock/subsys/$prog
 
 # if matched return 0, else return 1
