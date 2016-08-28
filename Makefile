@@ -102,7 +102,7 @@ tgz:
 	mkdir -p $(tgz_dir)
 	cp mackerel-agent.sample.conf $(tgz_dir)/$(MACKEREL_AGENT_NAME).conf
 	cp build/$(MACKEREL_AGENT_NAME) $(tgz_dir)/
-	tar cvfz build/$(MACKEREL_AGENT_NAME)-latest.tar.gz -C ./build/tgz $(MACKEREL_AGENT_NAME)
+	tar cvfz build/$(MACKEREL_AGENT_NAME)-latest.tar.gz -C build/tgz $(MACKEREL_AGENT_NAME)
 
 release:
 	_tools/releng
