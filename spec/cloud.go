@@ -13,10 +13,9 @@ import (
 )
 
 // This Generator collects metadata about cloud instances.
-// Currently only EC2 is supported.
+// Currently EC2 and GCE are supported.
 // EC2: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html
 // GCE: https://developers.google.com/compute/docs/metadata
-// DigitalOcean: https://developers.digitalocean.com/metadata/
 
 // CloudGenerator definition
 type CloudGenerator struct {
@@ -36,12 +35,11 @@ func (g *CloudGenerator) Key() string {
 
 var cloudLogger = logging.GetLogger("spec.cloud")
 
-var ec2BaseURL, gceMetaURL, digitalOceanBaseURL *url.URL
+var ec2BaseURL, gceMetaURL *url.URL
 
 func init() {
 	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
 	gceMetaURL, _ = url.Parse("http://metadata.google.internal/computeMetadata/v1/?recursive=true")
-	digitalOceanBaseURL, _ = url.Parse("http://169.254.169.254/metadata/v1") // has not been yet used
 }
 
 var timeout = 100 * time.Millisecond
