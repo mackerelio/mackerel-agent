@@ -19,6 +19,8 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 )
 
+// DfStat is disk free statistics from df command.
+// Field names are taken from column names of `df -P`
 type DfStat struct {
 	Name      string
 	Blocks    uint64
