@@ -32,7 +32,7 @@ run: build
 
 deps: generate
 	go get -d -v -t ./...
-#	go get github.com/golang/lint/golint
+	go get github.com/golang/lint/golint
 	go get github.com/pierrre/gotestcover
 	go get github.com/laher/goxc
 	go get github.com/mattn/goveralls
