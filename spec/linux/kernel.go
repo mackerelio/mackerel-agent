@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/shirou/gopsutil/host"
 )
 
 // KernelGenerator XXX
@@ -42,5 +43,72 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		results[key] = str
 	}
 
+	hostInfo, err := host.Info()
+	if err != nil {
+		kernelLogger.Errorf("Failed to get platform information: %s", err)
+	}
+
+	if np := normalizePlatform(hostInfo.Platform); np != "" {
+		platformInfo := np + " " + hostInfo.PlatformVersion
+
+		// when platform version is empty string
+		platformInfo = strings.TrimSpace(platformInfo)
+
+		results["platform"] = platformInfo
+	}
+
 	return results, nil
+}
+
+func normalizePlatform(platform string) string {
+	var normalized string
+
+	switch platform {
+	case "debian":
+		normalized = "Debian"
+	case "ubuntu":
+		normalized = "Ubuntu"
+	case "linuxmint":
+		normalized = "Linux Mint"
+	case "raspbian":
+		normalized = "Raspbian"
+	case "fedora":
+		normalized = "Fedora"
+	case "oracle":
+		normalized = "Oracle Linux"
+	case "centos":
+		normalized = "CentOS"
+	case "redhat":
+		normalized = "Red Hat Enterprise Linux"
+	case "scientific":
+		normalized = "Scientific Linux"
+	case "amazon":
+		normalized = "Amazon Linux"
+	case "xenserver":
+		normalized = "XenServer"
+	case "cloudlinux":
+		normalized = "CloudLinux"
+	case "ibm_powerkvm":
+		normalized = "IBM PowerKVM"
+	case "suse":
+		normalized = "SUSE Linux Enterprise Server"
+	case "opensuse":
+		normalized = "openSUSE"
+	case "gentoo":
+		normalized = "Gentoo Linux"
+	case "slackware":
+		normalized = "Slackware"
+	case "arch":
+		normalized = "Arch Linux"
+	case "exherbo":
+		normalized = "Exherbo"
+	case "alpine":
+		normalized = "Alpine Linux"
+	case "coreos":
+		normalized = "CoreOS"
+	default:
+		normalized = ""
+	}
+
+	return normalized
 }
