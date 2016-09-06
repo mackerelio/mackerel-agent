@@ -46,6 +46,7 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 	hostInfo, err := host.Info()
 	if err != nil {
 		kernelLogger.Errorf("Failed to get platform information: %s", err)
+		return results, nil
 	}
 
 	if np := normalizePlatform(hostInfo.Platform); np != "" {
