@@ -33,7 +33,7 @@ func (g *FilesystemGenerator) Generate() (Values, error) {
 		if device := strings.TrimPrefix(name, "/dev/"); name != device {
 			device = sanitizerReg.ReplaceAllString(device, "_")
 			// kilo bytes -> bytes
-			ret["filesystem."+device+".size"] = float64(dfs.Blocks) * 1024
+			ret["filesystem."+device+".size"] = float64(dfs.Used+dfs.Available) * 1024
 			ret["filesystem."+device+".used"] = float64(dfs.Used) * 1024
 		}
 	}
