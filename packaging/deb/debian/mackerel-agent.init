@@ -20,6 +20,10 @@ LOGFILE=${LOGILE:="/var/log/$NAME.log"}
 PIDFILE=${PIDFILE:="/var/run/$NAME.pid"}
 ROOT=${ROOT:="/var/lib/$NAME"}
 
+if [ "$HTTP_PROXY" != "" ]; then
+    export HTTP_PROXY=$HTTP_PROXY
+fi
+
 # Exit if the package is not installed
 [ -x $DAEMON ] || exit 0
 
