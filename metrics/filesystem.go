@@ -25,9 +25,7 @@ func (g *FilesystemGenerator) Generate() (Values, error) {
 	ret := Values{}
 	for _, dfs := range filesystems {
 		name := dfs.Name
-		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
-		if strings.HasPrefix(name, "/dev/mapper/docker-") ||
-			(g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name)) {
+		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
 			continue
 		}
 		if device := strings.TrimPrefix(name, "/dev/"); name != device {
