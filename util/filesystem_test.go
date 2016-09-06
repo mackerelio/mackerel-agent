@@ -15,11 +15,12 @@ func TestCollectDfValues(t *testing.T) {
 }
 
 func TestParseDfLines(t *testing.T) {
-	dfout := `Filesystem     1024-blocks     Used Available Capacity Mounted on
-/dev/sda1           19734388 16868164 1863772  91% /
-tmpfs                 517224        0  517224   0% /lib/init/rw
-udev                  512780       96  512684   1% /dev
-tmpfs                 517224        4  517220   1% /dev/shm
+	dfout := `Filesystem                         1024-blocks     Used Available Capacity Mounted on
+/dev/sda1                             19734388 16868164 1863772        91% /
+tmpfs                                   517224        0  517224         0% /lib/init/rw
+udev                                    512780       96  512684         1% /dev
+tmpfs                                   517224        4  517220         1% /dev/shm
+/dev/mapper/docker-000:0-000-00000    10190136   168708 9480756         2% /var/lib/docker/devicemapper/mnt/00000
 `
 	expect := []*DfStat{
 		{
