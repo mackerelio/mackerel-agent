@@ -92,6 +92,10 @@ func parseDfLines(out string) []*DfStat {
 			logger.Warningf(err.Error())
 			continue
 		}
+		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
+		if strings.HasPrefix(dfstat.Name, "/dev/mapper/docker-") {
+			continue
+		}
 		filesystems = append(filesystems, dfstat)
 	}
 	return filesystems
