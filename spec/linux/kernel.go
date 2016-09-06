@@ -76,6 +76,8 @@ func normalizePlatform(platform string) string {
 		normalized = "Fedora"
 	case "oracle":
 		normalized = "Oracle Linux"
+	case "enterpriseenterprise":
+		normalized = "Oracle Enterprise Linux"
 	case "centos":
 		normalized = "CentOS"
 	case "redhat":
