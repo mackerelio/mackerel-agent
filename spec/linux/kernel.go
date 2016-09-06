@@ -49,13 +49,12 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		return results, nil
 	}
 
-	if np := normalizePlatform(hostInfo.Platform); np != "" {
-		platformInfo := np + " " + hostInfo.PlatformVersion
+	if platformName := normalizePlatform(hostInfo.Platform); platformName != "" {
+		results["platform_name"] = platformName
+	}
 
-		// when platform version is empty string
-		platformInfo = strings.TrimSpace(platformInfo)
-
-		results["platform"] = platformInfo
+	if platformVersion := hostInfo.PlatformVersion; platformVersion != "" {
+		results["platform_version"] = platformVersion
 	}
 
 	return results, nil
