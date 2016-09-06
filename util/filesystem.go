@@ -7,7 +7,6 @@ package util
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"os/exec"
 	"regexp"
 	"runtime"
@@ -62,7 +61,6 @@ func init() {
 // CollectDfValues collects disk free statistics from df command
 func CollectDfValues() ([]*DfStat, error) {
 	cmd := exec.Command("df", dfOpt...)
-	cmd.Env = append(os.Environ(), "LANG=C")
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  15 * time.Second,
