@@ -109,7 +109,7 @@ func normalizePlatform(platform string) string {
 	case "coreos":
 		normalized = "CoreOS"
 	default:
-		normalized = ""
+		normalized = platform
 	}
 
 	return normalized
