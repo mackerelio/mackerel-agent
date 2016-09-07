@@ -1,6 +1,7 @@
 package logging
 
-//go:generate stringer -type=level level.go
+import "fmt"
+
 type level uint8
 
 // loglevels
@@ -13,3 +14,21 @@ const (
 	ERROR
 	CRITICAL
 )
+
+func (l level) String() string {
+	switch l {
+	case TRACE:
+		return "TRACE"
+	case DEBUG:
+		return "DEBUG"
+	case INFO:
+		return "INFO"
+	case WARNING:
+		return "WARNING"
+	case ERROR:
+		return "ERROR"
+	case CRITICAL:
+		return "CRITICAL"
+	}
+	return fmt.Sprintf("level(%d)", l)
+}
