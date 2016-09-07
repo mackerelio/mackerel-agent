@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.35.0 (2016-09-07)
+
+* built with Go 1.7 #266 (Songmu)
+* remove `func (vs *Values) Merge(other Values)` #268 (Songmu)
+* [incompatible] consider df  (used + available) as size of filesystem #271 (Songmu)
+* Remove DigitalOcean related comment/definition from spec/cloud.go #272 (astj)
+* Fix golint is not working on ci, and add some comment to pass golint #273 (astj)
+* Add linux distribution information to kernel spec #274 (ak1t0)
+* http_proxy configuration #275 (Songmu)
+* set PATH and LANG only in unix environment #276 (Songmu)
+* Ignore docker mapper storage in spec as well #278 (itchyny)
+
+
 ## 0.34.0 (2016-08-18)
 
 * Reduce retry count on finding a host by the custom identifier #258 (itchyny)
