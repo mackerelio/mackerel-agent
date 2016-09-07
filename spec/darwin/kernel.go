@@ -22,53 +22,32 @@ var kernelLogger = logging.GetLogger("spec.kernel")
 
 // Generate collects specs from `uname` command and `sw_vers` command
 func (g *KernelGenerator) Generate() (interface{}, error) {
-	// foundamental information from `uname` command
-	unameArgs := map[string][]string{
-		"release": {"-r"},
-		"version": {"-v"},
-		"machine": {"-m"},
-		"os":      {"-s"},
+	unameCommand := "/usr/bin/uname"
+	swVersCommand := "/usr/bin/sw_vers"
+
+	commands := map[string][]string{
+		"release":          {unameCommand, "-r"},
+		"version":          {unameCommand, "-v"},
+		"machine":          {unameCommand, "-m"},
+		"os":               {unameCommand, "-s"},
+		"platform_name":    {swVersCommand, "-productName"},
+		"platform_version": {swVersCommand, "-productVersion"},
 	}
 
-	unames := make(map[string]string, len(unameArgs))
+	// +1 is for `name`
+	results := make(map[string]string, len(commands)+1)
 
-	for field, args := range unameArgs {
-		out, err := exec.Command("/usr/bin/uname", args...).Output()
+	for field, commandAndArgs := range commands {
+		out, err := exec.Command(commandAndArgs[0], commandAndArgs[1:]...).Output()
 		if err != nil {
-			kernelLogger.Errorf("Failed to run uname %s (skip this field): %s", args, err)
+			kernelLogger.Errorf("Failed to run %s (skip this field): %s", commandAndArgs, err)
 			continue
 		}
 
-		unames[field] = strings.TrimSpace(string(out))
+		results[field] = strings.TrimSpace(string(out))
 	}
 
-	// platform information from `sw_vers` command
-	swVerArgs := map[string][]string{
-		"productName":    {"-productName"},
-		"productVersion": {"-productVersion"},
-	}
-
-	swVers := make(map[string]string, len(swVerArgs))
-
-	for field, args := range swVerArgs {
-		out, err := exec.Command("/usr/bin/sw_vers", args...).Output()
-		if err != nil {
-			kernelLogger.Errorf("Failed to run sw_vers %s (skip this field): %s", args, err)
-			continue
-		}
-
-		swVers[field] = strings.TrimSpace(string(out))
-	}
-
-	results := map[string]string{
-		"release":          unames["release"],
-		"version":          unames["version"],
-		"machine":          unames["machine"],
-		"os":               unames["os"],
-		"name":             unames["os"], // same as name
-		"platform_name":    swVers["productName"],
-		"platform_version": swVers["productVersion"],
-	}
+	results["name"] = results["os"]
 
 	return results, nil
 }
