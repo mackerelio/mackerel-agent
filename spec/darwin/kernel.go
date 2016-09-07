@@ -28,6 +28,7 @@ var kernelLogger = logging.GetLogger("spec.kernel")
 
 // Generate XXX
 func (g *KernelGenerator) Generate() (interface{}, error) {
+	// foundamental information from `uname` command
 	unameArgs := map[string][]string{
 		"release": {"-r"},
 		"version": {"-v"},
@@ -35,7 +36,7 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		"os":      {"-s"},
 	}
 
-	results := make(map[string]string, len(unameArgs)+1)
+	unames := make(map[string]string, len(unameArgs))
 
 	for field, args := range unameArgs {
 		out, err := exec.Command("/usr/bin/uname", args...).Output()
@@ -44,10 +45,36 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 			continue
 		}
 
-		results[field] = strings.TrimSpace(string(out))
+		unames[field] = strings.TrimSpace(string(out))
 	}
 
-	results["name"] = results["os"]
+	// platform information from `sw_vers` command
+	swVerArgs := map[string][]string{
+		"productName":    {"-productName"},
+		"productVersion": {"-productVersion"},
+	}
+
+	swVers := make(map[string]string, len(swVerArgs))
+
+	for field, args := range swVerArgs {
+		out, err := exec.Command("/usr/bin/sw_vers", args...).Output()
+		if err != nil {
+			kernelLogger.Errorf("Failed to run sw_vers %s (skip this field): %s", args, err)
+			continue
+		}
+
+		swVers[field] = strings.TrimSpace(string(out))
+	}
+
+	results := map[string]string{
+		"release":          unames["release"],
+		"version":          unames["version"],
+		"machine":          unames["machine"],
+		"os":               unames["os"],
+		"name":             unames["os"], // same as name
+		"platform_name":    swVers["productName"],
+		"platform_version": swVers["productVersion"],
+	}
 
 	return results, nil
 }
