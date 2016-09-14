@@ -38,7 +38,7 @@ start() {
     [ -x $exec ] || exit 5
 
     echo -n $"Starting $prog:"
-
+    mkdir -m 777 -p $MACKREL_PLUGIN_WORKDIR
     MACKREL_PLUGIN_WORKDIR=$MACKREL_PLUGIN_WORKDIR $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then

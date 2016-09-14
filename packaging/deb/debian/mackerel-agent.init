@@ -33,6 +33,7 @@ MACKREL_PLUGIN_WORKDIR=${MACKREL_PLUGIN_WORKDIR:="/var/tmp/$NAME"}
 #
 do_start()
 {
+    mkdir -m 777 -p $MACKREL_PLUGIN_WORKDIR
     MACKREL_PLUGIN_WORKDIR=$MACKREL_PLUGIN_WORKDIR $DAEMON ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
