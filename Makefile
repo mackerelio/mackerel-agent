@@ -111,10 +111,6 @@ commands_gen.go: commands.go
 	go get github.com/motemen/go-cli/gen
 	go generate
 
-logging/level_string.go: logging/level.go
-	go get golang.org/x/tools/cmd/stringer
-	go generate ./logging
-
 clean:
 	rm -f build/$(MACKEREL_AGENT_NAME)
 	go clean

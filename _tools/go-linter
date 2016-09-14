@@ -1,12 +1,10 @@
 #!/bin/sh
+set -e
 
-LINT_RET=.golint.txt
-rm -f $LINT_RET
 for os in $@; do
   if [ $os != "windows" ]; then
-    GOOS=$os golint ./... | grep -v '_string.go:' | tee -a $LINT_RET
+    GOOS=$os golint -set_exit_status ./...
   else
-    GOOS=$os golint --min_confidence=0.9 ./... | grep -v '_string.go:' | tee -a $LINT_RET
+    GOOS=$os golint -set_exit_status --min_confidence=0.9 ./...
   fi
 done
-exec test ! -s $LINT_RET
