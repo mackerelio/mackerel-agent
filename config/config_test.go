@@ -227,7 +227,7 @@ include = "%s/*.conf"
 command = "foo1"
 
 [plugin.metrics.bar]
-command = "this wille be overwritten"
+command = "this will be overwritten"
 `, tomlQuotedReplacer.Replace(configDir))
 
 	configFile, err := newTempFileWithContent(configContent)

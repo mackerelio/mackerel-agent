@@ -63,13 +63,13 @@ func TestStart(t *testing.T) {
 
 	root, err := ioutil.TempDir("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary dir for test")
+		t.Fatalf("Could not create temporary dir for test")
 	}
 	defer os.RemoveAll(root)
 
 	confFile, err := os.Create(filepath.Join(root, "mackerel-agent.conf"))
 	if err != nil {
-		t.Fatalf("Could not create temprary file for test")
+		t.Fatalf("Could not create temporary file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"` + "\n")
 	confFile.Sync()

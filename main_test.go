@@ -21,7 +21,7 @@ func TestParseFlags(t *testing.T) {
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`verbose=false
 root="/hoge/fuga"
@@ -62,7 +62,7 @@ func TestDetectForce(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 `)
@@ -92,7 +92,7 @@ func TestDetectForce(t *testing.T) {
 func TestResolveConfigForRetire(t *testing.T) {
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 `)
@@ -188,7 +188,7 @@ func TestConfigTestOK(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 `)
@@ -208,7 +208,7 @@ func TestConfigTestNotFound(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 `)
@@ -228,7 +228,7 @@ func TestConfigTestInvalidFormat(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 invalid!!!
