@@ -19,7 +19,7 @@ func TestDoInitialize(t *testing.T) {
 
 	root, err := ioutil.TempDir("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary dir for test")
+		t.Fatalf("Could not create temporary dir for test")
 	}
 	defer os.RemoveAll(root)
 
@@ -44,13 +44,13 @@ func TestDoInitialize(t *testing.T) {
 		f := filepath.Join(root, "mackerel-agent2.conf")
 		confFile, err := os.Create(f)
 		if err != nil {
-			t.Fatalf("Could not create temprary file for test")
+			t.Fatalf("Could not create temporary file for test")
 		}
 		confFile.Close()
 		argv := []string{"-conf", f, "-apikey", "hoge"}
 		err = doInit(&flag.FlagSet{}, argv)
 		if err != nil {
-			t.Errorf("err shoudl be nil but: %s", err)
+			t.Errorf("err should be nil but: %s", err)
 		}
 	}
 
