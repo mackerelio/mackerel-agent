@@ -1,3 +1,14 @@
+mackerel-agent (0.35.1-1) stable; urgency=low
+
+  * support MACKEREL_PLUGIN_WORKDIR in init scripts (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/277>
+  * Add platform metadata for Darwin (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/280>
+  * Disable http2 for now (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/283>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 29 Sep 2016 07:17:48 +0000
+
 mackerel-agent (0.35.0-1) stable; urgency=low
 
   * built with Go 1.7 (by Songmu)

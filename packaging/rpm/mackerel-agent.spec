@@ -62,6 +62,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Sep 29 2016 <mackerel-developers@hatena.ne.jp> - 0.35.1-1
+- support MACKEREL_PLUGIN_WORKDIR in init scripts (by Songmu)
+- Add platform metadata for Darwin (by astj)
+- Disable http2 for now (by Songmu)
+
 * Wed Sep 07 2016 <mackerel-developers@hatena.ne.jp> - 0.35.0-1
 - built with Go 1.7 (by Songmu)
 - remove `func (vs *Values) Merge(other Values)` (by Songmu)
