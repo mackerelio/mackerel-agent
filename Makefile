@@ -25,7 +25,7 @@ test: lint
 
 build: deps
 	go build -ldflags=$(BUILD_LDFLAGS) \
-	-o build/$(MACKEREL_AGENT_NAME)
+	  -o build/$(MACKEREL_AGENT_NAME)
 
 run: build
 	./build/$(MACKEREL_AGENT_NAME) $(ARGS)
