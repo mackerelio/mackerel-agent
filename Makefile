@@ -24,7 +24,7 @@ test: lint
 	go test -v -short $(TESTFLAGS) ./...
 
 build: deps
-	GODEBUG=http2client=0 go build -ldflags=$(BUILD_LDFLAGS) \
+	go build -ldflags=$(BUILD_LDFLAGS) \
 	  -o build/$(MACKEREL_AGENT_NAME)
 
 run: build
@@ -43,7 +43,7 @@ lint: deps
 
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
-	GODEBUG=http2client=0 goxc -build-ldflags=$(BUILD_LDFLAGS) \
+	goxc -build-ldflags=$(BUILD_LDFLAGS) \
 		-os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . -n $(MACKEREL_AGENT_NAME)
 
 cover: deps
