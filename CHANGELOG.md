@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.35.1 (2016-09-29)
+
+* support MACKEREL_PLUGIN_WORKDIR in init scripts #277 (Songmu)
+* Add platform metadata for Darwin #280 (astj)
+* Disable http2 for now #283 (Songmu)
+
+
 ## 0.35.0 (2016-09-07)
 
 * built with Go 1.7 #266 (Songmu)
