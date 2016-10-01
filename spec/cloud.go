@@ -59,6 +59,10 @@ func SuggestCloudGenerator() *CloudGenerator {
 func httpCli() *http.Client {
 	return &http.Client{
 		Timeout: timeout,
+		Transport: &http.Transport{
+			// don't use HTTP_PROXY when requesting cloud instance metadata APIs
+			Proxy: nil,
+		},
 	}
 }
 
