@@ -13,6 +13,7 @@ var sampleConfig = `
 apikey = "abcde"
 display_name = "fghij"
 diagnostic = true
+use_mountpoint = true
 
 [filesystems]
 ignore = "/dev/ram.*"
@@ -57,6 +58,10 @@ func TestLoadConfig(t *testing.T) {
 	}
 
 	if config.Diagnostic != true {
+		t.Error("should be true (config value should be used)")
+	}
+
+	if config.UseMountPoint != true {
 		t.Error("should be true (config value should be used)")
 	}
 
