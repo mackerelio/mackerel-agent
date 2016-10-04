@@ -14,6 +14,7 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 /*
@@ -39,7 +40,8 @@ cat /proc/diskstats sample:
 
 // DiskGenerator XXX
 type DiskGenerator struct {
-	Interval time.Duration
+	Interval      time.Duration
+	UseMountPoint bool
 }
 
 var diskMetricsNames = []string{
@@ -87,10 +89,15 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 		diskLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
-	return parseDiskStats(out)
+	return parseDiskStats(out, g.UseMountPoint)
 }
 
-func parseDiskStats(out []byte) (metrics.Values, error) {
+func parseDiskStats(out []byte, useMountPoint bool) (metrics.Values, error) {
+	nameMapping, err := getDeviceNameMapping()
+	if err != nil {
+		diskLogger.Errorf("Failed to prepare device name mapping: %s", err)
+		return nil, err
+	}
 	lineScanner := bufio.NewScanner(bytes.NewReader(out))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
@@ -108,10 +115,20 @@ func parseDiskStats(out []byte) (metrics.Values, error) {
 			break
 		}
 
+		deviceLabel := device
+		if useMountPoint {
+			mountpoint, exists := nameMapping[device]
+			if exists {
+				deviceLabel = mountpoint
+			} else {
+				diskLogger.Warningf("Failed to find mountpoint for device %s", device)
+			}
+		}
+
 		deviceResult := make(map[string]float64)
 		hasNonZeroValue := false
 		for i := range diskMetricsNames {
-			key := fmt.Sprintf("disk.%s.%s", device, diskMetricsNames[i])
+			key := fmt.Sprintf("disk.%s.%s", deviceLabel, diskMetricsNames[i])
 			value, err := strconv.ParseFloat(values[i], 64)
 			if err != nil {
 				diskLogger.Warningf("Failed to parse disk metrics: %s", err)
@@ -130,4 +147,24 @@ func parseDiskStats(out []byte) (metrics.Values, error) {
 	}
 
 	return results, nil
+}
+
+var mountpointSanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
+
+// Generate the metrics of filesystems
+func getDeviceNameMapping() (map[string]string, error) {
+	filesystems, err := util.CollectDfValues()
+	if err != nil {
+		return nil, err
+	}
+	ret := map[string]string{}
+	for _, dfs := range filesystems {
+		name := dfs.Name
+		if device := strings.TrimPrefix(name, "/dev/"); name != device {
+			mountpointLabel := mountpointSanitizerReg.ReplaceAllString(dfs.Mounted, "_")
+			deviceName := mountpointSanitizerReg.ReplaceAllString(device, "_")
+			ret[deviceName] = mountpointLabel
+		}
+	}
+	return ret, nil
 }
