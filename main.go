@@ -129,7 +129,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		case "role":
 			conf.Roles = roleFullnames
 		case "usemountpoint":
-			conf.UseMountPoint = *usemountpoint
+			conf.Filesystems.UseMountPoint = *usemountpoint
 		}
 	})
 

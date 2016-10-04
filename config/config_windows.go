@@ -19,14 +19,13 @@ var execdir = execdirInit()
 
 // DefaultConfig The default configuration for windows
 var DefaultConfig = &Config{
-	Apibase:       getApibase(),
-	Root:          execdir,
-	Pidfile:       filepath.Join(execdir, getAgentName()+".pid"),
-	Conffile:      filepath.Join(execdir, getAgentName()+".conf"),
-	Roles:         []string{},
-	Verbose:       false,
-	Diagnostic:    false,
-	UseMountPoint: false,
+	Apibase:    getApibase(),
+	Root:       execdir,
+	Pidfile:    filepath.Join(execdir, getAgentName()+".pid"),
+	Conffile:   filepath.Join(execdir, getAgentName()+".conf"),
+	Roles:      []string{},
+	Verbose:    false,
+	Diagnostic: false,
 	Connection: ConnectionConfig{
 		PostMetricsDequeueDelaySeconds: 30,
 		PostMetricsRetryDelaySeconds:   60,

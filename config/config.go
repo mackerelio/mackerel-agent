@@ -36,21 +36,20 @@ func getAgentName() string {
 
 // Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase       string
-	Apikey        string
-	Root          string
-	Pidfile       string
-	Conffile      string
-	Roles         []string
-	Verbose       bool
-	Silent        bool
-	Diagnostic    bool `toml:"diagnostic"`
-	Connection    ConnectionConfig
-	DisplayName   string      `toml:"display_name"`
-	HostStatus    HostStatus  `toml:"host_status"`
-	Filesystems   Filesystems `toml:"filesystems"`
-	HTTPProxy     string      `toml:"http_proxy"`
-	UseMountPoint bool        `toml:"use_mountpoint"`
+	Apibase     string
+	Apikey      string
+	Root        string
+	Pidfile     string
+	Conffile    string
+	Roles       []string
+	Verbose     bool
+	Silent      bool
+	Diagnostic  bool `toml:"diagnostic"`
+	Connection  ConnectionConfig
+	DisplayName string      `toml:"display_name"`
+	HostStatus  HostStatus  `toml:"host_status"`
+	Filesystems Filesystems `toml:"filesystems"`
+	HTTPProxy   string      `toml:"http_proxy"`
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
@@ -100,7 +99,8 @@ type HostStatus struct {
 
 // Filesystems configure filesystem related settings
 type Filesystems struct {
-	Ignore Regexpwrapper `toml:"ignore"`
+	Ignore        Regexpwrapper `toml:"ignore"`
+	UseMountPoint bool          `toml:"use_mountpoint"`
 }
 
 // Regexpwrapper is a wrapper type for marshalling string

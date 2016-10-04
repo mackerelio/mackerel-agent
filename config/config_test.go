@@ -13,7 +13,6 @@ var sampleConfig = `
 apikey = "abcde"
 display_name = "fghij"
 diagnostic = true
-use_mountpoint = true
 
 [filesystems]
 ignore = "/dev/ram.*"
@@ -61,8 +60,8 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("should be true (config value should be used)")
 	}
 
-	if config.UseMountPoint != true {
-		t.Error("should be true (config value should be used)")
+	if config.Filesystems.UseMountPoint != false {
+		t.Error("should be false (default value should be used)")
 	}
 
 	if config.Connection.PostMetricsDequeueDelaySeconds != 30 {
@@ -113,6 +112,31 @@ func TestLoadConfigWithHostStatus(t *testing.T) {
 
 	if config.HostStatus.OnStop != "poweroff" {
 		t.Error(`HostStatus.OnStop should be "poweroff"`)
+	}
+}
+
+var sampleConfigWithMountPoint = `
+apikey = "abcde"
+display_name = "fghij"
+
+[filesystems]
+use_mountpoint = true
+`
+
+func TestLoadConfigWithMountPoint(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithMountPoint)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	config, err := LoadConfig(tmpFile.Name())
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+
+	if config.Filesystems.UseMountPoint != true {
+		t.Error("should be true (config value should be used)")
 	}
 }
 
