@@ -92,7 +92,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey        = fs.String("apikey", "", "(DEPRECATED) API key from mackerel.io web site")
 		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
-		usemountpoint = fs.Bool("use_mount_point", false, "Use `Mounted on` as filesystem metric name")
+		usemountpoint = fs.Bool("use_mount_point", false, "Use `Mounted On` as filesystem metric name")
 		verbose       bool
 		roleFullnames roleFullnamesFlag
 	)
@@ -128,7 +128,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 			conf.Verbose = verbose
 		case "role":
 			conf.Roles = roleFullnames
-		case "usemountpoint":
+		case "use_mount_point":
 			conf.Filesystems.UseMountPoint = *usemountpoint
 		}
 	})
