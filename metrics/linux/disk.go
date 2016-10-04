@@ -89,15 +89,20 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 		diskLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
-	return parseDiskStats(out, g.UseMountPoint)
+
+	// If UseMountPoint is enabled, pass device name => mountpoint mapping to parseDiskStats.
+	// (If not, pass empty map)
+	var nameMapping map[string]string
+	if g.UseMountPoint {
+		nameMapping, err = getDeviceNameMapping()
+		if err != nil {
+			diskLogger.Warningf("Failed to prepare device name mapping: %s", err)
+		}
+	}
+	return parseDiskStats(out, nameMapping)
 }
 
-func parseDiskStats(out []byte, useMountPoint bool) (metrics.Values, error) {
-	nameMapping, err := getDeviceNameMapping()
-	if err != nil {
-		diskLogger.Errorf("Failed to prepare device name mapping: %s", err)
-		return nil, err
-	}
+func parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, error) {
 	lineScanner := bufio.NewScanner(bytes.NewReader(out))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
@@ -116,13 +121,9 @@ func parseDiskStats(out []byte, useMountPoint bool) (metrics.Values, error) {
 		}
 
 		deviceLabel := device
-		if useMountPoint {
-			mountpoint, exists := nameMapping[device]
-			if exists {
-				deviceLabel = mountpoint
-			} else {
-				diskLogger.Warningf("Failed to find mountpoint for device %s", device)
-			}
+		mountpoint, exists := mapping[device]
+		if exists {
+			deviceLabel = mountpoint
 		}
 
 		deviceResult := make(map[string]float64)
