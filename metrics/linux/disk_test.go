@@ -17,7 +17,7 @@ func TestDiskGenerator(t *testing.T) {
 		t.Skipf("Skip: can't access `/proc/diskstats` in Travis environment.")
 	}
 
-	g := &DiskGenerator{1 * time.Second}
+	g := &DiskGenerator{Interval: 1 * time.Second}
 	values, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
@@ -52,7 +52,7 @@ func TestParseDiskStats(t *testing.T) {
 
 202       2 xvda2 1641 9310 87552 1252 6365 3717 80664 24192 0 15040 25428`)
 
-	result, err := parseDiskStats(out)
+	result, err := parseDiskStats(out, false)
 	if err != nil {
 		t.Errorf("error should be nil but: %s", err)
 	}
