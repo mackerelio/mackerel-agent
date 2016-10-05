@@ -14,6 +14,7 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 /*
@@ -80,15 +81,13 @@ func (g *InterfaceGenerator) collectInterfacesValues() (metrics.Values, error) {
 	return parseNetdev(out)
 }
 
-var sanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
-
 func parseNetdev(out []byte) (metrics.Values, error) {
 	lineScanner := bufio.NewScanner(bytes.NewReader(out))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
 		line := lineScanner.Text()
 		if kv := strings.SplitN(line, ":", 2); len(kv) == 2 {
-			name := sanitizerReg.ReplaceAllString(strings.TrimSpace(kv[0]), "_")
+			name := util.SanitizeMetricKey(strings.TrimSpace(kv[0]))
 			if name == "lo" {
 				continue
 			}

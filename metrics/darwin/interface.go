@@ -79,7 +79,7 @@ func (g *InterfaceGenerator) collectIntarfacesValues() (metrics.Values, error) {
 	for lineScanner.Scan() {
 		line := lineScanner.Text()
 		fields := strings.Fields(line)
-		name := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(regexp.MustCompile(`\*`).ReplaceAllString(fields[0], ""), "_")
+		name := util.SanitizeMetricKey(regexp.MustCompile(`\*`).ReplaceAllString(fields[0], ""))
 		if match, _ := regexp.MatchString(`^lo\d+$`, name); match {
 			continue
 		}

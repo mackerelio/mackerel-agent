@@ -112,7 +112,7 @@ func parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, erro
 			diskLogger.Warningf("Failed to parse disk metrics: %s", text)
 			continue
 		}
-		device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(cols[2], "_")
+		device := util.SanitizeMetricKey(cols[2])
 		values := cols[3:]
 
 		if len(values) != len(diskMetricsNames) {
@@ -150,8 +150,6 @@ func parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, erro
 	return results, nil
 }
 
-var mountpointSanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
-
 // Generate the metrics of filesystems
 func getDeviceNameMapping() (map[string]string, error) {
 	filesystems, err := util.CollectDfValues()
@@ -162,8 +160,8 @@ func getDeviceNameMapping() (map[string]string, error) {
 	for _, dfs := range filesystems {
 		name := dfs.Name
 		if device := strings.TrimPrefix(name, "/dev/"); name != device {
-			mountpointLabel := mountpointSanitizerReg.ReplaceAllString(dfs.Mounted, "_")
-			deviceName := mountpointSanitizerReg.ReplaceAllString(device, "_")
+			mountpointLabel := util.SanitizeMetricKey(dfs.Mounted)
+			deviceName := util.SanitizeMetricKey(device)
 			ret[deviceName] = mountpointLabel
 		}
 	}
