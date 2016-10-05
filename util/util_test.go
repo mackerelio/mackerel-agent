@@ -39,3 +39,15 @@ func TestRunCommandWithTimeout(t *testing.T) {
 		t.Error("err should have error but nil")
 	}
 }
+
+func TestSanitizeMetricKey(t *testing.T) {
+	if SanitizeMetricKey("Hoge-123_") != "Hoge-123_" {
+		t.Errorf("characters matching [A-Za-z0-9_-] should be kept as is")
+	}
+	if SanitizeMetricKey(" /pあ'*") != "__p___" {
+		t.Errorf("dangerous characters should be sanitized")
+	}
+	if SanitizeMetricKey("p.q.r") != "p_q_r" {
+		t.Errorf(". (dot) should be sanitized")
+	}
+}
