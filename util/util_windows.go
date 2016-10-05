@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"syscall"
@@ -77,4 +78,11 @@ func GetWmicToFloat(target string, query string) (float64, error) {
 		return 0, err
 	}
 	return ret, nil
+}
+
+var metricKeySanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
+
+// SanitizeMetricKey sanitizes key string
+func SanitizeMetricKey(rawKey string) string {
+	return metricKeySanitizerReg.ReplaceAllString(rawKey, "_")
 }
