@@ -100,7 +100,7 @@ type HostStatus struct {
 // Filesystems configure filesystem related settings
 type Filesystems struct {
 	Ignore        Regexpwrapper `toml:"ignore"`
-	UseMountPoint bool          `toml:"use_mountpoint"`
+	UseMountpoint bool          `toml:"use_mountpoint"`
 }
 
 // Regexpwrapper is a wrapper type for marshalling string

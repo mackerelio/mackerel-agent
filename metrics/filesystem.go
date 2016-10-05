@@ -12,7 +12,7 @@ import (
 // FilesystemGenerator is common filesystem metrics generator on unix os.
 type FilesystemGenerator struct {
 	IgnoreRegexp  *regexp.Regexp
-	UseMountPoint bool
+	UseMountpoint bool
 }
 
 // Generate the metrics of filesystems
@@ -29,7 +29,7 @@ func (g *FilesystemGenerator) Generate() (Values, error) {
 		}
 		if device := strings.TrimPrefix(name, "/dev/"); name != device {
 			var metricName string
-			if g.UseMountPoint {
+			if g.UseMountpoint {
 				metricName = util.SanitizeMetricKey(dfs.Mounted)
 			} else {
 				metricName = util.SanitizeMetricKey(device)

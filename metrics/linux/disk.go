@@ -41,7 +41,7 @@ cat /proc/diskstats sample:
 // DiskGenerator XXX
 type DiskGenerator struct {
 	Interval      time.Duration
-	UseMountPoint bool
+	UseMountpoint bool
 }
 
 var diskMetricsNames = []string{
@@ -90,10 +90,10 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 		return nil, err
 	}
 
-	// If UseMountPoint is enabled, pass device name => mountpoint mapping to parseDiskStats.
+	// If UseMountpoint is enabled, pass device name => mountpoint mapping to parseDiskStats.
 	// (If not, pass empty map)
 	var nameMapping map[string]string
-	if g.UseMountPoint {
+	if g.UseMountpoint {
 		nameMapping, err = getDeviceNameMapping()
 		if err != nil {
 			diskLogger.Warningf("Failed to prepare device name mapping: %s", err)

@@ -60,7 +60,7 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("should be true (config value should be used)")
 	}
 
-	if config.Filesystems.UseMountPoint != false {
+	if config.Filesystems.UseMountpoint != false {
 		t.Error("should be false (default value should be used)")
 	}
 
@@ -135,7 +135,7 @@ func TestLoadConfigWithMountPoint(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	if config.Filesystems.UseMountPoint != true {
+	if config.Filesystems.UseMountpoint != true {
 		t.Error("should be true (config value should be used)")
 	}
 }
