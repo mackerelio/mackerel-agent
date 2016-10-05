@@ -14,6 +14,7 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 /*
