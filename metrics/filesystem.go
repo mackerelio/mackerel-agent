@@ -11,10 +11,9 @@ import (
 
 // FilesystemGenerator is common filesystem metrics generator on unix os.
 type FilesystemGenerator struct {
-	IgnoreRegexp *regexp.Regexp
+	IgnoreRegexp  *regexp.Regexp
+	UseMountpoint bool
 }
-
-var sanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
 
 // Generate the metrics of filesystems
 func (g *FilesystemGenerator) Generate() (Values, error) {
@@ -29,10 +28,15 @@ func (g *FilesystemGenerator) Generate() (Values, error) {
 			continue
 		}
 		if device := strings.TrimPrefix(name, "/dev/"); name != device {
-			device = sanitizerReg.ReplaceAllString(device, "_")
+			var metricName string
+			if g.UseMountpoint {
+				metricName = util.SanitizeMetricKey(dfs.Mounted)
+			} else {
+				metricName = util.SanitizeMetricKey(device)
+			}
 			// kilo bytes -> bytes
-			ret["filesystem."+device+".size"] = float64(dfs.Used+dfs.Available) * 1024
-			ret["filesystem."+device+".used"] = float64(dfs.Used) * 1024
+			ret["filesystem."+metricName+".size"] = float64(dfs.Used+dfs.Available) * 1024
+			ret["filesystem."+metricName+".used"] = float64(dfs.Used) * 1024
 		}
 	}
 	return ret, nil

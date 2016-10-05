@@ -14,6 +14,7 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 /*
@@ -39,7 +40,8 @@ cat /proc/diskstats sample:
 
 // DiskGenerator XXX
 type DiskGenerator struct {
-	Interval time.Duration
+	Interval      time.Duration
+	UseMountpoint bool
 }
 
 var diskMetricsNames = []string{
@@ -87,10 +89,20 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 		diskLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
 	}
-	return parseDiskStats(out)
+
+	// If UseMountpoint is enabled, pass device name => mountpoint mapping to parseDiskStats.
+	// (If not, pass empty map)
+	var nameMapping map[string]string
+	if g.UseMountpoint {
+		nameMapping, err = getDeviceNameMapping()
+		if err != nil {
+			diskLogger.Warningf("Failed to prepare device name mapping: %s", err)
+		}
+	}
+	return parseDiskStats(out, nameMapping)
 }
 
-func parseDiskStats(out []byte) (metrics.Values, error) {
+func parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, error) {
 	lineScanner := bufio.NewScanner(bytes.NewReader(out))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
@@ -100,7 +112,7 @@ func parseDiskStats(out []byte) (metrics.Values, error) {
 			diskLogger.Warningf("Failed to parse disk metrics: %s", text)
 			continue
 		}
-		device := regexp.MustCompile(`[^A-Za-z0-9_-]`).ReplaceAllString(cols[2], "_")
+		device := cols[2]
 		values := cols[3:]
 
 		if len(values) != len(diskMetricsNames) {
@@ -108,10 +120,16 @@ func parseDiskStats(out []byte) (metrics.Values, error) {
 			break
 		}
 
+		deviceLabel := util.SanitizeMetricKey(device)
+		mountpoint, exists := mapping[device]
+		if exists {
+			deviceLabel = util.SanitizeMetricKey(mountpoint)
+		}
+
 		deviceResult := make(map[string]float64)
 		hasNonZeroValue := false
 		for i := range diskMetricsNames {
-			key := fmt.Sprintf("disk.%s.%s", device, diskMetricsNames[i])
+			key := fmt.Sprintf("disk.%s.%s", deviceLabel, diskMetricsNames[i])
 			value, err := strconv.ParseFloat(values[i], 64)
 			if err != nil {
 				diskLogger.Warningf("Failed to parse disk metrics: %s", err)
@@ -130,4 +148,20 @@ func parseDiskStats(out []byte) (metrics.Values, error) {
 	}
 
 	return results, nil
+}
+
+// mapping from device name (like 'svda1') to mountpoint (like '/tmp')
+func getDeviceNameMapping() (map[string]string, error) {
+	filesystems, err := util.CollectDfValues()
+	if err != nil {
+		return nil, err
+	}
+	ret := map[string]string{}
+	for _, dfs := range filesystems {
+		name := dfs.Name
+		if device := strings.TrimPrefix(name, "/dev/"); name != device {
+			ret[device] = dfs.Mounted
+		}
+	}
+	return ret, nil
 }
