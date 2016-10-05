@@ -5,7 +5,6 @@ package util
 import (
 	"fmt"
 	"os/exec"
-	"regexp"
 	"time"
 
 	"github.com/Songmu/timeout"
@@ -40,11 +39,4 @@ func RunCommand(command, user string) (string, string, int, error) {
 		utilLogger.Errorf("RunCommand error command: %s, error: %s", command, err)
 	}
 	return stdout, stderr, exitStatus.GetChildExitCode(), err
-}
-
-var metricKeySanitizerReg = regexp.MustCompile(`[^A-Za-z0-9_-]`)
-
-// SanitizeMetricKey sanitizes key string
-func SanitizeMetricKey(rawKey string) string {
-	return metricKeySanitizerReg.ReplaceAllString(rawKey, "_")
 }
