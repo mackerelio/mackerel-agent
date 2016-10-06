@@ -56,10 +56,18 @@ func SuggestCloudGenerator() *CloudGenerator {
 	return nil
 }
 
-func isEC2() bool {
-	cl := http.Client{
+func httpCli() *http.Client {
+	return &http.Client{
 		Timeout: timeout,
+		Transport: &http.Transport{
+			// don't use HTTP_PROXY when requesting cloud instance metadata APIs
+			Proxy: nil,
+		},
 	}
+}
+
+func isEC2() bool {
+	cl := httpCli()
 	// '/ami-id` is may be aws specific URL
 	resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
 	if err != nil {
@@ -76,9 +84,7 @@ func isGCE() bool {
 }
 
 func requestGCEMeta() ([]byte, error) {
-	cl := http.Client{
-		Timeout: timeout,
-	}
+	cl := httpCli()
 	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
 	if err != nil {
 		return nil, err
@@ -104,9 +110,7 @@ type EC2Generator struct {
 
 // Generate collects metadata from cloud platform.
 func (g *EC2Generator) Generate() (interface{}, error) {
-	client := http.Client{
-		Timeout: timeout,
-	}
+	cl := httpCli()
 
 	metadataKeys := []string{
 		"instance-id",
@@ -126,7 +130,7 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 	metadata := make(map[string]string)
 
 	for _, key := range metadataKeys {
-		resp, err := client.Get(g.baseURL.String() + "/" + key)
+		resp, err := cl.Get(g.baseURL.String() + "/" + key)
 		if err != nil {
 			cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", key)
 			return nil, nil
@@ -154,9 +158,9 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 
 // SuggestCustomIdentifier suggests the identifier of the EC2 instance
 func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
-	client := http.Client{Timeout: timeout}
+	cl := httpCli()
 	key := "instance-id"
-	resp, err := client.Get(g.baseURL.String() + "/" + key)
+	resp, err := cl.Get(g.baseURL.String() + "/" + key)
 	if err != nil {
 		return "", fmt.Errorf("Error while retrieving instance-id.")
 	}
