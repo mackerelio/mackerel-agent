@@ -1,3 +1,12 @@
+mackerel-agent (0.36.0-1) stable; urgency=low
+
+  * don't use HTTP_PROXY when requesting cloud instance metadata APIs (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/285>
+  * Add an option to output filesystem-related metrics with key by mountpoint (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/286>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 18 Oct 2016 08:15:17 +0000
+
 mackerel-agent (0.35.1-1) stable; urgency=low
 
   * support MACKEREL_PLUGIN_WORKDIR in init scripts (by Songmu)

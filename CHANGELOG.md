@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.36.0 (2016-10-18)
+
+* don't use HTTP_PROXY when requesting cloud instance metadata APIs #285 (Songmu)
+* Add an option to output filesystem-related metrics with key by mountpoint #286 (astj)
+
+
 ## 0.35.1 (2016-09-29)
 
 * support MACKEREL_PLUGIN_WORKDIR in init scripts #277 (Songmu)

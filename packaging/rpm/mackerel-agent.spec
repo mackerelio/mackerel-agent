@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Oct 18 2016 <mackerel-developers@hatena.ne.jp> - 0.36.0-1
+- don't use HTTP_PROXY when requesting cloud instance metadata APIs (by Songmu)
+- Add an option to output filesystem-related metrics with key by mountpoint (by astj)
+
 * Thu Sep 29 2016 <mackerel-developers@hatena.ne.jp> - 0.35.1-1
 - support MACKEREL_PLUGIN_WORKDIR in init scripts (by Songmu)
 - Add platform metadata for Darwin (by astj)
