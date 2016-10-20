@@ -16,12 +16,15 @@ import (
 	"github.com/mattn/go-encoding"
 )
 
+// Node is HTML node traversing to convert to text.
 type Node struct {
 	Name     xml.Name
 	Attr     []xml.Attr
 	Children []interface{}
 }
 
+// MarshalXML encode the Node as XML emement. This handle only Comment and
+// CharData. Any other values are not converted.
 func (n *Node) MarshalXML(e *xml.Encoder, s xml.StartElement) error {
 	s.Name = n.Name
 	s.Name.Space = ""
@@ -43,6 +46,7 @@ func (n *Node) MarshalXML(e *xml.Encoder, s xml.StartElement) error {
 	return nil
 }
 
+// UnmarshalXML decodes as single XML element to read content.
 func (n *Node) UnmarshalXML(d *xml.Decoder, s xml.StartElement) error {
 	n.Name = s.Name
 	n.Attr = s.Attr
@@ -202,7 +206,7 @@ func main() {
 	if product == nil {
 		log.Fatal("__VERSION__ not found")
 	}
-	for i, _ := range product.Attr {
+	for i := range product.Attr {
 		if product.Attr[i].Name.Local == "Version" {
 			product.Attr[i].Value = *productVersion
 		}
