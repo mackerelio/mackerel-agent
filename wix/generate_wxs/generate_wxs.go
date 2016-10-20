@@ -67,7 +67,6 @@ func (n *Node) UnmarshalXML(d *xml.Decoder, s xml.StartElement) error {
 			n.Children = append(n.Children, c)
 		}
 	}
-	return nil
 }
 
 func hasAttr(node *Node, name, value string) bool {
