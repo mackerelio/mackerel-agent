@@ -1,3 +1,46 @@
+mackerel-agent (0.36.0-1) stable; urgency=low
+
+  * don't use HTTP_PROXY when requesting cloud instance metadata APIs (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/285>
+  * Add an option to output filesystem-related metrics with key by mountpoint (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/286>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 18 Oct 2016 08:15:17 +0000
+
+mackerel-agent (0.35.1-1) stable; urgency=low
+
+  * support MACKEREL_PLUGIN_WORKDIR in init scripts (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/277>
+  * Add platform metadata for Darwin (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/280>
+  * Disable http2 for now (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/283>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 29 Sep 2016 07:17:48 +0000
+
+mackerel-agent (0.35.0-1) stable; urgency=low
+
+  * built with Go 1.7 (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/266>
+  * remove `func (vs *Values) Merge(other Values)` (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/268>
+  * [incompatible] consider df  (used + available) as size of filesystem (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/271>
+  * Remove DigitalOcean related comment/definition from spec/cloud.go (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/272>
+  * Fix golint is not working on ci, and add some comment to pass golint (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/273>
+  * Add linux distribution information to kernel spec (by ak1t0)
+    <https://github.com/mackerelio/mackerel-agent/pull/274>
+  * http_proxy configuration (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/275>
+  * set PATH and LANG only in unix environment (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/276>
+  * Ignore docker mapper storage in spec as well (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/278>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 07 Sep 2016 02:42:39 +0000
+
 mackerel-agent (0.34.0-1) stable; urgency=low
 
   * Reduce retry count on finding a host by the custom identifier (by itchyny)

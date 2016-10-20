@@ -21,7 +21,7 @@ func TestParseFlags(t *testing.T) {
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`verbose=false
 root="/hoge/fuga"
@@ -62,7 +62,7 @@ func TestDetectForce(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 `)
@@ -71,7 +71,7 @@ func TestDetectForce(t *testing.T) {
 	defer os.Remove(confFile.Name())
 
 	argv := []string{"-conf=" + confFile.Name()}
-	conf, force, err := resolveConfigForRetire(&flag.FlagSet{}, argv)
+	conf, force, _ := resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if force {
 		t.Errorf("force should be false")
 	}
@@ -80,7 +80,7 @@ func TestDetectForce(t *testing.T) {
 	}
 
 	argv = append(argv, "-force")
-	conf, force, err = resolveConfigForRetire(&flag.FlagSet{}, argv)
+	conf, force, _ = resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if !force {
 		t.Errorf("force should be true")
 	}
@@ -92,7 +92,7 @@ func TestDetectForce(t *testing.T) {
 func TestResolveConfigForRetire(t *testing.T) {
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 `)
@@ -113,7 +113,7 @@ func TestResolveConfigForRetire(t *testing.T) {
 		"-role=hoge:fuga",
 	}
 
-	conf, force, err := resolveConfigForRetire(&flag.FlagSet{}, argv)
+	conf, force, _ := resolveConfigForRetire(&flag.FlagSet{}, argv)
 	if force {
 		t.Errorf("force should be false")
 	}
@@ -188,7 +188,7 @@ func TestConfigTestOK(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 `)
@@ -208,7 +208,7 @@ func TestConfigTestNotFound(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 `)
@@ -228,7 +228,7 @@ func TestConfigTestInvalidFormat(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
-		t.Fatalf("Could not create temprary config file for test")
+		t.Fatalf("Could not create temporary config file for test")
 	}
 	confFile.WriteString(`apikey="DUMMYAPIKEY"
 invalid!!!

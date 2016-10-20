@@ -2,14 +2,14 @@ package metrics
 
 import "github.com/mackerelio/mackerel-agent/mackerel"
 
-// Values XXX
+// Values represents metric values
 type Values map[string]float64
 
-// Merge XXX
-func (vs *Values) Merge(other Values) {
-	for k, v := range (map[string]float64)(other) {
-		(*vs)[k] = v
+func merge(v1, v2 Values) Values {
+	for k, v := range v2 {
+		v1[k] = v
 	}
+	return v1
 }
 
 // ValuesCustomIdentifier holds the metric values with the optional custom identifier
@@ -19,26 +19,26 @@ type ValuesCustomIdentifier struct {
 }
 
 // MergeValuesCustomIdentifiers merges the metric values and custom identifiers
-func MergeValuesCustomIdentifiers(values []ValuesCustomIdentifier, newValue ValuesCustomIdentifier) []ValuesCustomIdentifier {
+func MergeValuesCustomIdentifiers(values []*ValuesCustomIdentifier, newValue *ValuesCustomIdentifier) []*ValuesCustomIdentifier {
 	for _, value := range values {
 		if value.CustomIdentifier == newValue.CustomIdentifier ||
 			(value.CustomIdentifier != nil && newValue.CustomIdentifier != nil &&
 				*value.CustomIdentifier == *newValue.CustomIdentifier) {
-			value.Values.Merge(newValue.Values)
+			value.Values = merge(value.Values, newValue.Values)
 			return values
 		}
 	}
 	return append(values, newValue)
 }
 
-// Generator XXX
+// Generator generates metrics
 type Generator interface {
 	Generate() (Values, error)
 }
 
-// PluginGenerator XXX
+// PluginGenerator generates metrics of plugin
 type PluginGenerator interface {
-	Generate() (Values, error)
+	Generator
 	PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error)
 	CustomIdentifier() *string
 }

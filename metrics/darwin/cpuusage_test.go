@@ -9,7 +9,7 @@ func TestCPUUsageGenerator_Generate(t *testing.T) {
 	values, err := g.Generate()
 
 	if err != nil {
-		t.Errorf("error should not have occured: %s", err)
+		t.Errorf("error should not have occurred: %s", err)
 	}
 
 	metricName := []string{"cpu.user.percentage", "cpu.system.percentage", "cpu.idle.percentage"}

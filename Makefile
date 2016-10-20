@@ -25,14 +25,14 @@ test: lint
 
 build: deps
 	go build -ldflags=$(BUILD_LDFLAGS) \
-	-o build/$(MACKEREL_AGENT_NAME)
+	  -o build/$(MACKEREL_AGENT_NAME)
 
 run: build
 	./build/$(MACKEREL_AGENT_NAME) $(ARGS)
 
 deps: generate
 	go get -d -v -t ./...
-#	go get github.com/golang/lint/golint
+	go get github.com/golang/lint/golint
 	go get github.com/pierrre/gotestcover
 	go get github.com/laher/goxc
 	go get github.com/mattn/goveralls
@@ -102,7 +102,7 @@ tgz:
 	mkdir -p $(tgz_dir)
 	cp mackerel-agent.sample.conf $(tgz_dir)/$(MACKEREL_AGENT_NAME).conf
 	cp build/$(MACKEREL_AGENT_NAME) $(tgz_dir)/
-	tar cvfz build/$(MACKEREL_AGENT_NAME)-latest.tar.gz -C ./build/tgz $(MACKEREL_AGENT_NAME)
+	tar cvfz build/$(MACKEREL_AGENT_NAME)-latest.tar.gz -C build/tgz $(MACKEREL_AGENT_NAME)
 
 release:
 	_tools/releng
@@ -110,10 +110,6 @@ release:
 commands_gen.go: commands.go
 	go get github.com/motemen/go-cli/gen
 	go generate
-
-logging/level_string.go: logging/level.go
-	go get golang.org/x/tools/cmd/stringer
-	go generate ./logging
 
 clean:
 	rm -f build/$(MACKEREL_AGENT_NAME)

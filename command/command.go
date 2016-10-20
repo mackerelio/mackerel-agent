@@ -27,10 +27,6 @@ var retryInterval = 3 * time.Second
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
 func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error) {
-	// XXX this configuration should be moved to under spec/linux
-	os.Setenv("PATH", "/sbin:/usr/sbin:/bin:/usr/bin:"+os.Getenv("PATH"))
-	os.Setenv("LANG", "C") // prevent changing outputs of some command, e.g. ifconfig.
-
 	doRetry := func(f func() error) {
 		retry.Retry(retryNum, retryInterval, f)
 	}
@@ -353,7 +349,7 @@ func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
 						continue
 					}
 				}
-				for name, value := range (map[string]float64)(values.Values) {
+				for name, value := range values.Values {
 					if math.IsNaN(value) || math.IsInf(value, 0) {
 						logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", hostID, name, value)
 						continue

@@ -44,7 +44,7 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 			freeBytesAvailable := int64(0)
 			totalNumberOfBytes := int64(0)
 			totalNumberOfFreeBytes := int64(0)
-			r, _, err = windows.GetDiskFreeSpaceEx.Call(
+			r, _, _ = windows.GetDiskFreeSpaceEx.Call(
 				uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
 				uintptr(unsafe.Pointer(&freeBytesAvailable)),
 				uintptr(unsafe.Pointer(&totalNumberOfBytes)),

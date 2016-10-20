@@ -7,7 +7,6 @@ package util
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"os/exec"
 	"regexp"
 	"runtime"
@@ -19,6 +18,8 @@ import (
 	"github.com/mackerelio/mackerel-agent/logging"
 )
 
+// DfStat is disk free statistics from df command.
+// Field names are taken from column names of `df -P`
 type DfStat struct {
 	Name      string
 	Blocks    uint64
@@ -60,7 +61,6 @@ func init() {
 // CollectDfValues collects disk free statistics from df command
 func CollectDfValues() ([]*DfStat, error) {
 	cmd := exec.Command("df", dfOpt...)
-	cmd.Env = append(os.Environ(), "LANG=C")
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  15 * time.Second,
@@ -88,6 +88,10 @@ func parseDfLines(out string) []*DfStat {
 		dfstat, err := parseDfLine(line)
 		if err != nil {
 			logger.Warningf(err.Error())
+			continue
+		}
+		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
+		if strings.HasPrefix(dfstat.Name, "/dev/mapper/docker-") {
 			continue
 		}
 		filesystems = append(filesystems, dfstat)

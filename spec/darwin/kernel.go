@@ -10,12 +10,6 @@ import (
 )
 
 // KernelGenerator Generates specs about the kernel.
-// Keys below are expected.
-// - name:    the operating system name ("Linux")
-// - release: the operating system release ("2.6.32-5-686")
-// - version: the operating system version ("#1 SMP Sun Sep 23 09:49:36 UTC 2012")
-// - machine: the machine hardware name ("i686")
-// - os:      the operating system name ("GNU/Linux")
 type KernelGenerator struct {
 }
 
@@ -26,21 +20,27 @@ func (g *KernelGenerator) Key() string {
 
 var kernelLogger = logging.GetLogger("spec.kernel")
 
-// Generate XXX
+// Generate collects specs from `uname` command and `sw_vers` command
 func (g *KernelGenerator) Generate() (interface{}, error) {
-	unameArgs := map[string][]string{
-		"release": {"-r"},
-		"version": {"-v"},
-		"machine": {"-m"},
-		"os":      {"-s"},
+	unameCommand := "/usr/bin/uname"
+	swVersCommand := "/usr/bin/sw_vers"
+
+	commands := map[string][]string{
+		"release":          {unameCommand, "-r"},
+		"version":          {unameCommand, "-v"},
+		"machine":          {unameCommand, "-m"},
+		"os":               {unameCommand, "-s"},
+		"platform_name":    {swVersCommand, "-productName"},
+		"platform_version": {swVersCommand, "-productVersion"},
 	}
 
-	results := make(map[string]string, len(unameArgs)+1)
+	// +1 is for `name`
+	results := make(map[string]string, len(commands)+1)
 
-	for field, args := range unameArgs {
-		out, err := exec.Command("/usr/bin/uname", args...).Output()
+	for field, commandAndArgs := range commands {
+		out, err := exec.Command(commandAndArgs[0], commandAndArgs[1:]...).Output()
 		if err != nil {
-			kernelLogger.Errorf("Failed to run uname %s (skip this field): %s", args, err)
+			kernelLogger.Errorf("Failed to run %s (skip this field): %s", commandAndArgs, err)
 			continue
 		}
 

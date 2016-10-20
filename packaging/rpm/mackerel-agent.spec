@@ -62,6 +62,26 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Oct 18 2016 <mackerel-developers@hatena.ne.jp> - 0.36.0-1
+- don't use HTTP_PROXY when requesting cloud instance metadata APIs (by Songmu)
+- Add an option to output filesystem-related metrics with key by mountpoint (by astj)
+
+* Thu Sep 29 2016 <mackerel-developers@hatena.ne.jp> - 0.35.1-1
+- support MACKEREL_PLUGIN_WORKDIR in init scripts (by Songmu)
+- Add platform metadata for Darwin (by astj)
+- Disable http2 for now (by Songmu)
+
+* Wed Sep 07 2016 <mackerel-developers@hatena.ne.jp> - 0.35.0-1
+- built with Go 1.7 (by Songmu)
+- remove `func (vs *Values) Merge(other Values)` (by Songmu)
+- [incompatible] consider df  (used + available) as size of filesystem (by Songmu)
+- Remove DigitalOcean related comment/definition from spec/cloud.go (by astj)
+- Fix golint is not working on ci, and add some comment to pass golint (by astj)
+- Add linux distribution information to kernel spec (by ak1t0)
+- http_proxy configuration (by Songmu)
+- set PATH and LANG only in unix environment (by Songmu)
+- Ignore docker mapper storage in spec as well (by itchyny)
+
 * Thu Aug 18 2016 <mackerel-developers@hatena.ne.jp> - 0.34.0-1
 - Reduce retry count on finding a host by the custom identifier (by itchyny)
 - suppress checker flooding when resuming from sleep mode (by Songmu)

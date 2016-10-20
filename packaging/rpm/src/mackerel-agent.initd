@@ -24,6 +24,11 @@ BIN=${BIN:="/usr/bin/$prog"}
 LOGFILE=${LOGILE:="/var/log/$prog.log"}
 PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
 ROOT=${ROOT:="/var/lib/$prog"}
+MACKEREL_PLUGIN_WORKDIR=${MACKEREL_PLUGIN_WORKDIR:="/var/tmp/$prog"}
+
+if [ "$HTTP_PROXY" != "" ]; then
+    export HTTP_PROXY=$HTTP_PROXY
+fi
 
 lockfile=/var/lock/subsys/$prog
 
@@ -37,8 +42,8 @@ start() {
     [ -x $exec ] || exit 5
 
     echo -n $"Starting $prog:"
-
-    $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
+    mkdir -m 777 -p $MACKEREL_PLUGIN_WORKDIR
+    MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then
         failure
