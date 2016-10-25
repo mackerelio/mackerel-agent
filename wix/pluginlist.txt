@@ -1,0 +1,3 @@
+github.com/mackerelio/go-check-plugins/check-log
+github.com/mackerelio/go-check-plugins/check-procs
+github.com/mackerelio/go-check-plugins/check-check-ntservice
