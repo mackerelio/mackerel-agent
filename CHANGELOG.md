@@ -2,12 +2,7 @@
 
 ## 0.37.0 (2016-10-27)
 
-* Fix some english errors #2 (hakobe)
-* Windows porting #8 (mattn)
-* Make some methods private #9 (mechairoi)
-* Replace invalid characters(e.g. '.') in disk and interface names with underscores. #10 (mechairoi)
-* Remove deprecated metrics #11 (skozawa)
-* for windows #289 (daiksy)
+* improve Windows support #289 (daiksy)
 
 
 ## 0.36.0 (2016-10-18)
