@@ -1,16 +1,6 @@
 mackerel-agent (0.37.0-1) stable; urgency=low
 
-  * Fix some english errors (by hakobe)
-    <https://github.com/mackerelio/mackerel-agent/pull/2>
-  * Windows porting (by mattn)
-    <https://github.com/mackerelio/mackerel-agent/pull/8>
-  * Make some methods private (by mechairoi)
-    <https://github.com/mackerelio/mackerel-agent/pull/9>
-  * Replace invalid characters(e.g. '.') in disk and interface names with underscores. (by mechairoi)
-    <https://github.com/mackerelio/mackerel-agent/pull/10>
-  * Remove deprecated metrics (by skozawa)
-    <https://github.com/mackerelio/mackerel-agent/pull/11>
-  * for windows (by daiksy)
+  * improve Windows support (by daiksy)
     <https://github.com/mackerelio/mackerel-agent/pull/289>
 
  -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 27 Oct 2016 02:18:43 +0000
