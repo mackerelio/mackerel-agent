@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.37.0 (2016-10-27)
+
+* improve Windows support #289 (daiksy)
+
+
 ## 0.36.0 (2016-10-18)
 
 * don't use HTTP_PROXY when requesting cloud instance metadata APIs #285 (Songmu)

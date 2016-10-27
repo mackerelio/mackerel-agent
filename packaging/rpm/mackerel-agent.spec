@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Oct 27 2016 <mackerel-developers@hatena.ne.jp> - 0.37.0-1
+- improve Windows support (by daiksy)
+
 * Tue Oct 18 2016 <mackerel-developers@hatena.ne.jp> - 0.36.0-1
 - don't use HTTP_PROXY when requesting cloud instance metadata APIs (by Songmu)
 - Add an option to output filesystem-related metrics with key by mountpoint (by astj)

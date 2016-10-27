@@ -1,3 +1,10 @@
+mackerel-agent (0.37.0-1) stable; urgency=low
+
+  * improve Windows support (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/289>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 27 Oct 2016 02:18:43 +0000
+
 mackerel-agent (0.36.0-1) stable; urgency=low
 
   * don't use HTTP_PROXY when requesting cloud instance metadata APIs (by Songmu)
