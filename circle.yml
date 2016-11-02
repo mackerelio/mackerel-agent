@@ -7,5 +7,3 @@ test:
     - make lint
     - make cover
     - test `gofmt -l . | wc -l` = 0
-  post:
-    - goveralls -coverprofile=.profile.cov
