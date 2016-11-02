@@ -4,7 +4,6 @@ package linux
 
 import (
 	"math"
-	"os"
 )
 import (
 	"testing"

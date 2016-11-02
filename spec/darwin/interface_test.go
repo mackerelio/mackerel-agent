@@ -3,7 +3,6 @@
 package darwin
 
 import (
-	"os"
 	"testing"
 )
 

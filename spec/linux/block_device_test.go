@@ -3,7 +3,6 @@
 package linux
 
 import (
-	"os"
 	"regexp"
 	"testing"
 )
