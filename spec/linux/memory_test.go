@@ -79,10 +79,6 @@ func TestMemoryGenerator(t *testing.T) {
 		t.Error("memory should has anon_pages")
 	}
 
-	if os.Getenv("TRAVIS") != "" {
-		t.Skip("Skip in Travis for now")
-	}
-
 	if _, ok := memory["mapped"]; !ok {
 		t.Error("memory should has mapped")
 	}

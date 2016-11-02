@@ -44,10 +44,6 @@ func TestRunOnce(t *testing.T) {
 }
 
 func TestRunOncePayload(t *testing.T) {
-	if os.Getenv("TRAVIS") != "" {
-		t.Skip("Skip in travis")
-	}
-
 	if testing.Short() {
 		origMetricsInterval := metricsInterval
 		metricsInterval = 1
