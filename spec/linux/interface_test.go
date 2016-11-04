@@ -25,6 +25,9 @@ func TestInterfaceGenerate(t *testing.T) {
 	if os.Getenv("TRAVIS") != "" {
 		t.Skip("Skip in Travis for now")
 	}
+	if os.Getenv("CIRCLECI") != "" {
+		t.Skip("Skip in CircleCI for now")
+	}
 
 	if len(value) == 0 {
 		t.Error("should have at least 1 interface")
@@ -59,6 +62,9 @@ func TestGenerateByIpCommand(t *testing.T) {
 
 	if os.Getenv("TRAVIS") != "" {
 		t.Skip("Skip in Travis for now")
+	}
+	if os.Getenv("CIRCLECI") != "" {
+		t.Skip("Skip in CircleCI for now")
 	}
 
 	name := "eth0"
