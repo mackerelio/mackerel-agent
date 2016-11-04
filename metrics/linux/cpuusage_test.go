@@ -4,7 +4,6 @@ package linux
 
 import (
 	"math"
-	"os"
 )
 import (
 	"testing"
@@ -17,11 +16,6 @@ func TestCPUUsageGenerate(t *testing.T) {
 
 	sumPercentage := float64(0)
 	for _, metricName := range cpuUsageMetricNames {
-		if metricName == "cpu.guest" && os.Getenv("TRAVIS") != "" {
-			t.Logf("XXX Kernel 2.6.23 or lower doesn't output 'cpu.guest', Travis is also.")
-			continue
-		}
-
 		metricName += ".percentage"
 		value, ok := values[metricName]
 		if !ok {
