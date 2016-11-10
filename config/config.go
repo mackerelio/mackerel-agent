@@ -11,6 +11,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var configLogger = logging.GetLogger("config")
@@ -105,6 +106,14 @@ func (pconf *PluginConfig) prepareCommand() error {
 		return fmt.Errorf(errFmt, v)
 	}
 	return nil
+}
+
+// Run the plugin
+func (pconf *PluginConfig) Run() (string, string, int, error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue

@@ -6,7 +6,6 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var logger = logging.GetLogger("checks")
@@ -63,16 +62,12 @@ func (c *Checker) String() string {
 // Check invokes the command and transforms its result to a Report.
 func (c *Checker) Check() *Report {
 	now := time.Now()
-
-	command := c.Config.Command
-	logger.Debugf("Checker %q executing command %q", c.Name, command)
-	message, stderr, exitCode, err := util.RunCommand(command, c.Config.User)
+	message, stderr, exitCode, err := c.Config.Run()
 	if stderr != "" {
 		logger.Warningf("Checker %q output stderr: %s", c.Name, stderr)
 	}
 
 	status := StatusUnknown
-
 	if err != nil {
 		message = err.Error()
 	} else {
