@@ -14,18 +14,23 @@ import (
 
 var utilLogger = logging.GetLogger("util")
 
-// RunCommand XXX
+// RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
 func RunCommand(command, user string) (string, string, int, error) {
 	var outBuffer, errBuffer bytes.Buffer
-
 	wd, err := os.Getwd()
 	if err != nil {
 		return "", "", -1, err
 	}
-	cmd := exec.Command("cmd", "/c", "pushd "+wd+" & "+command)
+	cmdArgs := []string{"cmd", "/c", "pushd " + wd + " & " + command}
+	return RunCommandArgs(cmdArgs, user)
+}
+
+// RunCommandArgs run the command
+func RunCommandArgs(cmdArgs []string, user string) (string, string, int, error) {
 	if user != "" {
 		utilLogger.Warningf("RunCommand ignore option: user = %q", user)
 	}
+	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	cmd.Stdout = &outBuffer
 	cmd.Stderr = &errBuffer
 
