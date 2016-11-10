@@ -80,6 +80,7 @@ type PluginConfig struct {
 }
 
 func (pconf *PluginConfig) prepareCommand() error {
+	const errFmt = "failed to prepare plugin command. A configuration value of `command` should be string or string slice, but %T"
 	v := pconf.CommandRaw
 	switch v.(type) {
 	case string:
@@ -90,18 +91,18 @@ func (pconf *PluginConfig) prepareCommand() error {
 			for _, vv := range arr {
 				str, ok := vv.(string)
 				if !ok {
-					return fmt.Errorf("failed to prepare command")
+					return fmt.Errorf(errFmt, v)
 				}
 				pconf.CommandArgs = append(pconf.CommandArgs, str)
 			}
 		} else {
-			return fmt.Errorf("failed to prepare command")
+			return fmt.Errorf(errFmt, v)
 		}
 	case []string:
 		arr := v.([]string)
 		pconf.CommandArgs = arr
 	default:
-		return fmt.Errorf("failed to prepare command")
+		return fmt.Errorf(errFmt, v)
 	}
 	return nil
 }
@@ -210,7 +211,10 @@ func loadConfigFile(file string) (*Config, error) {
 	}
 	for _, pconfs := range config.Plugin {
 		for _, pconf := range pconfs {
-			pconf.prepareCommand()
+			err := pconf.prepareCommand()
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	return config, nil
