@@ -17,7 +17,7 @@ import (
 
 // PluginGenerator XXX
 type PluginGenerator struct {
-	Config config.PluginConfig
+	Config *config.PluginConfig
 }
 
 var pluginLogger = logging.GetLogger("metrics.plugin")
@@ -25,7 +25,7 @@ var pluginLogger = logging.GetLogger("metrics.plugin")
 const pluginPrefix = "custom."
 
 // NewPluginGenerator XXX
-func NewPluginGenerator(c config.PluginConfig) (*PluginGenerator, error) {
+func NewPluginGenerator(c *config.PluginConfig) (*PluginGenerator, error) {
 	return &PluginGenerator{c}, nil
 }
 

@@ -20,7 +20,7 @@ func containsKeyRegexp(values metrics.Values, reg string) bool {
 }
 
 func TestPluginGenerate(t *testing.T) {
-	conf := config.PluginConfig{
+	conf := &config.PluginConfig{
 		Command: "ruby ../../example/metrics-plugins/dice.rb",
 	}
 	g := &PluginGenerator{conf}

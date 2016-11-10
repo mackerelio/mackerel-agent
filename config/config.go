@@ -63,18 +63,47 @@ type Config struct {
 
 // PluginConfigs represents a set of [plugin.<kind>.<name>] sections in the configuration file
 // under a specific <kind>. The key of the map is <name>, for example "mysql" of "plugin.metrics.mysql".
-type PluginConfigs map[string]PluginConfig
+type PluginConfigs map[string]*PluginConfig
 
 // PluginConfig represents a section of [plugin.*].
 // `MaxCheckAttempts`, `NotificationInterval` and `CheckInterval` options are used with check monitoring plugins. Custom metrics plugins ignore these options.
 // `User` option is ignore in windows
 type PluginConfig struct {
+	CommandRaw           interface{} `toml:"command"`
 	Command              string
+	CommandArgs          []string
 	User                 string
 	NotificationInterval *int32  `toml:"notification_interval"`
 	CheckInterval        *int32  `toml:"check_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
+}
+
+func (pconf *PluginConfig) prepareCommand() error {
+	v := pconf.CommandRaw
+	switch v.(type) {
+	case string:
+		pconf.Command = v.(string)
+	case []interface{}:
+		arr := v.([]interface{})
+		if len(arr) > 0 {
+			for _, vv := range arr {
+				str, ok := vv.(string)
+				if !ok {
+					return fmt.Errorf("failed to prepare command")
+				}
+				pconf.CommandArgs = append(pconf.CommandArgs, str)
+			}
+		} else {
+			return fmt.Errorf("failed to prepare command")
+		}
+	case []string:
+		arr := v.([]string)
+		pconf.CommandArgs = arr
+	default:
+		return fmt.Errorf("failed to prepare command")
+	}
+	return nil
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
@@ -177,6 +206,11 @@ func loadConfigFile(file string) (*Config, error) {
 	if config.Include != "" {
 		if err := includeConfigFile(config, config.Include); err != nil {
 			return config, err
+		}
+	}
+	for _, pconfs := range config.Plugin {
+		for _, pconf := range pconfs {
+			pconf.prepareCommand()
 		}
 	}
 	return config, nil

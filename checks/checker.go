@@ -43,7 +43,7 @@ type Checker struct {
 	// to have the Command field which was used by metrics.pluginGenerator.
 	// If the configuration of *checks.Checker and/or metrics.pluginGenerator changes,
 	// we should reconsider using config.PluginConfig.
-	Config config.PluginConfig
+	Config *config.PluginConfig
 }
 
 // Report is what Checker produces by invoking its command.
