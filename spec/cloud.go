@@ -145,7 +145,7 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 			metadata[key] = string(body)
 			cloudLogger.Debugf("results %s:%s", key, string(body))
 		} else {
-			cloudLogger.Warningf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
+			cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
 		}
 	}
 
