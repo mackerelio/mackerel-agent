@@ -122,7 +122,6 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 		"local-hostname",
 		"public-hostname",
 		"local-ipv4",
-		"public-keys",
 		"public-ipv4",
 		"reservation-id",
 	}
