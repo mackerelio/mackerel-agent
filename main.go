@@ -107,7 +107,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	conf, confErr := config.LoadConfig(*conffile)
 	conf.Conffile = *conffile
 	if confErr != nil {
-		return nil, fmt.Errorf("Failed to load the config file: %s", confErr)
+		return nil, fmt.Errorf("failed to load the config file: %s", confErr)
 	}
 
 	// overwrite config from file by config from args
@@ -145,7 +145,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	}
 
 	if conf.Apikey == "" {
-		return nil, fmt.Errorf("Apikey must be specified in the config file (or by the DEPRECATED command-line flag)")
+		return nil, fmt.Errorf("apikey must be specified in the config file (or by the DEPRECATED command-line flag)")
 	}
 
 	if conf.HTTPProxy != "" {
@@ -158,7 +158,7 @@ func createPidFile(pidfile string) error {
 	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
 			if existsPid(pid) {
-				return fmt.Errorf("Pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
+				return fmt.Errorf("pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
 			}
 			// Note mackerel-agent in windows can't remove pidfile during stoping the service
 			logger.Warningf("Pidfile found, but there seems no another process of mackerel-agent. Ignoring %s", pidfile)
