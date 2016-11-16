@@ -162,7 +162,7 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 	key := "instance-id"
 	resp, err := cl.Get(g.baseURL.String() + "/" + key)
 	if err != nil {
-		return "", fmt.Errorf("error while retrieving instance-id.")
+		return "", fmt.Errorf("error while retrieving instance-id")
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {

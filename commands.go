@@ -105,7 +105,7 @@ func doRetire(fs *flag.FlagSet, argv []string) error {
 	}
 
 	if !force && !prompter.YN(fmt.Sprintf("retire this host? (hostID: %s)", hostID), false) {
-		return fmt.Errorf("retirement is canceled.")
+		return fmt.Errorf("retirement is canceled")
 	}
 
 	err = retry.Retry(10, 3*time.Second, func() error {
