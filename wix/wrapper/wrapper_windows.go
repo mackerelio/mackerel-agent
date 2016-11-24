@@ -27,7 +27,7 @@ func main() {
 		var err error
 		switch os.Args[1] {
 		case "install":
-			err = installService("mackerel-agent", "mackarel agent")
+			err = installService("mackerel-agent", "mackerel agent")
 		case "remove":
 			err = removeService("mackerel-agent")
 		}
