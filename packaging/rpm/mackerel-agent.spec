@@ -62,6 +62,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Nov 29 2016 <mackerel-developers@hatena.ne.jp> - 0.37.1-1
+- fix pluginlist (by daiksy)
+- Suppress ec2 metadata warnings (by itchyny)
+- Uncapitalize error messages (by itchyny)
+
 * Thu Oct 27 2016 <mackerel-developers@hatena.ne.jp> - 0.37.0-1
 - improve Windows support (by daiksy)
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.37.1 (2016-11-29)
+
+* fix pluginlist #291 (daiksy)
+* Suppress ec2 metadata warnings #294 (itchyny)
+* Uncapitalize error messages #295 (itchyny)
+
+
 ## 0.37.0 (2016-10-27)
 
 * improve Windows support #289 (daiksy)
