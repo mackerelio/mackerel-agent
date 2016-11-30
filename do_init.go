@@ -25,7 +25,7 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 	if confExists {
 		conf, err := config.LoadConfig(*conffile)
 		if err != nil {
-			return fmt.Errorf("Failed to load the config file: %s", err)
+			return fmt.Errorf("failed to load the config file: %s", err)
 		}
 		if conf.Apikey != "" {
 			return apikeyAlreadySetError(*conffile)

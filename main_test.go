@@ -136,7 +136,7 @@ func TestCreateAndRemovePidFile(t *testing.T) {
 	}
 
 	if runtime.GOOS != "windows" {
-		if err := createPidFile(fpath); err == nil || !strings.HasPrefix(err.Error(), "Pidfile found, try stopping another running mackerel-agent or delete") {
+		if err := createPidFile(fpath); err == nil || !strings.HasPrefix(err.Error(), "pidfile found, try stopping another running mackerel-agent or delete") {
 			t.Errorf("creating pid file should be failed when the running process exists, %s", err)
 		}
 	}
