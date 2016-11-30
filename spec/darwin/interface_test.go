@@ -3,7 +3,6 @@
 package darwin
 
 import (
-	"os"
 	"testing"
 )
 
@@ -20,10 +19,6 @@ func TestInterfaceGenerate(t *testing.T) {
 	value, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
-	}
-
-	if os.Getenv("TRAVIS") != "" {
-		t.Skip("Skip in Travis for now")
 	}
 
 	if len(value) == 0 {

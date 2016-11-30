@@ -122,7 +122,6 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 		"local-hostname",
 		"public-hostname",
 		"local-ipv4",
-		"public-keys",
 		"public-ipv4",
 		"reservation-id",
 	}
@@ -145,7 +144,7 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 			metadata[key] = string(body)
 			cloudLogger.Debugf("results %s:%s", key, string(body))
 		} else {
-			cloudLogger.Warningf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
+			cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
 		}
 	}
 
@@ -162,19 +161,19 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 	key := "instance-id"
 	resp, err := cl.Get(g.baseURL.String() + "/" + key)
 	if err != nil {
-		return "", fmt.Errorf("Error while retrieving instance-id.")
+		return "", fmt.Errorf("error while retrieving instance-id")
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return "", fmt.Errorf("Failed to request instance-id. response code: %d", resp.StatusCode)
+		return "", fmt.Errorf("failed to request instance-id. response code: %d", resp.StatusCode)
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("Results of requesting instance-id cannot be read: '%s'", err)
+		return "", fmt.Errorf("results of requesting instance-id cannot be read: '%s'", err)
 	}
 	instanceID := string(body)
 	if instanceID == "" {
-		return "", fmt.Errorf("Invalid instance id")
+		return "", fmt.Errorf("invalid instance id")
 	}
 	return instanceID + ".ec2.amazonaws.com", nil
 }

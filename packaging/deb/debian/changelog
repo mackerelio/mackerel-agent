@@ -1,3 +1,14 @@
+mackerel-agent (0.37.1-1) stable; urgency=low
+
+  * fix pluginlist (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/291>
+  * Suppress ec2 metadata warnings (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/294>
+  * Uncapitalize error messages (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/295>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 29 Nov 2016 05:57:27 +0000
+
 mackerel-agent (0.37.0-1) stable; urgency=low
 
   * improve Windows support (by daiksy)

@@ -76,7 +76,7 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 			})
 
 			if lastErr != nil {
-				return nil, fmt.Errorf("Failed to register this host: %s", lastErr.Error())
+				return nil, fmt.Errorf("failed to register this host: %s", lastErr.Error())
 			}
 
 			doRetry(func() error {
@@ -84,7 +84,7 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 				return filterErrorForRetry(lastErr)
 			})
 			if lastErr != nil {
-				return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
+				return nil, fmt.Errorf("failed to find this host on mackerel: %s", lastErr.Error())
 			}
 		}
 	} else { // check the hostID is valid or not
@@ -94,9 +94,9 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 		})
 		if lastErr != nil {
 			if fsStorage, ok := conf.HostIDStorage.(*config.FileSystemHostIDStorage); ok {
-				return nil, fmt.Errorf("Failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", fsStorage.HostIDFile(), lastErr.Error())
+				return nil, fmt.Errorf("failed to find this host on mackerel (You may want to delete file \"%s\" to register this host to an another organization): %s", fsStorage.HostIDFile(), lastErr.Error())
 			}
-			return nil, fmt.Errorf("Failed to find this host on mackerel: %s", lastErr.Error())
+			return nil, fmt.Errorf("failed to find this host on mackerel: %s", lastErr.Error())
 		}
 	}
 
@@ -107,13 +107,13 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 			return filterErrorForRetry(lastErr)
 		})
 		if lastErr != nil {
-			return nil, fmt.Errorf("Failed to set default host status: %s, %s", hostSt, lastErr.Error())
+			return nil, fmt.Errorf("failed to set default host status: %s, %s", hostSt, lastErr.Error())
 		}
 	}
 
 	lastErr = conf.SaveHostID(result.ID)
 	if lastErr != nil {
-		return nil, fmt.Errorf("Failed to save host ID: %s", lastErr.Error())
+		return nil, fmt.Errorf("failed to save host ID: %s", lastErr.Error())
 	}
 
 	return result, nil
@@ -529,12 +529,12 @@ func (c *Context) UpdateHostSpecs() {
 func Prepare(conf *config.Config) (*Context, error) {
 	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to prepare an api: %s", err.Error())
+		return nil, fmt.Errorf("failed to prepare an api: %s", err.Error())
 	}
 
 	host, err := prepareHost(conf, api)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to prepare host: %s", err.Error())
+		return nil, fmt.Errorf("failed to prepare host: %s", err.Error())
 	}
 
 	return &Context{

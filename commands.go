@@ -96,7 +96,7 @@ func doRetire(fs *flag.FlagSet, argv []string) error {
 
 	hostID, err := conf.LoadHostID()
 	if err != nil {
-		return fmt.Errorf("HostID file is not found")
+		return fmt.Errorf("hostID file is not found")
 	}
 
 	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
@@ -105,7 +105,7 @@ func doRetire(fs *flag.FlagSet, argv []string) error {
 	}
 
 	if !force && !prompter.YN(fmt.Sprintf("retire this host? (hostID: %s)", hostID), false) {
-		return fmt.Errorf("Retirement is canceled.")
+		return fmt.Errorf("retirement is canceled")
 	}
 
 	err = retry.Retry(10, 3*time.Second, func() error {
