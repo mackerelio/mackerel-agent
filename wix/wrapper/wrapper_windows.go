@@ -101,11 +101,7 @@ func (h *handler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- sv
 
 	exit := make(chan struct{})
 	go func() {
-		err := h.cmd.Wait()
-		// enter when the child process exited
-		if err != nil {
-			h.elog.Error(stopEid, err.Error())
-		}
+		h.cmd.Wait()
 		exit <- struct{}{}
 	}()
 
