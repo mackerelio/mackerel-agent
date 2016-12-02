@@ -58,7 +58,6 @@ func (h *handler) start() error {
 		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
 	}
 	cmd.Dir = dir
-	cmd.Stdin = os.Stdin
 
 	h.cmd = cmd
 	r, w := io.Pipe()
