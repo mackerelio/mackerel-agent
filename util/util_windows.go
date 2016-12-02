@@ -20,7 +20,7 @@ func RunCommand(command, user string) (string, string, int, error) {
 	if err != nil {
 		return "", "", -1, err
 	}
-	cmdArgs := []string{"cmd", "/c", "pushd " + wd + " & " + command}
+	cmdArgs := []string{"cmd", "/c", command}
 	return RunCommandArgs(cmdArgs, user)
 }
 
