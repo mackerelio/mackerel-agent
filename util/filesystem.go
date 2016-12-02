@@ -104,7 +104,7 @@ var dfColumnsPattern = regexp.MustCompile(`^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+
 func parseDfLine(line string) (*DfStat, error) {
 	matches := dfColumnsPattern.FindStringSubmatch(line)
 	if matches == nil {
-		return nil, fmt.Errorf("Failed to parse line: [%s]", line)
+		return nil, fmt.Errorf("failed to parse line: [%s]", line)
 	}
 	name := matches[1]
 	blocks, _ := strconv.ParseUint(matches[2], 0, 64)

@@ -1,0 +1,9 @@
+machine:
+  timezone:
+    Asia/Tokyo
+
+test:
+  override:
+    - make lint
+    - make cover
+    - test `gofmt -l . | wc -l` = 0

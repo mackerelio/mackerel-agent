@@ -22,8 +22,8 @@ func TestInterfaceGenerate(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	if os.Getenv("TRAVIS") != "" {
-		t.Skip("Skip in Travis for now")
+	if os.Getenv("CIRCLECI") != "" {
+		t.Skip("Skip in CircleCI for now")
 	}
 
 	if len(value) == 0 {
@@ -57,8 +57,8 @@ func TestGenerateByIpCommand(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	if os.Getenv("TRAVIS") != "" {
-		t.Skip("Skip in Travis for now")
+	if os.Getenv("CIRCLECI") != "" {
+		t.Skip("Skip in CircleCI for now")
 	}
 
 	name := "eth0"
