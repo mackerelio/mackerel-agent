@@ -83,13 +83,12 @@ type PluginConfig struct {
 func (pconf *PluginConfig) prepareCommand() error {
 	const errFmt = "failed to prepare plugin command. A configuration value of `command` should be string or string slice, but %T"
 	v := pconf.CommandRaw
-	switch v.(type) {
+	switch t := v.(type) {
 	case string:
-		pconf.Command = v.(string)
+		pconf.Command = t
 	case []interface{}:
-		arr := v.([]interface{})
-		if len(arr) > 0 {
-			for _, vv := range arr {
+		if len(t) > 0 {
+			for _, vv := range t {
 				str, ok := vv.(string)
 				if !ok {
 					return fmt.Errorf(errFmt, v)
@@ -100,8 +99,7 @@ func (pconf *PluginConfig) prepareCommand() error {
 			return fmt.Errorf(errFmt, v)
 		}
 	case []string:
-		arr := v.([]string)
-		pconf.CommandArgs = arr
+		pconf.CommandArgs = t
 	default:
 		return fmt.Errorf(errFmt, v)
 	}
