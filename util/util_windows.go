@@ -3,7 +3,6 @@ package util
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -16,10 +15,6 @@ var utilLogger = logging.GetLogger("util")
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
 func RunCommand(command, user string) (string, string, int, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", "", -1, err
-	}
 	cmdArgs := []string{"cmd", "/c", command}
 	return RunCommandArgs(cmdArgs, user)
 }
