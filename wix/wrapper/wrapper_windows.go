@@ -31,6 +31,20 @@ var (
 )
 
 func main() {
+	if len(os.Args) == 2 {
+		var err error
+		switch os.Args[1] {
+		case "install":
+			err = installService("mackerel-agent", "mackerel agent")
+		case "remove":
+			err = removeService("mackerel-agent")
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	elog, err := eventlog.Open(name)
 	if err != nil {
 		log.Fatal(err.Error())
