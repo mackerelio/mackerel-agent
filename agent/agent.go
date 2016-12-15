@@ -48,6 +48,7 @@ func (agent *Agent) Watch(quit chan struct{}) chan *MetricsResult {
 		for {
 			select {
 			case <-quit:
+				close(ticker)
 				t.Stop()
 				return
 			case t := <-t.C:
