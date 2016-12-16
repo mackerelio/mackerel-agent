@@ -33,25 +33,32 @@ func (agent *Agent) CollectMetrics(collectedTime time.Time) *MetricsResult {
 }
 
 // Watch XXX
-func (agent *Agent) Watch() chan *MetricsResult {
+func (agent *Agent) Watch(quit chan struct{}) chan *MetricsResult {
 
 	metricsResult := make(chan *MetricsResult)
 	ticker := make(chan time.Time)
 	interval := config.PostMetricsInterval
 
 	go func() {
-		c := time.Tick(1 * time.Second)
+		t := time.NewTicker(1 * time.Second)
 
 		last := time.Now()
 		ticker <- last // sends tick once at first
 
-		for t := range c {
-			// Fire an event at 0 second per minute.
-			// Because ticks may not be accurate,
-			// fire an event if t - last is more than 1 minute
-			if t.Second()%int(interval.Seconds()) == 0 || t.After(last.Add(interval)) {
-				last = t
-				ticker <- t
+		for {
+			select {
+			case <-quit:
+				close(ticker)
+				t.Stop()
+				return
+			case t := <-t.C:
+				// Fire an event at 0 second per minute.
+				// Because ticks may not be accurate,
+				// fire an event if t - last is more than 1 minute
+				if t.Second()%int(interval.Seconds()) == 0 || t.After(last.Add(interval)) {
+					last = t
+					ticker <- t
+				}
 			}
 		}
 	}()

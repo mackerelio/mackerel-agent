@@ -332,7 +332,7 @@ func updateHostSpecsLoop(c *Context, quit chan struct{}) {
 }
 
 func enqueueLoop(c *Context, postQueue chan *postValue, quit chan struct{}) {
-	metricsResult := c.Agent.Watch()
+	metricsResult := c.Agent.Watch(quit)
 	for {
 		select {
 		case <-quit:
