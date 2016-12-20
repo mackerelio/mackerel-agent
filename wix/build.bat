@@ -25,7 +25,8 @@ go get github.com/mackerelio/mackerel-agent/wix/wrapper
 go get github.com/mackerelio/mackerel-agent/wix/replace
 go get github.com/mackerelio/mackerel-agent/wix/generate_wxs
 
-go build -o ..\build\wrapper.exe wrapper\wrapper_windows.go
+go build -o ..\build\wrapper.exe wrapper\wrapper_windows.go wrapper\install.go
+
 go build -o ..\build\replace.exe replace\replace_windows.go
 go build -o ..\build\generate_wxs.exe generate_wxs\generate_wxs.go
 

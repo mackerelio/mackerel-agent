@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"io"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"syscall"
+	"time"
 	"unsafe"
 
 	"golang.org/x/sys/windows/svc"
@@ -21,7 +23,28 @@ const startEid = 2
 const stopEid = 3
 const loggerEid = 4
 
+var (
+	kernel32                     = syscall.NewLazyDLL("kernel32")
+	procAllocConsole             = kernel32.NewProc("AllocConsole")
+	procGenerateConsoleCtrlEvent = kernel32.NewProc("GenerateConsoleCtrlEvent")
+	procGetModuleFileName        = kernel32.NewProc("GetModuleFileNameW")
+)
+
 func main() {
+	if len(os.Args) == 2 {
+		var err error
+		switch os.Args[1] {
+		case "install":
+			err = installService("mackerel-agent", "mackerel agent")
+		case "remove":
+			err = removeService("mackerel-agent")
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	elog, err := eventlog.Open(name)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -42,7 +65,14 @@ type handler struct {
 }
 
 func (h *handler) start() error {
-	cmd := exec.Command(filepath.Join(filepath.Dir(execdir()), "mackerel-agent.exe"))
+	procAllocConsole.Call()
+	dir := execdir()
+	cmd := exec.Command(filepath.Join(dir, "mackerel-agent.exe"))
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
+	}
+	cmd.Dir = dir
+
 	h.cmd = cmd
 	r, w := io.Pipe()
 	cmd.Stderr = w
@@ -78,8 +108,26 @@ func (h *handler) start() error {
 	return cmd.Start()
 }
 
+func interrupt(p *os.Process) error {
+	r1, _, err := procGenerateConsoleCtrlEvent.Call(syscall.CTRL_BREAK_EVENT, uintptr(p.Pid))
+	if r1 == 0 {
+		return err
+	}
+	return nil
+}
+
 func (h *handler) stop() error {
 	if h.cmd != nil && h.cmd.Process != nil {
+		err := interrupt(h.cmd.Process)
+		if err == nil {
+			end := time.Now().Add(10 * time.Second)
+			for time.Now().Before(end) {
+				if h.cmd.ProcessState != nil && h.cmd.ProcessState.Exited() {
+					return nil
+				}
+				time.Sleep(1 * time.Second)
+			}
+		}
 		return h.cmd.Process.Kill()
 	}
 	return nil
@@ -133,14 +181,10 @@ L:
 }
 
 func execdir() string {
-	var (
-		kernel32              = syscall.NewLazyDLL("kernel32")
-		procGetModuleFileName = kernel32.NewProc("GetModuleFileNameW")
-	)
 	var wpath [syscall.MAX_PATH]uint16
 	r1, _, err := procGetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
 	if r1 == 0 {
 		log.Fatal(err)
 	}
-	return syscall.UTF16ToString(wpath[:])
+	return filepath.Dir(syscall.UTF16ToString(wpath[:]))
 }
