@@ -20,7 +20,7 @@ func containsKeyRegexp(values Values, reg string) bool {
 }
 
 func TestPluginGenerate(t *testing.T) {
-	conf := config.PluginConfig{
+	conf := &config.PluginConfig{
 		Command: "ruby ../example/metrics-plugins/dice.rb",
 	}
 	g := &pluginGenerator{Config: conf}
@@ -35,7 +35,7 @@ func TestPluginGenerate(t *testing.T) {
 }
 
 func TestPluginCollectValues(t *testing.T) {
-	g := &pluginGenerator{Config: config.PluginConfig{
+	g := &pluginGenerator{Config: &config.PluginConfig{
 		Command: "ruby ../example/metrics-plugins/dice.rb",
 	},
 	}
@@ -49,7 +49,7 @@ func TestPluginCollectValues(t *testing.T) {
 }
 
 func TestPluginCollectValuesCommand(t *testing.T) {
-	g := &pluginGenerator{Config: config.PluginConfig{
+	g := &pluginGenerator{Config: &config.PluginConfig{
 		Command: "echo \"just.echo.1\t1\t1397822016\"",
 	},
 	}
@@ -74,7 +74,7 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 }
 
 func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
-	g := &pluginGenerator{Config: config.PluginConfig{
+	g := &pluginGenerator{Config: &config.PluginConfig{
 		Command: `echo "just.echo.2   2   1397822016"`,
 	}}
 
@@ -99,7 +99,7 @@ func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
 
 func TestPluginLoadPluginMeta(t *testing.T) {
 	g := &pluginGenerator{
-		Config: config.PluginConfig{
+		Config: &config.PluginConfig{
 			Command: `echo '# mackerel-agent-plugin version=1
 {
   "graphs": {
@@ -155,7 +155,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 	}
 
 	generatorWithoutConf := &pluginGenerator{
-		Config: config.PluginConfig{
+		Config: &config.PluginConfig{
 			Command: "echo \"just.echo.1\t1\t1397822016\"",
 		},
 	}
@@ -166,7 +166,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 	}
 
 	generatorWithBadVersion := &pluginGenerator{
-		Config: config.PluginConfig{
+		Config: &config.PluginConfig{
 			Command: `echo "# mackerel-agent-plugin version=666"`,
 		},
 	}

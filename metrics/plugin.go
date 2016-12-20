@@ -12,13 +12,12 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
-	"github.com/mackerelio/mackerel-agent/util"
 )
 
 // pluginGenerator collects user-defined metrics.
 // mackerel-agent runs specified command and parses the result for the metric names and values.
 type pluginGenerator struct {
-	Config config.PluginConfig
+	Config *config.PluginConfig
 	Meta   *pluginMeta
 }
 
@@ -46,7 +45,7 @@ const pluginPrefix = "custom."
 var pluginConfigurationEnvName = "MACKEREL_AGENT_PLUGIN_META"
 
 // NewPluginGenerator XXX
-func NewPluginGenerator(conf config.PluginConfig) PluginGenerator {
+func NewPluginGenerator(conf *config.PluginConfig) PluginGenerator {
 	return &pluginGenerator{Config: conf}
 }
 
@@ -121,16 +120,13 @@ func (g *pluginGenerator) CustomIdentifier() *string {
 // 	  }
 // 	}
 func (g *pluginGenerator) loadPluginMeta() error {
-	command := g.Config.Command
-	pluginLogger.Debugf("Obtaining plugin configuration: %q", command)
-
 	// Set environment variable to make the plugin command generate its configuration
 	os.Setenv(pluginConfigurationEnvName, "1")
 	defer os.Setenv(pluginConfigurationEnvName, "")
 
-	stdout, stderr, exitCode, err := util.RunCommand(command, g.Config.User)
+	stdout, stderr, exitCode, err := g.Config.Run()
 	if err != nil {
-		return fmt.Errorf("running %q failed: %s, exit=%d stderr=%q", command, err, exitCode, stderr)
+		return fmt.Errorf("running %T failed: %s, exit=%d stderr=%q", g.Config.CommandRaw, err, exitCode, stderr)
 	}
 
 	outBuffer := bufio.NewReader(strings.NewReader(stdout))
@@ -138,7 +134,7 @@ func (g *pluginGenerator) loadPluginMeta() error {
 
 	headerLine, err := outBuffer.ReadString('\n')
 	if err != nil {
-		return fmt.Errorf("while reading the first line of command %q: %s", command, err)
+		return fmt.Errorf("while reading the first line of command %T: %s", g.Config.CommandRaw, err)
 	}
 
 	// Parse the header line of format:
@@ -219,17 +215,14 @@ func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDef
 var delimReg = regexp.MustCompile(`[\s\t]+`)
 
 func (g *pluginGenerator) collectValues() (Values, error) {
-	command := g.Config.Command
-	pluginLogger.Debugf("Executing plugin: command = \"%s\"", command)
-
 	os.Setenv(pluginConfigurationEnvName, "")
-	stdout, stderr, _, err := util.RunCommand(command, g.Config.User)
+	stdout, stderr, _, err := g.Config.Run()
 
 	if stderr != "" {
-		pluginLogger.Infof("command %q outputted to STDERR: %q", command, stderr)
+		pluginLogger.Infof("command %T outputted to STDERR: %q", g.Config.CommandRaw, stderr)
 	}
 	if err != nil {
-		pluginLogger.Errorf("Failed to execute command %q (skip these metrics):\n", command)
+		pluginLogger.Errorf("Failed to execute command %T (skip these metrics):\n", g.Config.CommandRaw)
 		return nil, err
 	}
 

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -334,6 +335,33 @@ silent = true
 
 	if !config.Silent {
 		t.Error("silent should be ture")
+	}
+}
+
+func TestLoadConfig_WithCommandArgs(t *testing.T) {
+	conff, err := newTempFileWithContent(`
+apikey = "abcde"
+[plugin.metrics.hoge]
+command = ["perl", "-E", "say 'Hello'"]
+`)
+	if err != nil {
+		t.Fatalf("should not raise error: %s", err)
+	}
+	defer os.Remove(conff.Name())
+
+	config, err := loadConfigFile(conff.Name())
+	assertNoError(t, err)
+
+	expected := []string{"perl", "-E", "say 'Hello'"}
+	p := config.Plugin["metrics"]["hoge"]
+	output := p.CommandArgs
+
+	if !reflect.DeepEqual(expected, output) {
+		t.Errorf("command args not expected: %+v", output)
+	}
+
+	if p.Command != "" {
+		t.Errorf("p.Command should be empty but: %s", p.Command)
 	}
 }
 

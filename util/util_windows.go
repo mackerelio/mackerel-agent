@@ -3,7 +3,6 @@ package util
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -14,22 +13,23 @@ import (
 
 var utilLogger = logging.GetLogger("util")
 
-// RunCommand XXX
+// RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
 func RunCommand(command, user string) (string, string, int, error) {
-	var outBuffer, errBuffer bytes.Buffer
+	cmdArgs := []string{"cmd", "/c", command}
+	return RunCommandArgs(cmdArgs, user)
+}
 
-	wd, err := os.Getwd()
-	if err != nil {
-		return "", "", -1, err
-	}
-	cmd := exec.Command("cmd", "/c", "pushd "+wd+" & "+command)
+// RunCommandArgs run the command
+func RunCommandArgs(cmdArgs []string, user string) (string, string, int, error) {
 	if user != "" {
 		utilLogger.Warningf("RunCommand ignore option: user = %q", user)
 	}
+	var outBuffer, errBuffer bytes.Buffer
+	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	cmd.Stdout = &outBuffer
 	cmd.Stderr = &errBuffer
 
-	err = cmd.Run()
+	err := cmd.Run()
 
 	stdout := outBuffer.String()
 	stderr := errBuffer.String()

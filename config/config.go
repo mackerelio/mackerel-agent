@@ -11,6 +11,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var configLogger = logging.GetLogger("config")
@@ -63,18 +64,54 @@ type Config struct {
 
 // PluginConfigs represents a set of [plugin.<kind>.<name>] sections in the configuration file
 // under a specific <kind>. The key of the map is <name>, for example "mysql" of "plugin.metrics.mysql".
-type PluginConfigs map[string]PluginConfig
+type PluginConfigs map[string]*PluginConfig
 
 // PluginConfig represents a section of [plugin.*].
 // `MaxCheckAttempts`, `NotificationInterval` and `CheckInterval` options are used with check monitoring plugins. Custom metrics plugins ignore these options.
 // `User` option is ignore in windows
 type PluginConfig struct {
+	CommandRaw           interface{} `toml:"command"`
 	Command              string
+	CommandArgs          []string
 	User                 string
 	NotificationInterval *int32  `toml:"notification_interval"`
 	CheckInterval        *int32  `toml:"check_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
+}
+
+func (pconf *PluginConfig) prepareCommand() error {
+	const errFmt = "failed to prepare plugin command. A configuration value of `command` should be string or string slice, but %T"
+	v := pconf.CommandRaw
+	switch t := v.(type) {
+	case string:
+		pconf.Command = t
+	case []interface{}:
+		if len(t) > 0 {
+			for _, vv := range t {
+				str, ok := vv.(string)
+				if !ok {
+					return fmt.Errorf(errFmt, v)
+				}
+				pconf.CommandArgs = append(pconf.CommandArgs, str)
+			}
+		} else {
+			return fmt.Errorf(errFmt, v)
+		}
+	case []string:
+		pconf.CommandArgs = t
+	default:
+		return fmt.Errorf(errFmt, v)
+	}
+	return nil
+}
+
+// Run the plugin
+func (pconf *PluginConfig) Run() (string, string, int, error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
@@ -177,6 +214,14 @@ func loadConfigFile(file string) (*Config, error) {
 	if config.Include != "" {
 		if err := includeConfigFile(config, config.Include); err != nil {
 			return config, err
+		}
+	}
+	for _, pconfs := range config.Plugin {
+		for _, pconf := range pconfs {
+			err := pconf.prepareCommand()
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	return config, nil
