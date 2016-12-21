@@ -55,6 +55,11 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 }
 
 func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
-	// XXX to be implemented
-	return []metrics.PluginGenerator{}
+	generators := []metrics.PluginGenerator{}
+
+	for _, pluginConfig := range conf.Plugin["metrics"] {
+		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
+	}
+
+	return generators
 }
