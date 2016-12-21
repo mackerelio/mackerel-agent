@@ -62,6 +62,15 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Dec 21 2016 <mackerel-developers@hatena.ne.jp> - 0.38.0-1
+- fix typo (by ts-3156)
+- Add Copyright (by yuuki)
+- Separate interfaceGenerator from specGenerators (by motemen)
+- Timout http reuquest in 30 sec (requries go 1.3) (by hakobe)
+- specify command arguments in mackerel-agent.conf (by Songmu)
+- several improvements for Windows (by daiksy)
+- Avoid time.Tick and use time.NewTicker instead (by haya14busa)
+
 * Tue Nov 29 2016 <mackerel-developers@hatena.ne.jp> - 0.37.1-1
 - fix pluginlist (by daiksy)
 - Suppress ec2 metadata warnings (by itchyny)

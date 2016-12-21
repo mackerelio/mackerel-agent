@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.38.0 (2016-12-21)
+
+* fix typo #12 (ts-3156)
+* Add Copyright #13 (yuuki)
+* Separate interfaceGenerator from specGenerators #14 (motemen)
+* Timout http reuquest in 30 sec (requries go 1.3) #17 (hakobe)
+* specify command arguments in mackerel-agent.conf #293 (Songmu)
+* several improvements for Windows #298 (daiksy)
+* Avoid time.Tick and use time.NewTicker instead #299 (haya14busa)
+
+
 ## 0.37.1 (2016-11-29)
 
 * fix pluginlist #291 (daiksy)
