@@ -1,3 +1,22 @@
+mackerel-agent (0.38.0-1) stable; urgency=low
+
+  * fix typo (by ts-3156)
+    <https://github.com/mackerelio/mackerel-agent/pull/12>
+  * Add Copyright (by yuuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/13>
+  * Separate interfaceGenerator from specGenerators (by motemen)
+    <https://github.com/mackerelio/mackerel-agent/pull/14>
+  * Timout http reuquest in 30 sec (requries go 1.3) (by hakobe)
+    <https://github.com/mackerelio/mackerel-agent/pull/17>
+  * specify command arguments in mackerel-agent.conf (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/293>
+  * several improvements for Windows (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/298>
+  * Avoid time.Tick and use time.NewTicker instead (by haya14busa)
+    <https://github.com/mackerelio/mackerel-agent/pull/299>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 21 Dec 2016 02:22:17 +0000
+
 mackerel-agent (0.37.1-1) stable; urgency=low
 
   * fix pluginlist (by daiksy)
