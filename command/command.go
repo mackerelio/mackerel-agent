@@ -638,3 +638,13 @@ func prepareGenerators(conf *config.Config) []metrics.Generator {
 	}
 	return generators
 }
+
+func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
+	generators := []metrics.PluginGenerator{}
+
+	for _, pluginConfig := range conf.Plugin["metrics"] {
+		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
+	}
+
+	return generators
+}
