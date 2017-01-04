@@ -58,7 +58,24 @@ func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
 }
 
 func TestPluginLoadPluginMeta(t *testing.T) {
-	// TODO test parse
+	g := &pluginGenerator{
+		Config: &config.PluginConfig{
+			Command: "ruby ../example/metrics-plugins/dice-with-meta.rb",
+		},
+	}
+
+	err := g.loadPluginMeta()
+	if g.Meta == nil {
+		t.Errorf("should parse meta: %s", err)
+	}
+
+	if g.Meta.Graphs["dice"].Label != "My Dice" ||
+		g.Meta.Graphs["dice"].Metrics[0].Label != "Die (d6)" ||
+		g.Meta.Graphs["dice"].Unit != "integer" ||
+		g.Meta.Graphs["dice"].Metrics[1].Label != "Die (d20)" {
+
+		t.Errorf("loading meta failed got: %+v", g.Meta)
+	}
 
 	generatorWithoutConf := &pluginGenerator{
 		Config: &config.PluginConfig{
@@ -66,7 +83,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 		},
 	}
 
-	err := generatorWithoutConf.loadPluginMeta()
+	err = generatorWithoutConf.loadPluginMeta()
 	if err == nil {
 		t.Error("should raise error")
 	}
