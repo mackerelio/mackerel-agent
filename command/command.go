@@ -558,7 +558,7 @@ func RunOnce(conf *config.Config) error {
 		"metrics": metrics,
 	})
 	if err != nil {
-		logger.Warningf("Error while marshaling graphdefs: err = %s, graphdefs = %s.", err.Error(), graphdefs)
+		logger.Warningf("Error while marshaling graphdefs: err = %s, graphdefs = %v.", err.Error(), graphdefs)
 		return err
 	}
 	fmt.Println(string(json))
