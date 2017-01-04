@@ -66,7 +66,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 		},
 	}
 
-	err = generatorWithoutConf.loadPluginMeta()
+	err := generatorWithoutConf.loadPluginMeta()
 	if err == nil {
 		t.Error("should raise error")
 	}
