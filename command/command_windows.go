@@ -45,11 +45,6 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	if g, err = metricsWindows.NewDiskGenerator(metricsInterval); err == nil {
 		generators = append(generators, g)
 	}
-	for _, pluginConfig := range conf.Plugin["metrics"] {
-		if g, err = metricsWindows.NewPluginGenerator(pluginConfig); err == nil {
-			generators = append(generators, g)
-		}
-	}
 
 	return generators
 }
