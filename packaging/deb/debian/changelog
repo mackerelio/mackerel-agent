@@ -1,3 +1,10 @@
+mackerel-agent (0.39.0-1) stable; urgency=low
+
+  * implement `pluginGenerators` for windows (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/301>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 11 Jan 2017 03:00:25 +0000
+
 mackerel-agent (0.38.0-1) stable; urgency=low
 
   * fix typo (by ts-3156)

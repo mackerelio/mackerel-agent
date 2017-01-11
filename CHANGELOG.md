@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.39.0 (2017-01-11)
+
+* implement `pluginGenerators` for windows #301 (daiksy)
+
+
 ## 0.38.0 (2016-12-21)
 
 * fix typo #12 (ts-3156)
