@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jan 11 2017 <mackerel-developers@hatena.ne.jp> - 0.39.0-1
+- implement `pluginGenerators` for windows (by daiksy)
+
 * Wed Dec 21 2016 <mackerel-developers@hatena.ne.jp> - 0.38.0-1
 - fix typo (by ts-3156)
 - Add Copyright (by yuuki)
