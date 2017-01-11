@@ -1,3 +1,16 @@
+mackerel-agent (0.39.0-1) stable; urgency=low
+
+  * implement `pluginGenerators` for windows (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/301>
+  * add check-windows-eventlog on pluginlist (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/302>
+  * Remove duplicated generator in Windows (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/305>
+  * add mackerel-plugin-windows-server-sessions on pluginlist (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/306>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 11 Jan 2017 05:29:09 +0000
+
 mackerel-agent (0.38.0-1) stable; urgency=low
 
   * fix typo (by ts-3156)
