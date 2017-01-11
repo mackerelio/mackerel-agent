@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.39.0 (2017-01-11)
+
+* implement `pluginGenerators` for windows #301 (daiksy)
+* add check-windows-eventlog on pluginlist #302 (daiksy)
+* Remove duplicated generator in Windows #305 (astj)
+* add mackerel-plugin-windows-server-sessions on pluginlist #306 (daiksy)
+
+
 ## 0.38.0 (2016-12-21)
 
 * fix typo #12 (ts-3156)
