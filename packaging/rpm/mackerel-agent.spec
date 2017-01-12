@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Jan 12 2017 <mackerel-developers@hatena.ne.jp> - 0.39.1-1
+- support filesystems.Ignore on windows (by Songmu)
+- remove windows plugins on pluginslist (by daiksy)
+
 * Wed Jan 11 2017 <mackerel-developers@hatena.ne.jp> - 0.39.0-1
 - implement `pluginGenerators` for windows (by daiksy)
 - add check-windows-eventlog on pluginlist (by daiksy)
