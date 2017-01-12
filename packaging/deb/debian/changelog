@@ -1,3 +1,12 @@
+mackerel-agent (0.39.1-1) stable; urgency=low
+
+  * support filesystems.Ignore on windows (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/303>
+  * remove windows plugins on pluginslist (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/309>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 12 Jan 2017 03:04:51 +0000
+
 mackerel-agent (0.39.0-1) stable; urgency=low
 
   * implement `pluginGenerators` for windows (by daiksy)

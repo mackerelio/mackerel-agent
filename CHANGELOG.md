@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.39.1 (2017-01-12)
+
+* support filesystems.Ignore on windows #303 (Songmu)
+* remove windows plugins on pluginslist #309 (daiksy)
+
+
 ## 0.39.0 (2017-01-11)
 
 * implement `pluginGenerators` for windows #301 (daiksy)
