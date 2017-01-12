@@ -32,6 +32,7 @@ test_script:
 - go get -d -v -t ./...
 - go tool vet -all .
 - go test -short ./...
+- call wix\pluginlist_test.bat
 notifications:
   - provider: Slack
     auth_token:
