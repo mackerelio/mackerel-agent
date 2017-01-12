@@ -1,3 +1,4 @@
 github.com/mackerelio/go-check-plugins/check-log
 github.com/mackerelio/go-check-plugins/check-procs
 github.com/mackerelio/go-check-plugins/check-ntservice
+github.com/mackerelio/go-check-plugins/wrrrrrong
