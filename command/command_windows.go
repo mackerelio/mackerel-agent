@@ -36,7 +36,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	if g, err = metricsWindows.NewMemoryGenerator(); err == nil {
 		generators = append(generators, g)
 	}
-	if g, err = metricsWindows.NewFilesystemGenerator(conf.Filesystems.Ignore.Regexp); err == nil {
+	if g, err = metricsWindows.NewFilesystemGenerator(); err == nil {
 		generators = append(generators, g)
 	}
 	if g, err = metricsWindows.NewInterfaceGenerator(metricsInterval); err == nil {
