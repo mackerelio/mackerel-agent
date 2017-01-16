@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Mon Jan 16 2017 <mackerel-developers@hatena.ne.jp> - 0.39.2-1
+- Test wix/pluginlist.txt on AppVeyor ci (by astj)
+- Revert "remove windows plugins on pluginslist" (by daiksy)
+
 * Thu Jan 12 2017 <mackerel-developers@hatena.ne.jp> - 0.39.1-1
 - support filesystems.Ignore on windows (by Songmu)
 - remove windows plugins on pluginslist (by daiksy)
