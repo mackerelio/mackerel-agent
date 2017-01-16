@@ -1,3 +1,12 @@
+mackerel-agent (0.39.2-1) stable; urgency=low
+
+  * Test wix/pluginlist.txt on AppVeyor ci (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/313>
+  * Revert "remove windows plugins on pluginslist" (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/314>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 16 Jan 2017 02:14:42 +0000
+
 mackerel-agent (0.39.1-1) stable; urgency=low
 
   * support filesystems.Ignore on windows (by Songmu)

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.39.2 (2017-01-16)
+
+* Test wix/pluginlist.txt on AppVeyor ci #313 (astj)
+* Revert "remove windows plugins on pluginslist" #314 (daiksy)
+
+
 ## 0.39.1 (2017-01-12)
 
 * support filesystems.Ignore on windows #303 (Songmu)
