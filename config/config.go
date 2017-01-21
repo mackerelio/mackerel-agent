@@ -164,6 +164,9 @@ func (conf *Config) CheckNames() []string {
 // LoadConfig XXX
 func LoadConfig(conffile string) (*Config, error) {
 	config, err := loadConfigFile(conffile)
+	if err != nil {
+		return nil, err
+	}
 
 	// set default values if config does not have values
 	if config.Apibase == "" {

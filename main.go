@@ -105,10 +105,10 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	fs.Parse(argv)
 
 	conf, confErr := config.LoadConfig(*conffile)
-	conf.Conffile = *conffile
 	if confErr != nil {
 		return nil, fmt.Errorf("failed to load the config file: %s", confErr)
 	}
+	conf.Conffile = *conffile
 
 	// overwrite config from file by config from args
 	fs.Visit(func(f *flag.Flag) {
