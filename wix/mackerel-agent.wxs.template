@@ -17,14 +17,16 @@
             </Component>
             <Component Id="AgentExe">
               <File Id="MackerelAgentExe" Name="mackerel-agent.exe" DiskId="1" Source="..\build\mackerel-agent.exe" KeyPath="yes"></File>
+            </Component>
+            <Component Id="SampleConfig">
+              <File Id="MackerelAgentSampleConfig" Name="mackerel-agent.sample.conf" DiskId="1" Source="mackerel-agent.sample.conf" KeyPath="yes"></File>
+            </Component>
+            <Component Id="AgentEventLog">
               <Util:EventSource
                   xmlns:Util="http://schemas.microsoft.com/wix/UtilExtension"
                   Name="mackerel-agent"
                   Log="Application"
                   EventMessageFile="%SystemRoot%\System32\EventCreate.exe"/>
-            </Component>
-            <Component Id="SampleConfig">
-              <File Id="MackerelAgentSampleConfig" Name="mackerel-agent.sample.conf" DiskId="1" Source="mackerel-agent.sample.conf" KeyPath="yes"></File>
             </Component>
           </Directory>
         </Directory>
