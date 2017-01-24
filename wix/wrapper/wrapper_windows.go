@@ -81,9 +81,19 @@ func (h *handler) start() error {
 	go func() {
 		// pipe stderr to windows event log
 		re := regexp.MustCompile("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} (\\w+) ")
+
+		// verbose log pattern
+		vRe := regexp.MustCompile("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} ..*go:\\d{1,}: (\\w+) ")
+
 		for scanner.Scan() {
 			line := scanner.Text()
-			if match := re.FindStringSubmatch(line); match != nil {
+
+			match := re.FindStringSubmatch(line)
+			if match == nil {
+				match = vRe.FindStringSubmatch(line)
+			}
+
+			if match != nil {
 				level := match[1]
 				switch level {
 				case "TRACE", "DEBUG", "INFO":
