@@ -45,10 +45,6 @@ func main() {
 		return
 	}
 
-	err := eventlog.InstallAsEventCreate(name, eventlog.Error|eventlog.Warning|eventlog.Info)
-	if err != nil {
-		log.Fatal("SetupEventLogSource() failed: %s", err)
-	}
 	elog, err := eventlog.Open(name)
 	if err != nil {
 		log.Fatal(err.Error())
