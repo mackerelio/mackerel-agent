@@ -64,7 +64,6 @@ type handler struct {
 	cmd  *exec.Cmd
 }
 
-
 // ex.
 // verbose log: 2017/01/21 22:21:08 command.go:434: DEBUG <command> received 'immediate' chan
 // normal log:  2017/01/24 14:14:27 INFO <main> Starting mackerel-agent version:0.36.0
@@ -89,9 +88,7 @@ func (h *handler) start() error {
 		for scanner.Scan() {
 			line := scanner.Text()
 
-			match := logRe.FindStringSubmatch(line)
-
-			if match != nil {
+			if match := logRe.FindStringSubmatch(line); match != nil {
 				level := match[1]
 				switch level {
 				case "TRACE", "DEBUG", "INFO":
