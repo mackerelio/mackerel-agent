@@ -61,6 +61,14 @@ rpm:
 			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
+# TODO migrate to rpm
+rpm-systemd:
+	GOOS=linux GOARCH=amd64 make build
+	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME)-systemd.spec
+
 deb:
 	GOOS=linux GOARCH=386 make build
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
@@ -118,4 +126,4 @@ clean:
 
 generate: commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate rpm-systemd
