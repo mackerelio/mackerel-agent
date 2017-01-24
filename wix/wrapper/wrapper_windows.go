@@ -64,6 +64,11 @@ type handler struct {
 	cmd  *exec.Cmd
 }
 
+// ex.
+// verbose log: 2017/01/21 22:21:08 command.go:434: DEBUG <command> received 'immediate' chan
+// normal log:  2017/01/24 14:14:27 INFO <main> Starting mackerel-agent version:0.36.0
+var logRe = regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} (?:.+\.go:\d+: )?([A-Z]+) `)
+
 func (h *handler) start() error {
 	procAllocConsole.Call()
 	dir := execdir()
@@ -80,10 +85,10 @@ func (h *handler) start() error {
 	scanner.Split(bufio.ScanLines) // default
 	go func() {
 		// pipe stderr to windows event log
-		re := regexp.MustCompile("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} (\\w+) ")
 		for scanner.Scan() {
 			line := scanner.Text()
-			if match := re.FindStringSubmatch(line); match != nil {
+
+			if match := logRe.FindStringSubmatch(line); match != nil {
 				level := match[1]
 				switch level {
 				case "TRACE", "DEBUG", "INFO":
