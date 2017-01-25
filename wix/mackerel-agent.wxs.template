@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="windows-1252"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:Util="http://schemas.microsoft.com/wix/UtilExtension">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 
   <Product Name='mackerel-agent' Id='*' UpgradeCode='1EF11651-A09E-47A3-BFE3-5877E22F7D26' Language='1033' Codepage='1252' Version='___VERSION___' Manufacturer='Hatena'>
 
@@ -23,7 +22,8 @@
               <File Id="MackerelAgentSampleConfig" Name="mackerel-agent.sample.conf" DiskId="1" Source="mackerel-agent.sample.conf" KeyPath="yes"></File>
             </Component>
             <Component Id="AgentEventLog">
-              <Util:EventSource
+              <util:EventSource
+                  xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
                   Name="mackerel-agent"
                   Log="Application"
                   EventMessageFile="%SystemRoot%\System32\EventCreate.exe" />
