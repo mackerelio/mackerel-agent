@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jan 25 2017 <mackerel-developers@hatena.ne.jp> - 0.39.3-1
+- Fix segfault when loading a bad config file (by hanazuki)
+- fix windows eventlog level when "verbose=true" (by daiksy)
+
 * Mon Jan 16 2017 <mackerel-developers@hatena.ne.jp> - 0.39.2-1
 - Test wix/pluginlist.txt on AppVeyor ci (by astj)
 - Revert "remove windows plugins on pluginslist" (by daiksy)
