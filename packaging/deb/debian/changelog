@@ -1,3 +1,12 @@
+mackerel-agent (0.39.3-1) stable; urgency=low
+
+  * Fix segfault when loading a bad config file (by hanazuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/316>
+  * fix windows eventlog level when "verbose=true" (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/318>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 25 Jan 2017 06:56:02 +0000
+
 mackerel-agent (0.39.2-1) stable; urgency=low
 
   * Test wix/pluginlist.txt on AppVeyor ci (by astj)
