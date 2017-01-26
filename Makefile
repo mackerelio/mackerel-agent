@@ -49,6 +49,13 @@ crossbuild: deps
 cover: deps
 	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
 
+crossbuild-package:
+	mkdir -p ./build-linux-386 ./build-linux-amd64
+	GOOS=linux GOARCH=386 make build
+	mv {build,build-linux-386}/$(MACKEREL_AGENT_NAME)
+	GOOS=linux GOARCH=amd64 make build
+	mv {build,build-linux-amd64}/$(MACKEREL_AGENT_NAME)
+
 rpm:
 	GOOS=linux GOARCH=386 make build
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
@@ -118,4 +125,4 @@ clean:
 
 generate: commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package
