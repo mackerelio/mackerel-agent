@@ -60,6 +60,8 @@ type Config struct {
 
 	// Cannot exist in configuration files
 	HostIDStorage HostIDStorage
+	MetricPlugins map[string]MetricPlugin
+	CheckPlugins  map[string]CheckPlugin
 }
 
 // PluginConfigs represents a set of [plugin.<kind>.<name>] sections in the configuration file
