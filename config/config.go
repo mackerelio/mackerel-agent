@@ -60,8 +60,8 @@ type Config struct {
 
 	// Cannot exist in configuration files
 	HostIDStorage HostIDStorage
-	MetricPlugins map[string]MetricPlugin
-	CheckPlugins  map[string]CheckPlugin
+	MetricPlugins map[string]*MetricPlugin
+	CheckPlugins  map[string]*CheckPlugin
 }
 
 // PluginConfigs represents a set of [plugin.<kind>.<name>] sections in the configuration file
@@ -80,6 +80,34 @@ type PluginConfig struct {
 	CheckInterval        *int32  `toml:"check_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
+}
+
+func makeMetricPlugin(pconf *PluginConfig) (*MetricPlugin, error) {
+	err := pconf.prepareCommand()
+	if err != nil {
+		return nil, err
+	}
+	return &MetricPlugin{
+		Command:          pconf.Command,
+		CommandArgs:      pconf.CommandArgs,
+		User:             pconf.User,
+		CustomIdentifier: pconf.CustomIdentifier,
+	}, nil
+}
+
+func makeCheckPlugin(pconf *PluginConfig) (*CheckPlugin, error) {
+	err := pconf.prepareCommand()
+	if err != nil {
+		return nil, err
+	}
+	return &CheckPlugin{
+		Command:              pconf.Command,
+		CommandArgs:          pconf.CommandArgs,
+		User:                 pconf.User,
+		NotificationInterval: pconf.NotificationInterval,
+		CheckInterval:        pconf.CheckInterval,
+		MaxCheckAttempts:     pconf.MaxCheckAttempts,
+	}, nil
 }
 
 // MetricPlugin represents the configuration of a metric plugin
@@ -241,9 +269,23 @@ func loadConfigFile(file string) (*Config, error) {
 			return config, err
 		}
 	}
-	for _, pconfs := range config.Plugin {
-		for _, pconf := range pconfs {
-			err := pconf.prepareCommand()
+
+	config.MetricPlugins = make(map[string]*MetricPlugin)
+	if pconfs, ok := config.Plugin["metrics"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			config.MetricPlugins[name], err = makeMetricPlugin(pconf)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	config.CheckPlugins = make(map[string]*CheckPlugin)
+	if pconfs, ok := config.Plugin["checks"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			config.CheckPlugins[name], err = makeCheckPlugin(pconf)
 			if err != nil {
 				return nil, err
 			}
