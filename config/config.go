@@ -80,6 +80,26 @@ type PluginConfig struct {
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
 
+// MetricPlugin represents the configuration of a metric plugin
+// The `User` option is ignored in Windows
+type MetricPlugin struct {
+	Command          string
+	CommandArgs      []string
+	User             string
+	CustomIdentifier *string
+}
+
+// CheckPlugin represents the configuration of a check plugin
+// The `User` option is ignored in Windows
+type CheckPlugin struct {
+	Command              string
+	CommandArgs          []string
+	User                 string
+	NotificationInterval *int32
+	CheckInterval        *int32
+	MaxCheckAttempts     *int32
+}
+
 func (pconf *PluginConfig) prepareCommand() error {
 	const errFmt = "failed to prepare plugin command. A configuration value of `command` should be string or string slice, but %T"
 	v := pconf.CommandRaw
