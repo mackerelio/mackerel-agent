@@ -52,7 +52,7 @@ cover: deps
 crossbuild-package:
 	mkdir -p ./build-linux-386 ./build-linux-amd64
 	GOOS=linux GOARCH=386 make build
-	mv build/$(MACKEREL_AGENT_NAME) build-linux-i386/
+	mv build/$(MACKEREL_AGENT_NAME) build-linux-386/
 	GOOS=linux GOARCH=amd64 make build
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-amd64/
 
