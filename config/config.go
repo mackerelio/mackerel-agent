@@ -54,7 +54,7 @@ type Config struct {
 
 	// Corresponds to the set of [plugin.<kind>.<name>] sections
 	// the key of the map is <kind>, which should be one of "metrics" or "checks".
-	Plugin map[string]PluginConfigs
+	Plugin map[string]map[string]*PluginConfig
 
 	Include string
 
@@ -64,13 +64,7 @@ type Config struct {
 	CheckPlugins  map[string]*CheckPlugin
 }
 
-// PluginConfigs represents a set of [plugin.<kind>.<name>] sections in the configuration file
-// under a specific <kind>. The key of the map is <name>, for example "mysql" of "plugin.metrics.mysql".
-type PluginConfigs map[string]*PluginConfig
-
-// PluginConfig represents a section of [plugin.*].
-// `MaxCheckAttempts`, `NotificationInterval` and `CheckInterval` options are used with check monitoring plugins. Custom metrics plugins ignore these options.
-// `User` option is ignore in windows
+// PluginConfig represents a plugin configuration.
 type PluginConfig struct {
 	CommandRaw           interface{} `toml:"command"`
 	Command              string
