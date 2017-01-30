@@ -37,12 +37,8 @@ var exitCodeToStatus = map[int]Status{
 // It invokes its given command and transforms the result to a Report
 // to be sent to Mackerel periodically.
 type Checker struct {
-	Name string
-	// NOTE(motemen): We make use of config.PluginConfig as it happens
-	// to have the Command field which was used by metrics.pluginGenerator.
-	// If the configuration of *checks.Checker and/or metrics.pluginGenerator changes,
-	// we should reconsider using config.PluginConfig.
-	Config *config.PluginConfig
+	Name   string
+	Config *config.CheckPlugin
 }
 
 // Report is what Checker produces by invoking its command.

@@ -618,7 +618,7 @@ func Run(c *Context, termCh chan struct{}) error {
 func createCheckers(conf *config.Config) []*checks.Checker {
 	checkers := []*checks.Checker{}
 
-	for name, pluginConfig := range conf.Plugin["checks"] {
+	for name, pluginConfig := range conf.CheckPlugins {
 		checker := &checks.Checker{
 			Name:   name,
 			Config: pluginConfig,
