@@ -82,7 +82,7 @@ type PluginConfig struct {
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
 
-func makeMetricPlugin(pconf *PluginConfig) (*MetricPlugin, error) {
+func (pconf *PluginConfig) makeMetricPlugin() (*MetricPlugin, error) {
 	err := pconf.prepareCommand()
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func makeMetricPlugin(pconf *PluginConfig) (*MetricPlugin, error) {
 	}, nil
 }
 
-func makeCheckPlugin(pconf *PluginConfig) (*CheckPlugin, error) {
+func (pconf *PluginConfig) makeCheckPlugin() (*CheckPlugin, error) {
 	err := pconf.prepareCommand()
 	if err != nil {
 		return nil, err
@@ -299,7 +299,7 @@ func (conf *Config) makePlugins() error {
 	if pconfs, ok := conf.Plugin["metrics"]; ok {
 		var err error
 		for name, pconf := range pconfs {
-			conf.MetricPlugins[name], err = makeMetricPlugin(pconf)
+			conf.MetricPlugins[name], err = pconf.makeMetricPlugin()
 			if err != nil {
 				return err
 			}
@@ -309,7 +309,7 @@ func (conf *Config) makePlugins() error {
 	if pconfs, ok := conf.Plugin["checks"]; ok {
 		var err error
 		for name, pconf := range pconfs {
-			conf.CheckPlugins[name], err = makeCheckPlugin(pconf)
+			conf.CheckPlugins[name], err = pconf.makeCheckPlugin()
 			if err != nil {
 				return err
 			}
