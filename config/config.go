@@ -119,6 +119,14 @@ type MetricPlugin struct {
 	CustomIdentifier *string
 }
 
+// Run the plugin
+func (pconf *MetricPlugin) Run() (string, string, int, error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
+}
+
 // CheckPlugin represents the configuration of a check plugin
 // The `User` option is ignored in Windows
 type CheckPlugin struct {
@@ -128,6 +136,14 @@ type CheckPlugin struct {
 	NotificationInterval *int32
 	CheckInterval        *int32
 	MaxCheckAttempts     *int32
+}
+
+// Run the plugin
+func (pconf *CheckPlugin) Run() (string, string, int, error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
 }
 
 func (pconf *PluginConfig) prepareCommand() error {
@@ -154,14 +170,6 @@ func (pconf *PluginConfig) prepareCommand() error {
 		return fmt.Errorf(errFmt, v)
 	}
 	return nil
-}
-
-// Run the plugin
-func (pconf *PluginConfig) Run() (string, string, int, error) {
-	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
-	}
-	return util.RunCommand(pconf.Command, pconf.User)
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
