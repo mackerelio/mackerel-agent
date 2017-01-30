@@ -60,7 +60,9 @@ crossbuild-package-kcps:
 	make crossbuild-package MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16
 
 crossbuild-package-stage:
-	make crossbuild-package MACKEREL_AGENT_NAME=mackerel-agent-stage MACKEREL_API_BASE=http://0.0.0.0
+	mkdir -p ./build-linux-386
+	GOOS=linux GOARCH=386 make build MACKEREL_AGENT_NAME=mackerel-agent-stage MACKEREL_API_BASE=http://0.0.0.0
+	mv build/mackerel-agent-stage build-linux-386/
 
 rpm: crossbuild-package
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
