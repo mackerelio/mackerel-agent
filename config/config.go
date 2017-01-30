@@ -289,7 +289,6 @@ func LoadConfig(conffile string) (*Config, error) {
 }
 
 func (conf *Config) buildPlugins() error {
-	conf.MetricPlugins = make(map[string]*MetricPlugin)
 	if pconfs, ok := conf.Plugin["metrics"]; ok {
 		var err error
 		for name, pconf := range pconfs {
@@ -299,7 +298,6 @@ func (conf *Config) buildPlugins() error {
 			}
 		}
 	}
-	conf.CheckPlugins = make(map[string]*CheckPlugin)
 	if pconfs, ok := conf.Plugin["checks"]; ok {
 		var err error
 		for name, pconf := range pconfs {
@@ -321,6 +319,8 @@ func loadConfigFile(file string) (*Config, error) {
 		return config, err
 	}
 
+	config.MetricPlugins = make(map[string]*MetricPlugin)
+	config.CheckPlugins = make(map[string]*CheckPlugin)
 	if err := config.buildPlugins(); err != nil {
 		return nil, err
 	}
