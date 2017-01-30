@@ -248,7 +248,11 @@ func TestLoadConfigFileInclude(t *testing.T) {
 	assertNoError(t, err)
 
 	configContent := fmt.Sprintf(`
-apikey = "not overwritten"
+apikey = "abcde"
+pidfile = "/path/to/pidfile"
+root = "/var/lib/mackerel-agent"
+verbose = false
+
 roles = [ "roles", "to be overwritten" ]
 
 include = "%s/*.conf"
@@ -281,12 +285,56 @@ command = "bar"
 	config, err := loadConfigFile(configFile.Name())
 	assertNoError(t, err)
 
-	assert(t, config.Apikey == "not overwritten", "apikey should not be overwritten")
+	assert(t, config.Apikey == "abcde", "apikey should be kept as it is when not configured in the included file")
+	assert(t, config.Pidfile == "/path/to/pidfile", "pidfile should be kept as it is when not configured in the included file")
+	assert(t, config.Root == "/var/lib/mackerel-agent", "root should be kept as it is when not configured in the included file")
+	assert(t, config.Verbose == false, "verbose should be kept as it is when not configured in the included file")
 	assert(t, len(config.Roles) == 1, "roles should be overwritten")
 	assert(t, config.Roles[0] == "Service:role", "roles should be overwritten")
 	assert(t, config.Plugin["metrics"]["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
 	assert(t, config.Plugin["metrics"]["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
 	assert(t, config.Plugin["metrics"]["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
+}
+
+func TestLoadConfigFileIncludeOverwritten(t *testing.T) {
+	configDir, err := ioutil.TempDir("", "mackerel-config-test")
+	assertNoError(t, err)
+	defer os.RemoveAll(configDir)
+
+	includedFile, err := os.Create(filepath.Join(configDir, "sub2.conf"))
+	assertNoError(t, err)
+
+	configContent := fmt.Sprintf(`
+apikey = "abcde"
+pidfile = "/path/to/pidfile"
+root = "/var/lib/mackerel-agent"
+verbose = false
+
+include = "%s/*.conf"
+`, tomlQuotedReplacer.Replace(configDir))
+
+	configFile, err := newTempFileWithContent(configContent)
+	assertNoError(t, err)
+	defer os.Remove(configFile.Name())
+
+	includedContent := `
+apikey = "new-api-key"
+pidfile = "/path/to/pidfile2"
+root = "/tmp"
+verbose = true
+`
+
+	_, err = includedFile.WriteString(includedContent)
+	assertNoError(t, err)
+	includedFile.Close()
+
+	config, err := loadConfigFile(configFile.Name())
+	assertNoError(t, err)
+
+	assert(t, config.Apikey == "new-api-key", "apikey should be overwritten")
+	assert(t, config.Pidfile == "/path/to/pidfile2", "pidfile should be overwritten")
+	assert(t, config.Root == "/tmp", "root should be overwritten")
+	assert(t, config.Verbose == true, "verbose should be overwritten")
 }
 
 func TestFileSystemHostIDStorage(t *testing.T) {
