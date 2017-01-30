@@ -218,7 +218,7 @@ func (r *Regexpwrapper) UnmarshalText(text []byte) error {
 	return err
 }
 
-// CheckNames return list of plugin.checks._name_
+// CheckNames returns a list of check plugins
 func (conf *Config) CheckNames() []string {
 	checks := []string{}
 	for name := range conf.CheckPlugins {
