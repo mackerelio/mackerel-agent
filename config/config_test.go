@@ -25,6 +25,7 @@ post_metrics_retry_max = 5
 [plugin.metrics.mysql]
 command = "ruby /path/to/your/plugin/mysql.rb"
 user = "mysql"
+custom_identifier = "app1.example.com"
 
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
@@ -199,6 +200,16 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if pluginConf.User != "mysql" {
 		t.Errorf("plugin user_name should be 'mysql'")
+	}
+	if *pluginConf.CustomIdentifier != "app1.example.com" {
+		t.Errorf("plugin custom_identifier should be 'app1.example.com'")
+	}
+	customIdentifiers := config.CustomIdentifiers()
+	if len(customIdentifiers) != 1 {
+		t.Errorf("config should have 1 custom_identifier")
+	}
+	if customIdentifiers[0] != "app1.example.com" {
+		t.Errorf("first custom_identifier should be 'app1.example.com'")
 	}
 
 	if config.CheckPlugins == nil {
