@@ -76,7 +76,16 @@ type PluginConfig struct {
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
 
-func (pconf *PluginConfig) makeMetricPlugin() (*MetricPlugin, error) {
+// MetricPlugin represents the configuration of a metric plugin
+// The User option is ignored on Windows
+type MetricPlugin struct {
+	Command          string
+	CommandArgs      []string
+	User             string
+	CustomIdentifier *string
+}
+
+func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	err := pconf.prepareCommand()
 	if err != nil {
 		return nil, err
@@ -87,30 +96,6 @@ func (pconf *PluginConfig) makeMetricPlugin() (*MetricPlugin, error) {
 		User:             pconf.User,
 		CustomIdentifier: pconf.CustomIdentifier,
 	}, nil
-}
-
-func (pconf *PluginConfig) makeCheckPlugin() (*CheckPlugin, error) {
-	err := pconf.prepareCommand()
-	if err != nil {
-		return nil, err
-	}
-	return &CheckPlugin{
-		Command:              pconf.Command,
-		CommandArgs:          pconf.CommandArgs,
-		User:                 pconf.User,
-		NotificationInterval: pconf.NotificationInterval,
-		CheckInterval:        pconf.CheckInterval,
-		MaxCheckAttempts:     pconf.MaxCheckAttempts,
-	}, nil
-}
-
-// MetricPlugin represents the configuration of a metric plugin
-// The User option is ignored on Windows
-type MetricPlugin struct {
-	Command          string
-	CommandArgs      []string
-	User             string
-	CustomIdentifier *string
 }
 
 // Run the plugin
@@ -138,6 +123,21 @@ type CheckPlugin struct {
 	NotificationInterval *int32
 	CheckInterval        *int32
 	MaxCheckAttempts     *int32
+}
+
+func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
+	err := pconf.prepareCommand()
+	if err != nil {
+		return nil, err
+	}
+	return &CheckPlugin{
+		Command:              pconf.Command,
+		CommandArgs:          pconf.CommandArgs,
+		User:                 pconf.User,
+		NotificationInterval: pconf.NotificationInterval,
+		CheckInterval:        pconf.CheckInterval,
+		MaxCheckAttempts:     pconf.MaxCheckAttempts,
+	}, nil
 }
 
 // Run the plugin
@@ -288,12 +288,12 @@ func LoadConfig(conffile string) (*Config, error) {
 	return config, err
 }
 
-func (conf *Config) makePlugins() error {
+func (conf *Config) buildPlugins() error {
 	conf.MetricPlugins = make(map[string]*MetricPlugin)
 	if pconfs, ok := conf.Plugin["metrics"]; ok {
 		var err error
 		for name, pconf := range pconfs {
-			conf.MetricPlugins[name], err = pconf.makeMetricPlugin()
+			conf.MetricPlugins[name], err = pconf.buildMetricPlugin()
 			if err != nil {
 				return err
 			}
@@ -303,7 +303,7 @@ func (conf *Config) makePlugins() error {
 	if pconfs, ok := conf.Plugin["checks"]; ok {
 		var err error
 		for name, pconf := range pconfs {
-			conf.CheckPlugins[name], err = pconf.makeCheckPlugin()
+			conf.CheckPlugins[name], err = pconf.buildCheckPlugin()
 			if err != nil {
 				return err
 			}
@@ -321,7 +321,7 @@ func loadConfigFile(file string) (*Config, error) {
 		return config, err
 	}
 
-	if err := config.makePlugins(); err != nil {
+	if err := config.buildPlugins(); err != nil {
 		return nil, err
 	}
 
@@ -359,7 +359,7 @@ func includeConfigFile(config *Config, include string) error {
 		}
 
 		// Overwrite plugin configurations.
-		if err := config.makePlugins(); err != nil {
+		if err := config.buildPlugins(); err != nil {
 			return err
 		}
 	}
