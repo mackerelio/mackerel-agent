@@ -87,7 +87,6 @@ rpm-kcps: crossbuild-package-kcps
 			-bb packaging/rpm-build/mackerel-agent-kcps.spec
 
 deb-kcps: crossbuild-package-kcps
-	make build MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16 GOOS=linux GOARCH=386
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
