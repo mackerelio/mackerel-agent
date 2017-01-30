@@ -241,7 +241,7 @@ func index(xs []string, y string) int {
 	return -1
 }
 
-// LoadConfig XXX
+// LoadConfig loads a Config from a file.
 func LoadConfig(conffile string) (*Config, error) {
 	config, err := loadConfigFile(conffile)
 	if err != nil {
