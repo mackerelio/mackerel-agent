@@ -315,6 +315,9 @@ func (conf *Config) makePlugins() error {
 			}
 		}
 	}
+	// Make Plugins empty because we should not use this later.
+	// Use MetricPlugins and CheckPlugins.
+	conf.Plugin = nil
 	return nil
 }
 
@@ -333,11 +336,6 @@ func loadConfigFile(file string) (*Config, error) {
 			return config, err
 		}
 	}
-
-	// Make Plugins empty because we should not use this later
-	// (specifically when we include another configuration file).
-	// Use MetricPlugins and CheckPlugins.
-	config.Plugin = nil
 
 	return config, nil
 }
