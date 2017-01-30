@@ -127,6 +127,14 @@ func (pconf *MetricPlugin) Run() (string, string, int, error) {
 	return util.RunCommand(pconf.Command, pconf.User)
 }
 
+// CommandString returns the command string for log messages
+func (pconf *MetricPlugin) CommandString() string {
+	if len(pconf.CommandArgs) > 0 {
+		return strings.Join(pconf.CommandArgs, " ")
+	}
+	return pconf.Command
+}
+
 // CheckPlugin represents the configuration of a check plugin
 // The `User` option is ignored in Windows
 type CheckPlugin struct {

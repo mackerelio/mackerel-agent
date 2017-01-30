@@ -126,7 +126,7 @@ func (g *pluginGenerator) loadPluginMeta() error {
 
 	stdout, stderr, exitCode, err := g.Config.Run()
 	if err != nil {
-		return fmt.Errorf("running %T failed: %s, exit=%d stderr=%q", g.Config.CommandRaw, err, exitCode, stderr)
+		return fmt.Errorf("running %s failed: %s, exit=%d stderr=%q", g.Config.CommandString(), err, exitCode, stderr)
 	}
 
 	outBuffer := bufio.NewReader(strings.NewReader(stdout))
@@ -134,7 +134,7 @@ func (g *pluginGenerator) loadPluginMeta() error {
 
 	headerLine, err := outBuffer.ReadString('\n')
 	if err != nil {
-		return fmt.Errorf("while reading the first line of command %T: %s", g.Config.CommandRaw, err)
+		return fmt.Errorf("while reading the first line of command %s: %s", g.Config.CommandString(), err)
 	}
 
 	// Parse the header line of format:
@@ -219,10 +219,10 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 	stdout, stderr, _, err := g.Config.Run()
 
 	if stderr != "" {
-		pluginLogger.Infof("command %T outputted to STDERR: %q", g.Config.CommandRaw, stderr)
+		pluginLogger.Infof("command %s outputted to STDERR: %q", g.Config.CommandString(), stderr)
 	}
 	if err != nil {
-		pluginLogger.Errorf("Failed to execute command %T (skip these metrics):\n", g.Config.CommandRaw)
+		pluginLogger.Errorf("Failed to execute command %s (skip these metrics):\n", g.Config.CommandString())
 		return nil, err
 	}
 
