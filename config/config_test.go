@@ -190,10 +190,10 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("PostMetricsRetryMax should be 5")
 	}
 
-	if config.Plugin["metrics"] == nil {
+	if config.MetricPlugins == nil {
 		t.Error("plugin should have metrics")
 	}
-	pluginConf := config.Plugin["metrics"]["mysql"]
+	pluginConf := config.MetricPlugins["mysql"]
 	if pluginConf.Command != "ruby /path/to/your/plugin/mysql.rb" {
 		t.Errorf("plugin conf command should be 'ruby /path/to/your/plugin/mysql.rb' but %v", pluginConf.Command)
 	}
@@ -201,10 +201,10 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Errorf("plugin user_name should be 'mysql'")
 	}
 
-	if config.Plugin["checks"] == nil {
+	if config.CheckPlugins == nil {
 		t.Error("plugin should have checks")
 	}
-	checks := config.Plugin["checks"]["heartbeat"]
+	checks := config.CheckPlugins["heartbeat"]
 	if checks.Command != "heartbeat.sh" {
 		t.Error("check command should be 'heartbeat.sh'")
 	}
@@ -284,9 +284,9 @@ command = "bar"
 	assert(t, config.Apikey == "not overwritten", "apikey should not be overwritten")
 	assert(t, len(config.Roles) == 1, "roles should be overwritten")
 	assert(t, config.Roles[0] == "Service:role", "roles should be overwritten")
-	assert(t, config.Plugin["metrics"]["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
-	assert(t, config.Plugin["metrics"]["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
-	assert(t, config.Plugin["metrics"]["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
+	assert(t, config.MetricPlugins["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
+	assert(t, config.MetricPlugins["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
+	assert(t, config.MetricPlugins["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
 }
 
 func TestFileSystemHostIDStorage(t *testing.T) {
@@ -353,7 +353,7 @@ command = ["perl", "-E", "say 'Hello'"]
 	assertNoError(t, err)
 
 	expected := []string{"perl", "-E", "say 'Hello'"}
-	p := config.Plugin["metrics"]["hoge"]
+	p := config.MetricPlugins["hoge"]
 	output := p.CommandArgs
 
 	if !reflect.DeepEqual(expected, output) {
