@@ -20,7 +20,6 @@ script:
 - make cover
 - test `gofmt -l . | wc -l` = 0
 - make crossbuild
-- make deb
 after_script:
 - goveralls -coverprofile=.profile.cov
 before_deploy:
