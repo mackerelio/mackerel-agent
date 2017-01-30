@@ -221,7 +221,7 @@ func (r *Regexpwrapper) UnmarshalText(text []byte) error {
 // CheckNames return list of plugin.checks._name_
 func (conf *Config) CheckNames() []string {
 	checks := []string{}
-	for name := range conf.Plugin["checks"] {
+	for name := range conf.CheckPlugins {
 		checks = append(checks, name)
 	}
 	return checks
