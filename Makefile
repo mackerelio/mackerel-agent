@@ -119,7 +119,7 @@ commands_gen.go: commands.go
 	go generate
 
 clean:
-	rm -f build/$(MACKEREL_AGENT_NAME) build-linux-amd64/$(MACKEREL_AGENT_NAME) build-linux-i386/$(MACKEREL_AGENT_NAME)
+	rm -f build/$(MACKEREL_AGENT_NAME) build-linux-amd64/$(MACKEREL_AGENT_NAME) build-linux-386/$(MACKEREL_AGENT_NAME)
 	go clean
 	rm -f commands_gen.go
 
