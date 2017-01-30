@@ -17,7 +17,7 @@ import (
 // pluginGenerator collects user-defined metrics.
 // mackerel-agent runs specified command and parses the result for the metric names and values.
 type pluginGenerator struct {
-	Config *config.PluginConfig
+	Config *config.MetricPlugin
 	Meta   *pluginMeta
 }
 
@@ -45,7 +45,7 @@ const pluginPrefix = "custom."
 var pluginConfigurationEnvName = "MACKEREL_AGENT_PLUGIN_META"
 
 // NewPluginGenerator XXX
-func NewPluginGenerator(conf *config.PluginConfig) PluginGenerator {
+func NewPluginGenerator(conf *config.MetricPlugin) PluginGenerator {
 	return &pluginGenerator{Config: conf}
 }
 
