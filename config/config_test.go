@@ -199,10 +199,10 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Errorf("plugin conf command should be 'ruby /path/to/your/plugin/mysql.rb' but %v", pluginConf.Command)
 	}
 	if pluginConf.User != "mysql" {
-		t.Errorf("plugin user_name should be 'mysql'")
+		t.Error("plugin user_name should be 'mysql'")
 	}
 	if *pluginConf.CustomIdentifier != "app1.example.com" {
-		t.Errorf("plugin custom_identifier should be 'app1.example.com'")
+		t.Errorf("plugin custom_identifier should be 'app1.example.com' but got %v", *pluginConf.CustomIdentifier)
 	}
 	customIdentifiers := config.CustomIdentifiers()
 	if len(customIdentifiers) != 1 {
