@@ -105,7 +105,7 @@ func (pconf *PluginConfig) makeCheckPlugin() (*CheckPlugin, error) {
 }
 
 // MetricPlugin represents the configuration of a metric plugin
-// The `User` option is ignored in Windows
+// The User option is ignored on Windows
 type MetricPlugin struct {
 	Command          string
 	CommandArgs      []string
@@ -130,7 +130,7 @@ func (pconf *MetricPlugin) CommandString() string {
 }
 
 // CheckPlugin represents the configuration of a check plugin
-// The `User` option is ignored in Windows
+// The User option is ignored on Windows
 type CheckPlugin struct {
 	Command              string
 	CommandArgs          []string
@@ -212,7 +212,7 @@ func (r *Regexpwrapper) UnmarshalText(text []byte) error {
 	return err
 }
 
-// CheckNames returns a list of check plugins
+// CheckNames returns a list of name of the check plugins
 func (conf *Config) CheckNames() []string {
 	checks := []string{}
 	for name := range conf.CheckPlugins {
