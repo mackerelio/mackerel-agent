@@ -52,8 +52,10 @@ type Config struct {
 	Filesystems Filesystems `toml:"filesystems"`
 	HTTPProxy   string      `toml:"http_proxy"`
 
-	// Corresponds to the set of [plugin.<kind>.<name>] sections
-	// the key of the map is <kind>, which should be one of "metrics" or "checks".
+	// This Plugin field is used to decode the toml file. After reading the
+	// configuration from file, this field is set to nil.
+	// Please use MetricPlugins and CheckPlugins.
+	// Corresponds to the set of [plugin.<kind>.<name>] sections.
 	Plugin map[string]map[string]*PluginConfig
 
 	Include string
