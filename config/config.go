@@ -54,8 +54,7 @@ type Config struct {
 
 	// This Plugin field is used to decode the toml file. After reading the
 	// configuration from file, this field is set to nil.
-	// Please use MetricPlugins and CheckPlugins.
-	// Corresponds to the set of [plugin.<kind>.<name>] sections.
+	// Please consider using MetricPlugins and CheckPlugins.
 	Plugin map[string]map[string]*PluginConfig
 
 	Include string
