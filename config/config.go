@@ -227,6 +227,26 @@ func (conf *Config) CheckNames() []string {
 	return checks
 }
 
+// CustomIdentifiers returns a list of customIdentifiers.
+func (conf *Config) CustomIdentifiers() []string {
+	var customIdentifiers []string
+	for _, pconf := range conf.MetricPlugins {
+		if pconf.CustomIdentifier != nil && index(customIdentifiers, *pconf.CustomIdentifier) == -1 {
+			customIdentifiers = append(customIdentifiers, *pconf.CustomIdentifier)
+		}
+	}
+	return customIdentifiers
+}
+
+func index(xs []string, y string) int {
+	for i, x := range xs {
+		if x == y {
+			return i
+		}
+	}
+	return -1
+}
+
 // LoadConfig XXX
 func LoadConfig(conffile string) (*Config, error) {
 	config, err := loadConfigFile(conffile)
