@@ -98,7 +98,7 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	}, nil
 }
 
-// Run the plugin
+// Run the metric plugin.
 func (pconf *MetricPlugin) Run() (string, string, int, error) {
 	if len(pconf.CommandArgs) > 0 {
 		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
@@ -140,7 +140,7 @@ func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
 	}, nil
 }
 
-// Run the plugin
+// Run the check plugin.
 func (pconf *CheckPlugin) Run() (string, string, int, error) {
 	if len(pconf.CommandArgs) > 0 {
 		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
