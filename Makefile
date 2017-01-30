@@ -56,15 +56,13 @@ crossbuild-package:
 	GOOS=linux GOARCH=amd64 make build
 	mv {build,build-linux-amd64}/$(MACKEREL_AGENT_NAME)
 
-rpm:
-	GOOS=linux GOARCH=386 make build
+rpm: crossbuild-package
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-386" \
 	      --define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
 				-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
-	GOOS=linux GOARCH=amd64 make build
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-amd64" \
 			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
@@ -119,7 +117,7 @@ commands_gen.go: commands.go
 	go generate
 
 clean:
-	rm -f build/$(MACKEREL_AGENT_NAME)
+	rm -f {build,build-linux-386,build-linux-amd64}/$(MACKEREL_AGENT_NAME)
 	go clean
 	rm -f commands_gen.go
 
