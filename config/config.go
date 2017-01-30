@@ -274,10 +274,38 @@ func LoadConfig(conffile string) (*Config, error) {
 	return config, err
 }
 
+func (conf *Config) makePlugins() error {
+	conf.MetricPlugins = make(map[string]*MetricPlugin)
+	if pconfs, ok := conf.Plugin["metrics"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			conf.MetricPlugins[name], err = makeMetricPlugin(pconf)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	conf.CheckPlugins = make(map[string]*CheckPlugin)
+	if pconfs, ok := conf.Plugin["checks"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			conf.CheckPlugins[name], err = makeCheckPlugin(pconf)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func loadConfigFile(file string) (*Config, error) {
 	config := &Config{}
 	if _, err := toml.DecodeFile(file, config); err != nil {
 		return config, err
+	}
+
+	if err := config.makePlugins(); err != nil {
+		return nil, err
 	}
 
 	if config.Include != "" {
@@ -286,27 +314,11 @@ func loadConfigFile(file string) (*Config, error) {
 		}
 	}
 
-	config.MetricPlugins = make(map[string]*MetricPlugin)
-	if pconfs, ok := config.Plugin["metrics"]; ok {
-		var err error
-		for name, pconf := range pconfs {
-			config.MetricPlugins[name], err = makeMetricPlugin(pconf)
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
+	// Make Plugins empty because we should not use this later
+	// (specifically when we include another configuration file).
+	// Use MetricPlugins and CheckPlugins.
+	config.Plugin = nil
 
-	config.CheckPlugins = make(map[string]*CheckPlugin)
-	if pconfs, ok := config.Plugin["checks"]; ok {
-		var err error
-		for name, pconf := range pconfs {
-			config.CheckPlugins[name], err = makeCheckPlugin(pconf)
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
 	return config, nil
 }
 
@@ -323,12 +335,6 @@ func includeConfigFile(config *Config, include string) error {
 		rolesSaved := config.Roles
 		config.Roles = nil
 
-		// Also, save plugin values for later merging
-		pluginSaved := map[string]PluginConfigs{}
-		for kind, plugins := range config.Plugin {
-			pluginSaved[kind] = plugins
-		}
-
 		meta, err := toml.DecodeFile(file, &config)
 		if err != nil {
 			return fmt.Errorf("while loading included config file %s: %s", file, err)
@@ -340,16 +346,10 @@ func includeConfigFile(config *Config, include string) error {
 			config.Roles = rolesSaved
 		}
 
-		for kind, plugins := range config.Plugin {
-			for key, conf := range plugins {
-				if pluginSaved[kind] == nil {
-					pluginSaved[kind] = PluginConfigs{}
-				}
-				pluginSaved[kind][key] = conf
-			}
+		// Overwrite plugin configurations.
+		if err := config.makePlugins(); err != nil {
+			return err
 		}
-
-		config.Plugin = pluginSaved
 	}
 
 	return nil
