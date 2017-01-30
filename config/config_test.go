@@ -229,7 +229,7 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("max_check_attempts should be 3")
 	}
 
-	if config.Plugins != nil {
+	if config.Plugin != nil {
 		t.Error("plugin config should be set nil, use MetricPlugins and CheckPlugins instead")
 	}
 }
