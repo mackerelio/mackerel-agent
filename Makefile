@@ -49,50 +49,57 @@ crossbuild: deps
 cover: deps
 	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
 
-rpm:
+crossbuild-package:
+	mkdir -p ./build-linux-386 ./build-linux-amd64
 	GOOS=linux GOARCH=386 make build
+	mv build/$(MACKEREL_AGENT_NAME) build-linux-386/
+	GOOS=linux GOARCH=amd64 make build
+	mv build/$(MACKEREL_AGENT_NAME) build-linux-amd64/
+
+crossbuild-package-kcps:
+	make crossbuild-package MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16
+
+crossbuild-package-stage:
+	mkdir -p ./build-linux-386
+	GOOS=linux GOARCH=386 make build MACKEREL_AGENT_NAME=mackerel-agent-stage MACKEREL_API_BASE=http://0.0.0.0
+	mv build/mackerel-agent-stage build-linux-386/
+
+rpm: crossbuild-package
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-386" \
 	      --define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
 				-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
-	GOOS=linux GOARCH=amd64 make build
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-amd64" \
 			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
-deb:
-	GOOS=linux GOARCH=386 make build
-	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
+deb: crossbuild-package
+	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
-rpm-kcps:
-	make build MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16 GOOS=linux GOARCH=386
+rpm-kcps: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-386" \
 			--define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
 			-bb packaging/rpm-build/mackerel-agent-kcps.spec
-	make build MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16 GOOS=linux GOARCH=amd64
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-amd64" \
 			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 			-bb packaging/rpm-build/mackerel-agent-kcps.spec
 
-deb-kcps:
-	make build MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16 GOOS=linux GOARCH=386
-	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-deb-build.sh
+deb-kcps: crossbuild-package-kcps
+	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
-rpm-stage:
-	make build MACKEREL_AGENT_NAME=mackerel-agent-stage MACKEREL_API_BASE=http://0.0.0.0 GOOS=linux GOARCH=386
+rpm-stage: crossbuild-package-stage
 	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build" \
+	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-386" \
 	      --define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
 				-bb packaging/rpm-build/mackerel-agent-stage.spec
 
-deb-stage:
-	make build MACKEREL_AGENT_NAME=mackerel-agent-stage MACKEREL_API_BASE=http://0.0.0.0 GOOS=linux GOARCH=386
-	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-deb-build.sh
+deb-stage: crossbuild-package-stage
+	MACKEREL_AGENT_NAME=mackerel-agent-stage BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
@@ -112,10 +119,10 @@ commands_gen.go: commands.go
 	go generate
 
 clean:
-	rm -f build/$(MACKEREL_AGENT_NAME)
+	rm -f build/$(MACKEREL_AGENT_NAME) build-linux-amd64/$(MACKEREL_AGENT_NAME) build-linux-386/$(MACKEREL_AGENT_NAME)
 	go clean
 	rm -f commands_gen.go
 
 generate: commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage
