@@ -360,7 +360,7 @@ func includeConfigFile(config *Config, include string) error {
 			config.Roles = rolesSaved
 		}
 
-		// Overwrite plugin configurations.
+		// Add new plugin or overwrite a plugin with the same plugin name.
 		if err := config.buildPlugins(); err != nil {
 			return err
 		}
