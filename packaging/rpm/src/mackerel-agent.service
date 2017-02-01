@@ -10,7 +10,7 @@ EnvironmentFile=-/etc/sysconfig/mackerel-agent
 PIDFile=/var/run/mackerel-agent.pid
 ExecStartPre=/usr/bin/mkdir -m 777 -p $MACKEREL_PLUGIN_WORKDIR
 ExecStart=/usr/bin/mackerel-agent --pidfile /var/run/mackerel-agent.pid --root $ROOT $OTHER_OPTS
-ExecStopPost=/bin/sh -c '[ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && /usr/bin/mackerel-agent retire -force --root $ROOT $OTHER_OPTS'
+ExecStopPost=/bin/sh -c '[ "$AUTO_RETIREMENT" == "" ] || [ "$AUTO_RETIREMENT" == "0" ] && true || /usr/bin/mackerel-agent retire -force --root $ROOT $OTHER_OPTS'
 
 [Install]
 WantedBy=multi-user.target
