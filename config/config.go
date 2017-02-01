@@ -289,7 +289,7 @@ func LoadConfig(conffile string) (*Config, error) {
 	return config, err
 }
 
-func (conf *Config) buildPlugins() error {
+func (conf *Config) setMetricPluginsAndCheckPlugins() error {
 	if pconfs, ok := conf.Plugin["metrics"]; ok {
 		var err error
 		for name, pconf := range pconfs {
@@ -322,7 +322,7 @@ func loadConfigFile(file string) (*Config, error) {
 
 	config.MetricPlugins = make(map[string]*MetricPlugin)
 	config.CheckPlugins = make(map[string]*CheckPlugin)
-	if err := config.buildPlugins(); err != nil {
+	if err := config.setMetricPluginsAndCheckPlugins(); err != nil {
 		return nil, err
 	}
 
@@ -360,7 +360,7 @@ func includeConfigFile(config *Config, include string) error {
 		}
 
 		// Add new plugin or overwrite a plugin with the same plugin name.
-		if err := config.buildPlugins(); err != nil {
+		if err := config.setMetricPluginsAndCheckPlugins(); err != nil {
 			return err
 		}
 	}
