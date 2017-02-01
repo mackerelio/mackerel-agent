@@ -1,6 +1,6 @@
 [Unit]
 Description=mackerel.io agent
-Documentation=https://mackerel.io
+Documentation=https://mackerel.io/
 After=network.target
 
 [Service]
