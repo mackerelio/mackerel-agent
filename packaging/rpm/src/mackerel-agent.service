@@ -1,7 +1,7 @@
 [Unit]
 Description=mackerel.io agent
 Documentation=https://mackerel.io
-# TODO fill dependencies?
+After=network.target
 
 [Service]
 Environment=MACKEREL_PLUGIN_WORKDIR=/var/tmp/mackerel-agent
