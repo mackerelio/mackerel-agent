@@ -204,7 +204,7 @@ func TestLoadConfigFile(t *testing.T) {
 	if *pluginConf.CustomIdentifier != "app1.example.com" {
 		t.Errorf("plugin custom_identifier should be 'app1.example.com' but got %v", *pluginConf.CustomIdentifier)
 	}
-	customIdentifiers := config.CustomIdentifiers()
+	customIdentifiers := config.ListCustomIdentifiers()
 	if len(customIdentifiers) != 1 {
 		t.Errorf("config should have 1 custom_identifier")
 	}

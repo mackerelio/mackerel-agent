@@ -123,7 +123,7 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 // configuration of the custom_identifier fields.
 func prepareCustomIdentiferHosts(conf *config.Config, api *mackerel.API) map[string]*mackerel.Host {
 	customIdentifierHosts := make(map[string]*mackerel.Host)
-	for _, customIdentifier := range conf.CustomIdentifiers() {
+	for _, customIdentifier := range conf.ListCustomIdentifiers() {
 		host, err := api.FindHostByCustomIdentifier(customIdentifier)
 		if err != nil {
 			logger.Warningf("Failed to retrieve the host of custom_identifier: %s, %s", customIdentifier, err)

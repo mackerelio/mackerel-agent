@@ -222,8 +222,8 @@ func (conf *Config) CheckNames() []string {
 	return checks
 }
 
-// CustomIdentifiers returns a list of customIdentifiers.
-func (conf *Config) CustomIdentifiers() []string {
+// ListCustomIdentifiers returns a list of customIdentifiers.
+func (conf *Config) ListCustomIdentifiers() []string {
 	var customIdentifiers []string
 	for _, pconf := range conf.MetricPlugins {
 		if pconf.CustomIdentifier != nil && index(customIdentifiers, *pconf.CustomIdentifier) == -1 {
