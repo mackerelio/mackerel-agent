@@ -76,10 +76,12 @@ rpm: crossbuild-package
 
 # TODO migrate to rpm
 rpm-systemd: crossbuild-package
+	mkdir -p rpmbuild
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-amd64" \
-			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
-			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME)-systemd.spec
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpm-build astj/mackerel-agent-packager-beta:rpm-centos7 \
+		--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
+		--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+		-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME)-systemd.spec
 
 deb: crossbuild-package
 	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
