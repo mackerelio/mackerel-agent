@@ -123,15 +123,7 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 // configuration of the custom_identifier fields.
 func prepareCustomIdentiferHosts(conf *config.Config, api *mackerel.API) map[string]*mackerel.Host {
 	customIdentifierHosts := make(map[string]*mackerel.Host)
-	customIdentifiers := make(map[string]bool) // use a map to make them unique
-	for _, pluginConfigs := range conf.Plugin {
-		for _, pluginConfig := range pluginConfigs {
-			if pluginConfig.CustomIdentifier != nil {
-				customIdentifiers[*pluginConfig.CustomIdentifier] = true
-			}
-		}
-	}
-	for customIdentifier := range customIdentifiers {
+	for _, customIdentifier := range conf.ListCustomIdentifiers() {
 		host, err := api.FindHostByCustomIdentifier(customIdentifier)
 		if err != nil {
 			logger.Warningf("Failed to retrieve the host of custom_identifier: %s, %s", customIdentifier, err)
@@ -618,7 +610,7 @@ func Run(c *Context, termCh chan struct{}) error {
 func createCheckers(conf *config.Config) []*checks.Checker {
 	checkers := []*checks.Checker{}
 
-	for name, pluginConfig := range conf.Plugin["checks"] {
+	for name, pluginConfig := range conf.CheckPlugins {
 		checker := &checks.Checker{
 			Name:   name,
 			Config: pluginConfig,
@@ -642,7 +634,7 @@ func prepareGenerators(conf *config.Config) []metrics.Generator {
 func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
 	generators := []metrics.PluginGenerator{}
 
-	for _, pluginConfig := range conf.Plugin["metrics"] {
+	for _, pluginConfig := range conf.MetricPlugins {
 		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
 	}
 

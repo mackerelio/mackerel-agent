@@ -25,6 +25,7 @@ post_metrics_retry_max = 5
 [plugin.metrics.mysql]
 command = "ruby /path/to/your/plugin/mysql.rb"
 user = "mysql"
+custom_identifier = "app1.example.com"
 
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
@@ -190,21 +191,31 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("PostMetricsRetryMax should be 5")
 	}
 
-	if config.Plugin["metrics"] == nil {
+	if config.MetricPlugins == nil {
 		t.Error("plugin should have metrics")
 	}
-	pluginConf := config.Plugin["metrics"]["mysql"]
+	pluginConf := config.MetricPlugins["mysql"]
 	if pluginConf.Command != "ruby /path/to/your/plugin/mysql.rb" {
 		t.Errorf("plugin conf command should be 'ruby /path/to/your/plugin/mysql.rb' but %v", pluginConf.Command)
 	}
 	if pluginConf.User != "mysql" {
-		t.Errorf("plugin user_name should be 'mysql'")
+		t.Error("plugin user_name should be 'mysql'")
+	}
+	if *pluginConf.CustomIdentifier != "app1.example.com" {
+		t.Errorf("plugin custom_identifier should be 'app1.example.com' but got %v", *pluginConf.CustomIdentifier)
+	}
+	customIdentifiers := config.ListCustomIdentifiers()
+	if len(customIdentifiers) != 1 {
+		t.Errorf("config should have 1 custom_identifier")
+	}
+	if customIdentifiers[0] != "app1.example.com" {
+		t.Errorf("first custom_identifier should be 'app1.example.com'")
 	}
 
-	if config.Plugin["checks"] == nil {
+	if config.CheckPlugins == nil {
 		t.Error("plugin should have checks")
 	}
-	checks := config.Plugin["checks"]["heartbeat"]
+	checks := config.CheckPlugins["heartbeat"]
 	if checks.Command != "heartbeat.sh" {
 		t.Error("check command should be 'heartbeat.sh'")
 	}
@@ -216,6 +227,10 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if *checks.MaxCheckAttempts != 3 {
 		t.Error("max_check_attempts should be 3")
+	}
+
+	if config.Plugin != nil {
+		t.Error("plugin config should be set nil, use MetricPlugins and CheckPlugins instead")
 	}
 }
 
@@ -291,9 +306,9 @@ command = "bar"
 	assert(t, config.Verbose == false, "verbose should be kept as it is when not configured in the included file")
 	assert(t, len(config.Roles) == 1, "roles should be overwritten")
 	assert(t, config.Roles[0] == "Service:role", "roles should be overwritten")
-	assert(t, config.Plugin["metrics"]["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
-	assert(t, config.Plugin["metrics"]["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
-	assert(t, config.Plugin["metrics"]["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
+	assert(t, config.MetricPlugins["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
+	assert(t, config.MetricPlugins["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
+	assert(t, config.MetricPlugins["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
 }
 
 func TestLoadConfigFileIncludeOverwritten(t *testing.T) {
@@ -401,7 +416,7 @@ command = ["perl", "-E", "say 'Hello'"]
 	assertNoError(t, err)
 
 	expected := []string{"perl", "-E", "say 'Hello'"}
-	p := config.Plugin["metrics"]["hoge"]
+	p := config.MetricPlugins["hoge"]
 	output := p.CommandArgs
 
 	if !reflect.DeepEqual(expected, output) {
