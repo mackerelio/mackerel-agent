@@ -2,6 +2,7 @@
 Description=mackerel.io agent
 Documentation=https://mackerel.io/
 After=network-online.target
+After=nss-lookup.target
 
 [Service]
 Environment=MACKEREL_PLUGIN_WORKDIR=/var/tmp/mackerel-agent
