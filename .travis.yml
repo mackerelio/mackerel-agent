@@ -17,13 +17,14 @@ addons:
 install:
 - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 before_script:
+- docker pull astj/mackerel-agent-packager-beta:rpm-centos6
 - docker pull astj/mackerel-agent-packager-beta:rpm-centos7
 script:
 - make lint
 - make cover
 - test `gofmt -l . | wc -l` = 0
 - make crossbuild
-- make rpm-systemd
+- make rpm rpm-systemd
 after_script:
 - goveralls -coverprofile=.profile.cov
 before_deploy:
