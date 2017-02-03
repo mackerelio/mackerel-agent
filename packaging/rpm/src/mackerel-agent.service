@@ -1,7 +1,7 @@
 [Unit]
 Description=mackerel.io agent
 Documentation=https://mackerel.io/
-After=network.target
+After=network-online.target
 
 [Service]
 Environment=MACKEREL_PLUGIN_WORKDIR=/var/tmp/mackerel-agent
