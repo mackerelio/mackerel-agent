@@ -76,10 +76,10 @@ rpm: crossbuild-package
 
 # TODO migrate to rpm
 rpm-systemd: crossbuild-package
-	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
+	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-amd64" \
 			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
-			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME)-systemd.spec
+			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 deb: crossbuild-package
 	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
