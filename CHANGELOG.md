@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.39.3 (2017-01-25)
+
+* Fix segfault when loading a bad config file #316 (hanazuki)
+* fix windows eventlog level when "verbose=true" #318 (daiksy)
+
+
 ## 0.39.2 (2017-01-16)
 
 * Test wix/pluginlist.txt on AppVeyor ci #313 (astj)
