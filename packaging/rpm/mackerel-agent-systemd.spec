@@ -39,6 +39,7 @@ mackerel.io agent
 
 %post
 %systemd_post %{name}.service
+systemctl enable %{name}.service
 
 %preun
 %systemd_preun %{name}.service
