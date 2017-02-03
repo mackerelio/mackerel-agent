@@ -27,8 +27,29 @@ type Node struct {
 // CharData. Any other values are not converted.
 func (n *Node) MarshalXML(e *xml.Encoder, s xml.StartElement) error {
 	s.Name = n.Name
-	s.Name.Space = ""
 	s.Attr = n.Attr
+	if strings.Contains(s.Name.Space, "/") {
+		s.Name.Space = ""
+	} else if s.Name.Space != "" {
+		s.Name.Local = s.Name.Space + ":" + s.Name.Local
+		s.Name.Space = ""
+	}
+
+	var newattr []xml.Attr
+	for _, attr := range s.Attr {
+		if strings.Contains(attr.Name.Space, "/") {
+			attr.Name.Space = ""
+		} else if attr.Name.Space != "" {
+			if attr.Name.Space == "xmlns" && s.Name.Space == "" {
+				s.Name.Local = attr.Name.Local + ":" + s.Name.Local
+			}
+			attr.Name.Local = attr.Name.Space + ":" + attr.Name.Local
+			attr.Name.Space = ""
+		}
+		newattr = append(newattr, attr)
+	}
+	s.Attr = newattr
+
 	e.EncodeToken(s)
 	for _, v := range n.Children {
 		switch v.(type) {
