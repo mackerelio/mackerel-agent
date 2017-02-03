@@ -87,7 +87,6 @@ func (n *Node) UnmarshalXML(d *xml.Decoder, s xml.StartElement) error {
 			if err := d.DecodeElement(&c, &v); err != nil {
 				return err
 			}
-			//println(c.Name.Local, c.Name.Space)
 			n.Children = append(n.Children, c)
 		}
 	}
