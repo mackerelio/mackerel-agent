@@ -41,6 +41,7 @@
       <ComponentRef Id="AgentExe"></ComponentRef>
       <ComponentRef Id="SampleConfig"></ComponentRef>
       <ComponentRef Id="Plugins"></ComponentRef>
+      <ComponentRef Id="AgentEventLog"></ComponentRef>
     </Feature>
 
     <InstallExecuteSequence>
