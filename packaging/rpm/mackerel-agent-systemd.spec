@@ -10,8 +10,9 @@ License:   Commercial
 Summary:   mackerel.io agent
 URL:       https://mackerel.io
 Group:     Hatena
-Source0:   %{name}.system
-Source3:   %{name}.conf
+Source0:   %{name}.sysconfig
+Source1:   %{name}.conf
+Source2:   %{name}.service
 Packager:  Hatena
 BuildArch: %{buildarch}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
