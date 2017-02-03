@@ -27,7 +27,7 @@ script:
 - make rpm rpm-systemd
 after_script:
 - goveralls -coverprofile=.profile.cov
-- tree rpmbuild
+- ls -lR rpmbuild/RPMS
 before_deploy:
 - make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
 - go get github.com/aktau/github-release
