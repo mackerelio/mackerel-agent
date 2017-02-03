@@ -26,7 +26,8 @@
               <util:EventSource
                   Name="mackerel-agent"
                   Log="Application"
-                  EventMessageFile="%SystemRoot%\System32\EventCreate.exe" />
+                  EventMessageFile="%SystemRoot%\System32\EventCreate.exe"
+                  KeyPath="yes" />
             </Component>
           </Directory>
         </Directory>
