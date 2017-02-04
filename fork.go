@@ -8,17 +8,36 @@ import (
 	"time"
 )
 
+type cmdManager struct {
+	prog    string
+	argv    []string
+	cmd     *exec.Cmd
+	startAt time.Time
+}
+
+func (cm *cmdManager) buildCmd() *exec.Cmd {
+	cmd := exec.Command(cm.prog, cm.argv...)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	return cmd
+}
+
+func (cm *cmdManager) start() error {
+	cm.cmd = cm.buildCmd()
+	cm.startAt = time.Now()
+	return cm.cmd.Start()
+}
+
+func (cm *cmdManager) wait() error {
+	return cm.cmd.Wait()
+}
+
 func handleFork(prog string, argv []string) error {
-	var cmdBuilder = func() *exec.Cmd {
-		cmd := exec.Command(prog, argv...)
-		cmd.Stderr = os.Stderr
-		cmd.Stdout = os.Stdout
-		return cmd
+	cm := &cmdManager{
+		prog: prog,
+		argv: argv,
 	}
-	cmd := cmdBuilder()
-	startAt := time.Now()
-	_ = startAt
-	cmd.Start()
+	cm.start()
 
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
@@ -26,11 +45,11 @@ func handleFork(prog string, argv []string) error {
 		for sig := range c {
 			if sig == syscall.SIGHUP {
 				// reload agent
-				cmd.Process.Signal(sig)
+				cm.cmd.Process.Signal(sig)
 			} else {
-				cmd.Process.Signal(sig)
+				cm.cmd.Process.Signal(sig)
 			}
 		}
 	}()
-	return cmd.Wait()
+	return cm.wait()
 }
