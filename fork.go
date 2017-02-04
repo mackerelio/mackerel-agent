@@ -42,8 +42,17 @@ func (cm *cmdManager) stop(sig os.Signal) error {
 	return cm.cmd.Process.Signal(sig)
 }
 
+func (cm *cmdManager) configtest() error {
+	argv := append([]string{"configtest"}, cm.argv...)
+	cmd := exec.Command(cm.prog, argv...)
+	return cmd.Run()
+}
+
 func (cm *cmdManager) reload() error {
-	// TODO configtest
+	err := cm.configtest()
+	if err != nil {
+		return err
+	}
 	cm.hupped = true
 	return cm.cmd.Process.Signal(syscall.SIGTERM)
 }
@@ -71,7 +80,10 @@ func handleFork(prog string, argv []string) error {
 	go func() {
 		for sig := range c {
 			if sig == syscall.SIGHUP {
-				cm.reload()
+				err := cm.reload()
+				if err != nil {
+					logger.Warningf("failed to reload: %s", err.Error())
+				}
 			} else {
 				cm.stop(sig)
 			}
