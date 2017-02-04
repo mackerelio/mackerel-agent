@@ -55,6 +55,17 @@ func doInit(fs *flag.FlagSet, argv []string) error {
 	return err
 }
 
+/* +command fork - fork
+
+	fork -conf mackerel-agent.conf ...
+
+run as fork mode
+*/
+func doFork(_ *flag.FlagSet, argv []string) error {
+	prog := os.Args[0]
+	return handleFork(prog, argv)
+}
+
 /* +command version - display version of mackerel-agent
 
 	version
