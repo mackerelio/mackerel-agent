@@ -9,10 +9,18 @@ import (
 )
 
 type cmdManager struct {
-	prog    string
-	argv    []string
-	cmd     *exec.Cmd
-	startAt time.Time
+	prog     string
+	argv     []string
+	cmd      *exec.Cmd
+	startAt  time.Time
+	signaled bool
+	hupped   bool
+}
+
+var spawnInterval = 60 * time.Second
+
+func (cm *cmdManager) launched() bool {
+	return cm.cmd.Process != nil && time.Now().After(cm.startAt.Add(spawnInterval))
 }
 
 func (cm *cmdManager) buildCmd() *exec.Cmd {
@@ -23,13 +31,32 @@ func (cm *cmdManager) buildCmd() *exec.Cmd {
 }
 
 func (cm *cmdManager) start() error {
+	cm.hupped = false
 	cm.cmd = cm.buildCmd()
 	cm.startAt = time.Now()
 	return cm.cmd.Start()
 }
 
-func (cm *cmdManager) wait() error {
-	return cm.cmd.Wait()
+func (cm *cmdManager) stop(sig os.Signal) error {
+	cm.signaled = true
+	return cm.cmd.Process.Signal(sig)
+}
+
+func (cm *cmdManager) reload() error {
+	// TODO configtest
+	cm.hupped = true
+	return cm.cmd.Process.Signal(syscall.SIGTERM)
+}
+
+func (cm *cmdManager) wait() (err error) {
+	for {
+		err = cm.cmd.Wait()
+		if cm.signaled || (!cm.hupped && !cm.launched()) {
+			break
+		}
+		cm.start()
+	}
+	return
 }
 
 func handleFork(prog string, argv []string) error {
@@ -44,10 +71,9 @@ func handleFork(prog string, argv []string) error {
 	go func() {
 		for sig := range c {
 			if sig == syscall.SIGHUP {
-				// reload agent
-				cm.cmd.Process.Signal(sig)
+				cm.reload()
 			} else {
-				cm.cmd.Process.Signal(sig)
+				cm.stop(sig)
 			}
 		}
 	}()
