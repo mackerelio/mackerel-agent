@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -9,8 +11,8 @@ import (
 )
 
 type supervisor struct {
-	prog     string
-	argv     []string
+	prog string
+	argv []string
 
 	cmd      *exec.Cmd
 	startAt  time.Time
@@ -46,7 +48,13 @@ func (sv *supervisor) stop(sig os.Signal) error {
 func (sv *supervisor) configtest() error {
 	argv := append([]string{"configtest"}, sv.argv...)
 	cmd := exec.Command(sv.prog, argv...)
-	return cmd.Run()
+	buf := &bytes.Buffer{}
+	cmd.Stderr = buf
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("configtest failed: %s", buf.String())
+	}
+	return nil
 }
 
 func (sv *supervisor) reload() error {
