@@ -92,6 +92,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey        = fs.String("apikey", "", "(DEPRECATED) API key from mackerel.io web site")
 		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
+		child         = fs.Bool("child", false, "is child of the supervise mode")
 		verbose       bool
 		roleFullnames roleFullnamesFlag
 	)
@@ -127,8 +128,13 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 			conf.Verbose = verbose
 		case "role":
 			conf.Roles = roleFullnames
+		case "child":
+			conf.Child = *child
 		}
 	})
+	if conf.Child {
+		conf.Pidfile = ""
+	}
 
 	r := []string{}
 	for _, roleFullName := range conf.Roles {
@@ -155,6 +161,9 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 }
 
 func createPidFile(pidfile string) error {
+	if pidfile == "" {
+		return nil
+	}
 	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
 			if existsPid(pid) {
@@ -182,6 +191,9 @@ func createPidFile(pidfile string) error {
 }
 
 func removePidFile(pidfile string) {
+	if pidfile == "" {
+		return
+	}
 	if err := os.Remove(pidfile); err != nil {
 		logger.Errorf("Failed to remove the pidfile: %s: %s", pidfile, err)
 	}

@@ -27,7 +27,8 @@ func (sv *supervisor) launched() bool {
 }
 
 func (sv *supervisor) buildCmd() *exec.Cmd {
-	cmd := exec.Command(sv.prog, sv.argv...)
+	argv := append(sv.argv, "-child")
+	cmd := exec.Command(sv.prog, argv...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	return cmd
