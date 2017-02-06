@@ -92,7 +92,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey        = fs.String("apikey", "", "(DEPRECATED) API key from mackerel.io web site")
 		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
-		child         = fs.Bool("child", false, "is child of the supervise mode")
+		child         = fs.Bool("child", false, "(internal use) child process of the supervise mode")
 		verbose       bool
 		roleFullnames roleFullnamesFlag
 	)

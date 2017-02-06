@@ -59,7 +59,7 @@ func doInit(fs *flag.FlagSet, argv []string) error {
 
 	supervise -conf mackerel-agent.conf ...
 
-run as supervise mode
+run as supervise mode enabling configuration reloading and crash recovery
 */
 func doSupervise(fs *flag.FlagSet, argv []string) error {
 	copiedArgv := make([]string, len(argv))

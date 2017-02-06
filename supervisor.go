@@ -20,7 +20,7 @@ type supervisor struct {
 	hupped   bool
 }
 
-var spawnInterval = 60 * time.Second
+var spawnInterval = 30 * time.Second
 
 func (sv *supervisor) launched() bool {
 	return sv.cmd.Process != nil && time.Now().After(sv.startAt.Add(spawnInterval))
