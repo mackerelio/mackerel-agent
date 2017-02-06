@@ -61,10 +61,22 @@ func doInit(fs *flag.FlagSet, argv []string) error {
 
 run as supervise mode
 */
-func doSupervise(_ *flag.FlagSet, argv []string) error {
+func doSupervise(fs *flag.FlagSet, argv []string) error {
+	copiedArgv := make([]string, len(argv))
+	copy(copiedArgv, argv)
+	conf, err := resolveConfig(fs, argv)
+	if err != nil {
+		return err
+	}
+	err = createPidFile(conf.Pidfile)
+	if err != nil {
+		return err
+	}
+	defer removePidFile(conf.Pidfile)
+
 	return (&supervisor{
 		prog: os.Args[0],
-		argv: argv,
+		argv: copiedArgv,
 	}).supervise()
 }
 
