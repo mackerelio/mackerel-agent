@@ -62,6 +62,9 @@ func doInit(fs *flag.FlagSet, argv []string) error {
 run as supervise mode enabling configuration reloading and crash recovery
 */
 func doSupervise(fs *flag.FlagSet, argv []string) error {
+	if runtime.GOOS == "windows" {
+		return fmt.Errorf("supervise mode is not supported on windows")
+	}
 	copiedArgv := make([]string, len(argv))
 	copy(copiedArgv, argv)
 	conf, err := resolveConfig(fs, argv)
