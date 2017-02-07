@@ -3,7 +3,7 @@
 !.goxc.json
 !.travis.yml
 /build
-/build-*
+/build-linux-*/
 /id
 /pid
 /wix/mackerel-agent.wxs
