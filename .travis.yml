@@ -11,7 +11,6 @@ env:
 addons:
   apt:
     packages:
-      - rpm
       - devscripts
       - debhelper
 install:
