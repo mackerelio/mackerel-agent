@@ -65,14 +65,17 @@ crossbuild-package-stage:
 	mv build/mackerel-agent-stage build-linux-386/
 
 rpm: crossbuild-package
+	mkdir -p rpmbuild
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-386" \
-	      --define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
-				-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
+	RPMBUILD_DOCKER_TAG=c6 _tools/packaging/rpmbuild-docker.sh \
+	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
+	--define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
+	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-amd64" \
-			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
-			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
+	RPMBUILD_DOCKER_TAG=c6 _tools/packaging/rpmbuild-docker.sh \
+	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
+	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 deb: crossbuild-package
 	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
