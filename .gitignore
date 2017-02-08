@@ -8,6 +8,7 @@
 /pid
 /wix/mackerel-agent.wxs
 /wix/mackerel-agent.wixobj
+/rpmbuild/
 
 packaging/rpm/src/mackerel-agent.conf
 packaging/deb/debian/mackerel-agent.conf
