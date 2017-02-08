@@ -1,3 +1,18 @@
+mackerel-agent (0.39.4-1) stable; urgency=low
+
+  * prepare windows eventlog (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/319>
+  * Refactor plugin configurations (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/322>
+  * Execute less `go build`s on deploy (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/323>
+  * treat xmlns (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/324>
+  * Fix xmlns (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/326>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 08 Feb 2017 01:46:39 +0000
+
 mackerel-agent (0.39.3-1) stable; urgency=low
 
   * Fix segfault when loading a bad config file (by hanazuki)

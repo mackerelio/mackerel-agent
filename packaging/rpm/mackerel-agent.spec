@@ -62,6 +62,13 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Feb 08 2017 <mackerel-developers@hatena.ne.jp> - 0.39.4-1
+- prepare windows eventlog (by daiksy)
+- Refactor plugin configurations (by itchyny)
+- Execute less `go build`s on deploy (by astj)
+- treat xmlns (by mattn)
+- Fix xmlns (by mattn)
+
 * Wed Jan 25 2017 <mackerel-developers@hatena.ne.jp> - 0.39.3-1
 - Fix segfault when loading a bad config file (by hanazuki)
 - fix windows eventlog level when "verbose=true" (by daiksy)
