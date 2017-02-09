@@ -349,7 +349,7 @@ func (conf *Config) setEachPlugins() error {
 		}
 	}
 	// Make Plugins empty because we should not use this later.
-	// Use MetricPlugins, CheckPlugins.and MetadataPlugins.
+	// Use MetricPlugins, CheckPlugins and MetadataPlugins.
 	conf.Plugin = nil
 	return nil
 }
