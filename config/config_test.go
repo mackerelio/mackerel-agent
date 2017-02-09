@@ -32,6 +32,11 @@ command = "heartbeat.sh"
 user = "xyz"
 notification_interval = 60
 max_check_attempts = 3
+
+[plugin.metadata.hostinfo]
+command = "hostinfo.sh"
+user = "zzz"
+check_interval = 60
 `
 
 func TestLoadConfig(t *testing.T) {
@@ -229,8 +234,22 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("max_check_attempts should be 3")
 	}
 
+	if config.MetadataPlugins == nil {
+		t.Error("config should have metadata plugin list")
+	}
+	metadataPlugin := config.MetadataPlugins["hostinfo"]
+	if metadataPlugin.Command != "hostinfo.sh" {
+		t.Errorf("command of metadata plugin should be 'hostinfo.sh' but got '%v'", metadataPlugin.Command)
+	}
+	if metadataPlugin.User != "zzz" {
+		t.Errorf("user of metadata plugin should be 'zzz' but got '%v'", metadataPlugin.User)
+	}
+	if *metadataPlugin.CheckInterval != 60 {
+		t.Errorf("check interval of metadata plugin should be 60 but got '%v'", *metadataPlugin.CheckInterval)
+	}
+
 	if config.Plugin != nil {
-		t.Error("plugin config should be set nil, use MetricPlugins and CheckPlugins instead")
+		t.Error("plugin config should be set nil, use MetricPlugins, CheckPlugins and MetadataPlugins instead")
 	}
 }
 
