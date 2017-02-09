@@ -149,6 +149,36 @@ func (pconf *CheckPlugin) Run() (string, string, int, error) {
 	return util.RunCommand(pconf.Command, pconf.User)
 }
 
+// MetadataPlugin represents the configuration of a metadata plugin
+// The User option is ignored on Windows
+type MetadataPlugin struct {
+	Command       string
+	CommandArgs   []string
+	User          string
+	CheckInterval *int32
+}
+
+func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
+	err := pconf.prepareCommand()
+	if err != nil {
+		return nil, err
+	}
+	return &MetadataPlugin{
+		Command:       pconf.Command,
+		CommandArgs:   pconf.CommandArgs,
+		User:          pconf.User,
+		CheckInterval: pconf.CheckInterval,
+	}, nil
+}
+
+// Run the metadata plugin.
+func (pconf *MetadataPlugin) Run() (string, string, int, error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
+}
+
 func (pconf *PluginConfig) prepareCommand() error {
 	const errFmt = "failed to prepare plugin command. A configuration value of `command` should be string or string slice, but %T"
 	v := pconf.CommandRaw
