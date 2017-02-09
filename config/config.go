@@ -60,9 +60,10 @@ type Config struct {
 	Include string
 
 	// Cannot exist in configuration files
-	HostIDStorage HostIDStorage
-	MetricPlugins map[string]*MetricPlugin
-	CheckPlugins  map[string]*CheckPlugin
+	HostIDStorage   HostIDStorage
+	MetricPlugins   map[string]*MetricPlugin
+	CheckPlugins    map[string]*CheckPlugin
+	MetadataPlugins map[string]*MetadataPlugin
 }
 
 // PluginConfig represents a plugin configuration.
@@ -319,7 +320,7 @@ func LoadConfig(conffile string) (*Config, error) {
 	return config, err
 }
 
-func (conf *Config) setMetricPluginsAndCheckPlugins() error {
+func (conf *Config) setEachPlugins() error {
 	if pconfs, ok := conf.Plugin["metrics"]; ok {
 		var err error
 		for name, pconf := range pconfs {
@@ -338,8 +339,17 @@ func (conf *Config) setMetricPluginsAndCheckPlugins() error {
 			}
 		}
 	}
+	if pconfs, ok := conf.Plugin["metadata"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			conf.MetadataPlugins[name], err = pconf.buildMetadataPlugin()
+			if err != nil {
+				return err
+			}
+		}
+	}
 	// Make Plugins empty because we should not use this later.
-	// Use MetricPlugins and CheckPlugins.
+	// Use MetricPlugins, CheckPlugins.and MetadataPlugins.
 	conf.Plugin = nil
 	return nil
 }
@@ -352,7 +362,8 @@ func loadConfigFile(file string) (*Config, error) {
 
 	config.MetricPlugins = make(map[string]*MetricPlugin)
 	config.CheckPlugins = make(map[string]*CheckPlugin)
-	if err := config.setMetricPluginsAndCheckPlugins(); err != nil {
+	config.MetadataPlugins = make(map[string]*MetadataPlugin)
+	if err := config.setEachPlugins(); err != nil {
 		return nil, err
 	}
 
@@ -390,7 +401,7 @@ func includeConfigFile(config *Config, include string) error {
 		}
 
 		// Add new plugin or overwrite a plugin with the same plugin name.
-		if err := config.setMetricPluginsAndCheckPlugins(); err != nil {
+		if err := config.setEachPlugins(); err != nil {
 			return err
 		}
 	}
