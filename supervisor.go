@@ -78,21 +78,23 @@ func (sv *supervisor) wait() (err error) {
 	return
 }
 
+func (sv *supervisor) handleSignal(ch <-chan os.Signal) {
+	for sig := range ch {
+		if sig == syscall.SIGHUP {
+			err := sv.reload()
+			if err != nil {
+				logger.Warningf("failed to reload: %s", err.Error())
+			}
+		} else {
+			sv.stop(sig)
+		}
+	}
+}
+
 func (sv *supervisor) supervise() error {
 	sv.start()
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
-	go func() {
-		for sig := range c {
-			if sig == syscall.SIGHUP {
-				err := sv.reload()
-				if err != nil {
-					logger.Warningf("failed to reload: %s", err.Error())
-				}
-			} else {
-				sv.stop(sig)
-			}
-		}
-	}()
+	go sv.handleSignal(c)
 	return sv.wait()
 }
