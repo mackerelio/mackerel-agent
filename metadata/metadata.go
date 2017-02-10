@@ -3,6 +3,7 @@ package metadata
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -34,4 +35,18 @@ func (g *MetadataGenerator) Fetch() (string, error) {
 	}
 
 	return message, nil
+}
+
+const defaultExecutionInterval = 10 * time.Minute
+
+// Interval calculates the time interval of command execution
+func (g *MetadataGenerator) Interval() time.Duration {
+	if g.Config.ExecutionInterval == nil {
+		return defaultExecutionInterval
+	}
+	interval := time.Duration(*g.Config.ExecutionInterval) * time.Minute
+	if interval < 1*time.Minute {
+		return 1 * time.Minute
+	}
+	return interval
 }
