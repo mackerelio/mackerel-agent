@@ -74,6 +74,7 @@ type PluginConfig struct {
 	User                 string
 	NotificationInterval *int32  `toml:"notification_interval"`
 	CheckInterval        *int32  `toml:"check_interval"`
+	ExecutionInterval    *int32  `toml:"execution_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
@@ -153,10 +154,10 @@ func (pconf *CheckPlugin) Run() (string, string, int, error) {
 // MetadataPlugin represents the configuration of a metadata plugin
 // The User option is ignored on Windows
 type MetadataPlugin struct {
-	Command       string
-	CommandArgs   []string
-	User          string
-	CheckInterval *int32
+	Command           string
+	CommandArgs       []string
+	User              string
+	ExecutionInterval *int32
 }
 
 func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
@@ -165,10 +166,10 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 		return nil, err
 	}
 	return &MetadataPlugin{
-		Command:       pconf.Command,
-		CommandArgs:   pconf.CommandArgs,
-		User:          pconf.User,
-		CheckInterval: pconf.CheckInterval,
+		Command:           pconf.Command,
+		CommandArgs:       pconf.CommandArgs,
+		User:              pconf.User,
+		ExecutionInterval: pconf.ExecutionInterval,
 	}, nil
 }
 
