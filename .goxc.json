@@ -3,6 +3,6 @@
     "TasksExclude": [
         "go-test"
     ],
-    "MainDirsExclude": "wix,testdata",
+    "MainDirsExclude": "wix,testdata,checks/testdata",
     "ResourcesInclude": "README*,mackerel-agent.conf"
 }
