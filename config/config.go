@@ -60,9 +60,10 @@ type Config struct {
 	Include string
 
 	// Cannot exist in configuration files
-	HostIDStorage HostIDStorage
-	MetricPlugins map[string]*MetricPlugin
-	CheckPlugins  map[string]*CheckPlugin
+	HostIDStorage   HostIDStorage
+	MetricPlugins   map[string]*MetricPlugin
+	CheckPlugins    map[string]*CheckPlugin
+	MetadataPlugins map[string]*MetadataPlugin
 }
 
 // PluginConfig represents a plugin configuration.
@@ -73,6 +74,7 @@ type PluginConfig struct {
 	User                 string
 	NotificationInterval *int32  `toml:"notification_interval"`
 	CheckInterval        *int32  `toml:"check_interval"`
+	ExecutionInterval    *int32  `toml:"execution_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
 }
@@ -143,6 +145,36 @@ func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
 
 // Run the check plugin.
 func (pconf *CheckPlugin) Run() (string, string, int, error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
+}
+
+// MetadataPlugin represents the configuration of a metadata plugin
+// The User option is ignored on Windows
+type MetadataPlugin struct {
+	Command           string
+	CommandArgs       []string
+	User              string
+	ExecutionInterval *int32
+}
+
+func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
+	err := pconf.prepareCommand()
+	if err != nil {
+		return nil, err
+	}
+	return &MetadataPlugin{
+		Command:           pconf.Command,
+		CommandArgs:       pconf.CommandArgs,
+		User:              pconf.User,
+		ExecutionInterval: pconf.ExecutionInterval,
+	}, nil
+}
+
+// Run the metadata plugin.
+func (pconf *MetadataPlugin) Run() (string, string, int, error) {
 	if len(pconf.CommandArgs) > 0 {
 		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
 	}
@@ -289,7 +321,7 @@ func LoadConfig(conffile string) (*Config, error) {
 	return config, err
 }
 
-func (conf *Config) setMetricPluginsAndCheckPlugins() error {
+func (conf *Config) setEachPlugins() error {
 	if pconfs, ok := conf.Plugin["metrics"]; ok {
 		var err error
 		for name, pconf := range pconfs {
@@ -308,8 +340,17 @@ func (conf *Config) setMetricPluginsAndCheckPlugins() error {
 			}
 		}
 	}
+	if pconfs, ok := conf.Plugin["metadata"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			conf.MetadataPlugins[name], err = pconf.buildMetadataPlugin()
+			if err != nil {
+				return err
+			}
+		}
+	}
 	// Make Plugins empty because we should not use this later.
-	// Use MetricPlugins and CheckPlugins.
+	// Use MetricPlugins, CheckPlugins and MetadataPlugins.
 	conf.Plugin = nil
 	return nil
 }
@@ -322,7 +363,8 @@ func loadConfigFile(file string) (*Config, error) {
 
 	config.MetricPlugins = make(map[string]*MetricPlugin)
 	config.CheckPlugins = make(map[string]*CheckPlugin)
-	if err := config.setMetricPluginsAndCheckPlugins(); err != nil {
+	config.MetadataPlugins = make(map[string]*MetadataPlugin)
+	if err := config.setEachPlugins(); err != nil {
 		return nil, err
 	}
 
@@ -360,7 +402,7 @@ func includeConfigFile(config *Config, include string) error {
 		}
 
 		// Add new plugin or overwrite a plugin with the same plugin name.
-		if err := config.setMetricPluginsAndCheckPlugins(); err != nil {
+		if err := config.setEachPlugins(); err != nil {
 			return err
 		}
 	}
