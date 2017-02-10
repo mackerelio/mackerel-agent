@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
@@ -17,7 +18,7 @@ func init() {
 	}
 }
 
-func TestSupervise(t *testing.T) {
+func TestSupervisor(t *testing.T) {
 	sv := &supervisor{
 		prog: "testdata/stub-agent",
 	}
@@ -30,7 +31,7 @@ func TestSupervise(t *testing.T) {
 	}
 }
 
-func TestSuperviseReload(t *testing.T) {
+func TestSupervisorReload(t *testing.T) {
 	sv := &supervisor{
 		prog: "testdata/stub-agent",
 	}
@@ -59,6 +60,42 @@ func TestSuperviseReload(t *testing.T) {
 	}
 
 	ch <- syscall.SIGTERM
+	err := <-done
+	if err == nil {
+		t.Errorf("something went wrong")
+	}
+	if newPid != sv.cmd.Process.Pid {
+		t.Errorf("something went wrong")
+	}
+	if existsPid(newPid) {
+		t.Errorf("child process isn't terminated")
+	}
+}
+
+func TestSupervisorReloadFail(t *testing.T) {
+	sv := &supervisor{
+		prog: "testdata/stub-agent",
+		argv: []string{"failed"},
+	}
+	sv.start()
+	ch := make(chan os.Signal)
+	go sv.handleSignal(ch)
+	done := make(chan error)
+	go func() {
+		done <- sv.wait()
+	}()
+	oldPid := sv.cmd.Process.Pid
+	if !existsPid(oldPid) {
+		t.Errorf("process doesn't exist")
+	}
+	ch <- syscall.SIGHUP
+	time.Sleep(time.Second)
+	newPid := sv.cmd.Process.Pid
+	if oldPid != newPid {
+		t.Errorf("reload should be failed")
+	}
+
+	exec.Command("/bin/kill", fmt.Sprintf("%d", newPid)).Run()
 	err := <-done
 	if err == nil {
 		t.Errorf("something went wrong")
