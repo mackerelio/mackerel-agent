@@ -41,15 +41,21 @@ func TestSuperviseReload(t *testing.T) {
 	go func() {
 		done <- sv.wait()
 	}()
-	origPid := sv.cmd.Process.Pid
+	oldPid := sv.cmd.Process.Pid
+	if !existsPid(oldPid) {
+		t.Errorf("process doesn't exist")
+	}
 	ch <- syscall.SIGHUP
 	time.Sleep(time.Second)
 	newPid := sv.cmd.Process.Pid
-	if origPid == newPid {
+	if oldPid == newPid {
 		t.Errorf("reload failed")
 	}
-	if existsPid(origPid) {
-		t.Errorf("original process doesn't terminated")
+	if existsPid(oldPid) {
+		t.Errorf("old process isn't terminated")
+	}
+	if !existsPid(newPid) {
+		t.Errorf("new process doesn't exist")
 	}
 
 	ch <- syscall.SIGTERM
@@ -60,8 +66,7 @@ func TestSuperviseReload(t *testing.T) {
 	if newPid != sv.cmd.Process.Pid {
 		t.Errorf("something went wrong")
 	}
-
 	if existsPid(newPid) {
-		t.Errorf("child process doesn't terminated")
+		t.Errorf("child process isn't terminated")
 	}
 }
