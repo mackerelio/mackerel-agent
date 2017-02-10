@@ -36,7 +36,7 @@ max_check_attempts = 3
 [plugin.metadata.hostinfo]
 command = "hostinfo.sh"
 user = "zzz"
-check_interval = 60
+execution_interval = 60
 `
 
 func TestLoadConfig(t *testing.T) {
@@ -244,8 +244,8 @@ func TestLoadConfigFile(t *testing.T) {
 	if metadataPlugin.User != "zzz" {
 		t.Errorf("user of metadata plugin should be 'zzz' but got '%v'", metadataPlugin.User)
 	}
-	if *metadataPlugin.CheckInterval != 60 {
-		t.Errorf("check interval of metadata plugin should be 60 but got '%v'", *metadataPlugin.CheckInterval)
+	if *metadataPlugin.ExecutionInterval != 60 {
+		t.Errorf("execution interval of metadata plugin should be 60 but got '%v'", *metadataPlugin.ExecutionInterval)
 	}
 
 	if config.Plugin != nil {
