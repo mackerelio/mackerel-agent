@@ -14,6 +14,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/metadata"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/spec"
 )
@@ -586,9 +587,10 @@ func runOncePayload(conf *config.Config) ([]mackerel.CreateGraphDefsPayload, *ma
 // NewAgent creates a new instance of agent.Agent from its configuration conf.
 func NewAgent(conf *config.Config) *agent.Agent {
 	return &agent.Agent{
-		MetricsGenerators: prepareGenerators(conf),
-		PluginGenerators:  pluginGenerators(conf),
-		Checkers:          createCheckers(conf),
+		MetricsGenerators:  prepareGenerators(conf),
+		PluginGenerators:   pluginGenerators(conf),
+		Checkers:           createCheckers(conf),
+		MetadataGenerators: metadataGenerators(conf),
 	}
 }
 
@@ -636,6 +638,21 @@ func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
 
 	for _, pluginConfig := range conf.MetricPlugins {
 		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
+	}
+
+	return generators
+}
+
+func metadataGenerators(conf *config.Config) []*metadata.MetadataGenerator {
+	generators := make([]*metadata.MetadataGenerator, 0, len(conf.MetadataPlugins))
+
+	for name, pluginConfig := range conf.MetadataPlugins {
+		generator := &metadata.MetadataGenerator{
+			Name:   name,
+			Config: pluginConfig,
+		}
+		logger.Debugf("Metadata plugin generator created: %v", generator)
+		generators = append(generators, generator)
 	}
 
 	return generators
