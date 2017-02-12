@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -16,6 +18,17 @@ func main() {
 			os.Exit(0)
 		}
 	}
+	ch := make(chan os.Signal)
+	signal.Notify(ch, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
+	go func() {
+		for sig := range ch {
+			if sig == syscall.SIGHUP {
+				// nop
+			} else {
+				os.Exit(0)
+			}
+		}
+	}()
 
 	for {
 		time.Sleep(time.Second)

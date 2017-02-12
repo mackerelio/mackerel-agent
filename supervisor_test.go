@@ -61,7 +61,7 @@ func TestSupervisorReload(t *testing.T) {
 
 	ch <- syscall.SIGTERM
 	err := <-done
-	if err == nil {
+	if err != nil {
 		t.Errorf("something went wrong")
 	}
 	if newPid != sv.cmd.Process.Pid {
@@ -97,7 +97,7 @@ func TestSupervisorReloadFail(t *testing.T) {
 
 	exec.Command("/bin/kill", fmt.Sprintf("%d", newPid)).Run()
 	err := <-done
-	if err == nil {
+	if err != nil {
 		t.Errorf("something went wrong")
 	}
 	if newPid != sv.cmd.Process.Pid {
