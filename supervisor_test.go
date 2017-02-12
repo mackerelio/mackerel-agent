@@ -35,6 +35,7 @@ func TestSupervisor(t *testing.T) {
 	if !existsPid(pid) {
 		t.Errorf("process doesn't exist")
 	}
+	time.Sleep(50 * time.Millisecond)
 	ch <- os.Interrupt
 
 	err := <-done
