@@ -138,3 +138,43 @@ func TestSupervisor_launchFailed(t *testing.T) {
 		t.Errorf("child process isn't terminated")
 	}
 }
+
+func TestSupervisor_crashRecovery(t *testing.T) {
+	origSpawnInterval := spawnInterval
+	spawnInterval = 300 * time.Millisecond
+	defer func() { spawnInterval = origSpawnInterval }()
+
+	sv := &supervisor{
+		prog: stubAgent,
+		argv: []string{"blah blah blah"},
+	}
+	sv.start()
+	ch := make(chan os.Signal)
+	go sv.handleSignal(ch)
+	done := make(chan error)
+	go func() {
+		done <- sv.wait()
+	}()
+	oldPid := sv.cmd.Process.Pid
+	if !existsPid(oldPid) {
+		t.Errorf("process doesn't exist")
+	}
+	time.Sleep(spawnInterval)
+
+	// let it crash
+	sv.cmd.Process.Signal(syscall.SIGUSR1)
+
+	time.Sleep(spawnInterval)
+	newPid := sv.cmd.Process.Pid
+	if oldPid == newPid {
+		t.Errorf("crash recovery failed")
+	}
+	if existsPid(oldPid) {
+		t.Errorf("old process isn't terminated")
+	}
+	if !existsPid(newPid) {
+		t.Errorf("new process doesn't exist")
+	}
+	ch <- syscall.SIGTERM
+	<-done
+}

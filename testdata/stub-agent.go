@@ -25,12 +25,15 @@ func main() {
 	}
 
 	ch := make(chan os.Signal)
-	signal.Notify(ch, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
+	signal.Notify(ch, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP, syscall.SIGUSR1)
 	go func() {
 		for sig := range ch {
-			if sig == syscall.SIGHUP {
+			switch sig {
+			case syscall.SIGHUP:
 				// nop
-			} else {
+			case syscall.SIGUSR1:
+				panic("[stub] panicked by SIGUSR1")
+			default:
 				os.Exit(0)
 			}
 		}
