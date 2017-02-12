@@ -18,6 +18,12 @@ func main() {
 			os.Exit(0)
 		}
 	}
+
+	if len(os.Args) > 1 && os.Args[1] == "launch failure" {
+		time.Sleep(300 * time.Millisecond)
+		os.Exit(1)
+	}
+
 	ch := make(chan os.Signal)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go func() {

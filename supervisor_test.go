@@ -3,7 +3,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
@@ -11,8 +10,10 @@ import (
 	"time"
 )
 
+const stubAgent = "testdata/stub-agent"
+
 func init() {
-	err := exec.Command("go", "build", "-o", "testdata/stub-agent", "testdata/stub-agent.go").Run()
+	err := exec.Command("go", "build", "-o", stubAgent, "testdata/stub-agent.go").Run()
 	if err != nil {
 		panic(err)
 	}
@@ -20,20 +21,35 @@ func init() {
 
 func TestSupervisor(t *testing.T) {
 	sv := &supervisor{
-		prog: "testdata/stub-agent",
+		prog: stubAgent,
+		argv: []string{"dummy"},
 	}
 	sv.start()
-	sv.stop(os.Interrupt)
-	err := sv.wait()
+	ch := make(chan os.Signal)
+	go sv.handleSignal(ch)
+	done := make(chan error)
+	go func() {
+		done <- sv.wait()
+	}()
+	pid := sv.cmd.Process.Pid
+	if !existsPid(pid) {
+		t.Errorf("process doesn't exist")
+	}
+	ch <- os.Interrupt
 
-	if err == nil {
-		t.Errorf("something went wrong")
+	err := <-done
+	if err != nil {
+		t.Errorf("error should be nil but: %s", err)
+	}
+	if existsPid(pid) {
+		t.Errorf("child process isn't terminated")
 	}
 }
 
-func TestSupervisorReload(t *testing.T) {
+func TestSupervisor_reload(t *testing.T) {
 	sv := &supervisor{
-		prog: "testdata/stub-agent",
+		prog: stubAgent,
+		argv: []string{"dummy"},
 	}
 	sv.start()
 	ch := make(chan os.Signal)
@@ -47,7 +63,7 @@ func TestSupervisorReload(t *testing.T) {
 		t.Errorf("process doesn't exist")
 	}
 	ch <- syscall.SIGHUP
-	time.Sleep(time.Second)
+	time.Sleep(200 * time.Millisecond)
 	newPid := sv.cmd.Process.Pid
 	if oldPid == newPid {
 		t.Errorf("reload failed")
@@ -58,7 +74,6 @@ func TestSupervisorReload(t *testing.T) {
 	if !existsPid(newPid) {
 		t.Errorf("new process doesn't exist")
 	}
-
 	ch <- syscall.SIGTERM
 	err := <-done
 	if err != nil {
@@ -72,9 +87,9 @@ func TestSupervisorReload(t *testing.T) {
 	}
 }
 
-func TestSupervisorReloadFail(t *testing.T) {
+func TestSupervisor_reloadFail(t *testing.T) {
 	sv := &supervisor{
-		prog: "testdata/stub-agent",
+		prog: stubAgent,
 		argv: []string{"failed"},
 	}
 	sv.start()
@@ -92,18 +107,34 @@ func TestSupervisorReloadFail(t *testing.T) {
 	time.Sleep(time.Second)
 	newPid := sv.cmd.Process.Pid
 	if oldPid != newPid {
-		t.Errorf("reload should be failed")
+		t.Errorf("reload should be failed, but unintentionally reloaded")
 	}
 
-	exec.Command("/bin/kill", fmt.Sprintf("%d", newPid)).Run()
+	ch <- syscall.SIGTERM
+	<-done
+}
+
+func TestSupervisor_launchFailed(t *testing.T) {
+	sv := &supervisor{
+		prog: stubAgent,
+		argv: []string{"launch failure"},
+	}
+	sv.start()
+	ch := make(chan os.Signal)
+	go sv.handleSignal(ch)
+	done := make(chan error)
+	go func() {
+		done <- sv.wait()
+	}()
+	pid := sv.cmd.Process.Pid
+	if !existsPid(pid) {
+		t.Errorf("process doesn't exist")
+	}
 	err := <-done
-	if err != nil {
+	if err == nil {
 		t.Errorf("something went wrong")
 	}
-	if newPid != sv.cmd.Process.Pid {
-		t.Errorf("something went wrong")
-	}
-	if existsPid(newPid) {
+	if existsPid(sv.cmd.Process.Pid) {
 		t.Errorf("child process isn't terminated")
 	}
 }
