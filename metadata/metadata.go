@@ -1,7 +1,6 @@
 package metadata
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -31,7 +30,7 @@ func (g *Generator) Fetch() (string, error) {
 	}
 
 	if exitCode != 0 {
-		return "", errors.New(fmt.Sprintf("Metadata plugin command exits with: %d", exitCode))
+		return "", fmt.Errorf("Metadata plugin command exits with: %d", exitCode)
 	}
 
 	return message, nil
