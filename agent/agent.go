@@ -15,7 +15,7 @@ type Agent struct {
 	MetricsGenerators  []metrics.Generator
 	PluginGenerators   []metrics.PluginGenerator
 	Checkers           []*checks.Checker
-	MetadataGenerators []*metadata.MetadataGenerator
+	MetadataGenerators []*metadata.Generator
 }
 
 // MetricsResult XXX

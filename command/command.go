@@ -643,11 +643,11 @@ func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
 	return generators
 }
 
-func metadataGenerators(conf *config.Config) []*metadata.MetadataGenerator {
-	generators := make([]*metadata.MetadataGenerator, 0, len(conf.MetadataPlugins))
+func metadataGenerators(conf *config.Config) []*metadata.Generator {
+	generators := make([]*metadata.Generator, 0, len(conf.MetadataPlugins))
 
 	for name, pluginConfig := range conf.MetadataPlugins {
-		generator := &metadata.MetadataGenerator{
+		generator := &metadata.Generator{
 			Name:   name,
 			Config: pluginConfig,
 		}

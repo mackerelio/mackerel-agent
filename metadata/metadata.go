@@ -11,14 +11,14 @@ import (
 
 var logger = logging.GetLogger("metadata")
 
-// MetadataGenerator generates metadata
-type MetadataGenerator struct {
+// Generator generates metadata
+type Generator struct {
 	Name   string
 	Config *config.MetadataPlugin
 }
 
 // Fetch invokes the command and returns the result
-func (g *MetadataGenerator) Fetch() (string, error) {
+func (g *Generator) Fetch() (string, error) {
 	message, stderr, exitCode, err := g.Config.Run()
 
 	if err != nil {
@@ -40,7 +40,7 @@ func (g *MetadataGenerator) Fetch() (string, error) {
 const defaultExecutionInterval = 10 * time.Minute
 
 // Interval calculates the time interval of command execution
-func (g *MetadataGenerator) Interval() time.Duration {
+func (g *Generator) Interval() time.Duration {
 	if g.Config.ExecutionInterval == nil {
 		return defaultExecutionInterval
 	}
