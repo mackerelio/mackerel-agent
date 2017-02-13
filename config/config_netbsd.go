@@ -5,14 +5,13 @@ import (
 	"path/filepath"
 )
 
-var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", "mackerel-agent")
+var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", getAgentName())
 
 // DefaultConfig The default configuration for netbsd
 var DefaultConfig = &Config{
 	Apibase:    getApibase(),
 	Root:       mackerelRoot,
-	Pidfile:    filepath.Join(mackerelRoot, "pid"),
-	Conffile:   filepath.Join(mackerelRoot, "mackerel-agent.conf"),
+	Conffile:   filepath.Join(mackerelRoot, getAgentName()+".conf"),
 	Roles:      []string{},
 	Verbose:    false,
 	Diagnostic: false,

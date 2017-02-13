@@ -155,6 +155,9 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 }
 
 func createPidFile(pidfile string) error {
+	if pidfile == "" {
+		return nil
+	}
 	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
 			if existsPid(pid) {
@@ -182,6 +185,9 @@ func createPidFile(pidfile string) error {
 }
 
 func removePidFile(pidfile string) {
+	if pidfile == "" {
+		return
+	}
 	if err := os.Remove(pidfile); err != nil {
 		logger.Errorf("Failed to remove the pidfile: %s: %s", pidfile, err)
 	}
