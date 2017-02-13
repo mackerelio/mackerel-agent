@@ -1,3 +1,5 @@
+// +build darwin freebsd netbsd
+
 package config
 
 import (
@@ -7,7 +9,7 @@ import (
 
 var mackerelRoot = filepath.Join(os.Getenv("HOME"), "Library", getAgentName())
 
-// DefaultConfig The default configuration for netbsd
+// DefaultConfig The default configuration for darwin, freebsd and netbsd
 var DefaultConfig = &Config{
 	Apibase:    getApibase(),
 	Root:       mackerelRoot,
