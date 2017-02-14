@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -9,54 +10,54 @@ import (
 
 func TestMetadataGenerator(t *testing.T) {
 	tests := []struct {
-		command string
-		message string
-		err     bool
+		command  string
+		metadata string
+		err      bool
 	}{
 		{
-			command: `go run testdata/json.go -exit-code 0 -message "{}"`,
-			message: `{}`,
-			err:     false,
+			command:  `go run testdata/json.go -exit-code 0 -metadata "{}"`,
+			metadata: `{}`,
+			err:      false,
 		},
 		{
-			command: `go run testdata/json.go -exit-code 1 -message "{}"`,
-			message: ``,
-			err:     true,
+			command:  `go run testdata/json.go -exit-code 1 -metadata "{}"`,
+			metadata: ``,
+			err:      true,
 		},
 		{
-			command: `go run testdata/json.go -exit-code 0 -message '{"example": "message"}'`,
-			message: `{"example": "message"}`,
-			err:     false,
+			command:  `go run testdata/json.go -exit-code 0 -metadata '{"example": "metadata", "foo": [100, 200, {}, null]}'`,
+			metadata: `{"example":"metadata","foo":[100,200,{},null]}`,
+			err:      false,
 		},
 		{
-			command: `go run testdata/json.go -exit-code 0 -message '{"example": message"}'`,
-			message: ``,
-			err:     true,
+			command:  `go run testdata/json.go -exit-code 0 -metadata '{"example": metadata"}'`,
+			metadata: ``,
+			err:      true,
 		},
 		{
-			command: `go run testdata/json.go -exit-code 0 -message '"foobar"'`,
-			message: `"foobar"`,
-			err:     false,
+			command:  `go run testdata/json.go -exit-code 0 -metadata '"foobar"'`,
+			metadata: `"foobar"`,
+			err:      false,
 		},
 		{
-			command: `go run testdata/json.go -exit-code 0 -message foobar`,
-			message: ``,
-			err:     true,
+			command:  `go run testdata/json.go -exit-code 0 -metadata foobar`,
+			metadata: ``,
+			err:      true,
 		},
 		{
-			command: `go run testdata/json.go -exit-code 0 -message 16777216`,
-			message: `16777216`,
-			err:     false,
+			command:  `go run testdata/json.go -exit-code 0 -metadata 262144`,
+			metadata: `262144`,
+			err:      false,
 		},
 		{
-			command: `go run testdata/json.go -exit-code 0 -message true`,
-			message: `true`,
-			err:     false,
+			command:  `go run testdata/json.go -exit-code 0 -metadata true`,
+			metadata: `true`,
+			err:      false,
 		},
 		{
-			command: `go run testdata/json.go -exit-code 0 -message null`,
-			message: `null`,
-			err:     false,
+			command:  `go run testdata/json.go -exit-code 0 -metadata null`,
+			metadata: `null`,
+			err:      false,
 		},
 	}
 	for _, test := range tests {
@@ -65,7 +66,7 @@ func TestMetadataGenerator(t *testing.T) {
 				Command: test.command,
 			},
 		}
-		message, err := g.Fetch()
+		metadata, err := g.Fetch()
 		if err != nil {
 			if !test.err {
 				t.Errorf("error occurred unexpectedly on command %q", test.command)
@@ -74,8 +75,9 @@ func TestMetadataGenerator(t *testing.T) {
 			if test.err {
 				t.Errorf("error did not occurr but error expected on command %q", test.command)
 			}
-			if message != test.message {
-				t.Errorf("message should be %q but got %q", test.message, message)
+			metadataStr, _ := json.Marshal(metadata)
+			if string(metadataStr) != test.metadata {
+				t.Errorf("metadata should be %q but got %q", test.metadata, string(metadataStr))
 			}
 		}
 	}
