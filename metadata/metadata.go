@@ -18,12 +18,12 @@ type Generator struct {
 }
 
 // Fetch invokes the command and returns the result
-func (g *Generator) Fetch() (string, error) {
+func (g *Generator) Fetch() (interface{}, error) {
 	message, stderr, exitCode, err := g.Config.Run()
 
 	if err != nil {
 		logger.Warningf("Error occurred while executing a metadata plugin %q: %s", g.Name, err.Error())
-		return "", err
+		return nil, err
 	}
 
 	if stderr != "" {
@@ -31,15 +31,15 @@ func (g *Generator) Fetch() (string, error) {
 	}
 
 	if exitCode != 0 {
-		return "", fmt.Errorf("Metadata plugin %q exits with: %d", g.Name, exitCode)
+		return nil, fmt.Errorf("Metadata plugin %q exits with: %d", g.Name, exitCode)
 	}
 
-	var data interface{}
-	if err := json.Unmarshal([]byte(message), &data); err != nil {
-		return "", fmt.Errorf("Metadata plugin %q outputs invalid JSON: %v", g.Name, message)
+	var metadata interface{}
+	if err := json.Unmarshal([]byte(message), &metadata); err != nil {
+		return nil, fmt.Errorf("Metadata plugin %q outputs invalid JSON: %v", g.Name, message)
 	}
 
-	return message, nil
+	return metadata, nil
 }
 
 const defaultExecutionInterval = 10 * time.Minute
