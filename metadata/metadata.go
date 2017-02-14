@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -26,11 +27,16 @@ func (g *Generator) Fetch() (string, error) {
 	}
 
 	if stderr != "" {
-		logger.Warningf("Metadata generator %q outputs stderr: %s", g.Name, stderr)
+		logger.Warningf("Metadata plugin %q outputs stderr: %s", g.Name, stderr)
 	}
 
 	if exitCode != 0 {
-		return "", fmt.Errorf("Metadata plugin command exits with: %d", exitCode)
+		return "", fmt.Errorf("Metadata plugin %q exits with: %d", g.Name, exitCode)
+	}
+
+	var data interface{}
+	if err := json.Unmarshal([]byte(message), &data); err != nil {
+		return "", fmt.Errorf("Metadata plugin %q outputs invalid JSON: %v", g.Name, message)
 	}
 
 	return message, nil
