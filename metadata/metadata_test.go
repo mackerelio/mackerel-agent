@@ -117,7 +117,7 @@ func TestMetadataGeneratorSaveDiffers(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		tmpf, _ := ioutil.TempFile("", "mackerel-metadata-test")
+		tmpf, _ := ioutil.TempFile("testdata", "mackerel-metadata-test")
 		g := Generator{Tempfile: tmpf.Name()}
 		var prevmetadata interface{}
 		_ = json.Unmarshal([]byte(test.prevmetadata), &prevmetadata)
