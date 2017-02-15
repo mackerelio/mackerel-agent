@@ -76,6 +76,9 @@ func (g *Generator) Save(metadata interface{}) error {
 	if err != nil {
 		return fmt.Errorf("failed to marshal the metadata to json: %v %s", metadata, err.Error())
 	}
+	if g.Tempfile == "" {
+		return fmt.Errorf("specify the name of temporary file")
+	}
 	if err = writeFileAtomically(g.Tempfile, data); err != nil {
 		return fmt.Errorf("failed to write the metadata to temporary file: %v %s", metadata, err.Error())
 	}
