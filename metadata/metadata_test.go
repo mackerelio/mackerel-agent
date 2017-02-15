@@ -11,57 +11,57 @@ import (
 
 func TestMetadataGeneratorFetch(t *testing.T) {
 	tests := []struct {
-		command  string
+		command  []string
 		metadata string
 		err      bool
 	}{
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata {}`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0", "-metadata", "{}"},
 			metadata: `{}`,
 			err:      false,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 1 -metadata {}`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "1", "-metadata", "{}"},
 			metadata: ``,
 			err:      true,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata '{"example": "metadata", "foo": [100, 200, {}, null]}'`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0", "-metadata", `{"example": "metadata", "foo": [100, 200, {}, null]}`},
 			metadata: `{"example":"metadata","foo":[100,200,{},null]}`,
 			err:      false,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata '{"example": metadata"}'`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0", "-metadata", `{"example": metadata"}`},
 			metadata: ``,
 			err:      true,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata '"foobar"'`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0", "-metadata", `"foobar"`},
 			metadata: `"foobar"`,
 			err:      false,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata foobar`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0", "-metadata", `foobar`},
 			metadata: ``,
 			err:      true,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata 262144`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0", "-metadata", "262144"},
 			metadata: `262144`,
 			err:      false,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata true`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0", "-metadata", "true"},
 			metadata: `true`,
 			err:      false,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata null`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0", "-metadata", "null"},
 			metadata: `null`,
 			err:      false,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 0`,
+			command:  []string{"go", "run", "testdata/json.go", "-exit-code", "0"},
 			metadata: ``,
 			err:      true,
 		},
@@ -69,17 +69,17 @@ func TestMetadataGeneratorFetch(t *testing.T) {
 	for _, test := range tests {
 		g := Generator{
 			Config: &config.MetadataPlugin{
-				Command: test.command,
+				CommandArgs: test.command,
 			},
 		}
 		metadata, err := g.Fetch()
 		if err != nil {
 			if !test.err {
-				t.Errorf("error occurred unexpectedly on command %q", test.command)
+				t.Errorf("error occurred unexpectedly on command %v %s", test.command, err.Error())
 			}
 		} else {
 			if test.err {
-				t.Errorf("error did not occurr but error expected on command %q", test.command)
+				t.Errorf("error did not occurr but error expected on command %v", test.command)
 			}
 			metadataStr, _ := json.Marshal(metadata)
 			if string(metadataStr) != test.metadata {
