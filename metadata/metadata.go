@@ -33,6 +33,7 @@ func (g *Generator) Fetch() (interface{}, error) {
 
 	if stderr != "" {
 		logger.Warningf("metadata plugin %q outputs stderr: %s", g.Name, stderr)
+		// metadata plugin can output message to stderr for debugging and json to stdout
 	}
 
 	if exitCode != 0 {
