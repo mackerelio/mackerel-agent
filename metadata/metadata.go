@@ -55,7 +55,7 @@ func (g *Generator) Differs(metadata interface{}) bool {
 	return !reflect.DeepEqual(g.PrevMetadata, metadata)
 }
 
-// Load loads the previous metadata from file
+// LoadFromFile loads the previous metadata from file
 func (g *Generator) LoadFromFile() {
 	data, err := ioutil.ReadFile(g.Tempfile)
 	if err != nil { // maybe initial state
