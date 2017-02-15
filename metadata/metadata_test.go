@@ -2,7 +2,7 @@ package metadata
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"strconv"
 	"testing"
 	"time"
 
@@ -116,9 +116,8 @@ func TestMetadataGeneratorSaveDiffers(t *testing.T) {
 			differs:      true,
 		},
 	}
-	for _, test := range tests {
-		tmpf, _ := ioutil.TempFile("testdata", "mackerel-metadata-test")
-		g := Generator{Tempfile: tmpf.Name()}
+	for i, test := range tests {
+		g := Generator{Tempfile: "testdata/.mackerel-metadata-test-" + strconv.Itoa(i)}
 		var prevmetadata interface{}
 		_ = json.Unmarshal([]byte(test.prevmetadata), &prevmetadata)
 
