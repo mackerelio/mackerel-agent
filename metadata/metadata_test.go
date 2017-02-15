@@ -8,7 +8,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 )
 
-func TestMetadataGenerator(t *testing.T) {
+func TestMetadataGeneratorFetch(t *testing.T) {
 	tests := []struct {
 		command  string
 		metadata string
