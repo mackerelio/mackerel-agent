@@ -65,6 +65,7 @@ func (g *Generator) LoadFromFile() {
 	var metadata interface{}
 	if err := json.Unmarshal(data, &metadata); err != nil {
 		logger.Warningf("metadata plugin %q detected a invalid json in temporary file: %s", g.Name, string(data))
+		// ignore errors, the file will be overwritten by Save()
 		return
 	}
 	g.PrevMetadata = metadata
@@ -92,6 +93,7 @@ func (g *Generator) Clear() error {
 	return os.Remove(g.Tempfile)
 }
 
+// writeFileAtomically writes contents to the file atomically
 func writeFileAtomically(f string, contents []byte) error {
 	tmpf, err := ioutil.TempFile("", "")
 	if err != nil {
