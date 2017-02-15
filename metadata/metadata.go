@@ -3,6 +3,8 @@ package metadata
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"time"
 
@@ -16,6 +18,7 @@ var logger = logging.GetLogger("metadata")
 type Generator struct {
 	Name         string
 	Config       *config.MetadataPlugin
+	Tempfile     string
 	PrevMetadata interface{}
 }
 
@@ -29,16 +32,16 @@ func (g *Generator) Fetch() (interface{}, error) {
 	}
 
 	if stderr != "" {
-		logger.Warningf("Metadata plugin %q outputs stderr: %s", g.Name, stderr)
+		logger.Warningf("metadata plugin %q outputs stderr: %s", g.Name, stderr)
 	}
 
 	if exitCode != 0 {
-		return nil, fmt.Errorf("Metadata plugin %q exits with: %d", g.Name, exitCode)
+		return nil, fmt.Errorf("exits with: %d", exitCode)
 	}
 
 	var metadata interface{}
 	if err := json.Unmarshal([]byte(message), &metadata); err != nil {
-		return nil, fmt.Errorf("Metadata plugin %q outputs invalid JSON: %v", g.Name, message)
+		return nil, fmt.Errorf("outputs invalid JSON: %v", message)
 	}
 
 	return metadata, nil
@@ -46,13 +49,51 @@ func (g *Generator) Fetch() (interface{}, error) {
 
 // Differs returns whether the metadata has been changed or not
 func (g *Generator) Differs(metadata interface{}) bool {
+	if g.PrevMetadata == nil {
+		g.LoadFromFile()
+	}
 	return !reflect.DeepEqual(g.PrevMetadata, metadata)
+}
+
+// Load loads the previous metadata from file
+func (g *Generator) LoadFromFile() {
+	data, err := ioutil.ReadFile(g.Tempfile)
+	if err != nil { // maybe initial state
+		return
+	}
+	var metadata interface{}
+	if err := json.Unmarshal(data, &metadata); err != nil {
+		logger.Warningf("metadata plugin %q detected a invalid json in temporary file: %s", g.Name, string(data))
+		return
+	}
+	g.PrevMetadata = metadata
 }
 
 // Save stores the metadata locally
 func (g *Generator) Save(metadata interface{}) error {
 	g.PrevMetadata = metadata
+	data, err := json.Marshal(metadata)
+	if err != nil {
+		return fmt.Errorf("failed to marshal the metadata to json: %v %s", metadata, err.Error())
+	}
+	if err = writeFileAtomically(g.Tempfile, data); err != nil {
+		return fmt.Errorf("failed to write the metadata to temporary file: %v %s", metadata, err.Error())
+	}
 	return nil
+}
+
+func writeFileAtomically(f string, contents []byte) error {
+	tmpf, err := ioutil.TempFile("", "")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmpf.Name())
+	_, err = tmpf.Write(contents)
+	if err != nil {
+		return err
+	}
+	tmpf.Close()
+	return os.Rename(tmpf.Name(), f)
 }
 
 const defaultExecutionInterval = 10 * time.Minute

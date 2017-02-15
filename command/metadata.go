@@ -1,6 +1,8 @@
 package command
 
 import (
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
@@ -10,10 +12,16 @@ import (
 func metadataGenerators(conf *config.Config) []*metadata.Generator {
 	generators := make([]*metadata.Generator, 0, len(conf.MetadataPlugins))
 
+	workdir := os.Getenv("MACKEREL_PLUGIN_WORKDIR")
+	if workdir == "" {
+		workdir = os.TempDir()
+	}
+
 	for name, pluginConfig := range conf.MetadataPlugins {
 		generator := &metadata.Generator{
-			Name:   name,
-			Config: pluginConfig,
+			Name:     name,
+			Config:   pluginConfig,
+			Tempfile: filepath.Join(workdir, "mackerel-metadata-"+name),
 		}
 		logger.Debugf("Metadata plugin generator created: %#v %#v", generator, generator.Config)
 		generators = append(generators, generator)
@@ -79,7 +87,7 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 			nextTime = now.Add(nextInterval)
 
 			if err != nil {
-				logger.Warningf("metadata %q: %s", g.Name, err.Error())
+				logger.Warningf("metadata plugin %q: %s", g.Name, err.Error())
 				continue
 			}
 
@@ -87,7 +95,11 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 				logger.Debugf("skipping metadata %q: %v", g.Name, metadata)
 				continue
 			}
-			_ = g.Save(metadata)
+
+			if err = g.Save(metadata); err != nil {
+				logger.Warningf("metadata plugin %q: %s", g.Name, err.Error())
+				continue
+			}
 
 			logger.Debugf("generated metadata %q: %v", g.Name, metadata)
 			resultCh <- &metadataResult{
