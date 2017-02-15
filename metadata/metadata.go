@@ -3,6 +3,7 @@ package metadata
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
@@ -13,8 +14,9 @@ var logger = logging.GetLogger("metadata")
 
 // Generator generates metadata
 type Generator struct {
-	Name   string
-	Config *config.MetadataPlugin
+	Name         string
+	Config       *config.MetadataPlugin
+	PrevMetadata interface{}
 }
 
 // Fetch invokes the command and returns the result
@@ -40,6 +42,17 @@ func (g *Generator) Fetch() (interface{}, error) {
 	}
 
 	return metadata, nil
+}
+
+// Differs returns whether the metadata has been changed or not
+func (g *Generator) Differs(metadata interface{}) bool {
+	return !reflect.DeepEqual(g.PrevMetadata, metadata)
+}
+
+// Save stores the metadata locally
+func (g *Generator) Save(metadata interface{}) error {
+	g.PrevMetadata = metadata
+	return nil
 }
 
 const defaultExecutionInterval = 10 * time.Minute

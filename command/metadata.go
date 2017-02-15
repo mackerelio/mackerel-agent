@@ -57,7 +57,7 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 			err := c.API.PutMetadata(c.Host.ID, result.namespace, result.metadata)
 			if err != nil {
 				logger.Errorf("put metadata %q failed: %s", result.namespace, err.Error())
-				// TODO: error handling (re-enqueue?)
+				continue
 			}
 		}
 	}
@@ -82,7 +82,14 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 				logger.Warningf("metadata %q: %s", g.Name, err.Error())
 				continue
 			}
-			logger.Debugf("metadata %q: %v", g.Name, metadata)
+
+			if !g.Differs(metadata) {
+				logger.Debugf("skipping metadata %q: %v", g.Name, metadata)
+				continue
+			}
+			_ = g.Save(metadata)
+
+			logger.Debugf("generated metadata %q: %v", g.Name, metadata)
 			resultCh <- &metadataResult{
 				namespace: g.Name,
 				metadata:  metadata,
