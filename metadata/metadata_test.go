@@ -83,6 +83,49 @@ func TestMetadataGenerator(t *testing.T) {
 	}
 }
 
+func TestMetadataGeneratorSaveDiffers(t *testing.T) {
+	tests := []struct {
+		prevmetadata string
+		metadata     string
+		differs      bool
+	}{
+		{
+			prevmetadata: `{}`,
+			metadata:     `{}`,
+			differs:      false,
+		},
+		{
+			prevmetadata: `{ "foo": [ 100, 200, null, {} ] }`,
+			metadata:     `{"foo":[100,200,null,{}]}`,
+			differs:      false,
+		},
+		{
+			prevmetadata: `null`,
+			metadata:     `{}`,
+			differs:      true,
+		},
+		{
+			prevmetadata: `[]`,
+			metadata:     `{}`,
+			differs:      true,
+		},
+	}
+	for _, test := range tests {
+		g := Generator{}
+		var prevmetadata interface{}
+		_ = json.Unmarshal([]byte(test.prevmetadata), &prevmetadata)
+		g.Save(prevmetadata)
+
+		var metadata interface{}
+		_ = json.Unmarshal([]byte(test.metadata), &metadata)
+
+		got := g.Differs(metadata)
+		if got != test.differs {
+			t.Errorf("Differs() should return %t but got %t for %v, %v", test.differs, got, prevmetadata, metadata)
+		}
+	}
+}
+
 func TestMetadataGeneratorInterval(t *testing.T) {
 	tests := []struct {
 		interval *int32
