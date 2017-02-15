@@ -15,7 +15,7 @@ func metadataGenerators(conf *config.Config) []*metadata.Generator {
 			Name:   name,
 			Config: pluginConfig,
 		}
-		logger.Debugf("Metadata plugin generator created: %v", generator)
+		logger.Debugf("Metadata plugin generator created: %#v %#v", generator, generator.Config)
 		generators = append(generators, generator)
 	}
 
