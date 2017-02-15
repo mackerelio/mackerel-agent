@@ -16,12 +16,12 @@ func TestMetadataGeneratorFetch(t *testing.T) {
 		err      bool
 	}{
 		{
-			command:  `go run testdata/json.go -exit-code 0 -metadata "{}"`,
+			command:  `go run testdata/json.go -exit-code 0 -metadata {}`,
 			metadata: `{}`,
 			err:      false,
 		},
 		{
-			command:  `go run testdata/json.go -exit-code 1 -metadata "{}"`,
+			command:  `go run testdata/json.go -exit-code 1 -metadata {}`,
 			metadata: ``,
 			err:      true,
 		},
