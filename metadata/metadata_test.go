@@ -149,11 +149,11 @@ func TestMetadataGeneratorInterval(t *testing.T) {
 	}{
 		{
 			interval: pint(0),
-			expected: 1 * time.Minute,
+			expected: 10 * time.Minute,
 		},
 		{
 			interval: pint(1),
-			expected: 1 * time.Minute,
+			expected: 10 * time.Minute,
 		},
 		{
 			interval: pint(30),
