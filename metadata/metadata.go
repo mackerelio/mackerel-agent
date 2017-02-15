@@ -116,8 +116,8 @@ func (g *Generator) Interval() time.Duration {
 		return defaultExecutionInterval
 	}
 	interval := time.Duration(*g.Config.ExecutionInterval) * time.Minute
-	if interval < 1*time.Minute {
-		return 1 * time.Minute
+	if interval < defaultExecutionInterval {
+		return defaultExecutionInterval
 	}
 	return interval
 }
