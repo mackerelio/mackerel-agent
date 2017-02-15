@@ -133,6 +133,13 @@ func TestMetadataGeneratorSaveDiffers(t *testing.T) {
 		if got != test.differs {
 			t.Errorf("Differs() should return %t but got %t for %v, %v", test.differs, got, prevmetadata, metadata)
 		}
+
+		if err := g.Clear(); err != nil {
+			t.Errorf("Error should not occur in Clear() but got: %s", err.Error())
+		}
+		if g.PrevMetadata != nil {
+			t.Errorf("metadata cache should be cleared but got: %v", g.PrevMetadata)
+		}
 	}
 }
 

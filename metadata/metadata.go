@@ -86,6 +86,12 @@ func (g *Generator) Save(metadata interface{}) error {
 	return nil
 }
 
+// Clear destroys the metadata cache
+func (g *Generator) Clear() error {
+	g.PrevMetadata = nil
+	return os.Remove(g.Tempfile)
+}
+
 func writeFileAtomically(f string, contents []byte) error {
 	tmpf, err := ioutil.TempFile("", "")
 	if err != nil {
