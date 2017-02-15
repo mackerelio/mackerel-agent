@@ -114,7 +114,10 @@ func TestMetadataGeneratorSaveDiffers(t *testing.T) {
 		g := Generator{}
 		var prevmetadata interface{}
 		_ = json.Unmarshal([]byte(test.prevmetadata), &prevmetadata)
-		g.Save(prevmetadata)
+
+		if err := g.Save(prevmetadata); err != nil {
+			t.Errorf("Error should not occur in Save() but got: %s", err.Error())
+		}
 
 		var metadata interface{}
 		_ = json.Unmarshal([]byte(test.metadata), &metadata)
