@@ -60,6 +60,11 @@ func TestMetadataGeneratorFetch(t *testing.T) {
 			metadata: `null`,
 			err:      false,
 		},
+		{
+			command:  `go run testdata/json.go -exit-code 0`,
+			metadata: ``,
+			err:      true,
+		},
 	}
 	for _, test := range tests {
 		g := Generator{
