@@ -48,8 +48,8 @@ func (g *Generator) Fetch() (interface{}, error) {
 	return metadata, nil
 }
 
-// Differs returns whether the metadata has been changed or not
-func (g *Generator) Differs(metadata interface{}) bool {
+// IsChanged returns whether the metadata has been changed or not
+func (g *Generator) IsChanged(metadata interface{}) bool {
 	if g.PrevMetadata == nil {
 		g.LoadFromFile()
 	}

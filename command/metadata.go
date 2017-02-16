@@ -101,7 +101,7 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 				continue
 			}
 
-			if !g.Differs(metadata) {
+			if !g.IsChanged(metadata) {
 				logger.Debugf("skipping metadata %q: %v", g.Name, metadata)
 				continue
 			}
