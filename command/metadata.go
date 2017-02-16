@@ -103,7 +103,7 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 			}
 
 			if !g.IsChanged(metadata) {
-				logger.Debugf("skipping metadata %q: %v", g.Name, metadata)
+				logger.Debugf("skipping metadata %q, metadata does not change", g.Name)
 				continue
 			}
 
@@ -112,7 +112,7 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 				continue
 			}
 
-			logger.Debugf("generated metadata %q: %v", g.Name, metadata)
+			logger.Debugf("generated metadata %q (saved cache to file: %s)", g.Name, g.Tempfile)
 			resultCh <- &metadataResult{
 				namespace: g.Name,
 				metadata:  metadata,
