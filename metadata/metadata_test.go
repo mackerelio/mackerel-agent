@@ -93,27 +93,27 @@ func TestMetadataGeneratorSaveDiffers(t *testing.T) {
 	tests := []struct {
 		prevmetadata string
 		metadata     string
-		differs      bool
+		ischanged    bool
 	}{
 		{
 			prevmetadata: `{}`,
 			metadata:     `{}`,
-			differs:      false,
+			ischanged:    false,
 		},
 		{
 			prevmetadata: `{ "foo": [ 100, 200, null, {} ] }`,
 			metadata:     `{"foo":[100,200,null,{}]}`,
-			differs:      false,
+			ischanged:    false,
 		},
 		{
 			prevmetadata: `null`,
 			metadata:     `{}`,
-			differs:      true,
+			ischanged:    true,
 		},
 		{
 			prevmetadata: `[]`,
 			metadata:     `{}`,
-			differs:      true,
+			ischanged:    true,
 		},
 	}
 	for i, test := range tests {
@@ -128,9 +128,9 @@ func TestMetadataGeneratorSaveDiffers(t *testing.T) {
 		var metadata interface{}
 		_ = json.Unmarshal([]byte(test.metadata), &metadata)
 
-		got := g.Differs(metadata)
-		if got != test.differs {
-			t.Errorf("Differs() should return %t but got %t for %v, %v", test.differs, got, prevmetadata, metadata)
+		got := g.IsChanged(metadata)
+		if got != test.ischanged {
+			t.Errorf("IsChanged() should return %t but got %t for %v, %v", test.ischanged, got, prevmetadata, metadata)
 		}
 
 		if err := g.Clear(); err != nil {
