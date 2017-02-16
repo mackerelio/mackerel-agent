@@ -62,10 +62,18 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 		}
 
 		for _, result := range results {
-			err := c.API.PutMetadata(c.Host.ID, result.namespace, result.metadata)
+			resp, err := c.API.PutMetadata(c.Host.ID, result.namespace, result.metadata)
+			// retry on 5XX errors
+			if resp != nil && resp.StatusCode >= 500 {
+				logger.Errorf("put metadata %q failed: status %s", result.namespace, resp.Status)
+				resultCh <- &metadataResult{
+					namespace: result.namespace,
+					metadata:  result.metadata,
+				}
+				continue
+			}
 			if err != nil {
-				logger.Errorf("put metadata %q failed: %s", result.namespace, err.Error())
-				// do not retry because huge metadata will be always rejected
+				logger.Errorf("put metadata %q failed: %v", result.namespace, err)
 				clearMetadataCache(c.Agent.MetadataGenerators, result.namespace)
 				continue
 			}
