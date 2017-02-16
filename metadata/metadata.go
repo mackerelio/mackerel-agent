@@ -99,7 +99,8 @@ func (g *Generator) Clear() error {
 
 // writeFileAtomically writes contents to the file atomically
 func writeFileAtomically(f string, contents []byte) error {
-	tmpf, err := ioutil.TempFile("", "")
+	// MUST be located on same disk partition
+	tmpf, err := ioutil.TempFile(filepath.Dir(f), "tmp")
 	if err != nil {
 		return err
 	}
