@@ -51,12 +51,13 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 		}
 
 		results := []*metadataResult{}
+	ConsumeResults:
 		for {
 			select {
 			case result := <-resultCh:
 				results = append(results, result)
 			default:
-				break
+				break ConsumeResults
 			}
 		}
 
