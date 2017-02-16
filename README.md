@@ -3,15 +3,23 @@ mackerel-agent
 
 ![agent-si](docs/images/agent-si.png "mackerel-agent")
 
-mackerel-agent is a piece of software which is installed on your hosts to collect metrics and events and send them to [Mackerel](https://mackerel.io/) where they can be visualized and monitored.
+`mackerel-agent` is a client software for [Mackerel](https://mackerel.io/).
+[Mackerel](https://mackerel.io/) is an online visualization and monitoring service for servers.
 
-mackerel-agent executes the following tasks in the foreground:
-- registering your hosts with Mackerel
-- collecting specs and metrics from your hosts and posting them to Mackerel
+Once `mackerel-agent` is installed, it runs following tasks on the installed host in foreground:
+- register your hosts to Mackerel
+- collect specs and metrics of the host and post them to Mackerel
 
-Your hosts' information will be viewable on [Mackerel](https://mackerel.io/).
+Collected information will be visualized on [Mackerel](https://mackerel.io/).
 
 As of now, mackerel-agent is officially supported to run on Amazon Linux, CentOS 5/6/7, Ubuntu 12.04LTS/14.04LTS, Debian 6/7 or Windows Server 2008 R2 and later 32-bit/64-bit environments.
+
+PREREQUISITES
+-------------
+
+You have to create an organization on [Mackerel](https://mackerel.io/) at first.
+After that, set `apikey` in `mackerel-agent.conf`.
+
 
 SYNOPSIS
 --------
@@ -23,11 +31,7 @@ make build
 make run
 ```
 
-The `apikey` will be required in order to run the agent.
-
-An organization must first be created in [Mackerel](https://mackerel.io/), then the `apikey` can be configured in `mackerel-agent.conf`.
-
-The following commands can be used instead of `make`.
+You can run following commands instead of `make`.
 
 ```
 go get -d github.com/mackerelio/mackerel-agent
@@ -39,10 +43,14 @@ go build -o build/mackerel-agent \
 ./build/mackerel-agent -conf=mackerel-agent.conf
 ```
 
-To build on Windows use the command ```build.bat```
+### on Windows
 
-To run on Windows use the command ```run.bat```
+Use `.bat` files instead of `make` commands.
 
+```
+build.bat
+run.bat
+```
 
 Test
 ----------
