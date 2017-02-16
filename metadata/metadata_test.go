@@ -90,7 +90,7 @@ func TestMetadataGeneratorFetch(t *testing.T) {
 	}
 }
 
-func TestMetadataGeneratorSaveDiffers(t *testing.T) {
+func TestMetadataGeneratorSaveIsChanged(t *testing.T) {
 	tests := []struct {
 		prevmetadata string
 		metadata     string
