@@ -102,7 +102,7 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 }
 
 // Run the metric plugin.
-func (pconf *MetricPlugin) Run() (string, string, int, error) {
+func (pconf *MetricPlugin) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(pconf.CommandArgs) > 0 {
 		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
 	}
@@ -144,7 +144,7 @@ func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
 }
 
 // Run the check plugin.
-func (pconf *CheckPlugin) Run() (string, string, int, error) {
+func (pconf *CheckPlugin) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(pconf.CommandArgs) > 0 {
 		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
 	}
@@ -174,7 +174,7 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 }
 
 // Run the metadata plugin.
-func (pconf *MetadataPlugin) Run() (string, string, int, error) {
+func (pconf *MetadataPlugin) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(pconf.CommandArgs) > 0 {
 		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
 	}
