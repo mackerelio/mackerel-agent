@@ -50,12 +50,14 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 			exit = true
 		}
 
-		results := []*metadataResult{}
+		results := make(map[string]*metadataResult)
 	ConsumeResults:
 		for {
 			select {
 			case result := <-resultCh:
-				results = append(results, result)
+				// prefer new result to old metadata which remains to be posted on retry
+				// and also avoid infinite number of retries
+				results[result.namespace] = result
 			default:
 				break ConsumeResults
 			}
@@ -78,6 +80,7 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 				continue
 			}
 		}
+		results = nil
 	}
 }
 
