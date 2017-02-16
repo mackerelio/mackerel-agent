@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"reflect"
 	"time"
 
@@ -81,7 +82,10 @@ func (g *Generator) Save(metadata interface{}) error {
 	if g.Tempfile == "" {
 		return fmt.Errorf("specify the name of temporary file")
 	}
-	if err = writeFileAtomically(g.Tempfile, data); err != nil {
+	if err := os.MkdirAll(filepath.Dir(g.Tempfile), 0755); err != nil {
+		return err
+	}
+	if err := writeFileAtomically(g.Tempfile, data); err != nil {
 		return fmt.Errorf("failed to write the metadata to temporary file: %v", err)
 	}
 	return nil
