@@ -106,7 +106,7 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 				continue
 			}
 
-			if err = g.Save(metadata); err != nil {
+			if err := g.Save(metadata); err != nil {
 				logger.Warningf("metadata plugin %q: %s", g.Name, err.Error())
 				continue
 			}
