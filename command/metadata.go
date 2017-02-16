@@ -21,7 +21,7 @@ func metadataGenerators(conf *config.Config) []*metadata.Generator {
 		generator := &metadata.Generator{
 			Name:     name,
 			Config:   pluginConfig,
-			Tempfile: filepath.Join(workdir, "mackerel-metadata-"+name),
+			Tempfile: filepath.Join(workdir, "mackerel-metadata", name),
 		}
 		logger.Debugf("Metadata plugin generator created: %#v %#v", generator, generator.Config)
 		generators = append(generators, generator)
