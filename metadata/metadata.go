@@ -27,7 +27,7 @@ func (g *Generator) Fetch() (interface{}, error) {
 	message, stderr, exitCode, err := g.Config.Run()
 
 	if err != nil {
-		logger.Warningf("Error occurred while executing a metadata plugin %q: %s", g.Name, err.Error())
+		logger.Warningf("Error occurred while executing a metadata plugin %q: %v", g.Name, err)
 		return nil, err
 	}
 
@@ -76,13 +76,13 @@ func (g *Generator) Save(metadata interface{}) error {
 	g.PrevMetadata = metadata
 	data, err := json.Marshal(metadata)
 	if err != nil {
-		return fmt.Errorf("failed to marshal the metadata to json: %v %s", metadata, err.Error())
+		return fmt.Errorf("failed to marshal the metadata to json: %v", err)
 	}
 	if g.Tempfile == "" {
 		return fmt.Errorf("specify the name of temporary file")
 	}
 	if err = writeFileAtomically(g.Tempfile, data); err != nil {
-		return fmt.Errorf("failed to write the metadata to temporary file: %v %s", metadata, err.Error())
+		return fmt.Errorf("failed to write the metadata to temporary file: %v", err)
 	}
 	return nil
 }
