@@ -99,6 +99,8 @@ func writeFileAtomically(f string, contents []byte) error {
 	if err != nil {
 		return err
 	}
+	// os.Remove here works successfully when tmpf.Write fails or os.Rename fails.
+	// In successful case, os.Remove fails because the temporary file is already renamed.
 	defer os.Remove(tmpf.Name())
 	_, err = tmpf.Write(contents)
 	tmpf.Close() // should be called before rename
