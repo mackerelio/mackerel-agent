@@ -197,13 +197,17 @@ func removePidFile(pidfile string) {
 	}
 }
 
-func start(conf *config.Config, termCh chan struct{}) error {
-	if conf.Silent {
+func setLogLevel(silent, verbose bool) {
+	if silent {
 		logging.SetLogLevel(logging.ERROR)
 	}
-	if conf.Verbose {
+	if verbose {
 		logging.SetLogLevel(logging.DEBUG)
 	}
+}
+
+func start(conf *config.Config, termCh chan struct{}) error {
+	setLogLevel(conf.Silent, conf.Verbose)
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
 
 	if err := createPidFile(conf.Pidfile); err != nil {

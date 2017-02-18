@@ -71,6 +71,7 @@ func doSupervise(fs *flag.FlagSet, argv []string) error {
 	if err != nil {
 		return err
 	}
+	setLogLevel(conf.Silent, conf.Verbose)
 	err = createPidFile(conf.Pidfile)
 	if err != nil {
 		return err
