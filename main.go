@@ -128,11 +128,9 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 			conf.Verbose = verbose
 		case "role":
 			conf.Roles = roleFullnames
-		case "child":
-			conf.Child = *child
 		}
 	})
-	if conf.Child {
+	if *child {
 		conf.Pidfile = ""
 	}
 

@@ -45,7 +45,6 @@ type Config struct {
 	Roles       []string
 	Verbose     bool
 	Silent      bool
-	Child       bool
 	Diagnostic  bool `toml:"diagnostic"`
 	Connection  ConnectionConfig
 	DisplayName string      `toml:"display_name"`
