@@ -20,6 +20,8 @@ type supervisor struct {
 	hupped   bool
 }
 
+// If the child process dies within 30 seconds, it is regarded as launching failure
+// and terminate the process without crash recovery
 var spawnInterval = 30 * time.Second
 
 func (sv *supervisor) launched() bool {
@@ -73,6 +75,9 @@ func (sv *supervisor) wait() (err error) {
 		if sv.signaled || (!sv.hupped && !sv.launched()) {
 			break
 		}
+		if err != nil {
+			logger.Warningf("mackerel-agent abnormally finished with following error and try to restart it: %s", err.Error())
+		}
 		sv.start()
 	}
 	return
@@ -81,6 +86,7 @@ func (sv *supervisor) wait() (err error) {
 func (sv *supervisor) handleSignal(ch <-chan os.Signal) {
 	for sig := range ch {
 		if sig == syscall.SIGHUP {
+			logger.Infof("receiving HUP, spawning a new mackerel-agent")
 			err := sv.reload()
 			if err != nil {
 				logger.Warningf("failed to reload: %s", err.Error())
