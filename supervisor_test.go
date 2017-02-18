@@ -25,7 +25,7 @@ func TestSupervisor(t *testing.T) {
 		argv: []string{"dummy"},
 	}
 	sv.start()
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 1)
 	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
@@ -53,7 +53,7 @@ func TestSupervisor_reload(t *testing.T) {
 		argv: []string{"dummy"},
 	}
 	sv.start()
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 1)
 	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
@@ -94,7 +94,7 @@ func TestSupervisor_reloadFail(t *testing.T) {
 		argv: []string{"failed"},
 	}
 	sv.start()
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 1)
 	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
@@ -121,7 +121,7 @@ func TestSupervisor_launchFailed(t *testing.T) {
 		argv: []string{"launch failure"},
 	}
 	sv.start()
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 1)
 	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
@@ -150,7 +150,7 @@ func TestSupervisor_crashRecovery(t *testing.T) {
 		argv: []string{"blah blah blah"},
 	}
 	sv.start()
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 1)
 	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {

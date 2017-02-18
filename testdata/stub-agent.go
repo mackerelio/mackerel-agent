@@ -24,7 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	ch := make(chan os.Signal)
+	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP, syscall.SIGUSR1)
 	go func() {
 		for sig := range ch {
