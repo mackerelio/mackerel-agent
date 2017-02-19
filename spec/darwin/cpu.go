@@ -27,6 +27,10 @@ type cpuSpec map[string]interface{}
 var sysCtlKeyMap = map[string]string{
 	"core_count":   "cores",
 	"brand_string": "model_name",
+	"model":        "model",
+	"vendor":       "vendor_id",
+	"family":       "family",
+	"stepping":     "stepping",
 }
 
 func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
