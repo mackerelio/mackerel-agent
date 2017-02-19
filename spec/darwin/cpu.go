@@ -36,7 +36,7 @@ var sysCtlKeyMap = map[string]string{
 func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(res))
 
-	results := map[string]interface{}{}
+	results := cpuSpec{}
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -55,7 +55,7 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 		return nil, err
 	}
 
-	return results, nil
+	return []cpuSpec{results}, nil
 }
 
 // MEMO: sysctl -a machdep.cpu.brand_string
