@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
@@ -37,6 +38,7 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(res))
 
 	results := cpuSpec{}
+	var cores int64
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -49,13 +51,26 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 		if label, ok := sysCtlKeyMap[key]; ok {
 			results[label] = val
 		}
+		if key == "core_count" {
+			var err error
+			cores, err = strconv.ParseInt(val, 10, 32)
+			if err != nil {
+				cpuLogger.Errorf("while parsing %q: %s", val, err)
+				return nil, err
+			}
+		}
 	}
+
 	if err := scanner.Err(); err != nil {
 		cpuLogger.Errorf("Failed (skip this spec): %s", err)
 		return nil, err
 	}
 
-	return []cpuSpec{results}, nil
+	wholeResults := []cpuSpec{}
+	for i := 0; int64(i) < cores; i++ {
+		wholeResults = append(wholeResults, results)
+	}
+	return wholeResults, nil
 }
 
 // MEMO: sysctl -a machdep.cpu.brand_string
