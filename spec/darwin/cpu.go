@@ -38,7 +38,7 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(res))
 
 	results := cpuSpec{}
-	var cores int
+	var coreCount int
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -53,7 +53,7 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 		}
 		if key == "core_count" {
 			var err error
-			cores, err = strconv.Atoi(val)
+			coreCount, err = strconv.Atoi(val)
 			if err != nil {
 				cpuLogger.Errorf("while parsing %q: %s", val, err)
 				return nil, err
@@ -66,8 +66,8 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 		return nil, err
 	}
 
-	wholeResults := make([]cpuSpec, 0, cores)
-	for i := 0; i < cores; i++ {
+	wholeResults := make([]cpuSpec, 0, coreCount)
+	for i := 0; i < coreCount; i++ {
 		wholeResults = append(wholeResults, results)
 	}
 	return wholeResults, nil
