@@ -22,8 +22,6 @@ script:
 - make crossbuild
 after_script:
 - goveralls -coverprofile=.profile.cov
-- docker pull astj/mackerel-rpm-builder:c6
-- make rpm rpm-kcps rpm-stage
 before_deploy:
 - docker pull astj/mackerel-rpm-builder:c6
 - make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
