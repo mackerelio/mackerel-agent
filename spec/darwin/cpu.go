@@ -59,21 +59,21 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (cpuSpec, error) {
 	return results, nil
 }
 
-func (g *CPUGenerator) getCoreCount() (*int, error) {
-	coreCountBytes, err := exec.Command("sysctl", "-n", "hw.logicalcpu").Output()
+func (g *CPUGenerator) getCpuCount() (*int, error) {
+	countBytes, err := exec.Command("sysctl", "-n", "hw.logicalcpu").Output()
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)
 		return nil, err
 	}
-	coreCount, err := strconv.Atoi(strings.TrimSpace(string(coreCountBytes)))
+	count, err := strconv.Atoi(strings.TrimSpace(string(countBytes)))
 	if err != nil {
 		cpuLogger.Errorf("Failed to parse: %s", err)
 		return nil, err
 	}
-	return &coreCount, nil
+	return &count, nil
 }
 
-// MEMO: sysctl -a machdep.cpu.brand_string
+// MEMO: sysctl -a machdep.cpu
 
 // Generate collects CPU specs.
 // Returns an array of cpuSpec.
@@ -91,19 +91,19 @@ func (g *CPUGenerator) getCoreCount() (*int, error) {
 // - flags
 func (g *CPUGenerator) Generate() (interface{}, error) {
 	cpuInfoBytes, err := exec.Command("sysctl", "-a", "machdep.cpu").Output()
-	coreInfo, err := g.parseSysCtlBytes(cpuInfoBytes)
+	cpuInfo, err := g.parseSysCtlBytes(cpuInfoBytes)
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)
 		return nil, err
 	}
-	coreCount, err := g.getCoreCount()
+	cpuCount, err := g.getCpuCount()
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)
 		return nil, err
 	}
-	results := make([]cpuSpec, *coreCount)
-	for i := 0; i < *coreCount; i++ {
-		results[i] = coreInfo
+	results := make([]cpuSpec, *cpuCount)
+	for i := 0; i < *cpuCount; i++ {
+		results[i] = cpuInfo
 	}
 	return results, nil
 }
