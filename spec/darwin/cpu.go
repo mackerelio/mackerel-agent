@@ -34,11 +34,10 @@ var sysCtlKeyMap = map[string]string{
 	"stepping":     "stepping",
 }
 
-func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
+func (g *CPUGenerator) parseSysCtlBytes(res []byte) (cpuSpec, error) {
 	scanner := bufio.NewScanner(bytes.NewBuffer(res))
 
 	results := cpuSpec{}
-	var coreCount int
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -51,26 +50,27 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 		if label, ok := sysCtlKeyMap[key]; ok {
 			results[label] = val
 		}
-		if key == "core_count" {
-			var err error
-			coreCount, err = strconv.Atoi(val)
-			if err != nil {
-				cpuLogger.Errorf("while parsing %q: %s", val, err)
-				return nil, err
-			}
-		}
 	}
 
 	if err := scanner.Err(); err != nil {
 		cpuLogger.Errorf("Failed (skip this spec): %s", err)
 		return nil, err
 	}
+	return results, nil
+}
 
-	wholeResults := make([]cpuSpec, coreCount)
-	for i := 0; i < coreCount; i++ {
-		wholeResults[i] = results
+func (g *CPUGenerator) getCoreCount() (*int, error) {
+	coreCountBytes, err := exec.Command("sysctl", "-n", "hw.logicalcpu").Output()
+	if err != nil {
+		cpuLogger.Errorf("Failed: %s", err)
+		return nil, err
 	}
-	return wholeResults, nil
+	coreCount, err := strconv.Atoi(strings.TrimSpace(string(coreCountBytes)))
+	if err != nil {
+		cpuLogger.Errorf("Failed to parse: %s", err)
+		return nil, err
+	}
+	return &coreCount, nil
 }
 
 // MEMO: sysctl -a machdep.cpu.brand_string
@@ -91,9 +91,19 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 // - flags
 func (g *CPUGenerator) Generate() (interface{}, error) {
 	cpuInfoBytes, err := exec.Command("sysctl", "-a", "machdep.cpu").Output()
+	coreInfo, err := g.parseSysCtlBytes(cpuInfoBytes)
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)
 		return nil, err
 	}
-	return g.parseSysCtlBytes(cpuInfoBytes)
+	coreCount, err := g.getCoreCount()
+	if err != nil {
+		cpuLogger.Errorf("Failed: %s", err)
+		return nil, err
+	}
+	results := make([]cpuSpec, *coreCount)
+	for i := 0; i < *coreCount; i++ {
+		results[i] = coreInfo
+	}
+	return results, nil
 }
