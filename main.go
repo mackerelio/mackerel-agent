@@ -131,6 +131,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		}
 	})
 	if *child {
+		// Child process of supervisor never create pidfile, because supervisor process does create it.
 		conf.Pidfile = ""
 	}
 
