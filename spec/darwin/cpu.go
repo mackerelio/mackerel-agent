@@ -66,7 +66,7 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (interface{}, error) {
 		return nil, err
 	}
 
-	wholeResults := make([]cpuSpec, 0, coreCount)
+	wholeResults := make([]cpuSpec, coreCount)
 	for i := 0; i < coreCount; i++ {
 		wholeResults[i] = results
 	}
