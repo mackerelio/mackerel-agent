@@ -41,6 +41,8 @@ prefix_match() {
 start() {
     [ -x $exec ] || exit 5
 
+    # Set large number of file descriptors for the safety sake
+    ulimit -n 65536 1>/dev/null 2>&1 || true
     echo -n $"Starting $prog:"
     mkdir -m 777 -p $MACKEREL_PLUGIN_WORKDIR
     MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
