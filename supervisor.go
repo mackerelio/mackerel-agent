@@ -73,8 +73,8 @@ func (sv *supervisor) getCmd() *exec.Cmd {
 }
 
 func (sv *supervisor) start() error {
-	sv.setHupped(false)
 	sv.mu.Lock()
+	sv.setHupped(false)
 	defer sv.mu.Unlock()
 	sv.cmd = sv.buildCmd()
 	sv.startAt = time.Now()
