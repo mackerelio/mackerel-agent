@@ -136,8 +136,7 @@ func (sv *supervisor) wait() (err error) {
 		if err != nil {
 			logger.Warningf("mackerel-agent abnormally finished with following error and try to restart it: %s", err.Error())
 		}
-		err = sv.start()
-		if err != nil {
+		if err = sv.start(); err != nil {
 			break
 		}
 	}
@@ -159,13 +158,13 @@ func (sv *supervisor) handleSignal(ch <-chan os.Signal) {
 }
 
 func (sv *supervisor) supervise(c chan os.Signal) error {
-	err := sv.start()
-	if err != nil {
+	if err := sv.start(); err != nil {
 		return err
 	}
 	if c == nil {
 		c = make(chan os.Signal, 1)
 	}
+	defer close(c)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go sv.handleSignal(c)
 	return sv.wait()
