@@ -39,7 +39,7 @@ func TestSupervisor(t *testing.T) {
 
 	err := <-done
 	if err != nil {
-		t.Errorf("error should be nil but: %s", err)
+		t.Errorf("error should be nil but: %v", err)
 	}
 	if existsPid(pid) {
 		t.Errorf("child process isn't terminated")
