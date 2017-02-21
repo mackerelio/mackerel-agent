@@ -20,13 +20,13 @@ var TimeoutDuration = 30 * time.Second
 var TimeoutKillAfter = 10 * time.Second
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
-func RunCommand(command, user string) (string, string, int, error) {
+func RunCommand(command, user string) (stdout, stderr string, exitCode int, err error) {
 	cmdArgs := []string{"/bin/sh", "-c", command}
 	return RunCommandArgs(cmdArgs, user)
 }
 
 // RunCommandArgs run the command
-func RunCommandArgs(cmdArgs []string, user string) (string, string, int, error) {
+func RunCommandArgs(cmdArgs []string, user string) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
 	if user != "" {
 		args = append([]string{"sudo", "-u", user}, args...)

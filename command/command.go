@@ -192,11 +192,18 @@ func loop(c *Context, termCh chan struct{}) error {
 
 	termMetricsCh := make(chan struct{})
 	var termCheckerCh chan struct{}
+	var termMetadataCh chan struct{}
 
 	hasChecks := len(c.Agent.Checkers) > 0
 	if hasChecks {
 		termCheckerCh = make(chan struct{})
 	}
+
+	hasMetadataPlugins := len(c.Agent.MetadataGenerators) > 0
+	if hasMetadataPlugins {
+		termMetadataCh = make(chan struct{})
+	}
+
 	// fan-out termCh
 	go func() {
 		for range termCh {
@@ -204,10 +211,18 @@ func loop(c *Context, termCh chan struct{}) error {
 			if termCheckerCh != nil {
 				termCheckerCh <- struct{}{}
 			}
+			if termMetadataCh != nil {
+				termMetadataCh <- struct{}{}
+			}
 		}
 	}()
+
 	if hasChecks {
 		go runCheckersLoop(c, termCheckerCh, quit)
+	}
+
+	if hasMetadataPlugins {
+		go runMetadataLoop(c, termMetadataCh, quit)
 	}
 
 	lState := loopStateFirst
@@ -420,7 +435,7 @@ func runCheckersLoop(c *Context, termCheckerCh <-chan struct{}, quit <-chan stru
 		select {
 		case <-time.After(1 * time.Minute):
 		case <-termCheckerCh:
-			logger.Debugf("received 'term' chan")
+			logger.Debugf("received 'term' chan for checkers loop")
 			exit = true
 		case <-reportImmediateCh:
 			logger.Debugf("received 'immediate' chan")
@@ -586,9 +601,10 @@ func runOncePayload(conf *config.Config) ([]mackerel.CreateGraphDefsPayload, *ma
 // NewAgent creates a new instance of agent.Agent from its configuration conf.
 func NewAgent(conf *config.Config) *agent.Agent {
 	return &agent.Agent{
-		MetricsGenerators: prepareGenerators(conf),
-		PluginGenerators:  pluginGenerators(conf),
-		Checkers:          createCheckers(conf),
+		MetricsGenerators:  prepareGenerators(conf),
+		PluginGenerators:   pluginGenerators(conf),
+		Checkers:           createCheckers(conf),
+		MetadataGenerators: metadataGenerators(conf),
 	}
 }
 

@@ -6,14 +6,16 @@ import (
 	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/metadata"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 // Agent is the root of metrics collectors
 type Agent struct {
-	MetricsGenerators []metrics.Generator
-	PluginGenerators  []metrics.PluginGenerator
-	Checkers          []*checks.Checker
+	MetricsGenerators  []metrics.Generator
+	PluginGenerators   []metrics.PluginGenerator
+	Checkers           []*checks.Checker
+	MetadataGenerators []*metadata.Generator
 }
 
 // MetricsResult XXX
