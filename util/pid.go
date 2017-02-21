@@ -1,13 +1,13 @@
 // +build linux freebsd netbsd
 
-package main
+package util
 
 import (
 	"fmt"
 	"os"
 )
 
-func existsPid(pid int) bool {
+func ExistsPid(pid int) bool {
 	_, err := os.Stat(fmt.Sprintf("/proc/%d/", pid))
 	return err == nil
 }
