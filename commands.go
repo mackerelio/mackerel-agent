@@ -55,11 +55,11 @@ func doInit(fs *flag.FlagSet, argv []string) error {
 	return err
 }
 
-/* +command supervise - supervise mode
+/* +command supervise - supervisor mode
 
 	supervise -conf mackerel-agent.conf ...
 
-run as supervise mode enabling configuration reloading and crash recovery
+run as supervisor mode enabling configuration reloading and crash recovery
 */
 func doSupervise(fs *flag.FlagSet, argv []string) error {
 	if runtime.GOOS == "windows" {
