@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 )
@@ -14,10 +15,39 @@ type supervisor struct {
 	prog string
 	argv []string
 
-	cmd      *exec.Cmd
-	startAt  time.Time
-	signaled bool
+	cmd     *exec.Cmd
+	startAt time.Time
+	mu      sync.RWMutex
+
+	signaled   bool
+	signaledMu sync.RWMutex
+
 	hupped   bool
+	huppedMu sync.RWMutex
+}
+
+func (sv *supervisor) setSignaled(signaled bool) {
+	sv.signaledMu.Lock()
+	defer sv.signaledMu.Unlock()
+	sv.signaled = signaled
+}
+
+func (sv *supervisor) getSignaled() bool {
+	sv.signaledMu.RLock()
+	defer sv.signaledMu.RUnlock()
+	return sv.signaled
+}
+
+func (sv *supervisor) setHupped(hupped bool) {
+	sv.huppedMu.Lock()
+	defer sv.huppedMu.Unlock()
+	sv.hupped = hupped
+}
+
+func (sv *supervisor) getHupped() bool {
+	sv.huppedMu.RLock()
+	defer sv.huppedMu.RUnlock()
+	return sv.hupped
 }
 
 // If the child process dies within 30 seconds, it is regarded as launching failure
@@ -25,7 +55,7 @@ type supervisor struct {
 var spawnInterval = 30 * time.Second
 
 func (sv *supervisor) launched() bool {
-	return sv.cmd.Process != nil && time.Now().After(sv.startAt.Add(spawnInterval))
+	return sv.getCmd().Process != nil && time.Now().After(sv.startAt.Add(spawnInterval))
 }
 
 func (sv *supervisor) buildCmd() *exec.Cmd {
@@ -36,16 +66,24 @@ func (sv *supervisor) buildCmd() *exec.Cmd {
 	return cmd
 }
 
+func (sv *supervisor) getCmd() *exec.Cmd {
+	sv.mu.RLock()
+	defer sv.mu.RUnlock()
+	return sv.cmd
+}
+
 func (sv *supervisor) start() error {
-	sv.hupped = false
+	sv.setHupped(false)
+	sv.mu.Lock()
+	defer sv.mu.Unlock()
 	sv.cmd = sv.buildCmd()
 	sv.startAt = time.Now()
 	return sv.cmd.Start()
 }
 
 func (sv *supervisor) stop(sig os.Signal) error {
-	sv.signaled = true
-	return sv.cmd.Process.Signal(sig)
+	sv.setSignaled(true)
+	return sv.getCmd().Process.Signal(sig)
 }
 
 func (sv *supervisor) configtest() error {
@@ -65,14 +103,14 @@ func (sv *supervisor) reload() error {
 	if err != nil {
 		return err
 	}
-	sv.hupped = true
-	return sv.cmd.Process.Signal(syscall.SIGTERM)
+	sv.setHupped(true)
+	return sv.getCmd().Process.Signal(syscall.SIGTERM)
 }
 
 func (sv *supervisor) wait() (err error) {
 	for {
 		err = sv.cmd.Wait()
-		if sv.signaled || (!sv.hupped && !sv.launched()) {
+		if sv.getSignaled() || (!sv.getHupped() && !sv.launched()) {
 			break
 		}
 		if err != nil {

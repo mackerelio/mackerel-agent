@@ -31,7 +31,7 @@ func TestSupervisor(t *testing.T) {
 	go func() {
 		done <- sv.wait()
 	}()
-	pid := sv.cmd.Process.Pid
+	pid := sv.getCmd().Process.Pid
 	if !existsPid(pid) {
 		t.Errorf("process doesn't exist")
 	}
@@ -59,13 +59,13 @@ func TestSupervisor_reload(t *testing.T) {
 	go func() {
 		done <- sv.wait()
 	}()
-	oldPid := sv.cmd.Process.Pid
+	oldPid := sv.getCmd().Process.Pid
 	if !existsPid(oldPid) {
 		t.Errorf("process doesn't exist")
 	}
 	ch <- syscall.SIGHUP
 	time.Sleep(200 * time.Millisecond)
-	newPid := sv.cmd.Process.Pid
+	newPid := sv.getCmd().Process.Pid
 	if oldPid == newPid {
 		t.Errorf("reload failed")
 	}
@@ -80,7 +80,7 @@ func TestSupervisor_reload(t *testing.T) {
 	if err != nil {
 		t.Errorf("something went wrong")
 	}
-	if newPid != sv.cmd.Process.Pid {
+	if newPid != sv.getCmd().Process.Pid {
 		t.Errorf("something went wrong")
 	}
 	if existsPid(newPid) {
@@ -100,13 +100,13 @@ func TestSupervisor_reloadFail(t *testing.T) {
 	go func() {
 		done <- sv.wait()
 	}()
-	oldPid := sv.cmd.Process.Pid
+	oldPid := sv.getCmd().Process.Pid
 	if !existsPid(oldPid) {
 		t.Errorf("process doesn't exist")
 	}
 	ch <- syscall.SIGHUP
 	time.Sleep(time.Second)
-	newPid := sv.cmd.Process.Pid
+	newPid := sv.getCmd().Process.Pid
 	if oldPid != newPid {
 		t.Errorf("reload should be failed, but unintentionally reloaded")
 	}
@@ -127,7 +127,7 @@ func TestSupervisor_launchFailed(t *testing.T) {
 	go func() {
 		done <- sv.wait()
 	}()
-	pid := sv.cmd.Process.Pid
+	pid := sv.getCmd().Process.Pid
 	if !existsPid(pid) {
 		t.Errorf("process doesn't exist")
 	}
@@ -135,7 +135,7 @@ func TestSupervisor_launchFailed(t *testing.T) {
 	if err == nil {
 		t.Errorf("something went wrong")
 	}
-	if existsPid(sv.cmd.Process.Pid) {
+	if existsPid(sv.getCmd().Process.Pid) {
 		t.Errorf("child process isn't terminated")
 	}
 }
@@ -156,17 +156,17 @@ func TestSupervisor_crashRecovery(t *testing.T) {
 	go func() {
 		done <- sv.wait()
 	}()
-	oldPid := sv.cmd.Process.Pid
+	oldPid := sv.getCmd().Process.Pid
 	if !existsPid(oldPid) {
 		t.Errorf("process doesn't exist")
 	}
 	time.Sleep(spawnInterval)
 
 	// let it crash
-	sv.cmd.Process.Signal(syscall.SIGUSR1)
+	sv.getCmd().Process.Signal(syscall.SIGUSR1)
 
 	time.Sleep(spawnInterval)
-	newPid := sv.cmd.Process.Pid
+	newPid := sv.getCmd().Process.Pid
 	if oldPid == newPid {
 		t.Errorf("crash recovery failed")
 	}
