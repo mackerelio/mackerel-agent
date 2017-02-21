@@ -17,6 +17,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/util"
 	"github.com/mackerelio/mackerel-agent/version"
 	"github.com/motemen/go-cli"
 )
@@ -165,7 +166,7 @@ func createPidFile(pidfile string) error {
 	}
 	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
-			if existsPid(pid) {
+			if util.ExistsPid(pid) {
 				return fmt.Errorf("pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
 			}
 			// Note mackerel-agent in windows can't remove pidfile during stoping the service

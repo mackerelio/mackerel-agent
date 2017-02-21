@@ -1,4 +1,4 @@
-package main
+package supervisor
 
 import (
 	"bytes"
@@ -9,11 +9,16 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/mackerelio/mackerel-agent/logging"
 )
 
-type supervisor struct {
-	prog string
-	argv []string
+var logger = logging.GetLogger("supervisor")
+
+// Supervisor supervise the mackerel-agent
+type Supervisor struct {
+	Prog string
+	Argv []string
 
 	cmd     *exec.Cmd
 	startAt time.Time
@@ -26,37 +31,37 @@ type supervisor struct {
 	huppedMu sync.RWMutex
 }
 
-func (sv *supervisor) setSignaled(signaled bool) {
+func (sv *Supervisor) setSignaled(signaled bool) {
 	sv.signaledMu.Lock()
 	defer sv.signaledMu.Unlock()
 	sv.signaled = signaled
 }
 
-func (sv *supervisor) getSignaled() bool {
+func (sv *Supervisor) getSignaled() bool {
 	sv.signaledMu.RLock()
 	defer sv.signaledMu.RUnlock()
 	return sv.signaled
 }
 
-func (sv *supervisor) setHupped(hupped bool) {
+func (sv *Supervisor) setHupped(hupped bool) {
 	sv.huppedMu.Lock()
 	defer sv.huppedMu.Unlock()
 	sv.hupped = hupped
 }
 
-func (sv *supervisor) getHupped() bool {
+func (sv *Supervisor) getHupped() bool {
 	sv.huppedMu.RLock()
 	defer sv.huppedMu.RUnlock()
 	return sv.hupped
 }
 
-func (sv *supervisor) getCmd() *exec.Cmd {
+func (sv *Supervisor) getCmd() *exec.Cmd {
 	sv.mu.RLock()
 	defer sv.mu.RUnlock()
 	return sv.cmd
 }
 
-func (sv *supervisor) getStartAt() time.Time {
+func (sv *Supervisor) getStartAt() time.Time {
 	sv.mu.RLock()
 	defer sv.mu.RUnlock()
 	return sv.startAt
@@ -66,19 +71,19 @@ func (sv *supervisor) getStartAt() time.Time {
 // and terminate the process without crash recovery
 var spawnInterval = 30 * time.Second
 
-func (sv *supervisor) launched() bool {
+func (sv *Supervisor) launched() bool {
 	return sv.getCmd().Process != nil && time.Now().After(sv.getStartAt().Add(spawnInterval))
 }
 
-func (sv *supervisor) buildCmd() *exec.Cmd {
-	argv := append(sv.argv, "-child")
-	cmd := exec.Command(sv.prog, argv...)
+func (sv *Supervisor) buildCmd() *exec.Cmd {
+	argv := append(sv.Argv, "-child")
+	cmd := exec.Command(sv.Prog, argv...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	return cmd
 }
 
-func (sv *supervisor) start() error {
+func (sv *Supervisor) start() error {
 	sv.mu.Lock()
 	sv.setHupped(false)
 	defer sv.mu.Unlock()
@@ -87,14 +92,14 @@ func (sv *supervisor) start() error {
 	return sv.cmd.Start()
 }
 
-func (sv *supervisor) stop(sig os.Signal) error {
+func (sv *Supervisor) stop(sig os.Signal) error {
 	sv.setSignaled(true)
 	return sv.getCmd().Process.Signal(sig)
 }
 
-func (sv *supervisor) configtest() error {
-	argv := append([]string{"configtest"}, sv.argv...)
-	cmd := exec.Command(sv.prog, argv...)
+func (sv *Supervisor) configtest() error {
+	argv := append([]string{"configtest"}, sv.Argv...)
+	cmd := exec.Command(sv.Prog, argv...)
 	buf := &bytes.Buffer{}
 	cmd.Stderr = buf
 	err := cmd.Run()
@@ -104,7 +109,7 @@ func (sv *supervisor) configtest() error {
 	return nil
 }
 
-func (sv *supervisor) reload() error {
+func (sv *Supervisor) reload() error {
 	err := sv.configtest()
 	if err != nil {
 		return err
@@ -113,7 +118,7 @@ func (sv *supervisor) reload() error {
 	return sv.getCmd().Process.Signal(syscall.SIGTERM)
 }
 
-func (sv *supervisor) wait() (err error) {
+func (sv *Supervisor) wait() (err error) {
 	for {
 		err = sv.cmd.Wait()
 		if sv.getSignaled() || (!sv.getHupped() && !sv.launched()) {
@@ -130,7 +135,7 @@ func (sv *supervisor) wait() (err error) {
 	return
 }
 
-func (sv *supervisor) handleSignal(ch <-chan os.Signal) {
+func (sv *Supervisor) handleSignal(ch <-chan os.Signal) {
 	for sig := range ch {
 		if sig == syscall.SIGHUP {
 			logger.Infof("receiving HUP, spawning a new mackerel-agent")
@@ -144,7 +149,8 @@ func (sv *supervisor) handleSignal(ch <-chan os.Signal) {
 	}
 }
 
-func (sv *supervisor) supervise(c chan os.Signal) error {
+// Supervise the mackerel-agent
+func (sv *Supervisor) Supervise(c chan os.Signal) error {
 	err := sv.start()
 	if err != nil {
 		return err

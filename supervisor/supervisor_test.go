@@ -1,6 +1,6 @@
 // +build !windows
 
-package main
+package supervisor
 
 import (
 	"os"
@@ -8,6 +8,8 @@ import (
 	"syscall"
 	"testing"
 	"time"
+
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 const stubAgent = "testdata/stub-agent"
@@ -20,18 +22,18 @@ func init() {
 }
 
 func TestSupervisor(t *testing.T) {
-	sv := &supervisor{
-		prog: stubAgent,
-		argv: []string{"dummy"},
+	sv := &Supervisor{
+		Prog: stubAgent,
+		Argv: []string{"dummy"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.supervise(ch)
+		done <- sv.Supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	pid := sv.getCmd().Process.Pid
-	if !existsPid(pid) {
+	if !util.ExistsPid(pid) {
 		t.Errorf("process doesn't exist")
 	}
 	time.Sleep(50 * time.Millisecond)
@@ -41,24 +43,24 @@ func TestSupervisor(t *testing.T) {
 	if err != nil {
 		t.Errorf("error should be nil but: %v", err)
 	}
-	if existsPid(pid) {
+	if util.ExistsPid(pid) {
 		t.Errorf("child process isn't terminated")
 	}
 }
 
 func TestSupervisor_reload(t *testing.T) {
-	sv := &supervisor{
-		prog: stubAgent,
-		argv: []string{"dummy"},
+	sv := &Supervisor{
+		Prog: stubAgent,
+		Argv: []string{"dummy"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.supervise(ch)
+		done <- sv.Supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid
-	if !existsPid(oldPid) {
+	if !util.ExistsPid(oldPid) {
 		t.Errorf("process doesn't exist")
 	}
 	ch <- syscall.SIGHUP
@@ -67,10 +69,10 @@ func TestSupervisor_reload(t *testing.T) {
 	if oldPid == newPid {
 		t.Errorf("reload failed")
 	}
-	if existsPid(oldPid) {
+	if util.ExistsPid(oldPid) {
 		t.Errorf("old process isn't terminated")
 	}
-	if !existsPid(newPid) {
+	if !util.ExistsPid(newPid) {
 		t.Errorf("new process doesn't exist")
 	}
 	ch <- syscall.SIGTERM
@@ -81,24 +83,24 @@ func TestSupervisor_reload(t *testing.T) {
 	if newPid != sv.getCmd().Process.Pid {
 		t.Errorf("something went wrong")
 	}
-	if existsPid(newPid) {
+	if util.ExistsPid(newPid) {
 		t.Errorf("child process isn't terminated")
 	}
 }
 
 func TestSupervisor_reloadFail(t *testing.T) {
-	sv := &supervisor{
-		prog: stubAgent,
-		argv: []string{"failed"},
+	sv := &Supervisor{
+		Prog: stubAgent,
+		Argv: []string{"failed"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.supervise(ch)
+		done <- sv.Supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid
-	if !existsPid(oldPid) {
+	if !util.ExistsPid(oldPid) {
 		t.Errorf("process doesn't exist")
 	}
 	ch <- syscall.SIGHUP
@@ -113,25 +115,25 @@ func TestSupervisor_reloadFail(t *testing.T) {
 }
 
 func TestSupervisor_launchFailed(t *testing.T) {
-	sv := &supervisor{
-		prog: stubAgent,
-		argv: []string{"launch failure"},
+	sv := &Supervisor{
+		Prog: stubAgent,
+		Argv: []string{"launch failure"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.supervise(ch)
+		done <- sv.Supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	pid := sv.getCmd().Process.Pid
-	if !existsPid(pid) {
+	if !util.ExistsPid(pid) {
 		t.Errorf("process doesn't exist")
 	}
 	err := <-done
 	if err == nil {
 		t.Errorf("something went wrong")
 	}
-	if existsPid(sv.getCmd().Process.Pid) {
+	if util.ExistsPid(sv.getCmd().Process.Pid) {
 		t.Errorf("child process isn't terminated")
 	}
 }
@@ -141,18 +143,18 @@ func TestSupervisor_crashRecovery(t *testing.T) {
 	spawnInterval = 300 * time.Millisecond
 	defer func() { spawnInterval = origSpawnInterval }()
 
-	sv := &supervisor{
-		prog: stubAgent,
-		argv: []string{"blah blah blah"},
+	sv := &Supervisor{
+		Prog: stubAgent,
+		Argv: []string{"blah blah blah"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.supervise(ch)
+		done <- sv.Supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid
-	if !existsPid(oldPid) {
+	if !util.ExistsPid(oldPid) {
 		t.Errorf("process doesn't exist")
 	}
 	time.Sleep(spawnInterval)
@@ -165,10 +167,10 @@ func TestSupervisor_crashRecovery(t *testing.T) {
 	if oldPid == newPid {
 		t.Errorf("crash recovery failed")
 	}
-	if existsPid(oldPid) {
+	if util.ExistsPid(oldPid) {
 		t.Errorf("old process isn't terminated")
 	}
-	if !existsPid(newPid) {
+	if !util.ExistsPid(newPid) {
 		t.Errorf("new process doesn't exist")
 	}
 	ch <- syscall.SIGTERM
