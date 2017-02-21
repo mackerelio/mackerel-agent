@@ -68,10 +68,12 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 			// retry on 5XX errors
 			if resp != nil && resp.StatusCode >= 500 {
 				logger.Errorf("put metadata %q failed: status %s", result.namespace, resp.Status)
-				resultCh <- &metadataResult{
-					namespace: result.namespace,
-					metadata:  result.metadata,
-				}
+				go func() {
+					resultCh <- &metadataResult{
+						namespace: result.namespace,
+						metadata:  result.metadata,
+					}
+				}()
 				continue
 			}
 			if err != nil {
