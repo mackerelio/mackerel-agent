@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-func ExistsPid(pid int) bool {
+func existsPid(pid int) bool {
 	cmd := exec.Command("/usr/sbin/lsof", "-p", fmt.Sprint(pid))
 	cmd.Stdout = ioutil.Discard
 	cmd.Stderr = ioutil.Discard
