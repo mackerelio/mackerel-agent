@@ -44,11 +44,13 @@ func Create(pidfile string) error {
 }
 
 // Remove pidfile
-func Remove(pidfile string) {
+func Remove(pidfile string) error {
 	if pidfile == "" {
-		return
+		return nil
 	}
-	if err := os.Remove(pidfile); err != nil {
+	err := os.Remove(pidfile)
+	if err != nil {
 		logger.Errorf("Failed to remove the pidfile: %s: %s", pidfile, err)
 	}
+	return err
 }
