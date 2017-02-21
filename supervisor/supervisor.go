@@ -15,6 +15,7 @@ import (
 
 var logger = logging.GetLogger("supervisor")
 
+// Supervisor supervise the mackerel-agent
 type Supervisor struct {
 	Prog string
 	Argv []string
@@ -148,6 +149,7 @@ func (sv *Supervisor) handleSignal(ch <-chan os.Signal) {
 	}
 }
 
+// Supervise the mackerel-agent
 func (sv *Supervisor) Supervise(c chan os.Signal) error {
 	err := sv.start()
 	if err != nil {
