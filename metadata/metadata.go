@@ -19,7 +19,7 @@ var logger = logging.GetLogger("metadata")
 type Generator struct {
 	Name         string
 	Config       *config.MetadataPlugin
-	Tempfile     string
+	Cachefile    string
 	PrevMetadata interface{}
 }
 
@@ -59,13 +59,13 @@ func (g *Generator) IsChanged(metadata interface{}) bool {
 
 // LoadFromFile loads the previous metadata from file
 func (g *Generator) LoadFromFile() {
-	data, err := ioutil.ReadFile(g.Tempfile)
+	data, err := ioutil.ReadFile(g.Cachefile)
 	if err != nil { // maybe initial state
 		return
 	}
 	var metadata interface{}
 	if err := json.Unmarshal(data, &metadata); err != nil {
-		logger.Warningf("metadata plugin %q detected a invalid json in temporary file: %s", g.Name, string(data))
+		logger.Warningf("metadata plugin %q detected a invalid json in the cache file: %s", g.Name, string(data))
 		// ignore errors, the file will be overwritten by Save()
 		return
 	}
@@ -79,14 +79,14 @@ func (g *Generator) Save(metadata interface{}) error {
 	if err != nil {
 		return fmt.Errorf("failed to marshal the metadata to json: %v", err)
 	}
-	if g.Tempfile == "" {
-		return fmt.Errorf("specify the name of temporary file")
+	if g.Cachefile == "" {
+		return fmt.Errorf("specify the name of the metadata cache file")
 	}
-	if err := os.MkdirAll(filepath.Dir(g.Tempfile), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Dir(g.Cachefile), 0755); err != nil {
 		return err
 	}
-	if err := writeFileAtomically(g.Tempfile, data); err != nil {
-		return fmt.Errorf("failed to write the metadata to temporary file: %v", err)
+	if err := writeFileAtomically(g.Cachefile, data); err != nil {
+		return fmt.Errorf("failed to write the metadata to the cache file: %v", err)
 	}
 	return nil
 }
@@ -94,7 +94,7 @@ func (g *Generator) Save(metadata interface{}) error {
 // Clear destroys the metadata cache
 func (g *Generator) Clear() error {
 	g.PrevMetadata = nil
-	return os.Remove(g.Tempfile)
+	return os.Remove(g.Cachefile)
 }
 
 // writeFileAtomically writes contents to the file atomically

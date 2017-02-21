@@ -19,9 +19,9 @@ func metadataGenerators(conf *config.Config) []*metadata.Generator {
 
 	for name, pluginConfig := range conf.MetadataPlugins {
 		generator := &metadata.Generator{
-			Name:     name,
-			Config:   pluginConfig,
-			Tempfile: filepath.Join(workdir, "mackerel-metadata", name),
+			Name:      name,
+			Config:    pluginConfig,
+			Cachefile: filepath.Join(workdir, "mackerel-metadata", name),
 		}
 		logger.Debugf("Metadata plugin generator created: %#v %#v", generator, generator.Config)
 		generators = append(generators, generator)
@@ -128,7 +128,7 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 				continue
 			}
 
-			logger.Debugf("metadata plugin %q: generated metadata (and saved cache to file: %s)", g.Name, g.Tempfile)
+			logger.Debugf("metadata plugin %q: generated metadata (and saved cache to file: %s)", g.Name, g.Cachefile)
 			resultCh <- &metadataResult{
 				namespace: g.Name,
 				metadata:  metadata,
