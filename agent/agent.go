@@ -91,7 +91,7 @@ func (agent *Agent) CollectGraphDefsOfPlugins() []mackerel.CreateGraphDefsPayloa
 	for _, g := range agent.PluginGenerators {
 		p, err := g.PrepareGraphDefs()
 		if err != nil {
-			logger.Debugf("Failed to fetch meta information from plugin %s (non critical); seems that this plugin does not have meta information: %s", g, err)
+			logger.Debugf("Failed to fetch meta information from plugin %v (non critical); seems that this plugin does not have meta information: %v", g, err)
 		}
 		if p != nil {
 			payloads = append(payloads, p...)
