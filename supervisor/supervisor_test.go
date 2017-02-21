@@ -21,7 +21,7 @@ func init() {
 	}
 }
 
-func Testsupervisor(t *testing.T) {
+func TestSupervisor(t *testing.T) {
 	sv := &supervisor{
 		prog: stubAgent,
 		argv: []string{"dummy"},
@@ -48,7 +48,7 @@ func Testsupervisor(t *testing.T) {
 	}
 }
 
-func Testsupervisor_reload(t *testing.T) {
+func TestSupervisor_reload(t *testing.T) {
 	sv := &supervisor{
 		prog: stubAgent,
 		argv: []string{"dummy"},
@@ -88,7 +88,7 @@ func Testsupervisor_reload(t *testing.T) {
 	}
 }
 
-func Testsupervisor_reloadFail(t *testing.T) {
+func TestSupervisor_reloadFail(t *testing.T) {
 	sv := &supervisor{
 		prog: stubAgent,
 		argv: []string{"failed"},
@@ -114,7 +114,7 @@ func Testsupervisor_reloadFail(t *testing.T) {
 	<-done
 }
 
-func Testsupervisor_launchFailed(t *testing.T) {
+func TestSupervisor_launchFailed(t *testing.T) {
 	sv := &supervisor{
 		prog: stubAgent,
 		argv: []string{"launch failure"},
@@ -138,7 +138,7 @@ func Testsupervisor_launchFailed(t *testing.T) {
 	}
 }
 
-func Testsupervisor_crashRecovery(t *testing.T) {
+func TestSupervisor_crashRecovery(t *testing.T) {
 	origSpawnInterval := spawnInterval
 	spawnInterval = 300 * time.Millisecond
 	defer func() { spawnInterval = origSpawnInterval }()
