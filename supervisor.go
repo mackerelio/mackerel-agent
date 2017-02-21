@@ -50,12 +50,24 @@ func (sv *supervisor) getHupped() bool {
 	return sv.hupped
 }
 
+func (sv *supervisor) getCmd() *exec.Cmd {
+	sv.mu.RLock()
+	defer sv.mu.RUnlock()
+	return sv.cmd
+}
+
+func (sv *supervisor) getStartAt() time.Time {
+	sv.mu.RLock()
+	defer sv.mu.RUnlock()
+	return sv.startAt
+}
+
 // If the child process dies within 30 seconds, it is regarded as launching failure
 // and terminate the process without crash recovery
 var spawnInterval = 30 * time.Second
 
 func (sv *supervisor) launched() bool {
-	return sv.getCmd().Process != nil && time.Now().After(sv.startAt.Add(spawnInterval))
+	return sv.getCmd().Process != nil && time.Now().After(sv.getStartAt().Add(spawnInterval))
 }
 
 func (sv *supervisor) buildCmd() *exec.Cmd {
@@ -64,12 +76,6 @@ func (sv *supervisor) buildCmd() *exec.Cmd {
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	return cmd
-}
-
-func (sv *supervisor) getCmd() *exec.Cmd {
-	sv.mu.RLock()
-	defer sv.mu.RUnlock()
-	return sv.cmd
 }
 
 func (sv *supervisor) start() error {
