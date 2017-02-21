@@ -1,6 +1,6 @@
 // +build linux freebsd netbsd
 
-package util
+package pidfile
 
 import (
 	"fmt"

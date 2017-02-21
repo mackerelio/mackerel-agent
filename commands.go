@@ -14,6 +14,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/pidfile"
 	"github.com/mackerelio/mackerel-agent/supervisor"
 	"github.com/mackerelio/mackerel-agent/version"
 )
@@ -73,11 +74,11 @@ func doSupervise(fs *flag.FlagSet, argv []string) error {
 		return err
 	}
 	setLogLevel(conf.Silent, conf.Verbose)
-	err = createPidFile(conf.Pidfile)
+	err = pidfile.Create(conf.Pidfile)
 	if err != nil {
 		return err
 	}
-	defer removePidFile(conf.Pidfile)
+	defer pidfile.Remove(conf.Pidfile)
 
 	return supervisor.Supervise(os.Args[0], copiedArgv, nil)
 }

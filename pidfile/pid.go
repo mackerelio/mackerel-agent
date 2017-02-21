@@ -1,6 +1,6 @@
-package util
+package pidfile
 
-// ExistsPid check if pid exists
+// ExistsPid checks if pid exists
 func ExistsPid(pid int) bool {
 	return existsPid(pid)
 }

@@ -1,6 +1,6 @@
 // +build linux freebsd darwin netbsd
 
-package util
+package pidfile
 
 import (
 	"math"
