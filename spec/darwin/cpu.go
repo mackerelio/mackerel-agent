@@ -59,7 +59,7 @@ func (g *CPUGenerator) parseSysCtlBytes(res []byte) (cpuSpec, error) {
 	return results, nil
 }
 
-func (g *CPUGenerator) getCpuCount() (*int, error) {
+func (g *CPUGenerator) getCPUCount() (*int, error) {
 	countBytes, err := exec.Command("sysctl", "-n", "hw.logicalcpu").Output()
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)
@@ -96,7 +96,7 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 		cpuLogger.Errorf("Failed: %s", err)
 		return nil, err
 	}
-	cpuCount, err := g.getCpuCount()
+	cpuCount, err := g.getCPUCount()
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)
 		return nil, err
