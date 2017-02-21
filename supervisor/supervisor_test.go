@@ -21,6 +21,20 @@ func init() {
 	}
 }
 
+func TestSupervise(t *testing.T) {
+	ch := make(chan os.Signal, 1)
+	done := make(chan error)
+	go func() {
+		done <- Supervise(stubAgent, []string{"dummy"}, ch)
+	}()
+	time.Sleep(50 * time.Millisecond)
+	ch <- os.Interrupt
+	err := <-done
+	if err != nil {
+		t.Errorf("error should be nil but: %v", err)
+	}
+}
+
 func TestSupervisor(t *testing.T) {
 	sv := &supervisor{
 		prog: stubAgent,
