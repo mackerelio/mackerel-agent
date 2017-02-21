@@ -21,15 +21,15 @@ func init() {
 	}
 }
 
-func TestSupervisor(t *testing.T) {
-	sv := &Supervisor{
-		Prog: stubAgent,
-		Argv: []string{"dummy"},
+func Testsupervisor(t *testing.T) {
+	sv := &supervisor{
+		prog: stubAgent,
+		argv: []string{"dummy"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.Supervise(ch)
+		done <- sv.supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	pid := sv.getCmd().Process.Pid
@@ -48,15 +48,15 @@ func TestSupervisor(t *testing.T) {
 	}
 }
 
-func TestSupervisor_reload(t *testing.T) {
-	sv := &Supervisor{
-		Prog: stubAgent,
-		Argv: []string{"dummy"},
+func Testsupervisor_reload(t *testing.T) {
+	sv := &supervisor{
+		prog: stubAgent,
+		argv: []string{"dummy"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.Supervise(ch)
+		done <- sv.supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid
@@ -88,15 +88,15 @@ func TestSupervisor_reload(t *testing.T) {
 	}
 }
 
-func TestSupervisor_reloadFail(t *testing.T) {
-	sv := &Supervisor{
-		Prog: stubAgent,
-		Argv: []string{"failed"},
+func Testsupervisor_reloadFail(t *testing.T) {
+	sv := &supervisor{
+		prog: stubAgent,
+		argv: []string{"failed"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.Supervise(ch)
+		done <- sv.supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid
@@ -114,15 +114,15 @@ func TestSupervisor_reloadFail(t *testing.T) {
 	<-done
 }
 
-func TestSupervisor_launchFailed(t *testing.T) {
-	sv := &Supervisor{
-		Prog: stubAgent,
-		Argv: []string{"launch failure"},
+func Testsupervisor_launchFailed(t *testing.T) {
+	sv := &supervisor{
+		prog: stubAgent,
+		argv: []string{"launch failure"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.Supervise(ch)
+		done <- sv.supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	pid := sv.getCmd().Process.Pid
@@ -138,19 +138,19 @@ func TestSupervisor_launchFailed(t *testing.T) {
 	}
 }
 
-func TestSupervisor_crashRecovery(t *testing.T) {
+func Testsupervisor_crashRecovery(t *testing.T) {
 	origSpawnInterval := spawnInterval
 	spawnInterval = 300 * time.Millisecond
 	defer func() { spawnInterval = origSpawnInterval }()
 
-	sv := &Supervisor{
-		Prog: stubAgent,
-		Argv: []string{"blah blah blah"},
+	sv := &supervisor{
+		prog: stubAgent,
+		argv: []string{"blah blah blah"},
 	}
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
 	go func() {
-		done <- sv.Supervise(ch)
+		done <- sv.supervise(ch)
 	}()
 	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid

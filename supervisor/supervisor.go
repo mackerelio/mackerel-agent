@@ -15,10 +15,9 @@ import (
 
 var logger = logging.GetLogger("supervisor")
 
-// Supervisor supervise the mackerel-agent
-type Supervisor struct {
-	Prog string
-	Argv []string
+type supervisor struct {
+	prog string
+	argv []string
 
 	cmd     *exec.Cmd
 	startAt time.Time
@@ -31,37 +30,47 @@ type Supervisor struct {
 	huppedMu sync.RWMutex
 }
 
-func (sv *Supervisor) setSignaled(signaled bool) {
+// Supervise starts a child mackerel-agent process and supervises it.
+// 'c' can be nil and it's typically nil. When you pass signal channel to this
+// method, you have to close the channel to stop internal goroutine.
+func Supervise(agentProg string, argv []string, c chan os.Signal) error {
+	return (&supervisor{
+		prog: agentProg,
+		argv: argv,
+	}).supervise(c)
+}
+
+func (sv *supervisor) setSignaled(signaled bool) {
 	sv.signaledMu.Lock()
 	defer sv.signaledMu.Unlock()
 	sv.signaled = signaled
 }
 
-func (sv *Supervisor) getSignaled() bool {
+func (sv *supervisor) getSignaled() bool {
 	sv.signaledMu.RLock()
 	defer sv.signaledMu.RUnlock()
 	return sv.signaled
 }
 
-func (sv *Supervisor) setHupped(hupped bool) {
+func (sv *supervisor) setHupped(hupped bool) {
 	sv.huppedMu.Lock()
 	defer sv.huppedMu.Unlock()
 	sv.hupped = hupped
 }
 
-func (sv *Supervisor) getHupped() bool {
+func (sv *supervisor) getHupped() bool {
 	sv.huppedMu.RLock()
 	defer sv.huppedMu.RUnlock()
 	return sv.hupped
 }
 
-func (sv *Supervisor) getCmd() *exec.Cmd {
+func (sv *supervisor) getCmd() *exec.Cmd {
 	sv.mu.RLock()
 	defer sv.mu.RUnlock()
 	return sv.cmd
 }
 
-func (sv *Supervisor) getStartAt() time.Time {
+func (sv *supervisor) getStartAt() time.Time {
 	sv.mu.RLock()
 	defer sv.mu.RUnlock()
 	return sv.startAt
@@ -71,19 +80,19 @@ func (sv *Supervisor) getStartAt() time.Time {
 // and terminate the process without crash recovery
 var spawnInterval = 30 * time.Second
 
-func (sv *Supervisor) launched() bool {
+func (sv *supervisor) launched() bool {
 	return sv.getCmd().Process != nil && time.Now().After(sv.getStartAt().Add(spawnInterval))
 }
 
-func (sv *Supervisor) buildCmd() *exec.Cmd {
-	argv := append(sv.Argv, "-child")
-	cmd := exec.Command(sv.Prog, argv...)
+func (sv *supervisor) buildCmd() *exec.Cmd {
+	argv := append(sv.argv, "-child")
+	cmd := exec.Command(sv.prog, argv...)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	return cmd
 }
 
-func (sv *Supervisor) start() error {
+func (sv *supervisor) start() error {
 	sv.mu.Lock()
 	sv.setHupped(false)
 	defer sv.mu.Unlock()
@@ -92,14 +101,14 @@ func (sv *Supervisor) start() error {
 	return sv.cmd.Start()
 }
 
-func (sv *Supervisor) stop(sig os.Signal) error {
+func (sv *supervisor) stop(sig os.Signal) error {
 	sv.setSignaled(true)
 	return sv.getCmd().Process.Signal(sig)
 }
 
-func (sv *Supervisor) configtest() error {
-	argv := append([]string{"configtest"}, sv.Argv...)
-	cmd := exec.Command(sv.Prog, argv...)
+func (sv *supervisor) configtest() error {
+	argv := append([]string{"configtest"}, sv.argv...)
+	cmd := exec.Command(sv.prog, argv...)
 	buf := &bytes.Buffer{}
 	cmd.Stderr = buf
 	err := cmd.Run()
@@ -109,7 +118,7 @@ func (sv *Supervisor) configtest() error {
 	return nil
 }
 
-func (sv *Supervisor) reload() error {
+func (sv *supervisor) reload() error {
 	err := sv.configtest()
 	if err != nil {
 		return err
@@ -118,7 +127,7 @@ func (sv *Supervisor) reload() error {
 	return sv.getCmd().Process.Signal(syscall.SIGTERM)
 }
 
-func (sv *Supervisor) wait() (err error) {
+func (sv *supervisor) wait() (err error) {
 	for {
 		err = sv.cmd.Wait()
 		if sv.getSignaled() || (!sv.getHupped() && !sv.launched()) {
@@ -135,7 +144,7 @@ func (sv *Supervisor) wait() (err error) {
 	return
 }
 
-func (sv *Supervisor) handleSignal(ch <-chan os.Signal) {
+func (sv *supervisor) handleSignal(ch <-chan os.Signal) {
 	for sig := range ch {
 		if sig == syscall.SIGHUP {
 			logger.Infof("receiving HUP, spawning a new mackerel-agent")
@@ -149,8 +158,7 @@ func (sv *Supervisor) handleSignal(ch <-chan os.Signal) {
 	}
 }
 
-// Supervise the mackerel-agent
-func (sv *Supervisor) Supervise(c chan os.Signal) error {
+func (sv *supervisor) supervise(c chan os.Signal) error {
 	err := sv.start()
 	if err != nil {
 		return err

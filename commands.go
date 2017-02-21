@@ -79,10 +79,7 @@ func doSupervise(fs *flag.FlagSet, argv []string) error {
 	}
 	defer removePidFile(conf.Pidfile)
 
-	return (&supervisor.Supervisor{
-		Prog: os.Args[0],
-		Argv: copiedArgv,
-	}).Supervise(nil)
+	return supervisor.Supervise(os.Args[0], copiedArgv, nil)
 }
 
 /* +command version - display version of mackerel-agent
