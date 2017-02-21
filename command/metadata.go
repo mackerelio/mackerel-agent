@@ -33,6 +33,7 @@ func metadataGenerators(conf *config.Config) []*metadata.Generator {
 type metadataResult struct {
 	namespace string
 	metadata  interface{}
+	createdAt time.Time
 }
 
 func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan struct{}) {
@@ -55,9 +56,14 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 		for {
 			select {
 			case result := <-resultCh:
-				// prefer new result to old metadata which remains to be posted on retry
-				// and also avoid infinite number of retries
-				results[result.namespace] = result
+				// prefer new result to avoid infinite number of retries
+				if prev, ok := results[result.namespace]; ok {
+					if result.createdAt.After(prev.createdAt) {
+						results[result.namespace] = result
+					}
+				} else {
+					results[result.namespace] = result
+				}
 			default:
 				break ConsumeResults
 			}
@@ -69,10 +75,7 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 			if resp != nil && resp.StatusCode >= 500 {
 				logger.Errorf("put metadata %q failed: status %s", result.namespace, resp.Status)
 				go func() {
-					resultCh <- &metadataResult{
-						namespace: result.namespace,
-						metadata:  result.metadata,
-					}
+					resultCh <- result
 				}()
 				continue
 			}
@@ -129,6 +132,7 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 			resultCh <- &metadataResult{
 				namespace: g.Name,
 				metadata:  metadata,
+				createdAt: time.Now(),
 			}
 
 		case <-quit:
