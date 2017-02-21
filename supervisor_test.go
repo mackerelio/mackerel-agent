@@ -24,13 +24,12 @@ func TestSupervisor(t *testing.T) {
 		prog: stubAgent,
 		argv: []string{"dummy"},
 	}
-	sv.start()
 	ch := make(chan os.Signal, 1)
-	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
-		done <- sv.wait()
+		done <- sv.supervise(ch)
 	}()
+	time.Sleep(50 * time.Millisecond)
 	pid := sv.getCmd().Process.Pid
 	if !existsPid(pid) {
 		t.Errorf("process doesn't exist")
@@ -52,13 +51,12 @@ func TestSupervisor_reload(t *testing.T) {
 		prog: stubAgent,
 		argv: []string{"dummy"},
 	}
-	sv.start()
 	ch := make(chan os.Signal, 1)
-	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
-		done <- sv.wait()
+		done <- sv.supervise(ch)
 	}()
+	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid
 	if !existsPid(oldPid) {
 		t.Errorf("process doesn't exist")
@@ -93,13 +91,12 @@ func TestSupervisor_reloadFail(t *testing.T) {
 		prog: stubAgent,
 		argv: []string{"failed"},
 	}
-	sv.start()
 	ch := make(chan os.Signal, 1)
-	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
-		done <- sv.wait()
+		done <- sv.supervise(ch)
 	}()
+	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid
 	if !existsPid(oldPid) {
 		t.Errorf("process doesn't exist")
@@ -120,13 +117,12 @@ func TestSupervisor_launchFailed(t *testing.T) {
 		prog: stubAgent,
 		argv: []string{"launch failure"},
 	}
-	sv.start()
 	ch := make(chan os.Signal, 1)
-	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
-		done <- sv.wait()
+		done <- sv.supervise(ch)
 	}()
+	time.Sleep(50 * time.Millisecond)
 	pid := sv.getCmd().Process.Pid
 	if !existsPid(pid) {
 		t.Errorf("process doesn't exist")
@@ -149,13 +145,12 @@ func TestSupervisor_crashRecovery(t *testing.T) {
 		prog: stubAgent,
 		argv: []string{"blah blah blah"},
 	}
-	sv.start()
 	ch := make(chan os.Signal, 1)
-	go sv.handleSignal(ch)
 	done := make(chan error)
 	go func() {
-		done <- sv.wait()
+		done <- sv.supervise(ch)
 	}()
+	time.Sleep(50 * time.Millisecond)
 	oldPid := sv.getCmd().Process.Pid
 	if !existsPid(oldPid) {
 		t.Errorf("process doesn't exist")

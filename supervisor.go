@@ -135,9 +135,11 @@ func (sv *supervisor) handleSignal(ch <-chan os.Signal) {
 	}
 }
 
-func (sv *supervisor) supervise() error {
+func (sv *supervisor) supervise(c chan os.Signal) error {
 	sv.start()
-	c := make(chan os.Signal, 1)
+	if c == nil {
+		c := make(chan os.Signal, 1)
+	}
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go sv.handleSignal(c)
 	return sv.wait()

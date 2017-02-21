@@ -81,7 +81,7 @@ func doSupervise(fs *flag.FlagSet, argv []string) error {
 	return (&supervisor{
 		prog: os.Args[0],
 		argv: copiedArgv,
-	}).supervise()
+	}).supervise(nil)
 }
 
 /* +command version - display version of mackerel-agent
