@@ -1,4 +1,6 @@
-sudo: false
+sudo: required
+services:
+  - docker
 language: go
 go:
 - 1.7
@@ -6,7 +8,6 @@ env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
   - secure: "B34YsRebWxyx/UAHNAL5YWOgx2RE13TVfDC8FCCc7gAlogJcyAcPnC88fe8ECChHQC3GNnsHSi+GqgxTxzfoVkV+LUAFgHWbcF5O4O/4qHztKj7//72RwO+gXVr4U1Laz45bBr2r68XW0llj5tIlaEYxROJNLSAVDE4yDzmAHgc="
-sudo: false
 addons:
   apt:
     packages:
@@ -15,13 +16,18 @@ addons:
       - debhelper
 install:
 - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+before_script:
+- docker pull astj/mackerel-agent-packager-beta:rpm-centos6
+- docker pull astj/mackerel-agent-packager-beta:rpm-centos7
 script:
 - make lint
 - make cover
 - test `gofmt -l . | wc -l` = 0
 - make crossbuild
+- make rpm rpm-systemd
 after_script:
 - goveralls -coverprofile=.profile.cov
+- ls -lR rpmbuild/RPMS
 before_deploy:
 - make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
 - go get github.com/aktau/github-release

@@ -65,14 +65,26 @@ crossbuild-package-stage:
 	mv build/mackerel-agent-stage build-linux-386/
 
 rpm: crossbuild-package
+	mkdir -p rpmbuild
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-386" \
-	      --define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
-				-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-agent-packager-beta:rpm-centos6 \
+	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
+	--define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
+	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	rpmbuild --define "_sourcedir `pwd`/packaging/rpm-build/src" --define "_builddir `pwd`/build-linux-amd64" \
-			--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
-			-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-agent-packager-beta:rpm-centos6 \
+	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
+	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
+
+# TODO migrate to rpm
+rpm-systemd: crossbuild-package
+	mkdir -p rpmbuild
+	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-agent-packager-beta:rpm-centos7 \
+		--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
+		--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+		-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME)-systemd.spec
 
 deb: crossbuild-package
 	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
@@ -125,4 +137,4 @@ clean:
 
 generate: commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-systemd
