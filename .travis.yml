@@ -1,4 +1,6 @@
-sudo: false
+sudo: required
+services:
+- docker
 language: go
 go:
 - 1.7
@@ -6,11 +8,9 @@ env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
   - secure: "B34YsRebWxyx/UAHNAL5YWOgx2RE13TVfDC8FCCc7gAlogJcyAcPnC88fe8ECChHQC3GNnsHSi+GqgxTxzfoVkV+LUAFgHWbcF5O4O/4qHztKj7//72RwO+gXVr4U1Laz45bBr2r68XW0llj5tIlaEYxROJNLSAVDE4yDzmAHgc="
-sudo: false
 addons:
   apt:
     packages:
-      - rpm
       - devscripts
       - debhelper
 install:
@@ -23,6 +23,7 @@ script:
 after_script:
 - goveralls -coverprofile=.profile.cov
 before_deploy:
+- docker pull astj/mackerel-rpm-builder:c6
 - make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
 - go get github.com/aktau/github-release
 - mkdir -p ~/bin
