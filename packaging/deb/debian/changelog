@@ -1,3 +1,35 @@
+mackerel-agent (0.40.0-1) stable; urgency=low
+
+  * support metadata plugins in configuration (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/331>
+  * Add metadata plugin feature (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/333>
+  * Use Named Result Parameters as document (by haya14busa)
+    <https://github.com/mackerelio/mackerel-agent/pull/334>
+  * Set large number of file descriptors for the safety sake in init scripts (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/337>
+  * Improve darwin cpu spec (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/338>
+  * Fix format verb: use '%v' (by haya14busa)
+    <https://github.com/mackerelio/mackerel-agent/pull/340>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 22 Feb 2017 02:48:34 +0000
+
+mackerel-agent (0.39.4-1) stable; urgency=low
+
+  * prepare windows eventlog (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/319>
+  * Refactor plugin configurations (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/322>
+  * Execute less `go build`s on deploy (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/323>
+  * treat xmlns (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/324>
+  * Fix xmlns (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/326>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 08 Feb 2017 01:46:39 +0000
+
 mackerel-agent (0.39.3-1) stable; urgency=low
 
   * Fix segfault when loading a bad config file (by hanazuki)

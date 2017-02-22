@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.40.0 (2017-02-22)
+
+* support metadata plugins in configuration #331 (itchyny)
+* Add metadata plugin feature #333 (itchyny)
+* Use Named Result Parameters as document #334 (haya14busa)
+* Set large number of file descriptors for the safety sake in init scripts #337 (Songmu)
+* Improve darwin cpu spec #338 (astj)
+* Fix format verb: use '%v' #340 (haya14busa)
+
+
+## 0.39.4 (2017-02-08)
+
+* prepare windows eventlog #319 (daiksy)
+* Refactor plugin configurations #322 (itchyny)
+* Execute less `go build`s on deploy #323 (astj)
+* treat xmlns #324 (mattn)
+* Fix xmlns #326 (mattn)
+
+
 ## 0.39.3 (2017-01-25)
 
 * Fix segfault when loading a bad config file #316 (hanazuki)

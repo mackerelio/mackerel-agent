@@ -62,6 +62,21 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Feb 22 2017 <mackerel-developers@hatena.ne.jp> - 0.40.0-1
+- support metadata plugins in configuration (by itchyny)
+- Add metadata plugin feature (by itchyny)
+- Use Named Result Parameters as document (by haya14busa)
+- Set large number of file descriptors for the safety sake in init scripts (by Songmu)
+- Improve darwin cpu spec (by astj)
+- Fix format verb: use '%v' (by haya14busa)
+
+* Wed Feb 08 2017 <mackerel-developers@hatena.ne.jp> - 0.39.4-1
+- prepare windows eventlog (by daiksy)
+- Refactor plugin configurations (by itchyny)
+- Execute less `go build`s on deploy (by astj)
+- treat xmlns (by mattn)
+- Fix xmlns (by mattn)
+
 * Wed Jan 25 2017 <mackerel-developers@hatena.ne.jp> - 0.39.3-1
 - Fix segfault when loading a bad config file (by hanazuki)
 - fix windows eventlog level when "verbose=true" (by daiksy)

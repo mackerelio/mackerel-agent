@@ -18,17 +18,35 @@ import (
 
 // Node is HTML node traversing to convert to text.
 type Node struct {
-	Name     xml.Name
-	Attr     []xml.Attr
-	Children []interface{}
+	Name      xml.Name
+	Attr      []xml.Attr
+	Children  []interface{}
+	RootSpace map[string]string
 }
 
 // MarshalXML encode the Node as XML emement. This handle only Comment and
 // CharData. Any other values are not converted.
 func (n *Node) MarshalXML(e *xml.Encoder, s xml.StartElement) error {
 	s.Name = n.Name
-	s.Name.Space = ""
 	s.Attr = n.Attr
+
+	if ns, ok := n.RootSpace[s.Name.Space]; ok {
+		s.Name.Local = ns + ":" + s.Name.Local
+	}
+	s.Name.Space = ""
+
+	var newattr []xml.Attr
+	for _, attr := range s.Attr {
+		if ns, ok := n.RootSpace[attr.Name.Space]; ok {
+			attr.Name.Local = ns + ":" + attr.Name.Local
+		} else if attr.Name.Space != "" {
+			attr.Name.Local = attr.Name.Space + ":" + attr.Name.Local
+		}
+		attr.Name.Space = ""
+		newattr = append(newattr, attr)
+	}
+	s.Attr = newattr
+
 	e.EncodeToken(s)
 	for _, v := range n.Children {
 		switch v.(type) {
@@ -37,6 +55,7 @@ func (n *Node) MarshalXML(e *xml.Encoder, s xml.StartElement) error {
 		case xml.CharData:
 			e.EncodeToken(v.(xml.CharData))
 		case *Node:
+			v.(*Node).RootSpace = n.RootSpace
 			if err := e.Encode(v.(*Node)); err != nil {
 				return err
 			}
@@ -255,6 +274,13 @@ func main() {
 		log.Fatal(err)
 	}
 	defer f.Close()
+
+	v.RootSpace = make(map[string]string)
+	for _, attr := range v.Attr {
+		if attr.Name.Local != "xmlns" {
+			v.RootSpace[attr.Value] = attr.Name.Local
+		}
+	}
 
 	f.Write([]byte("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\n"))
 	err = xml.NewEncoder(f).Encode(v)

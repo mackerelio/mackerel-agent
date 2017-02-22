@@ -52,23 +52,21 @@ type Config struct {
 	Filesystems Filesystems `toml:"filesystems"`
 	HTTPProxy   string      `toml:"http_proxy"`
 
-	// Corresponds to the set of [plugin.<kind>.<name>] sections
-	// the key of the map is <kind>, which should be one of "metrics" or "checks".
-	Plugin map[string]PluginConfigs
+	// This Plugin field is used to decode the toml file. After reading the
+	// configuration from file, this field is set to nil.
+	// Please consider using MetricPlugins and CheckPlugins.
+	Plugin map[string]map[string]*PluginConfig
 
 	Include string
 
 	// Cannot exist in configuration files
-	HostIDStorage HostIDStorage
+	HostIDStorage   HostIDStorage
+	MetricPlugins   map[string]*MetricPlugin
+	CheckPlugins    map[string]*CheckPlugin
+	MetadataPlugins map[string]*MetadataPlugin
 }
 
-// PluginConfigs represents a set of [plugin.<kind>.<name>] sections in the configuration file
-// under a specific <kind>. The key of the map is <name>, for example "mysql" of "plugin.metrics.mysql".
-type PluginConfigs map[string]*PluginConfig
-
-// PluginConfig represents a section of [plugin.*].
-// `MaxCheckAttempts`, `NotificationInterval` and `CheckInterval` options are used with check monitoring plugins. Custom metrics plugins ignore these options.
-// `User` option is ignore in windows
+// PluginConfig represents a plugin configuration.
 type PluginConfig struct {
 	CommandRaw           interface{} `toml:"command"`
 	Command              string
@@ -76,8 +74,111 @@ type PluginConfig struct {
 	User                 string
 	NotificationInterval *int32  `toml:"notification_interval"`
 	CheckInterval        *int32  `toml:"check_interval"`
+	ExecutionInterval    *int32  `toml:"execution_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
+}
+
+// MetricPlugin represents the configuration of a metric plugin
+// The User option is ignored on Windows
+type MetricPlugin struct {
+	Command          string
+	CommandArgs      []string
+	User             string
+	CustomIdentifier *string
+}
+
+func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
+	err := pconf.prepareCommand()
+	if err != nil {
+		return nil, err
+	}
+	return &MetricPlugin{
+		Command:          pconf.Command,
+		CommandArgs:      pconf.CommandArgs,
+		User:             pconf.User,
+		CustomIdentifier: pconf.CustomIdentifier,
+	}, nil
+}
+
+// Run the metric plugin.
+func (pconf *MetricPlugin) Run() (stdout, stderr string, exitCode int, err error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
+}
+
+// CommandString returns the command string for log messages
+func (pconf *MetricPlugin) CommandString() string {
+	if len(pconf.CommandArgs) > 0 {
+		return strings.Join(pconf.CommandArgs, " ")
+	}
+	return pconf.Command
+}
+
+// CheckPlugin represents the configuration of a check plugin
+// The User option is ignored on Windows
+type CheckPlugin struct {
+	Command              string
+	CommandArgs          []string
+	User                 string
+	NotificationInterval *int32
+	CheckInterval        *int32
+	MaxCheckAttempts     *int32
+}
+
+func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
+	err := pconf.prepareCommand()
+	if err != nil {
+		return nil, err
+	}
+	return &CheckPlugin{
+		Command:              pconf.Command,
+		CommandArgs:          pconf.CommandArgs,
+		User:                 pconf.User,
+		NotificationInterval: pconf.NotificationInterval,
+		CheckInterval:        pconf.CheckInterval,
+		MaxCheckAttempts:     pconf.MaxCheckAttempts,
+	}, nil
+}
+
+// Run the check plugin.
+func (pconf *CheckPlugin) Run() (stdout, stderr string, exitCode int, err error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
+}
+
+// MetadataPlugin represents the configuration of a metadata plugin
+// The User option is ignored on Windows
+type MetadataPlugin struct {
+	Command           string
+	CommandArgs       []string
+	User              string
+	ExecutionInterval *int32
+}
+
+func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
+	err := pconf.prepareCommand()
+	if err != nil {
+		return nil, err
+	}
+	return &MetadataPlugin{
+		Command:           pconf.Command,
+		CommandArgs:       pconf.CommandArgs,
+		User:              pconf.User,
+		ExecutionInterval: pconf.ExecutionInterval,
+	}, nil
+}
+
+// Run the metadata plugin.
+func (pconf *MetadataPlugin) Run() (stdout, stderr string, exitCode int, err error) {
+	if len(pconf.CommandArgs) > 0 {
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	}
+	return util.RunCommand(pconf.Command, pconf.User)
 }
 
 func (pconf *PluginConfig) prepareCommand() error {
@@ -104,14 +205,6 @@ func (pconf *PluginConfig) prepareCommand() error {
 		return fmt.Errorf(errFmt, v)
 	}
 	return nil
-}
-
-// Run the plugin
-func (pconf *PluginConfig) Run() (string, string, int, error) {
-	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
-	}
-	return util.RunCommand(pconf.Command, pconf.User)
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
@@ -152,16 +245,36 @@ func (r *Regexpwrapper) UnmarshalText(text []byte) error {
 	return err
 }
 
-// CheckNames return list of plugin.checks._name_
+// CheckNames returns a list of name of the check plugins
 func (conf *Config) CheckNames() []string {
 	checks := []string{}
-	for name := range conf.Plugin["checks"] {
+	for name := range conf.CheckPlugins {
 		checks = append(checks, name)
 	}
 	return checks
 }
 
-// LoadConfig XXX
+// ListCustomIdentifiers returns a list of customIdentifiers.
+func (conf *Config) ListCustomIdentifiers() []string {
+	var customIdentifiers []string
+	for _, pconf := range conf.MetricPlugins {
+		if pconf.CustomIdentifier != nil && index(customIdentifiers, *pconf.CustomIdentifier) == -1 {
+			customIdentifiers = append(customIdentifiers, *pconf.CustomIdentifier)
+		}
+	}
+	return customIdentifiers
+}
+
+func index(xs []string, y string) int {
+	for i, x := range xs {
+		if x == y {
+			return i
+		}
+	}
+	return -1
+}
+
+// LoadConfig loads a Config from a file.
 func LoadConfig(conffile string) (*Config, error) {
 	config, err := loadConfigFile(conffile)
 	if err != nil {
@@ -208,10 +321,51 @@ func LoadConfig(conffile string) (*Config, error) {
 	return config, err
 }
 
+func (conf *Config) setEachPlugins() error {
+	if pconfs, ok := conf.Plugin["metrics"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			conf.MetricPlugins[name], err = pconf.buildMetricPlugin()
+			if err != nil {
+				return err
+			}
+		}
+	}
+	if pconfs, ok := conf.Plugin["checks"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			conf.CheckPlugins[name], err = pconf.buildCheckPlugin()
+			if err != nil {
+				return err
+			}
+		}
+	}
+	if pconfs, ok := conf.Plugin["metadata"]; ok {
+		var err error
+		for name, pconf := range pconfs {
+			conf.MetadataPlugins[name], err = pconf.buildMetadataPlugin()
+			if err != nil {
+				return err
+			}
+		}
+	}
+	// Make Plugins empty because we should not use this later.
+	// Use MetricPlugins, CheckPlugins and MetadataPlugins.
+	conf.Plugin = nil
+	return nil
+}
+
 func loadConfigFile(file string) (*Config, error) {
 	config := &Config{}
 	if _, err := toml.DecodeFile(file, config); err != nil {
 		return config, err
+	}
+
+	config.MetricPlugins = make(map[string]*MetricPlugin)
+	config.CheckPlugins = make(map[string]*CheckPlugin)
+	config.MetadataPlugins = make(map[string]*MetadataPlugin)
+	if err := config.setEachPlugins(); err != nil {
+		return nil, err
 	}
 
 	if config.Include != "" {
@@ -219,14 +373,7 @@ func loadConfigFile(file string) (*Config, error) {
 			return config, err
 		}
 	}
-	for _, pconfs := range config.Plugin {
-		for _, pconf := range pconfs {
-			err := pconf.prepareCommand()
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
+
 	return config, nil
 }
 
@@ -243,12 +390,6 @@ func includeConfigFile(config *Config, include string) error {
 		rolesSaved := config.Roles
 		config.Roles = nil
 
-		// Also, save plugin values for later merging
-		pluginSaved := map[string]PluginConfigs{}
-		for kind, plugins := range config.Plugin {
-			pluginSaved[kind] = plugins
-		}
-
 		meta, err := toml.DecodeFile(file, &config)
 		if err != nil {
 			return fmt.Errorf("while loading included config file %s: %s", file, err)
@@ -260,16 +401,10 @@ func includeConfigFile(config *Config, include string) error {
 			config.Roles = rolesSaved
 		}
 
-		for kind, plugins := range config.Plugin {
-			for key, conf := range plugins {
-				if pluginSaved[kind] == nil {
-					pluginSaved[kind] = PluginConfigs{}
-				}
-				pluginSaved[kind][key] = conf
-			}
+		// Add new plugin or overwrite a plugin with the same plugin name.
+		if err := config.setEachPlugins(); err != nil {
+			return err
 		}
-
-		config.Plugin = pluginSaved
 	}
 
 	return nil

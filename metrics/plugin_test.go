@@ -18,7 +18,7 @@ func containsKeyRegexp(values Values, reg string) bool {
 }
 
 func TestPluginGenerate(t *testing.T) {
-	conf := &config.PluginConfig{
+	conf := &config.MetricPlugin{
 		Command: "ruby ../example/metrics-plugins/dice.rb",
 	}
 	g := &pluginGenerator{Config: conf}
@@ -33,7 +33,7 @@ func TestPluginGenerate(t *testing.T) {
 }
 
 func TestPluginCollectValues(t *testing.T) {
-	g := &pluginGenerator{Config: &config.PluginConfig{
+	g := &pluginGenerator{Config: &config.MetricPlugin{
 		Command: "ruby ../example/metrics-plugins/dice.rb",
 	},
 	}

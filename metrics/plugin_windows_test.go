@@ -9,7 +9,7 @@ import (
 )
 
 func TestPluginCollectValuesCommand(t *testing.T) {
-	g := &pluginGenerator{Config: &config.PluginConfig{
+	g := &pluginGenerator{Config: &config.MetricPlugin{
 		Command: "echo just.echo.1	1	1397822016",
 	},
 	}
@@ -34,7 +34,7 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 }
 
 func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
-	g := &pluginGenerator{Config: &config.PluginConfig{
+	g := &pluginGenerator{Config: &config.MetricPlugin{
 		Command: `echo just.echo.2   2   1397822016`,
 	}}
 
@@ -59,7 +59,7 @@ func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
 
 func TestPluginLoadPluginMeta(t *testing.T) {
 	g := &pluginGenerator{
-		Config: &config.PluginConfig{
+		Config: &config.MetricPlugin{
 			Command: "ruby ../example/metrics-plugins/dice-with-meta.rb",
 		},
 	}
@@ -78,7 +78,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 	}
 
 	generatorWithoutConf := &pluginGenerator{
-		Config: &config.PluginConfig{
+		Config: &config.MetricPlugin{
 			Command: "echo just.echo.1	1	1397822016",
 		},
 	}
@@ -89,7 +89,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 	}
 
 	generatorWithBadVersion := &pluginGenerator{
-		Config: &config.PluginConfig{
+		Config: &config.MetricPlugin{
 			Command: `echo # mackerel-agent-plugin version=666`,
 		},
 	}
