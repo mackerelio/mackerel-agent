@@ -1,6 +1,6 @@
 // +build linux freebsd darwin netbsd
 
-package main
+package pidfile
 
 import (
 	"math"
@@ -9,10 +9,10 @@ import (
 )
 
 func TestExistsPid(t *testing.T) {
-	if !existsPid(os.Getpid()) {
+	if !ExistsPid(os.Getpid()) {
 		t.Errorf("something went wrong")
 	}
-	if existsPid(math.MaxInt32) {
+	if ExistsPid(math.MaxInt32) {
 		t.Errorf("something went wrong")
 	}
 }

@@ -14,6 +14,8 @@ import (
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/pidfile"
+	"github.com/mackerelio/mackerel-agent/supervisor"
 	"github.com/mackerelio/mackerel-agent/version"
 )
 
@@ -53,6 +55,32 @@ func doInit(fs *flag.FlagSet, argv []string) error {
 		return nil
 	}
 	return err
+}
+
+/* +command supervise - supervisor mode
+
+	supervise -conf mackerel-agent.conf ...
+
+run as supervisor mode enabling configuration reloading and crash recovery
+*/
+func doSupervise(fs *flag.FlagSet, argv []string) error {
+	if runtime.GOOS == "windows" {
+		return fmt.Errorf("supervise mode is not supported on windows")
+	}
+	copiedArgv := make([]string, len(argv))
+	copy(copiedArgv, argv)
+	conf, err := resolveConfig(fs, argv)
+	if err != nil {
+		return err
+	}
+	setLogLevel(conf.Silent, conf.Verbose)
+	err = pidfile.Create(conf.Pidfile)
+	if err != nil {
+		return err
+	}
+	defer pidfile.Remove(conf.Pidfile)
+
+	return supervisor.Supervise(os.Args[0], copiedArgv, nil)
 }
 
 /* +command version - display version of mackerel-agent

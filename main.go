@@ -3,13 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"regexp"
 	"runtime"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -17,6 +14,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/mackerel-agent/pidfile"
 	"github.com/mackerelio/mackerel-agent/version"
 	"github.com/motemen/go-cli"
 )
@@ -92,6 +90,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey        = fs.String("apikey", "", "(DEPRECATED) API key from mackerel.io web site")
 		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
+		child         = fs.Bool("child", false, "(internal use) child process of the supervise mode")
 		verbose       bool
 		roleFullnames roleFullnamesFlag
 	)
@@ -129,6 +128,10 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 			conf.Roles = roleFullnames
 		}
 	})
+	if *child {
+		// Child process of supervisor never create pidfile, because supervisor process does create it.
+		conf.Pidfile = ""
+	}
 
 	r := []string{}
 	for _, roleFullName := range conf.Roles {
@@ -154,52 +157,23 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	return conf, nil
 }
 
-func createPidFile(pidfile string) error {
-	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
-		if pid, err := strconv.Atoi(string(pidString)); err == nil {
-			if existsPid(pid) {
-				return fmt.Errorf("pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
-			}
-			// Note mackerel-agent in windows can't remove pidfile during stoping the service
-			logger.Warningf("Pidfile found, but there seems no another process of mackerel-agent. Ignoring %s", pidfile)
-		} else {
-			logger.Warningf("Malformed pidfile found. Ignoring %s", pidfile)
-		}
+func setLogLevel(silent, verbose bool) {
+	if silent {
+		logging.SetLogLevel(logging.ERROR)
 	}
-
-	err := os.MkdirAll(filepath.Dir(pidfile), 0755)
-	if err != nil {
-		return err
-	}
-	file, err := os.Create(pidfile)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	_, err = fmt.Fprintf(file, "%d", os.Getpid())
-	return err
-}
-
-func removePidFile(pidfile string) {
-	if err := os.Remove(pidfile); err != nil {
-		logger.Errorf("Failed to remove the pidfile: %s: %s", pidfile, err)
+	if verbose {
+		logging.SetLogLevel(logging.DEBUG)
 	}
 }
 
 func start(conf *config.Config, termCh chan struct{}) error {
-	if conf.Silent {
-		logging.SetLogLevel(logging.ERROR)
-	}
-	if conf.Verbose {
-		logging.SetLogLevel(logging.DEBUG)
-	}
+	setLogLevel(conf.Silent, conf.Verbose)
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
 
-	if err := createPidFile(conf.Pidfile); err != nil {
-		return fmt.Errorf("createPidFile(%q) failed: %s", conf.Pidfile, err)
+	if err := pidfile.Create(conf.Pidfile); err != nil {
+		return fmt.Errorf("pidfile.Create(%q) failed: %s", conf.Pidfile, err)
 	}
-	defer removePidFile(conf.Pidfile)
+	defer pidfile.Remove(conf.Pidfile)
 
 	ctx, err := command.Prepare(conf)
 	if err != nil {
