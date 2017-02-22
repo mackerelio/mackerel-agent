@@ -51,8 +51,8 @@ func (g *SwapGenerator) Generate() (metrics.Values, error) {
 	f, _ := strconv.ParseFloat(matches[3], 64)
 
 	const mb = 1024.0 * 1024.0
-	return metrics.Values(map[string]float64{
+	return metrics.Values{
 		"memory.swap_total": t * mb,
 		"memory.swap_free":  f * mb,
-	}), nil
+	}, nil
 }

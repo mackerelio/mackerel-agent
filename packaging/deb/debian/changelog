@@ -1,3 +1,390 @@
+mackerel-agent (0.39.4-1) stable; urgency=low
+
+  * prepare windows eventlog (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/319>
+  * Refactor plugin configurations (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/322>
+  * Execute less `go build`s on deploy (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/323>
+  * treat xmlns (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/324>
+  * Fix xmlns (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/326>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 08 Feb 2017 01:46:39 +0000
+
+mackerel-agent (0.39.3-1) stable; urgency=low
+
+  * Fix segfault when loading a bad config file (by hanazuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/316>
+  * fix windows eventlog level when "verbose=true" (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/318>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 25 Jan 2017 06:56:02 +0000
+
+mackerel-agent (0.39.2-1) stable; urgency=low
+
+  * Test wix/pluginlist.txt on AppVeyor ci (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/313>
+  * Revert "remove windows plugins on pluginslist" (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/314>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 16 Jan 2017 02:14:42 +0000
+
+mackerel-agent (0.39.1-1) stable; urgency=low
+
+  * support filesystems.Ignore on windows (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/303>
+  * remove windows plugins on pluginslist (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/309>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 12 Jan 2017 03:04:51 +0000
+
+mackerel-agent (0.39.0-1) stable; urgency=low
+
+  * implement `pluginGenerators` for windows (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/301>
+  * add check-windows-eventlog on pluginlist (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/302>
+  * Remove duplicated generator in Windows (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/305>
+  * add mackerel-plugin-windows-server-sessions on pluginlist (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/306>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 11 Jan 2017 05:29:09 +0000
+
+mackerel-agent (0.38.0-1) stable; urgency=low
+
+  * fix typo (by ts-3156)
+    <https://github.com/mackerelio/mackerel-agent/pull/12>
+  * Add Copyright (by yuuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/13>
+  * Separate interfaceGenerator from specGenerators (by motemen)
+    <https://github.com/mackerelio/mackerel-agent/pull/14>
+  * Timout http reuquest in 30 sec (requries go 1.3) (by hakobe)
+    <https://github.com/mackerelio/mackerel-agent/pull/17>
+  * specify command arguments in mackerel-agent.conf (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/293>
+  * several improvements for Windows (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/298>
+  * Avoid time.Tick and use time.NewTicker instead (by haya14busa)
+    <https://github.com/mackerelio/mackerel-agent/pull/299>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 21 Dec 2016 02:22:17 +0000
+
+mackerel-agent (0.37.1-1) stable; urgency=low
+
+  * fix pluginlist (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/291>
+  * Suppress ec2 metadata warnings (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/294>
+  * Uncapitalize error messages (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/295>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 29 Nov 2016 05:57:27 +0000
+
+mackerel-agent (0.37.0-1) stable; urgency=low
+
+  * improve Windows support (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/289>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 27 Oct 2016 02:18:43 +0000
+
+mackerel-agent (0.36.0-1) stable; urgency=low
+
+  * don't use HTTP_PROXY when requesting cloud instance metadata APIs (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/285>
+  * Add an option to output filesystem-related metrics with key by mountpoint (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/286>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 18 Oct 2016 08:15:17 +0000
+
+mackerel-agent (0.35.1-1) stable; urgency=low
+
+  * support MACKEREL_PLUGIN_WORKDIR in init scripts (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/277>
+  * Add platform metadata for Darwin (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/280>
+  * Disable http2 for now (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/283>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 29 Sep 2016 07:17:48 +0000
+
+mackerel-agent (0.35.0-1) stable; urgency=low
+
+  * built with Go 1.7 (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/266>
+  * remove `func (vs *Values) Merge(other Values)` (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/268>
+  * [incompatible] consider df  (used + available) as size of filesystem (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/271>
+  * Remove DigitalOcean related comment/definition from spec/cloud.go (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/272>
+  * Fix golint is not working on ci, and add some comment to pass golint (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/273>
+  * Add linux distribution information to kernel spec (by ak1t0)
+    <https://github.com/mackerelio/mackerel-agent/pull/274>
+  * http_proxy configuration (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/275>
+  * set PATH and LANG only in unix environment (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/276>
+  * Ignore docker mapper storage in spec as well (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/278>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 07 Sep 2016 02:42:39 +0000
+
+mackerel-agent (0.34.0-1) stable; urgency=low
+
+  * Reduce retry count on finding a host by the custom identifier (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/258>
+  * suppress checker flooding when resuming from sleep mode (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/260>
+  * truncate checker message up to 1024 characters (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/261>
+  * commonalize spec.FilesystemGenerator around unix OSs (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/262>
+  * define type DfStat,	remove dfColumnSpecs and refactor (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/263>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 18 Aug 2016 02:54:33 +0000
+
+mackerel-agent (0.33.0-1) stable; urgency=low
+
+  * Fill the customIdentifier in EC2 (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/255>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 08 Aug 2016 07:17:56 +0000
+
+mackerel-agent (0.32.2-1) stable; urgency=low
+
+  * fix GOMAXPROCS to 1 for avoiding rare panics (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/253>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 14 Jul 2016 05:26:48 +0000
+
+mackerel-agent (0.32.1-1) stable; urgency=low
+
+  * Add user for executing a plugin (by y-kuno)
+    <https://github.com/mackerelio/mackerel-agent/pull/250>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 07 Jul 2016 08:45:14 +0000
+
+mackerel-agent (0.32.0-1) stable; urgency=low
+
+  * Added plugin check interval option (by karupanerura)
+    <https://github.com/mackerelio/mackerel-agent/pull/245>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 30 Jun 2016 08:38:51 +0000
+
+mackerel-agent (0.31.2-1) stable; urgency=low
+
+  * Refactor around metrics/linux/memory (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/242>
+  * Don't stop mackerel-agent process on upgrading by debian package (by karupanerura)
+    <https://github.com/mackerelio/mackerel-agent/pull/243>
+  * add `silent` configuration key for suppressing log output (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/244>
+  * change log level ERROR to WARNING in spec/spec.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/246>
+  * remove /usr/local/bin from sample.conf (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/248>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 23 Jun 2016 06:12:22 +0000
+
+mackerel-agent (0.31.1-1) stable; urgency=low
+
+  * embed right version number
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 25 May 2016 10:10:13 +0000
+
+mackerel-agent (0.31.0-1) stable; urgency=low
+
+  * Post the custom metrics to the hosts specified by custom identifiers (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/231>
+  * refactor FilesystemGenerator (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/233>
+  * Refactor metrics/linux/interface.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/234>
+  * remove regexp from spec/linux/cpu (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/235>
+  * Fix missing printf args (by shogo82148)
+    <https://github.com/mackerelio/mackerel-agent/pull/237>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 25 May 2016 04:13:19 +0000
+
+mackerel-agent (0.30.4-1) stable; urgency=low
+
+  * Recover from panic while processing generators (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/228>
+  * check length of cols just to be safe in metrics/linux/disk.go (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/229>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 10 May 2016 09:19:28 +0000
+
+mackerel-agent (0.30.3-1) stable; urgency=low
+
+  * Remove usr local bin again (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/217>
+  * Fix typo (by yukiyan)
+    <https://github.com/mackerelio/mackerel-agent/pull/221>
+  * Fix comments (by stefafafan)
+    <https://github.com/mackerelio/mackerel-agent/pull/222>
+  * Remove go get cmd/vet (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/223>
+  * retry retirement when api request failed (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/224>
+  * output plugin stderr to log (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/226>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 02 May 2016 04:47:48 +0000
+
+mackerel-agent (0.30.2-1) stable; urgency=low
+
+  * Revert "Merge pull request #211 from mackerelio/usr-bin" (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/215>
+
+ -- Songmu <y.songmu@gmail.com>  Fri, 25 Mar 2016 14:27:46 +0900
+
+mackerel-agent (0.30.1-1) stable; urgency=low
+
+  * deprecate /usr/local/bin (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/211>
+  * use GOARCH=amd64 for now (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/213>
+
+ -- Songmu <y.songmu@gmail.com>  Fri, 25 Mar 2016 11:08:50 +0900
+
+mackerel-agent (0.30.0-1) stable; urgency=low
+
+  * remove uptime metrics generator (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/161>
+  * Remove deprecated-sensu feature (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/202>
+  * Send all IP addresses of each interface (linux only) (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/205>
+  * add `init` subcommand (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/207>
+  * Refactor net interface (multi ip support and bugfix) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/208>
+  * Stop to fetch flags of cpu in spec/linux/cpu (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/209>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 17 Mar 2016 01:39:41 +0900
+
+mackerel-agent (0.29.2-1) stable; urgency=low
+
+  * Don't overwrite mackerel-agent.conf when updating deb package (Fix deb packaging) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/199>
+
+ -- Songmu <y.songmu@gmail.com>  Mon, 07 Mar 2016 19:35:05 +0900
+
+mackerel-agent (0.29.1-1) stable; urgency=low
+
+  * maintenance release
+
+ -- Songmu <y.songmu@gmail.com>  Fri, 04 Mar 2016 19:00:38 +0900
+
+mackerel-agent (0.29.0-1) stable; urgency=low
+
+  * remove deprecated command line options (-version and -once) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/194>
+  * Report checker execution timeout as Unknown status (by hanazuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/197>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 02 Mar 2016 15:14:15 +0900
+
+mackerel-agent (0.28.1-1) stable; urgency=low
+
+  * fix the exit status on stopping the agent in the init script of debian (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/192>
+
+ -- Stefan Utamaru <stefafafan@hatena.ne.jp>  Thu, 18 Feb 2016 17:06:18 +0900
+
+mackerel-agent (0.28.0-1) stable; urgency=low
+
+  * add a configuration to ignore filesystems (by stanaka)
+    <https://github.com/mackerelio/mackerel-agent/pull/186>
+  * fix the code of extending the process's environment (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/187>
+  * s{code.google.com/p/winsvc}{golang.org/x/sys/windows/svc} (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/188>
+  * Max check attempts option for check plugin (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/189>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 04 Feb 2016 11:31:56 +0900
+
+mackerel-agent (0.27.1-1) stable; urgency=low
+
+  * [bugfix] fix timeout interval when calling `df` (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/184>
+
+ -- Songmu <y.songmu@gmail.com>  Fri, 08 Jan 2016 15:20:24 +0900
+
+mackerel-agent (0.27.0-1) stable; urgency=low
+
+  * use timeout when calling `df` (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/180>
+  * Notification Interval for check monitoring (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/181>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 06 Jan 2016 13:41:53 +0900
+
+mackerel-agent (0.26.2-1) stable; urgency=low
+
+  * output success message to stderr when configtest succeed (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/178>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 10 Dec 2015 11:15:21 +0900
+
+mackerel-agent (0.26.1-1) stable; urgency=low
+
+  * fix deprecate message (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/176>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 09 Dec 2015 15:20:47 +0900
+
+mackerel-agent (0.26.0-1) stable; urgency=low
+
+  * Make HostID storage replacable (by motemen)
+    <https://github.com/mackerelio/mackerel-agent/pull/167>
+  * Publicize command.Context's fields (by motemen)
+    <https://github.com/mackerelio/mackerel-agent/pull/168>
+  * Configtest (by fujiwara)
+    <https://github.com/mackerelio/mackerel-agent/pull/169>
+  * Refactor config loading and check if Apikey exists in configtest (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/171>
+  * fix exit status of debian init script. (by fujiwara)
+    <https://github.com/mackerelio/mackerel-agent/pull/172>
+  * Deprecate version and once option (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/173>
+
+ -- Songmu <y.songmu@gmail.com>  Tue, 08 Dec 2015 11:17:07 +0900
+
+mackerel-agent (0.25.1-1) stable; urgency=low
+
+  * Go 1.5.1 (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/164>
+  * logging STDERR of checker command (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/165>
+
+ -- Songmu <y.songmu@gmail.com>  Wed, 25 Nov 2015 10:57:07 +0900
+
+mackerel-agent (0.25.0-1) stable; urgency=low
+
+  * Retrieve interfaces on Darwin (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/158>
+  * add NetBSD support. (by miwarin)
+    <https://github.com/mackerelio/mackerel-agent/pull/162>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 12 Nov 2015 12:34:38 +0900
+
+mackerel-agent (0.24.1-1) stable; urgency=low
+
+  * We are Mackerel (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/156>
+
+ -- Songmu <y.songmu@gmail.com>  Thu, 05 Nov 2015 15:54:56 +0900
+
 mackerel-agent (0.24.0-1) stable; urgency=low
 
   * define config.agentName and set proper config path (by Songmu)

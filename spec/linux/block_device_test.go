@@ -3,7 +3,6 @@
 package linux
 
 import (
-	"os"
 	"regexp"
 	"testing"
 )
@@ -25,10 +24,6 @@ func hasValidBlockDeviceValueForKey(t *testing.T, deviceInfo map[string]interfac
 }
 
 func TestBlockDeviceGenerate(t *testing.T) {
-	if os.Getenv("TRAVIS") != "" {
-		t.Skip("Skip in travis")
-	}
-
 	g := &BlockDeviceGenerator{}
 
 	value, err := g.Generate()

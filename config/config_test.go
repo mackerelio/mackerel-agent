@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -14,29 +15,36 @@ apikey = "abcde"
 display_name = "fghij"
 diagnostic = true
 
+[filesystems]
+ignore = "/dev/ram.*"
+
 [connection]
 post_metrics_retry_delay_seconds = 600
 post_metrics_retry_max = 5
 
 [plugin.metrics.mysql]
 command = "ruby /path/to/your/plugin/mysql.rb"
-
-[sensu.checks.memory] # for backward compatibility
-command = "ruby ../sensu/plugins/system/memory-metrics.rb"
-type = "metric"
+user = "mysql"
+custom_identifier = "app1.example.com"
 
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
+user = "xyz"
+notification_interval = 60
+max_check_attempts = 3
+
+[plugin.metadata.hostinfo]
+command = "hostinfo.sh"
+user = "zzz"
+execution_interval = 60
 `
 
 func TestLoadConfig(t *testing.T) {
-	tmpFile, err := ioutil.TempFile("", "")
+	tmpFile, err := newTempFileWithContent(sampleConfig)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfig), 0644); err != nil {
-		t.Errorf("should not raise error: %v", err)
-	}
+	defer os.Remove(tmpFile.Name())
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -57,6 +65,10 @@ func TestLoadConfig(t *testing.T) {
 
 	if config.Diagnostic != true {
 		t.Error("should be true (config value should be used)")
+	}
+
+	if config.Filesystems.UseMountpoint != false {
+		t.Error("should be false (default value should be used)")
 	}
 
 	if config.Connection.PostMetricsDequeueDelaySeconds != 30 {
@@ -82,13 +94,11 @@ on_stop  = "poweroff"
 `
 
 func TestLoadConfigWithHostStatus(t *testing.T) {
-	tmpFile, err := ioutil.TempFile("", "")
+	tmpFile, err := newTempFileWithContent(sampleConfigWithHostStatus)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	if err = ioutil.WriteFile(tmpFile.Name(), []byte(sampleConfigWithHostStatus), 0644); err != nil {
-		t.Errorf("should not raise error: %v", err)
-	}
+	defer os.Remove(tmpFile.Name())
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -112,16 +122,57 @@ func TestLoadConfigWithHostStatus(t *testing.T) {
 	}
 }
 
-func TestLoadConfigFile(t *testing.T) {
-	tmpFile, err := ioutil.TempFile("", "mackerel-config-test")
+var sampleConfigWithMountPoint = `
+apikey = "abcde"
+display_name = "fghij"
+
+[filesystems]
+use_mountpoint = true
+`
+
+func TestLoadConfigWithMountPoint(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithMountPoint)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	if _, err := tmpFile.WriteString(sampleConfig); err != nil {
-		t.Fatal("should not raise error")
+	defer os.Remove(tmpFile.Name())
+
+	config, err := LoadConfig(tmpFile.Name())
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
 	}
-	tmpFile.Sync()
-	tmpFile.Close()
+
+	if config.Filesystems.UseMountpoint != true {
+		t.Error("should be true (config value should be used)")
+	}
+}
+
+var sampleConfigWithInvalidIgnoreRegexp = `
+apikey = "abcde"
+display_name = "fghij"
+
+[filesystems]
+ignore = "**"
+`
+
+func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithInvalidIgnoreRegexp)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: %v", err)
+	}
+}
+
+func TestLoadConfigFile(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfig)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
 	defer os.Remove(tmpFile.Name())
 
 	config, err := loadConfigFile(tmpFile.Name())
@@ -145,26 +196,60 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("PostMetricsRetryMax should be 5")
 	}
 
-	if config.Plugin["metrics"] == nil {
+	if config.MetricPlugins == nil {
 		t.Error("plugin should have metrics")
 	}
-	pluginConf := config.Plugin["metrics"]["mysql"]
+	pluginConf := config.MetricPlugins["mysql"]
 	if pluginConf.Command != "ruby /path/to/your/plugin/mysql.rb" {
 		t.Errorf("plugin conf command should be 'ruby /path/to/your/plugin/mysql.rb' but %v", pluginConf.Command)
 	}
-
-	// for backward compatibility
-	sensu := config.Plugin["metrics"]["DEPRECATED-sensu-memory"]
-	if sensu.Command != "ruby ../sensu/plugins/system/memory-metrics.rb" {
-		t.Error("sensu command should be 'ruby ../sensu/plugins/system/memory-metrics.rb'")
+	if pluginConf.User != "mysql" {
+		t.Error("plugin user_name should be 'mysql'")
+	}
+	if *pluginConf.CustomIdentifier != "app1.example.com" {
+		t.Errorf("plugin custom_identifier should be 'app1.example.com' but got %v", *pluginConf.CustomIdentifier)
+	}
+	customIdentifiers := config.ListCustomIdentifiers()
+	if len(customIdentifiers) != 1 {
+		t.Errorf("config should have 1 custom_identifier")
+	}
+	if customIdentifiers[0] != "app1.example.com" {
+		t.Errorf("first custom_identifier should be 'app1.example.com'")
 	}
 
-	if config.Plugin["checks"] == nil {
+	if config.CheckPlugins == nil {
 		t.Error("plugin should have checks")
 	}
-	checks := config.Plugin["checks"]["heartbeat"]
+	checks := config.CheckPlugins["heartbeat"]
 	if checks.Command != "heartbeat.sh" {
-		t.Error("sensu command should be 'heartbeat.sh'")
+		t.Error("check command should be 'heartbeat.sh'")
+	}
+	if checks.User != "xyz" {
+		t.Error("check user_name should be 'xyz'")
+	}
+	if *checks.NotificationInterval != 60 {
+		t.Error("notification_interval should be 60")
+	}
+	if *checks.MaxCheckAttempts != 3 {
+		t.Error("max_check_attempts should be 3")
+	}
+
+	if config.MetadataPlugins == nil {
+		t.Error("config should have metadata plugin list")
+	}
+	metadataPlugin := config.MetadataPlugins["hostinfo"]
+	if metadataPlugin.Command != "hostinfo.sh" {
+		t.Errorf("command of metadata plugin should be 'hostinfo.sh' but got '%v'", metadataPlugin.Command)
+	}
+	if metadataPlugin.User != "zzz" {
+		t.Errorf("user of metadata plugin should be 'zzz' but got '%v'", metadataPlugin.User)
+	}
+	if *metadataPlugin.ExecutionInterval != 60 {
+		t.Errorf("execution interval of metadata plugin should be 60 but got '%v'", *metadataPlugin.ExecutionInterval)
+	}
+
+	if config.Plugin != nil {
+		t.Error("plugin config should be set nil, use MetricPlugins, CheckPlugins and MetadataPlugins instead")
 	}
 }
 
@@ -191,14 +276,17 @@ var tomlQuotedReplacer = strings.NewReplacer(
 func TestLoadConfigFileInclude(t *testing.T) {
 	configDir, err := ioutil.TempDir("", "mackerel-config-test")
 	assertNoError(t, err)
-
-	configFile, err := ioutil.TempFile("", "mackerel-config-test")
-	assertNoError(t, err)
+	defer os.RemoveAll(configDir)
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub1.conf"))
+	assertNoError(t, err)
 
 	configContent := fmt.Sprintf(`
-apikey = "not overwritten"
+apikey = "abcde"
+pidfile = "/path/to/pidfile"
+root = "/var/lib/mackerel-agent"
+verbose = false
+
 roles = [ "roles", "to be overwritten" ]
 
 include = "%s/*.conf"
@@ -207,8 +295,12 @@ include = "%s/*.conf"
 command = "foo1"
 
 [plugin.metrics.bar]
-command = "this wille be overwritten"
+command = "this will be overwritten"
 `, tomlQuotedReplacer.Replace(configDir))
+
+	configFile, err := newTempFileWithContent(configContent)
+	assertNoError(t, err)
+	defer os.Remove(configFile.Name())
 
 	includedContent := `
 roles = [ "Service:role" ]
@@ -220,24 +312,151 @@ command = "foo2"
 command = "bar"
 `
 
-	_, err = configFile.WriteString(configContent)
-	assertNoError(t, err)
-
 	_, err = includedFile.WriteString(includedContent)
 	assertNoError(t, err)
-
-	configFile.Close()
 	includedFile.Close()
-	defer os.Remove(configFile.Name())
-	defer os.Remove(includedFile.Name())
 
 	config, err := loadConfigFile(configFile.Name())
 	assertNoError(t, err)
 
-	assert(t, config.Apikey == "not overwritten", "apikey should not be overwritten")
+	assert(t, config.Apikey == "abcde", "apikey should be kept as it is when not configured in the included file")
+	assert(t, config.Pidfile == "/path/to/pidfile", "pidfile should be kept as it is when not configured in the included file")
+	assert(t, config.Root == "/var/lib/mackerel-agent", "root should be kept as it is when not configured in the included file")
+	assert(t, config.Verbose == false, "verbose should be kept as it is when not configured in the included file")
 	assert(t, len(config.Roles) == 1, "roles should be overwritten")
 	assert(t, config.Roles[0] == "Service:role", "roles should be overwritten")
-	assert(t, config.Plugin["metrics"]["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
-	assert(t, config.Plugin["metrics"]["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
-	assert(t, config.Plugin["metrics"]["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
+	assert(t, config.MetricPlugins["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
+	assert(t, config.MetricPlugins["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
+	assert(t, config.MetricPlugins["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
+}
+
+func TestLoadConfigFileIncludeOverwritten(t *testing.T) {
+	configDir, err := ioutil.TempDir("", "mackerel-config-test")
+	assertNoError(t, err)
+	defer os.RemoveAll(configDir)
+
+	includedFile, err := os.Create(filepath.Join(configDir, "sub2.conf"))
+	assertNoError(t, err)
+
+	configContent := fmt.Sprintf(`
+apikey = "abcde"
+pidfile = "/path/to/pidfile"
+root = "/var/lib/mackerel-agent"
+verbose = false
+
+include = "%s/*.conf"
+`, tomlQuotedReplacer.Replace(configDir))
+
+	configFile, err := newTempFileWithContent(configContent)
+	assertNoError(t, err)
+	defer os.Remove(configFile.Name())
+
+	includedContent := `
+apikey = "new-api-key"
+pidfile = "/path/to/pidfile2"
+root = "/tmp"
+verbose = true
+`
+
+	_, err = includedFile.WriteString(includedContent)
+	assertNoError(t, err)
+	includedFile.Close()
+
+	config, err := loadConfigFile(configFile.Name())
+	assertNoError(t, err)
+
+	assert(t, config.Apikey == "new-api-key", "apikey should be overwritten")
+	assert(t, config.Pidfile == "/path/to/pidfile2", "pidfile should be overwritten")
+	assert(t, config.Root == "/tmp", "root should be overwritten")
+	assert(t, config.Verbose == true, "verbose should be overwritten")
+}
+
+func TestFileSystemHostIDStorage(t *testing.T) {
+	root, err := ioutil.TempDir("", "mackerel-agent-test")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	s := FileSystemHostIDStorage{Root: root}
+	err = s.SaveHostID("test-host-id")
+	assertNoError(t, err)
+
+	hostID, err := s.LoadHostID()
+	assertNoError(t, err)
+	assert(t, hostID == "test-host-id", "SaveHostID and LoadHostID should preserve the host id")
+
+	err = s.DeleteSavedHostID()
+	assertNoError(t, err)
+
+	_, err = s.LoadHostID()
+	assert(t, err != nil, "LoadHostID after DeleteSavedHostID must fail")
+}
+
+func TestConfig_HostIDStorage(t *testing.T) {
+	conf := Config{
+		Root: "test-root",
+	}
+
+	storage, ok := conf.hostIDStorage().(*FileSystemHostIDStorage)
+	assert(t, ok, "Default hostIDStorage must be *FileSystemHostIDStorage")
+	assert(t, storage.Root == "test-root", "FileSystemHostIDStorage must have the same Root of Config")
+}
+
+func TestLoadConfigWithSilent(t *testing.T) {
+	conff, err := newTempFileWithContent(`
+apikey = "abcde"
+silent = true
+`)
+	if err != nil {
+		t.Fatalf("should not raise error: %s", err)
+	}
+	defer os.Remove(conff.Name())
+
+	config, err := loadConfigFile(conff.Name())
+	assertNoError(t, err)
+
+	if !config.Silent {
+		t.Error("silent should be ture")
+	}
+}
+
+func TestLoadConfig_WithCommandArgs(t *testing.T) {
+	conff, err := newTempFileWithContent(`
+apikey = "abcde"
+[plugin.metrics.hoge]
+command = ["perl", "-E", "say 'Hello'"]
+`)
+	if err != nil {
+		t.Fatalf("should not raise error: %s", err)
+	}
+	defer os.Remove(conff.Name())
+
+	config, err := loadConfigFile(conff.Name())
+	assertNoError(t, err)
+
+	expected := []string{"perl", "-E", "say 'Hello'"}
+	p := config.MetricPlugins["hoge"]
+	output := p.CommandArgs
+
+	if !reflect.DeepEqual(expected, output) {
+		t.Errorf("command args not expected: %+v", output)
+	}
+
+	if p.Command != "" {
+		t.Errorf("p.Command should be empty but: %s", p.Command)
+	}
+}
+
+func newTempFileWithContent(content string) (*os.File, error) {
+	tmpf, err := ioutil.TempFile("", "mackerel-config-test")
+	if err != nil {
+		return nil, err
+	}
+	if _, err := tmpf.WriteString(content); err != nil {
+		os.Remove(tmpf.Name())
+		return nil, err
+	}
+	tmpf.Sync()
+	tmpf.Close()
+	return tmpf, nil
 }

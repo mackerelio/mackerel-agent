@@ -21,8 +21,8 @@ var execdir = execdirInit()
 var DefaultConfig = &Config{
 	Apibase:    getApibase(),
 	Root:       execdir,
-	Pidfile:    filepath.Join(execdir, getAgentName() + ".pid"),
-	Conffile:   filepath.Join(execdir, getAgentName() + ".conf"),
+	Pidfile:    filepath.Join(execdir, getAgentName()+".pid"),
+	Conffile:   filepath.Join(execdir, getAgentName()+".conf"),
 	Roles:      []string{},
 	Verbose:    false,
 	Diagnostic: false,

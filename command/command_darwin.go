@@ -13,11 +13,11 @@ func specGenerators() []spec.Generator {
 		&specDarwin.KernelGenerator{},
 		&specDarwin.MemoryGenerator{},
 		&specDarwin.CPUGenerator{},
-		&specDarwin.FilesystemGenerator{},
+		&spec.FilesystemGenerator{},
 	}
 }
 
-func interfaceGenerator() spec.Generator {
+func interfaceGenerator() spec.InterfaceGenerator {
 	return &specDarwin.InterfaceGenerator{}
 }
 
@@ -27,18 +27,8 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsDarwin.CPUUsageGenerator{},
 		&metricsDarwin.MemoryGenerator{},
 		&metricsDarwin.SwapGenerator{},
-		&metricsDarwin.FilesystemGenerator{},
+		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp, UseMountpoint: conf.Filesystems.UseMountpoint},
 		&metricsDarwin.InterfaceGenerator{Interval: metricsInterval},
-	}
-
-	return generators
-}
-
-func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
-	generators := []metrics.PluginGenerator{}
-
-	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
 	}
 
 	return generators

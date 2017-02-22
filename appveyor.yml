@@ -11,23 +11,28 @@ install:
   - md c:\mackerel-secure
   - ps: if ($env:CERT) { Set-Content c:\mackerel-secure\cert.p12.base64 $env:CERT }
   - ps: if ($env:CERTPASS) { Set-Content c:\mackerel-secure\certpass $env:CERTPASS }
-  - set PATH=c:\go\bin;c:\tools\ruby215\bin;%PATH%;C:\MinGW\bin
+  - set PATH=c:\go\bin;%GOPATH%\bin;c:\tools\ruby215\bin;%PATH%;C:\MinGW\bin
   - echo %Path%
-  - choco install ruby
+  - choco install -y ruby
   - rd c:\go /s /q
-  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.4.2.windows-386.zip
-  - 7z x go1.4.2.windows-386.zip -oC:\ >nul
+  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.7.windows-386.zip
+  - 7z x go1.7.windows-386.zip -oC:\ >nul
   - go version
   - go env
-  - set CERT= & set CERTPASS= & env
+  - set CERT= & set CERTPASS= & set
 build_script:
+  - go get github.com/motemen/go-cli/gen
+  - go generate
+  - go get golang.org/x/tools/cmd/stringer
+  - go generate ./logging
   - call wix\build.bat
 test_script:
 - FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w
 - cd %CDUP%
 - go get -d -v -t ./...
-- go vet ./...
+- go tool vet -all .
 - go test -short ./...
+- call wix\pluginlist_test.bat
 notifications:
   - provider: Slack
     auth_token:
@@ -38,10 +43,13 @@ deploy:
   provider: GitHub
   auth_token:
     secure: nT6f+l3sILrBAyVGLE1il+wkv5BvrnEnVkiPGDZQegePa81MUC4AIDTNQ/gX8AWW
-  artifact: mackerel-agent-msi
+  artifact: mackerel-agent-msi, mackerel-agent-k-msi
   appveyor_repo_tag: true
+  force_update: true
   on:
     appveyor_repo_tag: true
 artifacts:
   - path: build\mackerel-agent.msi
     name: mackerel-agent-msi
+  - path: build\mackerel-agent-k.msi
+    name: mackerel-agent-k-msi

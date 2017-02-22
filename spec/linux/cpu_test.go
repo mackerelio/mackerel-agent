@@ -65,12 +65,6 @@ func TestCPUGenerate(t *testing.T) {
 	if _, ok := cpu1["cache_size"]; !ok {
 		t.Error("cpu should have cache_size")
 	}
-	if _, ok := cpu1["flags"]; !ok {
-		t.Error("cpu should have flags")
-	}
-	if _, ok := cpu1["flags"].([]string); !ok {
-		t.Error("cpu.flags should be slice of string")
-	}
 }
 
 func TestCPUgenerate_linux4_0_amd64(t *testing.T) {

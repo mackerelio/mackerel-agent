@@ -43,11 +43,11 @@ func TestUrlFor(t *testing.T) {
 		true,
 	)
 
-	if api.urlFor("/").String() != "http://example.com/" {
+	if api.urlFor("/", "").String() != "http://example.com/" {
 		t.Error("should return http://example.com/")
 	}
 
-	if api.urlFor("/path/to/api").String() != "http://example.com/path/to/api" {
+	if api.urlFor("/path/to/api", "").String() != "http://example.com/path/to/api" {
 		t.Error("should return http://example.com/path/to/api")
 	}
 }
@@ -87,7 +87,7 @@ func TestDo(t *testing.T) {
 		false,
 	)
 
-	req, _ := http.NewRequest("GET", api.urlFor("/").String(), nil)
+	req, _ := http.NewRequest("GET", api.urlFor("/", "").String(), nil)
 	api.do(req)
 }
 
@@ -158,9 +158,17 @@ func TestCreateHost(t *testing.T) {
 		"macAddress": "01:23:45:67:89:ab",
 		"encap":      "Ethernet",
 	})
-	hostID, err := api.CreateHost("dummy", map[string]interface{}{
-		"memo": "hello",
-	}, interfaces, []string{"My-Service:app-default"}, "label")
+	hostSpec := HostSpec{
+		Name: "dummy",
+		Meta: map[string]interface{}{
+			"memo": "hello",
+		},
+		Interfaces:       interfaces,
+		RoleFullnames:    []string{"My-Service:app-default"},
+		DisplayName:      "my-display-name",
+		CustomIdentifier: "",
+	}
+	hostID, err := api.CreateHost(hostSpec)
 
 	if err != nil {
 		t.Error("should not raise error: ", err)
@@ -214,7 +222,10 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	// with nil args
-	hostID, err := api.CreateHost("nilsome", nil, nil, nil, "")
+	hostSpec := HostSpec{
+		Name: "nilsome",
+	}
+	hostID, err := api.CreateHost(hostSpec)
 	if err != nil {
 		t.Error("should not return error but got: ", err)
 	}
@@ -291,8 +302,6 @@ func TestUpdateHost(t *testing.T) {
 		"encap":      "Ethernet",
 	})
 
-	var checkNames = []string{}
-
 	hostSpec := HostSpec{
 		Name: "dummy",
 		Meta: map[string]interface{}{
@@ -300,7 +309,7 @@ func TestUpdateHost(t *testing.T) {
 		},
 		Interfaces:    interfaces,
 		RoleFullnames: []string{"My-Service:app-default"},
-		Checks:        checkNames,
+		Checks:        []string{},
 	}
 
 	err := api.UpdateHost("ABCD123", hostSpec)
@@ -365,12 +374,12 @@ func TestFindHost(t *testing.T) {
 		}
 
 		respJSON, _ := json.Marshal(map[string]map[string]interface{}{
-			"host": map[string]interface{}{
+			"host": {
 				"id":     "9rxGOHfVF8F",
 				"name":   "mydb001",
 				"status": "working",
 				"memo":   "memo",
-				"roles":  map[string][]string{"My-Service": []string{"db-master", "db-slave"}},
+				"roles":  map[string][]string{"My-Service": {"db-master", "db-slave"}},
 			},
 		})
 
@@ -381,6 +390,49 @@ func TestFindHost(t *testing.T) {
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 	host, err := api.FindHost("9rxGOHfVF8F")
+
+	if err != nil {
+		t.Error("err shoud be nil but: ", err)
+	}
+
+	if reflect.DeepEqual(host, &Host{
+		ID:     "9rxGOHfVF8F",
+		Name:   "mydb001",
+		Type:   "",
+		Status: "working",
+	}) != true {
+		t.Error("request sends json including memo but: ", host)
+	}
+}
+
+func TestFindHostByCustomIdentifier(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		if req.URL.Path != "/api/v0/hosts" {
+			t.Error("request URL should be /api/v0/hosts but :", req.URL.Path)
+		}
+
+		if req.Method != "GET" {
+			t.Error("request method should be GET but :", req.Method)
+		}
+
+		respJSON, _ := json.Marshal(map[string][]map[string]interface{}{
+			"hosts": {{
+				"id":               "9rxGOHfVF8F",
+				"CustomIdentifier": "foo-bar",
+				"name":             "mydb001",
+				"status":           "working",
+				"memo":             "memo",
+				"roles":            map[string][]string{"My-Service": {"db-master", "db-slave"}},
+			}},
+		})
+
+		res.Header()["Content-Type"] = []string{"application/json"}
+		fmt.Fprint(res, string(respJSON))
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	host, err := api.FindHostByCustomIdentifier("foo-bar")
 
 	if err != nil {
 		t.Error("err shoud be nil but: ", err)
@@ -444,7 +496,7 @@ func TestPostHostMetricValues(t *testing.T) {
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 	err := api.PostMetricsValues([]*CreatingMetricsValue{
-		&CreatingMetricsValue{
+		{
 			HostID: "9rxGOHfVF8F",
 			Name:   "custom.metric.mysql.connections",
 			Time:   123456789,
@@ -507,17 +559,17 @@ func TestCreateGraphDefs(t *testing.T) {
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 	err := api.CreateGraphDefs([]CreateGraphDefsPayload{
-		CreateGraphDefsPayload{
+		{
 			Name:        "mackerel",
 			DisplayName: "HorseMackerel",
 			Unit:        "percentage",
 			Metrics: []CreateGraphDefsPayloadMetric{
-				CreateGraphDefsPayloadMetric{
+				{
 					Name:        "saba1",
 					DisplayName: "aji1",
 					IsStacked:   false,
 				},
-				CreateGraphDefsPayloadMetric{
+				{
 					Name:        "saba2",
 					DisplayName: "aji2",
 					IsStacked:   false,

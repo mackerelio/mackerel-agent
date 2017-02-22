@@ -2,15 +2,18 @@ package main
 
 import (
 	"bufio"
-	"code.google.com/p/winsvc/eventlog"
-	"code.google.com/p/winsvc/svc"
 	"io"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"syscall"
+	"time"
 	"unsafe"
+
+	"golang.org/x/sys/windows/svc"
+	"golang.org/x/sys/windows/svc/eventlog"
 )
 
 const name = "mackerel-agent"
@@ -20,7 +23,28 @@ const startEid = 2
 const stopEid = 3
 const loggerEid = 4
 
+var (
+	kernel32                     = syscall.NewLazyDLL("kernel32")
+	procAllocConsole             = kernel32.NewProc("AllocConsole")
+	procGenerateConsoleCtrlEvent = kernel32.NewProc("GenerateConsoleCtrlEvent")
+	procGetModuleFileName        = kernel32.NewProc("GetModuleFileNameW")
+)
+
 func main() {
+	if len(os.Args) == 2 {
+		var err error
+		switch os.Args[1] {
+		case "install":
+			err = installService("mackerel-agent", "mackerel agent")
+		case "remove":
+			err = removeService("mackerel-agent")
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
 	elog, err := eventlog.Open(name)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -40,8 +64,20 @@ type handler struct {
 	cmd  *exec.Cmd
 }
 
+// ex.
+// verbose log: 2017/01/21 22:21:08 command.go:434: DEBUG <command> received 'immediate' chan
+// normal log:  2017/01/24 14:14:27 INFO <main> Starting mackerel-agent version:0.36.0
+var logRe = regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} (?:.+\.go:\d+: )?([A-Z]+) `)
+
 func (h *handler) start() error {
-	cmd := exec.Command(filepath.Join(filepath.Dir(execdir()), "mackerel-agent.exe"))
+	procAllocConsole.Call()
+	dir := execdir()
+	cmd := exec.Command(filepath.Join(dir, "mackerel-agent.exe"))
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
+	}
+	cmd.Dir = dir
+
 	h.cmd = cmd
 	r, w := io.Pipe()
 	cmd.Stderr = w
@@ -49,10 +85,10 @@ func (h *handler) start() error {
 	scanner.Split(bufio.ScanLines) // default
 	go func() {
 		// pipe stderr to windows event log
-		re := regexp.MustCompile("^\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} (\\w+) ")
 		for scanner.Scan() {
 			line := scanner.Text()
-			if match := re.FindStringSubmatch(line); match != nil {
+
+			if match := logRe.FindStringSubmatch(line); match != nil {
 				level := match[1]
 				switch level {
 				case "TRACE", "DEBUG", "INFO":
@@ -77,14 +113,32 @@ func (h *handler) start() error {
 	return cmd.Start()
 }
 
+func interrupt(p *os.Process) error {
+	r1, _, err := procGenerateConsoleCtrlEvent.Call(syscall.CTRL_BREAK_EVENT, uintptr(p.Pid))
+	if r1 == 0 {
+		return err
+	}
+	return nil
+}
+
 func (h *handler) stop() error {
 	if h.cmd != nil && h.cmd.Process != nil {
+		err := interrupt(h.cmd.Process)
+		if err == nil {
+			end := time.Now().Add(10 * time.Second)
+			for time.Now().Before(end) {
+				if h.cmd.ProcessState != nil && h.cmd.ProcessState.Exited() {
+					return nil
+				}
+				time.Sleep(1 * time.Second)
+			}
+		}
 		return h.cmd.Process.Kill()
 	}
 	return nil
 }
 
-// implement https://godoc.org/code.google.com/p/winsvc/svc#Handler
+// implement https://godoc.org/golang.org/x/sys/windows/svc#Handler
 func (h *handler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- svc.Status) (svcSpecificEC bool, exitCode uint32) {
 	s <- svc.Status{State: svc.StartPending}
 	defer func() {
@@ -132,14 +186,10 @@ L:
 }
 
 func execdir() string {
-	var (
-		kernel32              = syscall.NewLazyDLL("kernel32")
-		procGetModuleFileName = kernel32.NewProc("GetModuleFileNameW")
-	)
 	var wpath [syscall.MAX_PATH]uint16
 	r1, _, err := procGetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
 	if r1 == 0 {
 		log.Fatal(err)
 	}
-	return syscall.UTF16ToString(wpath[:])
+	return filepath.Dir(syscall.UTF16ToString(wpath[:]))
 }

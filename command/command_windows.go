@@ -18,7 +18,7 @@ func specGenerators() []spec.Generator {
 	}
 }
 
-func interfaceGenerator() spec.Generator {
+func interfaceGenerator() spec.InterfaceGenerator {
 	return &specWindows.InterfaceGenerator{}
 }
 
@@ -36,7 +36,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	if g, err = metricsWindows.NewMemoryGenerator(); err == nil {
 		generators = append(generators, g)
 	}
-	if g, err = metricsWindows.NewFilesystemGenerator(); err == nil {
+	if g, err = metricsWindows.NewFilesystemGenerator(conf.Filesystems.Ignore.Regexp); err == nil {
 		generators = append(generators, g)
 	}
 	if g, err = metricsWindows.NewInterfaceGenerator(metricsInterval); err == nil {
@@ -45,16 +45,6 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	if g, err = metricsWindows.NewDiskGenerator(metricsInterval); err == nil {
 		generators = append(generators, g)
 	}
-	for _, pluginConfig := range conf.Plugin["metrics"] {
-		if g, err = metricsWindows.NewPluginGenerator(pluginConfig); err == nil {
-			generators = append(generators, g)
-		}
-	}
 
 	return generators
-}
-
-func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
-	// XXX to be implemented
-	return []metrics.PluginGenerator{}
 }

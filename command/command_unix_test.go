@@ -3,7 +3,6 @@
 package command
 
 import (
-	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -24,16 +23,14 @@ func TestRunOnce(t *testing.T) {
 	}
 
 	conf := &config.Config{
-		Plugin: map[string]config.PluginConfigs{
-			"metrics": map[string]config.PluginConfig{
-				"metric1": config.PluginConfig{
-					Command: diceCommand,
-				},
+		MetricPlugins: map[string]*config.MetricPlugin{
+			"metric1": {
+				Command: diceCommand,
 			},
-			"checks": map[string]config.PluginConfig{
-				"check1": config.PluginConfig{
-					Command: "echo 1",
-				},
+		},
+		CheckPlugins: map[string]*config.CheckPlugin{
+			"check1": {
+				Command: "echo 1",
 			},
 		},
 	}
@@ -44,10 +41,6 @@ func TestRunOnce(t *testing.T) {
 }
 
 func TestRunOncePayload(t *testing.T) {
-	if os.Getenv("TRAVIS") != "" {
-		t.Skip("Skip in travis")
-	}
-
 	if testing.Short() {
 		origMetricsInterval := metricsInterval
 		metricsInterval = 1
@@ -57,16 +50,14 @@ func TestRunOncePayload(t *testing.T) {
 	}
 
 	conf := &config.Config{
-		Plugin: map[string]config.PluginConfigs{
-			"metrics": map[string]config.PluginConfig{
-				"metric1": config.PluginConfig{
-					Command: diceCommand,
-				},
+		MetricPlugins: map[string]*config.MetricPlugin{
+			"metric1": {
+				Command: diceCommand,
 			},
-			"checks": map[string]config.PluginConfig{
-				"check1": config.PluginConfig{
-					Command: "echo 1",
-				},
+		},
+		CheckPlugins: map[string]*config.CheckPlugin{
+			"check1": {
+				Command: "echo 1",
 			},
 		},
 	}
@@ -80,12 +71,12 @@ func TestRunOncePayload(t *testing.T) {
 		DisplayName: "My Dice",
 		Unit:        "integer",
 		Metrics: []mackerel.CreateGraphDefsPayloadMetric{
-			mackerel.CreateGraphDefsPayloadMetric{
+			{
 				Name:        "custom.dice.d6",
 				DisplayName: "Die (d6)",
 				IsStacked:   false,
 			},
-			mackerel.CreateGraphDefsPayloadMetric{
+			{
 				Name:        "custom.dice.d20",
 				DisplayName: "Die (d20)",
 				IsStacked:   false,
@@ -102,7 +93,10 @@ func TestRunOncePayload(t *testing.T) {
 		t.Errorf("first check name should be check1")
 	}
 
-	if metrics.Values["custom.dice.d20"] == 0 {
+	if len(metrics.Values) != 1 {
+		t.Errorf("there must be some metric values")
+	}
+	if metrics.Values[0].Values["custom.dice.d20"] == 0 {
 		t.Errorf("custom.dice.d20 name should be set")
 	}
 

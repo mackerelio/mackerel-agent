@@ -6,7 +6,7 @@ import (
 	"bufio"
 	"io"
 	"os"
-	"regexp"
+	"strings"
 
 	"github.com/mackerelio/mackerel-agent/logging"
 )
@@ -15,7 +15,7 @@ import (
 type CPUGenerator struct {
 }
 
-// Key XXX
+// Key return "cpu"
 func (g *CPUGenerator) Key() string {
 	return "cpu"
 }
@@ -31,37 +31,29 @@ func (g *CPUGenerator) generate(file io.Reader) (interface{}, error) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-
-		if matches := regexp.MustCompile(`^processor\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
+		kv := strings.SplitN(line, ":", 2)
+		if len(kv) < 2 {
+			continue
+		}
+		key := strings.TrimSpace(kv[0])
+		val := strings.TrimSpace(kv[1])
+		switch key {
+		case "processor":
 			cur = make(map[string]interface{})
 			if modelName != "" {
 				cur["model_name"] = modelName
 			}
 			results = append(results, cur)
-		} else if matches := regexp.MustCompile(`^Processor\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			modelName = matches[1]
-		} else if matches := regexp.MustCompile(`^vendor_id\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["vendor_id"] = matches[1]
-		} else if matches := regexp.MustCompile(`^cpu family\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["family"] = matches[1]
-		} else if matches := regexp.MustCompile(`^model\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["model"] = matches[1]
-		} else if matches := regexp.MustCompile(`^stepping\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["stepping"] = matches[1]
-		} else if matches := regexp.MustCompile(`^physical id\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["physical_id"] = matches[1]
-		} else if matches := regexp.MustCompile(`^core id\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["core_id"] = matches[1]
-		} else if matches := regexp.MustCompile(`^cpu cores\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["cores"] = matches[1]
-		} else if matches := regexp.MustCompile(`^model name\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["model_name"] = matches[1]
-		} else if matches := regexp.MustCompile(`^cpu MHz\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["mhz"] = matches[1]
-		} else if matches := regexp.MustCompile(`^cache size\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["cache_size"] = matches[1]
-		} else if matches := regexp.MustCompile(`^flags\s+:\s+(.*)$`).FindStringSubmatch(line); matches != nil {
-			cur["flags"] = regexp.MustCompile(` `).Split(matches[1], -1)
+		case "Processor":
+			modelName = val
+		case "vendor_id", "model", "stepping", "physical id", "core id", "model name", "cache size":
+			cur[strings.Replace(key, " ", "_", -1)] = val
+		case "cpu family":
+			cur["family"] = val
+		case "cpu cores":
+			cur["cores"] = val
+		case "cpu MHz":
+			cur["mhz"] = val
 		}
 	}
 	if err := scanner.Err(); err != nil {
@@ -79,7 +71,7 @@ func (g *CPUGenerator) generate(file io.Reader) (interface{}, error) {
 	return results, nil
 }
 
-// Generate XXX
+// Generate cpu specs
 func (g *CPUGenerator) Generate() (interface{}, error) {
 	file, err := os.Open("/proc/cpuinfo")
 	if err != nil {

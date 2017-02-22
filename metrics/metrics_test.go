@@ -5,22 +5,84 @@ import (
 	"testing"
 )
 
-func TestMerge(t *testing.T) {
-	var v = Values(map[string]float64{
+func TestMergeValuesCustomIdentifiers(t *testing.T) {
+	var v0 = Values{
 		"aa": 10,
-	})
-	var vv = Values(map[string]float64{
+	}
+	var v1 = Values{
 		"bb": 20,
 		"cc": 30,
-	})
+	}
+	var v2 = Values{
+		"dd": 40,
+		"ee": 50,
+	}
+	var v3 = Values{
+		"ff": 60,
+		"gg": 70,
+	}
 
-	v.Merge(vv)
+	v := MergeValuesCustomIdentifiers([]*ValuesCustomIdentifier{
+		{Values: v0},
+	}, &ValuesCustomIdentifier{Values: v1})
 
-	if !reflect.DeepEqual(v, Values(map[string]float64{
-		"aa": 10,
-		"bb": 20,
-		"cc": 30,
-	})) {
+	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
+		{
+			Values: Values{
+				"aa": 10,
+				"bb": 20,
+				"cc": 30,
+			},
+			CustomIdentifier: nil,
+		}}) {
+		t.Errorf("somthing went wrong")
+	}
+
+	customIdentifiers := "foo-bar"
+	v = MergeValuesCustomIdentifiers(v, &ValuesCustomIdentifier{Values: v2, CustomIdentifier: &customIdentifiers})
+
+	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
+		{
+			Values: Values{
+				"aa": 10,
+				"bb": 20,
+				"cc": 30,
+			},
+			CustomIdentifier: nil,
+		},
+		{
+			Values: Values{
+				"dd": 40,
+				"ee": 50,
+			},
+			CustomIdentifier: &customIdentifiers,
+		},
+	}) {
+		t.Errorf("somthing went wrong")
+	}
+
+	sameCustomIdentifiers := "foo-bar"
+	v = MergeValuesCustomIdentifiers(v, &ValuesCustomIdentifier{Values: v3, CustomIdentifier: &sameCustomIdentifiers})
+
+	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
+		{
+			Values: Values{
+				"aa": 10,
+				"bb": 20,
+				"cc": 30,
+			},
+			CustomIdentifier: nil,
+		},
+		{
+			Values: Values{
+				"dd": 40,
+				"ee": 50,
+				"ff": 60,
+				"gg": 70,
+			},
+			CustomIdentifier: &customIdentifiers,
+		},
+	}) {
 		t.Errorf("somthing went wrong")
 	}
 }

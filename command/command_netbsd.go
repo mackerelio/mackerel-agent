@@ -13,11 +13,11 @@ func specGenerators() []spec.Generator {
 		&specNetbsd.KernelGenerator{},
 		&specNetbsd.MemoryGenerator{},
 		&specNetbsd.CPUGenerator{},
-		&specNetbsd.FilesystemGenerator{},
+		&spec.FilesystemGenerator{},
 	}
 }
 
-func interfaceGenerator() spec.Generator {
+func interfaceGenerator() spec.InterfaceGenerator {
 	return &specNetbsd.InterfaceGenerator{}
 }
 
@@ -25,18 +25,8 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsNetbsd.Loadavg5Generator{},
 		&metricsNetbsd.CPUUsageGenerator{},
-		&metricsNetbsd.FilesystemGenerator{},
+		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp, UseMountpoint: conf.Filesystems.UseMountpoint},
 		&metricsNetbsd.MemoryGenerator{},
-	}
-
-	return generators
-}
-
-func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
-	generators := []metrics.PluginGenerator{}
-
-	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
 	}
 
 	return generators

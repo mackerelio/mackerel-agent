@@ -4,10 +4,11 @@ package windows
 
 import (
 	"fmt"
-	"github.com/mackerelio/mackerel-agent/logging"
 	"strings"
 	"syscall"
 	"unsafe"
+
+	"github.com/mackerelio/mackerel-agent/logging"
 )
 
 // FilesystemInfo XXX
@@ -16,8 +17,8 @@ type FilesystemInfo struct {
 	KbUsed      float64
 	KbSize      float64
 	KbAvailable float64
-	Mount        string
-	Label        string
+	Mount       string
+	Label       string
 	VolumeName  string
 	FsType      string
 }
@@ -41,7 +42,7 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 	for _, v := range drivebuf {
 		if v >= 65 && v <= 90 {
 			drive := string(v)
-			r, _, err = GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
+			r, _, _ = GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
 			if r != DRIVE_FIXED {
 				continue
 			}
@@ -76,7 +77,7 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 		}
 		freeBytesAvailable := int64(0)
 		totalNumberOfBytes := int64(0)
-		r, _, err = GetDiskFreeSpaceEx.Call(
+		r, _, _ = GetDiskFreeSpaceEx.Call(
 			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
 			uintptr(unsafe.Pointer(&freeBytesAvailable)),
 			uintptr(unsafe.Pointer(&totalNumberOfBytes)),
@@ -89,8 +90,8 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 			KbUsed:      float64((totalNumberOfBytes - freeBytesAvailable) / 1024),
 			KbSize:      float64(totalNumberOfBytes / 1024),
 			KbAvailable: float64(freeBytesAvailable / 1024),
-			Mount:        drive,
-			Label:        syscall.UTF16ToString(drivebuf),
+			Mount:       drive,
+			Label:       syscall.UTF16ToString(drivebuf),
 			VolumeName:  syscall.UTF16ToString(volumebuf),
 			FsType:      strings.ToLower(syscall.UTF16ToString(fsnamebuf)),
 		}

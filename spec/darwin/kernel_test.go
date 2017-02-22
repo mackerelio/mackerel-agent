@@ -26,4 +26,9 @@ func TestKernelGenerator_Generate(t *testing.T) {
 	if !releaseExists {
 		t.Errorf("'release' must exit: %v", kernel)
 	}
+
+	_, platformNameExists := kernel["platform_name"]
+	if !platformNameExists {
+		t.Errorf("'platform_name' must exit: %v", kernel)
+	}
 }

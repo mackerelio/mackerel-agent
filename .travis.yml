@@ -1,42 +1,51 @@
+sudo: false
 language: go
 go:
-- 1.4
-env: PATH=/home/travis/gopath/bin:$PATH
+- 1.7
+env:
+  global:
+  - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
+  - secure: "B34YsRebWxyx/UAHNAL5YWOgx2RE13TVfDC8FCCc7gAlogJcyAcPnC88fe8ECChHQC3GNnsHSi+GqgxTxzfoVkV+LUAFgHWbcF5O4O/4qHztKj7//72RwO+gXVr4U1Laz45bBr2r68XW0llj5tIlaEYxROJNLSAVDE4yDzmAHgc="
+sudo: false
+addons:
+  apt:
+    packages:
+      - rpm
+      - devscripts
+      - debhelper
 install:
-- sudo apt-get update
-- DEBIAN_FRONTEND=noninteractive sudo apt-get install -y rpm devscripts debhelper
 - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
 - make lint
 - make cover
-- goxc -t
+- test `gofmt -l . | wc -l` = 0
 - make crossbuild
 after_script:
 - goveralls -coverprofile=.profile.cov
-after_success:
-- tool/travis/autotag.sh
 before_deploy:
-- make rpm deb
+- make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
+- go get github.com/aktau/github-release
+- mkdir -p ~/bin
+- git clone https://github.com/github/hub.git && cd hub && script/build -o ~/bin/hub && cd ..
+- echo $TRAVIS_BRANCH
+- git config --add remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+- git fetch
+- git checkout master || git checkout -b master origin/master
+- git checkout $TRAVIS_BRANCH
+- git fetch --depth=1000
+- git fetch --tags --depth=1000 || true
 deploy:
-  provider: releases
-  api_key:
-    secure: NtpNjquqjnwpeVQQM1GTHTTU7YOo8fEIyoBtMf3Vf1ayZjuWVZxwNfM77E596TG52a8pnZtpapXyHT0M4e1zms7F5KVCrOEfOB0OrA4IDzoATelVqdONnN3lbRJeVJVdSmK8/FNKwjI24tQZTaTQcIOioNqh7ZRcrEYlatGCuAw=
-  file:
-  - /home/travis/rpmbuild/RPMS/noarch/mackerel-agent-0.24.0-1.noarch.rpm
-  - packaging/mackerel-agent_0.24.0-1_all.deb
-  - snapshot/mackerel-agent_darwin_386.zip
-  - snapshot/mackerel-agent_darwin_amd64.zip
-  - snapshot/mackerel-agent_freebsd_386.zip
-  - snapshot/mackerel-agent_freebsd_amd64.zip
-  - snapshot/mackerel-agent_freebsd_arm.zip
-  - snapshot/mackerel-agent_linux_386.tar.gz
-  - snapshot/mackerel-agent_linux_amd64.tar.gz
-  - snapshot/mackerel-agent_linux_arm.tar.gz
+- provider: script
+  script: _tools/releng --task=upload-to-github-release -v && _tools/releng --task=upload-master-to-github-release -v
   skip_cleanup: true
   on:
-    repo: mackerelio/mackerel-agent
+    branch: master
+- provider: script
+  script: _tools/releng --task=create-pullrequest --current-branch=$TRAVIS_BRANCH -v
+  skip_cleanup: true
+  on:
     all_branches: true
-    tags: true
+    condition: "$TRAVIS_BRANCH =~ ^bump-version-.*$"
 notifications:
   slack:
     secure: n9Hs5rIlb6MuFVsRp46ykd+CptnE3boI7Q9mNLuHwz77IQ/2mpUmOyBRDeW3BA2EXa4WEYAXu8q7/b7zVV+c+RcPdz8/h9N9EBrHUVeIkCP/Nyp+aUA8GvLNjGuxYC7nov3L+9GHBFXKX8FaV2lZ1/Eeb1Ovbtv6Oi39xNkHqTQ=

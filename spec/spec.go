@@ -7,19 +7,19 @@ import (
 
 var logger = logging.GetLogger("spec")
 
-// Generator XXX
+// Generator interface for generating spec values
 type Generator interface {
 	Key() string
 	Generate() (interface{}, error)
 }
 
-// Collect XXX
+// Collect spec values
 func Collect(specGenerators []Generator) map[string]interface{} {
 	specs := make(map[string]interface{})
 	for _, g := range specGenerators {
 		value, err := g.Generate()
 		if err != nil {
-			logger.Errorf("Failed to collect meta in %T (skip this spec): %s", g, err.Error())
+			logger.Warningf("Failed to collect meta in %T (skip this spec): %s", g, err.Error())
 			continue
 		}
 		specs[g.Key()] = value

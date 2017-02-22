@@ -20,10 +20,15 @@ prog="mackerel-agent"
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
-BIN=${BIN:="/usr/local/bin/$prog"}
+BIN=${BIN:="/usr/bin/$prog"}
 LOGFILE=${LOGILE:="/var/log/$prog.log"}
 PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
 ROOT=${ROOT:="/var/lib/$prog"}
+MACKEREL_PLUGIN_WORKDIR=${MACKEREL_PLUGIN_WORKDIR:="/var/tmp/$prog"}
+
+if [ "$HTTP_PROXY" != "" ]; then
+    export HTTP_PROXY=$HTTP_PROXY
+fi
 
 lockfile=/var/lock/subsys/$prog
 
@@ -36,9 +41,11 @@ prefix_match() {
 start() {
     [ -x $exec ] || exit 5
 
+    # Set large number of file descriptors for the safety sake
+    ulimit -n 65536 1>/dev/null 2>&1 || true
     echo -n $"Starting $prog:"
-
-    $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
+    mkdir -m 777 -p $MACKEREL_PLUGIN_WORKDIR
+    MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then
         failure
@@ -52,6 +59,24 @@ start() {
     echo
 
     return 0
+}
+
+configtest_q() {
+    $BIN configtest ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1
+}
+
+configtest() {
+    echo -n $"Testing configuration of $prog: "
+
+    configtest_q
+    if [ "$?" -eq 0 ]; then
+        success
+        echo
+    else
+        failure
+        echo
+        return 1
+    fi
 }
 
 stop() {
@@ -130,6 +155,7 @@ case "$1" in
         exit $retval
         ;;
     reload)
+        configtest_q || exit 1
         restart
         ;;
     restart)
@@ -138,8 +164,11 @@ case "$1" in
     status)
         rh_status
         ;;
+    configtest)
+        configtest
+        ;;
     *)
-        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        echo $"Usage: $0 {start|stop|restart|reload|status|configtest}"
         exit 2
 esac
 

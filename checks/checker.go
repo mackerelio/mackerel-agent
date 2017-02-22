@@ -6,7 +6,6 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var logger = logging.GetLogger("checks")
@@ -25,6 +24,8 @@ const (
 	StatusUnknown   Status = "UNKNOWN"
 )
 
+const defaultCheckInterval = 1 * time.Minute
+
 var exitCodeToStatus = map[int]Status{
 	0: StatusOK,
 	1: StatusWarning,
@@ -36,55 +37,63 @@ var exitCodeToStatus = map[int]Status{
 // It invokes its given command and transforms the result to a Report
 // to be sent to Mackerel periodically.
 type Checker struct {
-	Name string
-	// NOTE(motemen): We make use of config.PluginConfig as it happens
-	// to have Command field which was used by metrics.pluginGenerator.
-	// If the configuration of checks.Checker and metrics.pluginGenerator goes different ones,
-	// we should reconcider using config.PluginConfig.
-	Config config.PluginConfig
+	Name   string
+	Config *config.CheckPlugin
 }
 
 // Report is what Checker produces by invoking its command.
 type Report struct {
-	Name       string
-	Status     Status
-	Message    string
-	OccurredAt time.Time
+	Name                 string
+	Status               Status
+	Message              string
+	OccurredAt           time.Time
+	NotificationInterval *int32
+	MaxCheckAttempts     *int32
 }
 
-func (c Checker) String() string {
+func (c *Checker) String() string {
 	return fmt.Sprintf("checker %q command=[%s]", c.Name, c.Config.Command)
 }
 
 // Check invokes the command and transforms its result to a Report.
-func (c Checker) Check() (*Report, error) {
+func (c *Checker) Check() *Report {
 	now := time.Now()
-
-	command := c.Config.Command
-	logger.Debugf("Checker %q executing command %q", c.Name, command)
-	// NOTE(motemen): Should we consider using stderr?
-	message, _, exitCode, err := util.RunCommand(command)
-	if err != nil {
-		return nil, err
+	message, stderr, exitCode, err := c.Config.Run()
+	if stderr != "" {
+		logger.Warningf("Checker %q output stderr: %s", c.Name, stderr)
 	}
 
 	status := StatusUnknown
-	if s, ok := exitCodeToStatus[exitCode]; ok {
-		status = s
+	if err != nil {
+		message = err.Error()
+	} else {
+		if s, ok := exitCodeToStatus[exitCode]; ok {
+			status = s
+		}
+
+		logger.Debugf("Checker %q status=%s message=%q", c.Name, status, message)
 	}
 
-	logger.Debugf("Checker %q status=%s message=%q", c.Name, status, message)
-
 	return &Report{
-		Name:       c.Name,
-		Status:     status,
-		Message:    message,
-		OccurredAt: now,
-	}, nil
+		Name:                 c.Name,
+		Status:               status,
+		Message:              message,
+		OccurredAt:           now,
+		NotificationInterval: c.Config.NotificationInterval,
+		MaxCheckAttempts:     c.Config.MaxCheckAttempts,
+	}
 }
 
 // Interval is the interval where the command is invoked.
-// (Will be configurable in the future)
-func (c Checker) Interval() time.Duration {
-	return 1 * time.Minute
+func (c *Checker) Interval() time.Duration {
+	if c.Config.CheckInterval != nil {
+		interval := time.Duration(*c.Config.CheckInterval) * time.Minute
+		if interval < 1*time.Minute {
+			interval = 1 * time.Minute
+		} else if interval > 60*time.Minute {
+			interval = 60 * time.Minute
+		}
+		return interval
+	}
+	return defaultCheckInterval
 }

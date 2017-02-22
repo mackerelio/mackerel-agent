@@ -13,11 +13,11 @@ func specGenerators() []spec.Generator {
 		&specFreebsd.KernelGenerator{},
 		&specFreebsd.MemoryGenerator{},
 		&specFreebsd.CPUGenerator{},
-		&specFreebsd.FilesystemGenerator{},
+		&spec.FilesystemGenerator{},
 	}
 }
 
-func interfaceGenerator() spec.Generator {
+func interfaceGenerator() spec.InterfaceGenerator {
 	return &specFreebsd.InterfaceGenerator{}
 }
 
@@ -25,18 +25,8 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
 		&metricsFreebsd.Loadavg5Generator{},
 		&metricsFreebsd.CPUUsageGenerator{},
-		&metricsFreebsd.FilesystemGenerator{},
+		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp, UseMountpoint: conf.Filesystems.UseMountpoint},
 		&metricsFreebsd.MemoryGenerator{},
-	}
-
-	return generators
-}
-
-func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
-	generators := []metrics.PluginGenerator{}
-
-	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
 	}
 
 	return generators

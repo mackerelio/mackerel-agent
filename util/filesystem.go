@@ -6,15 +6,28 @@ package util
 
 import (
 	"bufio"
-	"bytes"
+	"fmt"
 	"os/exec"
 	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/Songmu/timeout"
 	"github.com/mackerelio/mackerel-agent/logging"
 )
+
+// DfStat is disk free statistics from df command.
+// Field names are taken from column names of `df -P`
+type DfStat struct {
+	Name      string
+	Blocks    uint64
+	Used      uint64
+	Available uint64
+	Capacity  uint8
+	Mounted   string
+}
 
 // `df -P` sample:
 //  Filesystem     1024-blocks     Used Available Capacity Mounted on
@@ -26,16 +39,6 @@ import (
 var dfHeaderPattern = regexp.MustCompile(
 	// 1024-blocks or 1k-blocks
 	`^Filesystem\s+(?:1024|1[Kk])-block`,
-)
-
-// DfColumnSpec XXX
-type DfColumnSpec struct {
-	Name  string
-	IsInt bool // type of collected data  true: int64, false: string
-}
-
-var dfColumnsPattern = regexp.MustCompile(
-	`^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+%)\s+(.+)$`,
 )
 
 var logger = logging.GetLogger("util.filesystem")
@@ -55,59 +58,67 @@ func init() {
 	}
 }
 
-// CollectDfValues XXX
-func CollectDfValues(dfColumnSpecs []DfColumnSpec) (map[string]map[string]interface{}, error) {
+// CollectDfValues collects disk free statistics from df command
+func CollectDfValues() ([]*DfStat, error) {
 	cmd := exec.Command("df", dfOpt...)
-	cmd.Env = append(cmd.Env, "LANG=C")
-
+	tio := &timeout.Timeout{
+		Cmd:       cmd,
+		Duration:  15 * time.Second,
+		KillAfter: 5 * time.Second,
+	}
 	// Ignores exit status in case that df returns exit status 1
 	// when the agent does not have permission to access file system info.
-	out, err := cmd.Output()
+	_, stdout, _, err := tio.Run()
+
 	if err != nil {
 		logger.Warningf("'df %s' command exited with a non-zero status: '%s'", strings.Join(dfOpt, " "), err)
+		return nil, nil
 	}
+	return parseDfLines(stdout), nil
+}
 
-	lineScanner := bufio.NewScanner(bytes.NewReader(out))
-	filesystems := make(map[string]map[string]interface{})
-
-DF_LINES:
+func parseDfLines(out string) []*DfStat {
+	lineScanner := bufio.NewScanner(strings.NewReader(out))
+	var filesystems []*DfStat
 	for lineScanner.Scan() {
 		line := lineScanner.Text()
-
 		if dfHeaderPattern.MatchString(line) {
 			continue
-		} else if matches := dfColumnsPattern.FindStringSubmatch(line); matches != nil {
-			name := matches[1]
-			entry := make(map[string]interface{})
-
-			for i, colSpec := range dfColumnSpecs {
-				stringValue := matches[2+i]
-
-				var (
-					value interface{}
-					err   error
-				)
-
-				if colSpec.IsInt {
-					// parse as int64 to allow large size disks
-					value, err = strconv.ParseInt(stringValue, 0, 64)
-				} else {
-					value = stringValue
-				}
-
-				if err != nil {
-					logger.Warningf("Failed to parse value: [%s]", stringValue)
-					continue DF_LINES
-				}
-
-				entry[colSpec.Name] = value
-			}
-
-			filesystems[name] = entry
-		} else {
-			logger.Warningf("Failed to parse line: [%s]", line)
 		}
+		dfstat, err := parseDfLine(line)
+		if err != nil {
+			logger.Warningf(err.Error())
+			continue
+		}
+		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
+		if strings.HasPrefix(dfstat.Name, "/dev/mapper/docker-") {
+			continue
+		}
+		filesystems = append(filesystems, dfstat)
 	}
+	return filesystems
+}
 
-	return filesystems, nil
+var dfColumnsPattern = regexp.MustCompile(`^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)%\s+(.+)$`)
+
+func parseDfLine(line string) (*DfStat, error) {
+	matches := dfColumnsPattern.FindStringSubmatch(line)
+	if matches == nil {
+		return nil, fmt.Errorf("failed to parse line: [%s]", line)
+	}
+	name := matches[1]
+	blocks, _ := strconv.ParseUint(matches[2], 0, 64)
+	used, _ := strconv.ParseUint(matches[3], 0, 64)
+	available, _ := strconv.ParseUint(matches[4], 0, 64)
+	capacity, _ := strconv.ParseUint(matches[5], 0, 8)
+	mounted := matches[6]
+
+	return &DfStat{
+		Name:      name,
+		Blocks:    blocks,
+		Used:      used,
+		Available: available,
+		Capacity:  uint8(capacity),
+		Mounted:   mounted,
+	}, nil
 }

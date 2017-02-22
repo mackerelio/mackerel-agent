@@ -14,11 +14,11 @@ func specGenerators() []spec.Generator {
 		&specLinux.CPUGenerator{},
 		&specLinux.MemoryGenerator{},
 		&specLinux.BlockDeviceGenerator{},
-		&specLinux.FilesystemGenerator{},
+		&spec.FilesystemGenerator{},
 	}
 }
 
-func interfaceGenerator() spec.Generator {
+func interfaceGenerator() spec.InterfaceGenerator {
 	return &specLinux.InterfaceGenerator{}
 }
 
@@ -27,20 +27,9 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsLinux.Loadavg5Generator{},
 		&metricsLinux.CPUUsageGenerator{Interval: metricsInterval},
 		&metricsLinux.MemoryGenerator{},
-		&metricsLinux.UptimeGenerator{},
 		&metricsLinux.InterfaceGenerator{Interval: metricsInterval},
-		&metricsLinux.DiskGenerator{Interval: metricsInterval},
-		&metricsLinux.FilesystemGenerator{},
-	}
-
-	return generators
-}
-
-func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
-	generators := []metrics.PluginGenerator{}
-
-	for _, pluginConfig := range conf.Plugin["metrics"] {
-		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
+		&metricsLinux.DiskGenerator{Interval: metricsInterval, UseMountpoint: conf.Filesystems.UseMountpoint},
+		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp, UseMountpoint: conf.Filesystems.UseMountpoint},
 	}
 
 	return generators

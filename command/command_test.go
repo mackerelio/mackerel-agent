@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"sort"
+	"sync"
 	"testing"
 	"time"
 
@@ -107,8 +108,8 @@ func TestPrepareWithCreate(t *testing.T) {
 	}
 
 	c, _ := Prepare(&conf)
-	api := c.api
-	host := c.host
+	api := c.API
+	host := c.Host
 
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
@@ -151,7 +152,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 	defer ts.Close()
 	tempDir, _ := ioutil.TempDir("", "")
 	conf.Root = tempDir
-	saveHostID(tempDir, "xxx12345678901")
+	conf.SaveHostID("xxx12345678901")
 
 	mockHandlers["PUT /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
@@ -171,8 +172,8 @@ func TestPrepareWithUpdate(t *testing.T) {
 	}
 
 	c, _ := Prepare(&conf)
-	api := c.api
-	host := c.host
+	api := c.API
+	host := c.Host
 
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
@@ -188,7 +189,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 }
 
 func TestCollectHostSpecs(t *testing.T) {
-	hostname, meta, _ /*interfaces*/, err := collectHostSpecs()
+	hostname, meta, _ /*interfaces*/, _ /*customIdentifier*/, err := collectHostSpecs()
 
 	if err != nil {
 		t.Errorf("collectHostSpecs should not fail: %s", err)
@@ -205,9 +206,12 @@ func TestCollectHostSpecs(t *testing.T) {
 
 type counterGenerator struct {
 	counter int
+	sync.Mutex
 }
 
 func (g *counterGenerator) Generate() (metrics.Values, error) {
+	g.Lock()
+	defer g.Unlock()
 	g.counter = g.counter + 1
 	return map[string]float64{"dummy.a": float64(g.counter)}, nil
 }
@@ -309,12 +313,12 @@ func TestLoop(t *testing.T) {
 	host := &mackerel.Host{ID: "xyzabc12345"}
 
 	termCh := make(chan struct{})
-	exitCh := make(chan int)
+	exitCh := make(chan error)
 	c := &Context{
-		ag:   ag,
-		conf: &conf,
-		api:  api,
-		host: host,
+		Agent:  ag,
+		Config: &conf,
+		API:    api,
+		Host:   host,
 	}
 	// Start looping!
 	go func() {
@@ -338,8 +342,8 @@ func TestLoop(t *testing.T) {
 	}
 
 	termCh <- struct{}{}
-	exitCode := <-exitCh
-	if exitCode != 0 {
-		t.Errorf("exit code should be 0, got: %d", exitCode)
+	exitErr := <-exitCh
+	if exitErr != nil {
+		t.Errorf("exitErr should be nil, got: %s", exitErr)
 	}
 }

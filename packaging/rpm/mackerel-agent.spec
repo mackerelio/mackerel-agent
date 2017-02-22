@@ -2,10 +2,9 @@
 # rpmbuild -ba ~/rpmbuild/SPECS/mackerel-agent.spec
 
 %define _binaries_in_noarch_packages_terminate_build   0
-%define _localbindir /usr/local/bin
 
 Name:      mackerel-agent
-Version:   0.24.0
+Version:   %{_version}
 Release:   1
 License:   Commercial
 Summary:   mackerel.io agent
@@ -16,45 +15,36 @@ Source1:   %{name}.sysconfig
 Source2:   %{name}.logrotate
 Source3:   %{name}.conf
 Packager:  Hatena
-BuildArch: noarch
+BuildArch: %{buildarch}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(post): /sbin/chkconfig
 Requires(preun): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
 
 %description
-mackerel.io agent beta
+mackerel.io agent
 
 %prep
 
 %build
 
 %install
-rm -rf %{buildroot}
-install -d -m 755 %{buildroot}/%{_localbindir}
-install    -m 655 %{_builddir}/%{name}  %{buildroot}/%{_localbindir}
-
-install -d -m 755 %{buildroot}/%{_localstatedir}/log/
-
-install -d -m 755 %{buildroot}/%{_initrddir}
-install    -m 755 %{_sourcedir}/%{name}.initd        %{buildroot}/%{_initrddir}/%{name}
-
-install -d -m 755 %{buildroot}/%{_sysconfdir}/sysconfig/
-install    -m 644 %{_sourcedir}/%{name}.sysconfig %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
-
-install -d -m 755 %{buildroot}/%{_sysconfdir}/logrotate.d/
-install    -m 644 %{_sourcedir}/%{name}.logrotate %{buildroot}/%{_sysconfdir}/logrotate.d/%{name}
-
-install -d -m 755 %{buildroot}/%{_sysconfdir}/mackerel-agent/
-install    -m 644 %{_sourcedir}/%{name}.conf %{buildroot}/%{_sysconfdir}/mackerel-agent/%{name}.conf
+%{__rm} -rf %{buildroot}
+%{__install} -Dp -m0755 %{_builddir}/%{name}             %{buildroot}%{_bindir}/%{name}
+%{__install} -d  -m0755                                  %{buildroot}/%{_localstatedir}/log/
+%{__install} -Dp -m0755 %{_sourcedir}/%{name}.initd      %{buildroot}/%{_initrddir}/%{name}
+%{__install} -Dp -m0644 %{_sourcedir}/%{name}.sysconfig  %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
+%{__install} -Dp -m0644 %{_sourcedir}/%{name}.logrotate  %{buildroot}/%{_sysconfdir}/logrotate.d/%{name}
+%{__install} -Dp -m0644 %{_sourcedir}/%{name}.conf       %{buildroot}/%{_sysconfdir}/%{name}/%{name}.conf
+%{__install} -Dp -m0755 %{_sourcedir}/%{name}.deprecated %{buildroot}/usr/local/bin/%{name}
 
 %clean
-rm -f %{buildroot}%{_bindir}/${name}
+%{__rm} -rf %{buildroot}
 
 %pre
 
 %post
-chkconfig --add %{name}
+/sbin/chkconfig --add %{name}
 
 %preun
 if [ $1 = 0 ]; then
@@ -65,12 +55,199 @@ fi
 %files
 %defattr(-,root,root)
 %{_initrddir}/%{name}
-%{_localbindir}/%{name}
+%{_bindir}/%{name}
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%config(noreplace) %{_sysconfdir}/mackerel-agent/%{name}.conf
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 %{_sysconfdir}/logrotate.d/%{name}
+/usr/local/bin/%{name}
 
 %changelog
+* Wed Feb 08 2017 <mackerel-developers@hatena.ne.jp> - 0.39.4-1
+- prepare windows eventlog (by daiksy)
+- Refactor plugin configurations (by itchyny)
+- Execute less `go build`s on deploy (by astj)
+- treat xmlns (by mattn)
+- Fix xmlns (by mattn)
+
+* Wed Jan 25 2017 <mackerel-developers@hatena.ne.jp> - 0.39.3-1
+- Fix segfault when loading a bad config file (by hanazuki)
+- fix windows eventlog level when "verbose=true" (by daiksy)
+
+* Mon Jan 16 2017 <mackerel-developers@hatena.ne.jp> - 0.39.2-1
+- Test wix/pluginlist.txt on AppVeyor ci (by astj)
+- Revert "remove windows plugins on pluginslist" (by daiksy)
+
+* Thu Jan 12 2017 <mackerel-developers@hatena.ne.jp> - 0.39.1-1
+- support filesystems.Ignore on windows (by Songmu)
+- remove windows plugins on pluginslist (by daiksy)
+
+* Wed Jan 11 2017 <mackerel-developers@hatena.ne.jp> - 0.39.0-1
+- implement `pluginGenerators` for windows (by daiksy)
+- add check-windows-eventlog on pluginlist (by daiksy)
+- Remove duplicated generator in Windows (by astj)
+- add mackerel-plugin-windows-server-sessions on pluginlist (by daiksy)
+
+* Wed Dec 21 2016 <mackerel-developers@hatena.ne.jp> - 0.38.0-1
+- fix typo (by ts-3156)
+- Add Copyright (by yuuki)
+- Separate interfaceGenerator from specGenerators (by motemen)
+- Timout http reuquest in 30 sec (requries go 1.3) (by hakobe)
+- specify command arguments in mackerel-agent.conf (by Songmu)
+- several improvements for Windows (by daiksy)
+- Avoid time.Tick and use time.NewTicker instead (by haya14busa)
+
+* Tue Nov 29 2016 <mackerel-developers@hatena.ne.jp> - 0.37.1-1
+- fix pluginlist (by daiksy)
+- Suppress ec2 metadata warnings (by itchyny)
+- Uncapitalize error messages (by itchyny)
+
+* Thu Oct 27 2016 <mackerel-developers@hatena.ne.jp> - 0.37.0-1
+- improve Windows support (by daiksy)
+
+* Tue Oct 18 2016 <mackerel-developers@hatena.ne.jp> - 0.36.0-1
+- don't use HTTP_PROXY when requesting cloud instance metadata APIs (by Songmu)
+- Add an option to output filesystem-related metrics with key by mountpoint (by astj)
+
+* Thu Sep 29 2016 <mackerel-developers@hatena.ne.jp> - 0.35.1-1
+- support MACKEREL_PLUGIN_WORKDIR in init scripts (by Songmu)
+- Add platform metadata for Darwin (by astj)
+- Disable http2 for now (by Songmu)
+
+* Wed Sep 07 2016 <mackerel-developers@hatena.ne.jp> - 0.35.0-1
+- built with Go 1.7 (by Songmu)
+- remove `func (vs *Values) Merge(other Values)` (by Songmu)
+- [incompatible] consider df  (used + available) as size of filesystem (by Songmu)
+- Remove DigitalOcean related comment/definition from spec/cloud.go (by astj)
+- Fix golint is not working on ci, and add some comment to pass golint (by astj)
+- Add linux distribution information to kernel spec (by ak1t0)
+- http_proxy configuration (by Songmu)
+- set PATH and LANG only in unix environment (by Songmu)
+- Ignore docker mapper storage in spec as well (by itchyny)
+
+* Thu Aug 18 2016 <mackerel-developers@hatena.ne.jp> - 0.34.0-1
+- Reduce retry count on finding a host by the custom identifier (by itchyny)
+- suppress checker flooding when resuming from sleep mode (by Songmu)
+- truncate checker message up to 1024 characters (by Songmu)
+- commonalize spec.FilesystemGenerator around unix OSs (by Songmu)
+- define type DfStat,	remove dfColumnSpecs and refactor (by Songmu)
+
+* Mon Aug 08 2016 <mackerel-developers@hatena.ne.jp> - 0.33.0-1
+- Fill the customIdentifier in EC2 (by itchyny)
+
+* Thu Jul 14 2016 <mackerel-developers@hatena.ne.jp> - 0.32.2-1
+- fix GOMAXPROCS to 1 for avoiding rare panics (by Songmu)
+
+* Thu Jul 07 2016 <mackerel-developers@hatena.ne.jp> - 0.32.1-1
+- Add user for executing a plugin (by y-kuno)
+
+* Thu Jun 30 2016 <mackerel-developers@hatena.ne.jp> - 0.32.0-1
+- Added plugin check interval option (by karupanerura)
+
+* Thu Jun 23 2016 <mackerel-developers@hatena.ne.jp> - 0.31.2-1
+- Refactor around metrics/linux/memory (by Songmu)
+- Don't stop mackerel-agent process on upgrading by debian package (by karupanerura)
+- add `silent` configuration key for suppressing log output (by Songmu)
+- change log level ERROR to WARNING in spec/spec.go (by Songmu)
+- remove /usr/local/bin from sample.conf (by Songmu)
+
+* Wed May 25 2016 <mackerel-developers@hatena.ne.jp> - 0.31.0-1
+- Post the custom metrics to the hosts specified by custom identifiers (by itchyny)
+- refactor FilesystemGenerator (by Songmu)
+- Refactor metrics/linux/interface.go (by Songmu)
+- remove regexp from spec/linux/cpu (by Songmu)
+- Fix missing printf args (by shogo82148)
+
+* Tue May 10 2016 <mackerel-developers@hatena.ne.jp> - 0.30.4-1
+- Recover from panic while processing generators (by stanaka)
+- check length of cols just to be safe in metrics/linux/disk.go (by Songmu)
+
+* Mon May 02 2016 <mackerel-developers@hatena.ne.jp> - 0.30.3-1
+- Remove usr local bin again (by Songmu)
+- Fix typo (by yukiyan)
+- Fix comments (by stefafafan)
+- Remove go get cmd/vet (by itchyny)
+- retry retirement when api request failed (by Songmu)
+- output plugin stderr to log (by Songmu)
+
+* Fri Apr 08 2016 <mackerel-developers@hatena.ne.jp> - 0.30.5-1
+- Feature some3 (by stanaka)
+
+* Fri Apr 08 2016 <mackerel-developers@hatena.ne.jp> - 0.30.4-1
+- update (by stanaka)
+- update (by stanaka)
+- Feature some2 (by stanaka)
+- update (by stanaka)
+
+* Fri Apr 08 2016 <mackerel-developers@hatena.ne.jp> - 0.30.3-1
+- update README.md (by stanaka)
+- update (by stanaka)
+
+* Fri Mar 25 2016 <y.songmu@gmail.com> - 0.30.2-1
+- Revert "Merge pull request #211 from mackerelio/usr-bin" (by Songmu)
+
+* Fri Mar 25 2016 <y.songmu@gmail.com> - 0.30.1-1
+- deprecate /usr/local/bin (by Songmu)
+- use GOARCH=amd64 for now (by Songmu)
+
+* Thu Mar 17 2016 <y.songmu@gmail.com> - 0.30.0-1
+- remove uptime metrics generator (by Songmu)
+- Remove deprecated-sensu feature (by Songmu)
+- Send all IP addresses of each interface (linux only) (by mechairoi)
+- add `init` subcommand (by Songmu)
+- Refactor net interface (multi ip support and bugfix) (by Songmu)
+- Stop to fetch flags of cpu in spec/linux/cpu (by Songmu)
+
+* Mon Mar 07 2016 <y.songmu@gmail.com> - 0.29.2-1
+- Don't overwrite mackerel-agent.conf when updating deb package (Fix deb packaging) (by Songmu)
+
+* Fri Mar 04 2016 <y.songmu@gmail.com> - 0.29.1-1
+- maintenance release
+
+* Wed Mar 02 2016 <y.songmu@gmail.com> - 0.29.0-1
+- remove deprecated command line options (-version and -once) (by Songmu)
+- Report checker execution timeout as Unknown status (by hanazuki)
+
+* Thu Feb 18 2016 <stefafafan@hatena.ne.jp> - 0.28.1-1
+- fix the exit status on stopping the agent in the init script of debian (by itchyny)
+
+* Thu Feb 04 2016 <y.songmu@gmail.com> - 0.28.0-1
+- add a configuration to ignore filesystems (by stanaka)
+- fix the code of extending the process's environment (by itchyny)
+- s{code.google.com/p/winsvc}{golang.org/x/sys/windows/svc} (by Songmu)
+- Max check attempts option for check plugin (by mechairoi)
+
+* Fri Jan 08 2016 <y.songmu@gmail.com> - 0.27.1-1
+- [bugfix] fix timeout interval when calling `df` (by Songmu)
+
+* Wed Jan 06 2016 <y.songmu@gmail.com> - 0.27.0-1
+- use timeout when calling `df` (by Songmu)
+- Notification Interval for check monitoring (by itchyny)
+
+* Thu Dec 10 2015 <y.songmu@gmail.com> - 0.26.2-1
+- output success message to stderr when configtest succeed (by Songmu)
+
+* Wed Dec 09 2015 <y.songmu@gmail.com> - 0.26.1-1
+- fix deprecate message (by Songmu)
+
+* Tue Dec 08 2015 <y.songmu@gmail.com> - 0.26.0-1
+- Make HostID storage replacable (by motemen)
+- Publicize command.Context's fields (by motemen)
+- Configtest (by fujiwara)
+- Refactor config loading and check if Apikey exists in configtest (by Songmu)
+- fix exit status of debian init script. (by fujiwara)
+- Deprecate version and once option (by Songmu)
+
+* Wed Nov 25 2015 <y.songmu@gmail.com> - 0.25.1-1
+- Go 1.5.1 (by Songmu)
+- logging STDERR of checker command (by Songmu)
+
+* Thu Nov 12 2015 <y.songmu@gmail.com> - 0.25.0-1
+- Retrieve interfaces on Darwin (by itchyny)
+- add NetBSD support. (by miwarin)
+
+* Thu Nov 05 2015 <y.songmu@gmail.com> - 0.24.1-1
+- We are Mackerel (by itchyny)
+
 * Mon Oct 26 2015 <daiksy@hatena.ne.jp> - 0.24.0-1
 - define config.agentName and set proper config path (by Songmu)
 - /proc/cpuinfo parser for old ARM Linux kernels (by hanazuki)

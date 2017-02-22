@@ -8,22 +8,19 @@ import (
 
 func TestChecker_Check(t *testing.T) {
 	checkerOK := Checker{
-		Config: config.PluginConfig{
+		Config: &config.CheckPlugin{
 			Command: "go run testdata/exit.go -code 0 -message OK",
 		},
 	}
 
 	checkerWarning := Checker{
-		Config: config.PluginConfig{
+		Config: &config.CheckPlugin{
 			Command: "go run testdata/exit.go -code 1 -message something_is_going_wrong",
 		},
 	}
 
 	{
-		report, err := checkerOK.Check()
-		if err != nil {
-			t.Errorf("err should be nil: %v", err)
-		}
+		report := checkerOK.Check()
 		if report.Status != StatusOK {
 			t.Errorf("status should be OK: %v", report.Status)
 		}
@@ -33,10 +30,7 @@ func TestChecker_Check(t *testing.T) {
 	}
 
 	{
-		report, err := checkerWarning.Check()
-		if err != nil {
-			t.Errorf("err should be nil: %v", err)
-		}
+		report := checkerWarning.Check()
 		if report.Status != StatusWarning {
 			t.Errorf("status should be WARNING: %v", report.Status)
 		}
