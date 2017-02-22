@@ -21,6 +21,8 @@ script:
 - test `gofmt -l . | wc -l` = 0
 - make crossbuild
 after_script:
+- docker pull astj/mackerel-rpm-builder:c5
+- make rpm rpm-kcps rpm-stage
 - goveralls -coverprofile=.profile.cov
 before_deploy:
 - docker pull astj/mackerel-rpm-builder:c5
