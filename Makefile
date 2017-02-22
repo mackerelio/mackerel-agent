@@ -80,7 +80,7 @@ rpm: crossbuild-package
 # TODO migrate to rpm
 rpm-systemd: crossbuild-package
 	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c7 \
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild -e NAME_POSTFIX=-c7 astj/mackerel-rpm-builder:c7 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
 	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
