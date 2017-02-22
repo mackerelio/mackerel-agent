@@ -65,7 +65,7 @@ crossbuild-package-stage:
 	mv build/mackerel-agent-stage build-linux-386/
 
 rpm: crossbuild-package
-	mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+	mkdir -p rpmbuild/RPMS/{noarch,x86_64}
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
@@ -82,7 +82,7 @@ deb: crossbuild-package
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 rpm-kcps: crossbuild-package-kcps
-	mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+	mkdir -p rpmbuild/RPMS/{noarch,x86_64}
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
@@ -99,7 +99,7 @@ deb-kcps: crossbuild-package-kcps
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 rpm-stage: crossbuild-package-stage
-	mkdir -p rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+	mkdir -p rpmbuild/RPMS/{noarch,x86_64}
 	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
