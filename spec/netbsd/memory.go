@@ -30,10 +30,10 @@ const bytesInKibibytes = 1024
 func (g *MemoryGenerator) Generate() (interface{}, error) {
 	spec := map[string]string{}
 
-	cmd := exec.Command("sysctl", "-n", "hw.physmem")
+	cmd := exec.Command("sysctl", "-n", "hw.physmem64")
 	outputBytes, err := cmd.Output()
 	if err != nil {
-		return nil, fmt.Errorf("sysctl -n hw.physmem: %s", err)
+		return nil, fmt.Errorf("sysctl -n hw.physmem64: %s", err)
 	}
 
 	output := string(outputBytes)
