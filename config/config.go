@@ -288,9 +288,6 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Root == "" {
 		config.Root = DefaultConfig.Root
 	}
-	if config.Pidfile == "" {
-		config.Pidfile = DefaultConfig.Pidfile
-	}
 	if config.Verbose == false {
 		config.Verbose = DefaultConfig.Verbose
 	}

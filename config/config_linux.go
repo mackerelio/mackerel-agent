@@ -5,8 +5,7 @@ import "fmt"
 // DefaultConfig The default configuration for linux
 var DefaultConfig = &Config{
 	Apibase:    getApibase(),
-	Root:       "/var/lib/mackerel-agent",
-	Pidfile:    "/var/run/mackerel-agent.pid",
+	Root:       "/var/lib/" + getAgentName(),
 	Conffile:   fmt.Sprintf("/etc/%s/%s.conf", getAgentName(), getAgentName()),
 	Roles:      []string{},
 	Verbose:    false,
