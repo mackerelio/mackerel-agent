@@ -32,7 +32,7 @@ type supervisor struct {
 
 // Supervise starts a child mackerel-agent process and supervises it.
 // 'c' can be nil and it's typically nil. When you pass signal channel to this
-// method, you have to close the channel to stop internal goroutine.
+// method, the channel will be closed internally.
 func Supervise(agentProg string, argv []string, c chan os.Signal) error {
 	return (&supervisor{
 		prog: agentProg,
