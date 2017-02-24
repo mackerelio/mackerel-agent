@@ -5,7 +5,7 @@
 
 Name:      mackerel-agent
 Version:   %{_version}
-Release:   1
+Release:   1%{?dist}
 License:   Commercial
 Summary:   mackerel.io agent
 URL:       https://mackerel.io
