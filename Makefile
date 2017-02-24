@@ -47,7 +47,7 @@ crossbuild: deps
 		-os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . -n $(MACKEREL_AGENT_NAME)
 
 cover: deps
-	gotestcover -v -short -covermode=count -coverprofile=.profile.cov -parallelpackages=4 ./...
+	gotestcover -v -race -short -covermode=atomic -coverprofile=.profile.cov -parallelpackages=4 ./...
 
 crossbuild-package:
 	mkdir -p ./build-linux-386 ./build-linux-amd64
