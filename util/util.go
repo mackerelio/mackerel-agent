@@ -29,7 +29,7 @@ func RunCommand(command, user string) (stdout, stderr string, exitCode int, err 
 func RunCommandArgs(cmdArgs []string, user string) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
 	if user != "" {
-		args = append([]string{"sudo", "-u", user}, args...)
+		args = append([]string{"sudo", "-Eu", user}, args...)
 	}
 	cmd := exec.Command(args[0], args[1:]...)
 	tio := &timeout.Timeout{
