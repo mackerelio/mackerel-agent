@@ -186,7 +186,7 @@ sub spew {
 sub replace {
     my ($file, $code) = @_;
     if(!-f $file){ errorf "File does not exist: %s\n", $file; }
-    my $content = $code->(slurp($file));
+    my $content = $code->(slurp($file), $file);
     spew($file, $content);
 }
 
@@ -333,31 +333,28 @@ sub update_changelog {
         }
     };
 
-    my $generate_rpm_changelog_replacer = sub {
-        my $spec = shift;
-        return sub {
-            my $content = shift;
+    my $rpm_changelog_replacer = sub {
+        my ($content, $filename) = @_;
 
-            my $update = sprintf "* %s <%s> - %s-1\n", $now->strftime('%a %b %d %Y'), $email, $next_version;
-            for my $rel (@releases) {
-                $update .= sprintf "- %s (by %s)\n", $rel->{title}, $rel->{user};
-            }
-            if (index($content, $update) == -1) {
-                infof "update '%s'\n", $spec;
-                $ret = 1;
-                $content =~ s/%changelog/%changelog\n$update/;
-            } else {
-                infof "skip to update '%s'\n", $spec;
-            }
-            $content;
-        };
+        my $update = sprintf "* %s <%s> - %s-1\n", $now->strftime('%a %b %d %Y'), $email, $next_version;
+        for my $rel (@releases) {
+            $update .= sprintf "- %s (by %s)\n", $rel->{title}, $rel->{user};
+        }
+        if (index($content, $update) == -1) {
+            infof "update '%s'\n", $filename;
+            $ret = 1;
+            $content =~ s/%changelog/%changelog\n$update/;
+        } else {
+            infof "skip to update '%s'\n", $filename;
+        }
+        $content;
     };
 
     my $rpm_spec = sprintf "packaging/rpm/%s.spec", $package_name;
-    replace $rpm_spec => $generate_rpm_changelog_replacer->($rpm_spec);
+    replace $rpm_spec => $rpm_changelog_replacer;
 
     my $rpm_systemd_spec = sprintf "packaging/rpm/%s-systemd.spec", $package_name;
-    replace $rpm_systemd_spec => $generate_rpm_changelog_replacer->($rpm_systemd_spec);
+    replace $rpm_systemd_spec => $rpm_changelog_replacer;
 
     replace 'CHANGELOG.md' => sub {
         my $content = shift;
