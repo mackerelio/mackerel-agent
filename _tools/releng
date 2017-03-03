@@ -333,28 +333,31 @@ sub update_changelog {
         }
     };
 
-    my $rpm_changelog_replacer = sub {
-        my $content = shift;
+    my $generate_rpm_changelog_replacer = sub {
+        my $spec = shift;
+        return sub {
+            my $content = shift;
 
-        my $update = sprintf "* %s <%s> - %s-1\n", $now->strftime('%a %b %d %Y'), $email, $next_version;
-        for my $rel (@releases) {
-            $update .= sprintf "- %s (by %s)\n", $rel->{title}, $rel->{user};
-        }
-        if(index($content, $update) == -1){
-            infof "update '%s'\n", $spec;
-            $ret = 1;
-            $content =~ s/%changelog/%changelog\n$update/;
-        } else {
-            infof "skip to update '%s'\n", $spec;
-        }
-        $content;
+            my $update = sprintf "* %s <%s> - %s-1\n", $now->strftime('%a %b %d %Y'), $email, $next_version;
+            for my $rel (@releases) {
+                $update .= sprintf "- %s (by %s)\n", $rel->{title}, $rel->{user};
+            }
+            if (index($content, $update) == -1) {
+                infof "update '%s'\n", $spec;
+                $ret = 1;
+                $content =~ s/%changelog/%changelog\n$update/;
+            } else {
+                infof "skip to update '%s'\n", $spec;
+            }
+            $content;
+        };
     };
 
     my $rpm_spec = sprintf "packaging/rpm/%s.spec", $package_name;
-    replace $rpm_spec => $rpm_changelog_replacer;
+    replace $rpm_spec => $generate_rpm_changelog_replacer->($rpm_spec);
 
     my $rpm_systemd_spec = sprintf "packaging/rpm/%s-systemd.spec", $package_name;
-    replace $rpm_systemd_spec => $rpm_changelog_replacer;
+    replace $rpm_systemd_spec => $generate_rpm_changelog_replacer->($rpm_systemd_spec);
 
     replace 'CHANGELOG.md' => sub {
         my $content = shift;
@@ -546,6 +549,10 @@ sub main {
     } elsif($task && $task eq "upload-to-github-release"){
         infof "Upload files to GitHub Release.\n";
         upload_to_github_release();
+        return;
+    } elsif($task && $task eq "update-changelog"){
+        infof "Updating changelog.\n";
+        update_changelog(next_version);
         return;
     } elsif($task && $task eq "upload-master-to-github-release"){
         infof "Upload files on master branch to GitHub Release.\n";
