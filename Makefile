@@ -64,7 +64,6 @@ crossbuild-package-stage:
 
 rpm: rpm-v1 rpm-v2
 rpm-v1: crossbuild-package
-	mkdir -p rpmbuild/RPMS/{noarch,x86_64}
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
@@ -89,7 +88,6 @@ deb: crossbuild-package
 
 rpm-kcps: rpm-kcps-v1 rpm-kcps-v2
 rpm-kcps-v1: crossbuild-package-kcps
-	mkdir -p rpmbuild/RPMS/{noarch,x86_64}
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
@@ -114,7 +112,6 @@ deb-kcps: crossbuild-package-kcps
 
 rpm-stage: rpm-stage-v1 rpm-stage-v2
 rpm-stage-v1: crossbuild-package-stage
-	mkdir -p rpmbuild/RPMS/{noarch,x86_64}
 	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
