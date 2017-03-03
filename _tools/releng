@@ -333,8 +333,7 @@ sub update_changelog {
         }
     };
 
-    my $spec = sprintf "packaging/rpm/%s.spec", $package_name;
-    replace $spec => sub {
+    my $rpm_changelog_replacer = sub {
         my $content = shift;
 
         my $update = sprintf "* %s <%s> - %s-1\n", $now->strftime('%a %b %d %Y'), $email, $next_version;
@@ -350,6 +349,12 @@ sub update_changelog {
         }
         $content;
     };
+
+    my $rpm_spec = sprintf "packaging/rpm/%s.spec", $package_name;
+    replace $rpm_spec => $rpm_changelog_replacer;
+
+    my $rpm_systemd_spec = sprintf "packaging/rpm/%s-systemd.spec", $package_name;
+    replace $rpm_systemd_spec => $rpm_changelog_replacer;
 
     replace 'CHANGELOG.md' => sub {
         my $content = shift;
