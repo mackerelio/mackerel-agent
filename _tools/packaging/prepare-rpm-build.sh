@@ -14,6 +14,8 @@ fi
 orig_dir="packaging/rpm"
 build_dir="packaging/rpm-build"
 
+mkdir -p rpmbuild/RPMS/{noarch,x86_64}
+
 rm -rf "$build_dir"
 mkdir -p "$build_dir"
 cp -r "$orig_dir/src" "$build_dir/src"

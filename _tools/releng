@@ -186,7 +186,7 @@ sub spew {
 sub replace {
     my ($file, $code) = @_;
     if(!-f $file){ errorf "File does not exist: %s\n", $file; }
-    my $content = $code->(slurp($file));
+    my $content = $code->(slurp($file), $file);
     spew($file, $content);
 }
 
@@ -314,7 +314,7 @@ sub update_changelog {
     my $ret = 0;
 
     replace 'packaging/deb/debian/changelog' => sub {
-        my $content = shift;
+        my ($content, $filename) = @_;
 
         my $update = "$package_name ($next_version-1) stable; urgency=low\n\n";
         for my $rel (@releases) {
@@ -324,46 +324,51 @@ sub update_changelog {
 
         # '35' means a rough length to cut timestamp at the end of update.
         if(index($content, substr($update, 0, length($update) - 35)) == -1){
-            infof "update 'packaging/deb/debian/changelog'.\n";
+            infof "update '$filename'.\n";
             $ret = 1;
             $update . $content;
         } else {
-            infof "skip to update 'packaging/deb/debian/changelog'.\n";
+            infof "skip to update '$filename'.\n";
             $content;
         }
     };
 
-    my $spec = sprintf "packaging/rpm/%s.spec", $package_name;
-    replace $spec => sub {
-        my $content = shift;
+    my $rpm_changelog_replacer = sub {
+        my ($content, $filename) = @_;
 
         my $update = sprintf "* %s <%s> - %s-1\n", $now->strftime('%a %b %d %Y'), $email, $next_version;
         for my $rel (@releases) {
             $update .= sprintf "- %s (by %s)\n", $rel->{title}, $rel->{user};
         }
-        if(index($content, $update) == -1){
-            infof "update '%s'\n", $spec;
+        if (index($content, $update) == -1) {
+            infof "update '%s'\n", $filename;
             $ret = 1;
             $content =~ s/%changelog/%changelog\n$update/;
         } else {
-            infof "skip to update '%s'\n", $spec;
+            infof "skip to update '%s'\n", $filename;
         }
         $content;
     };
 
+    my $rpm_spec = sprintf "packaging/rpm/%s.spec", $package_name;
+    replace $rpm_spec => $rpm_changelog_replacer;
+
+    my $rpm_systemd_spec = sprintf "packaging/rpm/%s-systemd.spec", $package_name;
+    replace $rpm_systemd_spec => $rpm_changelog_replacer;
+
     replace 'CHANGELOG.md' => sub {
-        my $content = shift;
+        my ($content, $filename) = @_;
 
         my $update = sprintf "\n\n## %s (%s)\n\n", $next_version, $now->strftime('%Y-%m-%d');
         for my $rel (@releases) {
             $update .= sprintf "* %s #%d (%s)\n", $rel->{title}, $rel->{num}, $rel->{user};
         }
         if(index($content, $update) == -1){
-            infof "update 'CHANGELOG.md'\n";
+            infof "update '$filename'\n";
             $ret = 1;
             $content =~ s/\A# Changelog/# Changelog$update/;
         } else {
-            infof "skip to update 'CHANGELOG.md'\n";
+            infof "skip to update '$filename'\n";
         }
         $content;
     };
@@ -541,6 +546,10 @@ sub main {
     } elsif($task && $task eq "upload-to-github-release"){
         infof "Upload files to GitHub Release.\n";
         upload_to_github_release();
+        return;
+    } elsif($task && $task eq "update-changelog"){
+        infof "Updating changelog.\n";
+        update_changelog(next_version);
         return;
     } elsif($task && $task eq "upload-master-to-github-release"){
         infof "Upload files on master branch to GitHub Release.\n";
