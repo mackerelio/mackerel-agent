@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.41.0 (2017-03-07)
+
+* [EXPERIMENTAL] systemd support for CentOS 7 #317 (astj)
+* add `supervise` subcommand (supervisor mode) #327 (Songmu)
+* Build RPM packages with Docker #330 (astj)
+* run test with -race in CI #339 (haya14busa)
+* Use hw.physmem64 instead of hw.physmem in NetBSD #343 (astj)
+* Build RPM files on CentOS5 on Docker #344 (astj)
+* Keep environment variables when Agent runs commands with sudo #346 (astj)
+* Release systemd RPMs to github releases #347 (astj)
+* Fix disk metrics on Windows #348 (mattn)
+
+
 ## 0.40.0 (2017-02-22)
 
 * support metadata plugins in configuration #331 (itchyny)

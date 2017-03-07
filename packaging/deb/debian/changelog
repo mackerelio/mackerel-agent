@@ -1,3 +1,26 @@
+mackerel-agent (0.41.0-1) stable; urgency=low
+
+  * [EXPERIMENTAL] systemd support for CentOS 7 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/317>
+  * add `supervise` subcommand (supervisor mode) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/327>
+  * Build RPM packages with Docker (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/330>
+  * run test with -race in CI (by haya14busa)
+    <https://github.com/mackerelio/mackerel-agent/pull/339>
+  * Use hw.physmem64 instead of hw.physmem in NetBSD (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/343>
+  * Build RPM files on CentOS5 on Docker (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/344>
+  * Keep environment variables when Agent runs commands with sudo (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/346>
+  * Release systemd RPMs to github releases (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/347>
+  * Fix disk metrics on Windows (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/348>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 07 Mar 2017 04:37:30 +0000
+
 mackerel-agent (0.40.0-1) stable; urgency=low
 
   * support metadata plugins in configuration (by itchyny)
