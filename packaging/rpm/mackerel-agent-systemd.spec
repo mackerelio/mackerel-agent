@@ -55,3 +55,14 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Mar 07 2017 <mackerel-developers@hatena.ne.jp> - 0.40.1-1
+- [EXPERIMENTAL] systemd support for CentOS 7 (by astj)
+- add `supervise` subcommand (supervisor mode) (by Songmu)
+- Build RPM packages with Docker (by astj)
+- run test with -race in CI (by haya14busa)
+- Use hw.physmem64 instead of hw.physmem in NetBSD (by astj)
+- Build RPM files on CentOS5 on Docker (by astj)
+- Keep environment variables when Agent runs commands with sudo (by astj)
+- Release systemd RPMs to github releases (by astj)
+- Fix disk metrics on Windows (by mattn)
+
