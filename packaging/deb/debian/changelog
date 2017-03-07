@@ -8,7 +8,7 @@ mackerel-agent (0.41.0-1) stable; urgency=low
     <https://github.com/mackerelio/mackerel-agent/pull/330>
   * run test with -race in CI (by haya14busa)
     <https://github.com/mackerelio/mackerel-agent/pull/339>
-  * Use hw.physmem64 instead of hw.physmem in NetBSD (by astj)
+  * Use hw.physmem64 instead of hw.physmem in NetBSD (by miwarin, astj)
     <https://github.com/mackerelio/mackerel-agent/pull/343>
   * Build RPM files on CentOS5 on Docker (by astj)
     <https://github.com/mackerelio/mackerel-agent/pull/344>

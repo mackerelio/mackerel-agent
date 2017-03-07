@@ -67,7 +67,7 @@ fi
 - add `supervise` subcommand (supervisor mode) (by Songmu)
 - Build RPM packages with Docker (by astj)
 - run test with -race in CI (by haya14busa)
-- Use hw.physmem64 instead of hw.physmem in NetBSD (by astj)
+- Use hw.physmem64 instead of hw.physmem in NetBSD (by miwarin, astj)
 - Build RPM files on CentOS5 on Docker (by astj)
 - Keep environment variables when Agent runs commands with sudo (by astj)
 - Release systemd RPMs to github releases (by astj)
