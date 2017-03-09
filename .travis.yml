@@ -7,7 +7,7 @@ go:
 env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
-  - secure: "B34YsRebWxyx/UAHNAL5YWOgx2RE13TVfDC8FCCc7gAlogJcyAcPnC88fe8ECChHQC3GNnsHSi+GqgxTxzfoVkV+LUAFgHWbcF5O4O/4qHztKj7//72RwO+gXVr4U1Laz45bBr2r68XW0llj5tIlaEYxROJNLSAVDE4yDzmAHgc="
+  - secure: "jobJuVfvAZNnKN5CUpwasWNHsgpZZG9g6G6cbaczHb1EZfWtZqROnsN0QUqdh0N51hXxcCjPvmkHJc1uSCYaOrpX5DtWq6Y5XE2XcOikPbDb5a1tZAQY8/FTti8E4VZTYtoIOEjp4u23kdti3QZ8xFLZF5Zx/jIxXc9+Cz6l7Rw="
 addons:
   apt:
     packages:
@@ -38,12 +38,12 @@ before_deploy:
 - git fetch --tags --depth=1000 || true
 deploy:
 - provider: script
-  script: _tools/releng --task=upload-to-github-release -v && _tools/releng --task=upload-master-to-github-release -v
+  script: _tools/releng --task=upload-to-github-release && _tools/releng --task=upload-master-to-github-release
   skip_cleanup: true
   on:
     branch: master
 - provider: script
-  script: _tools/releng --task=create-pullrequest --current-branch=$TRAVIS_BRANCH -v
+  script: _tools/releng --task=create-pullrequest --current-branch=$TRAVIS_BRANCH
   skip_cleanup: true
   on:
     all_branches: true
