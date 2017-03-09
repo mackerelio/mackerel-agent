@@ -2,4 +2,5 @@ github.com/mackerelio/go-check-plugins/check-log
 github.com/mackerelio/go-check-plugins/check-procs
 github.com/mackerelio/go-check-plugins/check-ntservice
 github.com/mackerelio/go-check-plugins/check-windows-eventlog
+github.com/mackerelio/go-check-plugins/check-tcp
 github.com/mackerelio/mackerel-agent-plugins/mackerel-plugin-windows-server-sessions
