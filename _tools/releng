@@ -52,7 +52,7 @@ sub DEBUG() { $ENV{MC_RELENG_DEBUG} || $verbose }
 
 sub command {say('+ '. join ' ', @_) if DEBUG; !system(@_) or croak $!}
 sub command_with_exit_code {say('+ '. join ' ', @_) if DEBUG; system(@_)}
-sub command_without_stderr {say('+ '. join ' ', @_) if DEBUG; !system(join(' ', @_) . ' 2>/dev/null') or croak $!}
+sub command_without_stderr {say('+ '. join ' ', @_) if DEBUG; !system(join(' ', @_) . ' >/dev/null 2>&1') or croak $!}
 sub _git {
     if($dry_run){
         return
