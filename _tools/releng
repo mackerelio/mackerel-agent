@@ -52,6 +52,7 @@ sub DEBUG() { $ENV{MC_RELENG_DEBUG} || $verbose }
 
 sub command {say('+ '. join ' ', @_) if DEBUG; !system(@_) or croak $!}
 sub command_with_exit_code {say('+ '. join ' ', @_) if DEBUG; system(@_)}
+sub command_without_stdout {say('+ '. join ' ', @_) if DEBUG; !system(join(' ', @_) . ' 2>/dev/null') or croak $!}
 sub _git {
     if($dry_run){
         return
@@ -76,6 +77,12 @@ sub git_with_exit_code {
     unshift  @_, _git; goto \&command_with_exit_code
 }
 
+sub git_without_stdout {
+    if($dry_run){
+        return
+    }
+    unshift  @_, _git; goto \&command_without_stdout
+}
 
 sub _hub {
     if($dry_run){
@@ -468,7 +475,7 @@ sub create_pull_request {
         git qw/config user.email/, 'mackerel-developers@hatena.ne.jp';
         git qw/config user.name/, 'mackerel';
         git qw/commit -am/, "update changelogs";
-        git qw/push -u/, "https://$ENV{GITHUB_TOKEN}\@github.com/$REPO_NAME.git";
+        git_without_stdout qw/push -u/, "https://$ENV{GITHUB_TOKEN}\@github.com/$REPO_NAME.git";
         infof "Difference is pushed to GitHub.\n";
     }
 
@@ -484,7 +491,7 @@ sub create_pull_request {
         infof "Releasing pull request is created. Review and merge it. You can update changelogs and commit more in this branch before merging.\n";
     } else {
         # do push and pull-request again
-        git qw/push -u/, "https://$ENV{GITHUB_TOKEN}\@github.com/$REPO_NAME.git";
+        git_without_stdout qw/push -u/, "https://$ENV{GITHUB_TOKEN}\@github.com/$REPO_NAME.git";
         $ret = hub_with_exit_code qw/pull-request -m/, $pr_body, qq/-b/, qq/$REPO_NAME:master/;
         if(!defined($ret) || $ret == 0){
             infof "Releasing pull request is created. Review and merge it. You can update changelogs and commit more in this branch before merging.\n";
