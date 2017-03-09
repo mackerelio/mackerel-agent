@@ -1,3 +1,14 @@
+mackerel-agent (0.41.1-1) stable; urgency=low
+
+  * add check-tcp on pluginlist.txt (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/351>
+  * use new bot token (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/352>
+  * use new bot token (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/354>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 09 Mar 2017 07:43:01 +0000
+
 mackerel-agent (0.41.0-1) stable; urgency=low
 
   * [EXPERIMENTAL] systemd support for CentOS 7 (by astj)
