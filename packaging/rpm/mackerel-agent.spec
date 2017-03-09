@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Mar 09 2017 <mackerel-developers@hatena.ne.jp> - 0.41.1-1
+- add check-tcp on pluginlist.txt (by daiksy)
+
 * Tue Mar 07 2017 <mackerel-developers@hatena.ne.jp> - 0.41.0-1
 - [EXPERIMENTAL] systemd support for CentOS 7 (by astj)
 - add `supervise` subcommand (supervisor mode) (by Songmu)

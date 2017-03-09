@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.41.1 (2017-03-09)
+
+* add check-tcp on pluginlist.txt #351 (daiksy)
+
+
 ## 0.41.0 (2017-03-07)
 
 * [EXPERIMENTAL] systemd support for CentOS 7 #317 (astj)
