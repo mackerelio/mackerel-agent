@@ -22,6 +22,7 @@ script:
 - make crossbuild
 after_script:
 - goveralls -coverprofile=.profile.cov
+- make deb-systemd
 before_deploy:
 - docker pull astj/mackerel-rpm-builder:c5
 - docker pull astj/mackerel-rpm-builder:c7
