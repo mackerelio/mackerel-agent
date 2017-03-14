@@ -3,6 +3,7 @@
 package pidfile
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -31,7 +32,16 @@ func TestCreate(t *testing.T) {
 	if pid != os.Getpid() {
 		t.Errorf("contents of pidfile does not match pid. content: %d, pid: %d", pid, os.Getpid())
 	}
+}
 
+func TestCreate_mutex(t *testing.T) {
+	dir, err := ioutil.TempDir("", "")
+	if err != nil {
+		t.Fatalf("failed to create tempdir")
+	}
+	defer os.RemoveAll(dir)
+	pidfile := filepath.Join(dir, "pidfile")
+	ioutil.WriteFile(pidfile, []byte(fmt.Sprintf("%d", os.Getppid())), 0644)
 	err = Create(pidfile)
 	if err == nil {
 		t.Errorf("Successfully overwriting the pidfile unintentionally")
