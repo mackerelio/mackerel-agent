@@ -19,6 +19,9 @@ func Create(pidfile string) error {
 	}
 	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
+			if pid == os.Getpid() {
+				return nil
+			}
 			if ExistsPid(pid) {
 				return fmt.Errorf("pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
 			}
