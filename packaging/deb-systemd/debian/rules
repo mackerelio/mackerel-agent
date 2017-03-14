@@ -2,7 +2,7 @@
 # -*- makefile -*-
 
 %:
-	dh $@
+	dh $@ --with=systemd
 
 package=mackerel-agent
 
