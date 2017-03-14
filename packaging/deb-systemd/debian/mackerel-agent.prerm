@@ -3,11 +3,10 @@ set -e
 
 case "$1" in
 remove)
-  # This section is not automallically inserted by dh_installinit,
-  # because `--no-start` option is specified in rules file.
-  if [ -x "/etc/init.d/mackerel-agent" ]; then
-    invoke-rc.d mackerel-agent stop || exit $?
-  fi
+  # TODO how to stop systemd daemon
+  # if [ -x "/etc/init.d/mackerel-agent" ]; then
+  #   invoke-rc.d mackerel-agent stop || exit $?
+  # fi
 ;;
 upgrade|deconfigure|failed-upgrade)
   exit 0
