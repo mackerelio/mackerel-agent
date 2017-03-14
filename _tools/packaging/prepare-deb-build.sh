@@ -12,6 +12,10 @@ BUILD_DIRECTORY=${BUILD_DIRECTORY:-build}
 orig_dir="packaging/deb"
 build_dir="packaging/deb-build"
 
+if [ "$BUILD_SYSTEMD" != "" ]; then
+    orig_dir="packaging/deb-systemd"
+fi
+
 cp mackerel-agent.sample.conf   "$orig_dir/debian/mackerel-agent.conf"
 rm -rf "$build_dir"
 cp -r "$orig_dir" "$build_dir"
