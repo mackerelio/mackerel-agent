@@ -6,9 +6,6 @@
 
 package=mackerel-agent
 
-override_dh_installinit:
-	dh_installinit --no-start --no-restart-on-upgrade --name=${package} -- defaults 95 05
-
 override_dh_auto_install:
 	dh_auto_install
 	install    -m 755 debian/${package}.bin        debian/${package}/usr/bin/${package}
