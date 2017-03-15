@@ -13,6 +13,7 @@ addons:
     packages:
       - devscripts
       - debhelper
+      - dh-systemd
 install:
 - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
