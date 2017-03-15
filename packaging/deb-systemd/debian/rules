@@ -17,4 +17,4 @@ override_dh_auto_install:
 override_dh_usrlocal:
 
 override_dh_systemd_start:
-	dh_systemd_start --no-restart-on-upgrade
+	dh_systemd_start --no-restart-on-upgrade --no-start
