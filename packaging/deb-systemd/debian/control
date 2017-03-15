@@ -10,6 +10,6 @@ Homepage: https://mackerel.io
 
 Package: mackerel-agent
 Architecture: all
-Depends: ${misc:Depends}
+Depends: ${misc:Depends}, systemd
 Description: mackerel.io agent
  Server monitoring agent for https://mackerel.io (Monitoring SaaS)
