@@ -32,6 +32,11 @@ func TestCreate(t *testing.T) {
 	if pid != os.Getpid() {
 		t.Errorf("contents of pidfile does not match pid. content: %d, pid: %d", pid, os.Getpid())
 	}
+
+	err = Create(pidfile)
+	if err != nil {
+		t.Errorf("When the content of pidfile is the same as own pid, the error should be nil, but: %s", err.Error())
+	}
 }
 
 func TestCreate_mutex(t *testing.T) {
@@ -44,7 +49,7 @@ func TestCreate_mutex(t *testing.T) {
 	ioutil.WriteFile(pidfile, []byte(fmt.Sprintf("%d", os.Getppid())), 0644)
 	err = Create(pidfile)
 	if err == nil {
-		t.Errorf("Successfully overwriting the pidfile unintentionally")
+		t.Errorf("if pidfile exists and its process is running, an error should be returned, but successfully overwriting the pidfile unintentionally")
 	}
 }
 
