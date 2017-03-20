@@ -7,8 +7,6 @@ import (
 	"math"
 	"os"
 	"os/signal"
-	"runtime"
-	"strings"
 	"syscall"
 	"testing"
 	"time"
@@ -134,12 +132,6 @@ func TestCreateAndRemovePidFile(t *testing.T) {
 	err = pidfile.Create(fpath)
 	if err != nil {
 		t.Errorf("pid file should be created but, %s", err)
-	}
-
-	if runtime.GOOS != "windows" {
-		if err := pidfile.Create(fpath); err == nil || !strings.HasPrefix(err.Error(), "pidfile found, try stopping another running mackerel-agent or delete") {
-			t.Errorf("creating pid file should be failed when the running process exists, %s", err)
-		}
 	}
 
 	pidfile.Remove(fpath)
