@@ -17,9 +17,9 @@ fi
 
 MACKEREL_AGENT_VERSION=$(grep -o -e "[0-9]\+.[0-9]\+.[0-9]\+-[0-9]" "$orig_dir/debian/changelog" | head -1 | sed 's/-.*$//')
 
-cp mackerel-agent.sample.conf   "$orig_dir/debian/mackerel-agent.conf"
 rm -rf "$build_dir"
 cp -r "$orig_dir" "$build_dir"
+cp mackerel-agent.sample.conf   "$build_dir/debian/mackerel-agent.conf"
 
 convert_for_alternative $build_dir $MACKEREL_AGENT_NAME
 cp "${BUILD_DIRECTORY}/$MACKEREL_AGENT_NAME" "$build_dir/debian/$MACKEREL_AGENT_NAME.bin"
