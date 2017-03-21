@@ -1,4 +1,4 @@
-mackerel-agent (0.41.1-1) stable; urgency=low
+mackerel-agent (0.41.1-1.systemd) stable; urgency=low
 
   * add check-tcp on pluginlist.txt (by daiksy)
     <https://github.com/mackerelio/mackerel-agent/pull/351>
