@@ -320,25 +320,32 @@ sub update_changelog {
     my $now = localtime;
     my $ret = 0;
 
-    replace 'packaging/deb/debian/changelog' => sub {
-        my ($content, $filename) = @_;
+    my $generate_deb_changelog_replacer = sub {
+        my ($debian_version) = @_;
+        return sub {
+            my ($content, $filename) = @_;
 
-        my $update = "$package_name ($next_version-1) stable; urgency=low\n\n";
-        for my $rel (@releases) {
-            $update .= sprintf "  * %s (by %s)\n    <%s>\n", $rel->{title}, $rel->{user}, $rel->{url};
-        }
-        $update .= sprintf "\n -- %s <%s>  %s\n\n", $name, $email, $now->strftime("%a, %d %b %Y %H:%M:%S %z");
+            my $update = "$package_name ($next_version-$debian_version) stable; urgency=low\n\n";
+            for my $rel (@releases) {
+                $update .= sprintf "  * %s (by %s)\n    <%s>\n", $rel->{title}, $rel->{user}, $rel->{url};
+            }
+            $update .= sprintf "\n -- %s <%s>  %s\n\n", $name, $email, $now->strftime("%a, %d %b %Y %H:%M:%S %z");
 
-        # '35' means a rough length to cut timestamp at the end of update.
-        if(index($content, substr($update, 0, length($update) - 35)) == -1){
-            infof "update '$filename'.\n";
-            $ret = 1;
-            $update . $content;
-        } else {
-            infof "skip to update '$filename'.\n";
-            $content;
-        }
+            # '35' means a rough length to cut timestamp at the end of update.
+            if(index($content, substr($update, 0, length($update) - 35)) == -1){
+                infof "update '$filename'.\n";
+                $ret = 1;
+                $update . $content;
+            } else {
+                infof "skip to update '$filename'.\n";
+                $content;
+            }
+        };
     };
+
+    replace 'packaging/deb/debian/changelog' => $generate_deb_changelog_replacer->('1');
+
+    replace 'packaging/deb-systemd/debian/changelog' => $generate_deb_changelog_replacer->('1.systemd');
 
     my $rpm_changelog_replacer = sub {
         my ($content, $filename) = @_;
