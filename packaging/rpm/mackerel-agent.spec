@@ -62,6 +62,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Mar 22 2017 <mackerel-developers@hatena.ne.jp> - 0.41.2-1
+- Don't raise error when creating pidfile if the contents of pidfile is same as own pid (by Songmu)
+- Exclude _tools from package (by itchyny)
+- Add workaround for docker0 interface in docker-enabled Travis (by astj)
+
 * Thu Mar 09 2017 <mackerel-developers@hatena.ne.jp> - 0.41.1-1
 - add check-tcp on pluginlist.txt (by daiksy)
 
