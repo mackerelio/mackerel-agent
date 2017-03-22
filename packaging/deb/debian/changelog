@@ -1,3 +1,14 @@
+mackerel-agent (0.41.2-1) stable; urgency=low
+
+  * Don't raise error when creating pidfile if the contents of pidfile is same as own pid (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/357>
+  * Exclude _tools from package (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/358>
+  * Add workaround for docker0 interface in docker-enabled Travis (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/359>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 22 Mar 2017 07:50:32 +0000
+
 mackerel-agent (0.41.1-1) stable; urgency=low
 
   * add check-tcp on pluginlist.txt (by daiksy)
