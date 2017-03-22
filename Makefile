@@ -88,7 +88,7 @@ deb: crossbuild-package
 
 deb-systemd: crossbuild-package
 	BUILD_DIRECTORY=build-linux-amd64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)/packaging":/workspace -w /workspace/deb-build a91d52f2eac2 --no-tgz-check -uc -us
+	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 rpm-kcps: rpm-kcps-v1 rpm-kcps-v2
 rpm-kcps-v1: crossbuild-package-kcps
