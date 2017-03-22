@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.41.2 (2017-03-22)
+
+* Don't raise error when creating pidfile if the contents of pidfile is same as own pid #357 (Songmu)
+* Exclude _tools from package #358 (itchyny)
+* Add workaround for docker0 interface in docker-enabled Travis #359 (astj)
+
+
 ## 0.41.1 (2017-03-09)
 
 * add check-tcp on pluginlist.txt #351 (daiksy)
