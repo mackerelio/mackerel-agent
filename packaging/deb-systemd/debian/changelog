@@ -1,0 +1,5 @@
+mackerel-agent (0.41.2-1.systemd) stable; urgency=low
+
+   * Prepare systemd support.
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 22 Mar 2017 10:00:01 +0000
