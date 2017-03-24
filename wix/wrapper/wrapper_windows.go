@@ -105,7 +105,7 @@ func (h *handler) start() error {
 		for {
 			b, err := br.ReadByte()
 			if err != nil {
-				if err != nil {
+				if err != io.EOF {
 					h.elog.Error(loggerEid, err.Error())
 				}
 				break
