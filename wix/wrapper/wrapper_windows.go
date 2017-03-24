@@ -79,7 +79,7 @@ type handler struct {
 // ex.
 // verbose log: 2017/01/21 22:21:08 command.go:434: DEBUG <command> received 'immediate' chan
 // normal log:  2017/01/24 14:14:27 INFO <main> Starting mackerel-agent version:0.36.0
-var logRe = regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} (?:.+\.go:\d+: )?([A-Z]+) `)
+var logRe = regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} (?:\S+\.go:\d+: )?([A-Z]+) `)
 
 func (h *handler) start() error {
 	procAllocConsole.Call()
