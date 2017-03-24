@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-	"time"
 )
 
 type item struct {
@@ -54,48 +53,78 @@ func (tr *testReader) Read(b []byte) (int, error) {
 	if len(tr.token) == 0 {
 		return 0, io.EOF
 	}
-	total := len(b)
-	rest := total
-	for {
-		if tr.sr == nil || tr.sr.Len() == 0 {
-			if len(tr.token) == 0 {
-				return total - rest, nil
-			}
-			if len(tr.token[0]) == 0 {
-				time.Sleep(20 * time.Millisecond)
-				tr.token = tr.token[1:]
-			}
-			tr.sr = strings.NewReader(tr.token[0])
-			tr.token = tr.token[1:]
+	if tr.sr == nil || tr.sr.Len() == 0 {
+		if len(tr.token) == 0 {
+			return len(b), nil
 		}
-		n, err := tr.sr.Read(b)
-		rest -= n
-		if err == nil && rest == 0 {
-			return total, err
-		}
-		b = b[n:]
+		tr.sr = strings.NewReader(tr.token[0])
+		tr.token = tr.token[1:]
 	}
+	return tr.sr.Read(b)
 }
 
 func TestAggregate(t *testing.T) {
 	tests := []struct {
+		name  string
 		input []string
 		info  []item
 		warn  []item
 		err   []item
 	}{
 		{
+			name: "standard",
 			input: []string{
 				"2017/01/02 03:04:05 foo.go:1: INFO foo",
 			},
 			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
 		},
 		{
+			name: "over 4096",
 			input: []string{
 				strings.Repeat("=", 4097) + "\n2017/01/02 03:04:05 foo",
 				".go:1: INFO foo",
 			},
 			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
+		},
+		{
+			name: "concated log",
+			input: []string{
+				"2017/01/02 03:04:05 foo.go:1: INFO foo",
+				"2017/01/02 03:04:05 foo.go:1: WARNING foo",
+				"2017/01/02 03:04:05 foo.go:1: ERROR foo",
+			},
+			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo2017/01/02 03:04:05 foo.go:1: WARNING foo2017/01/02 03:04:05 foo.go:1: ERROR foo"}},
+		},
+		{
+			name: "separated log",
+			input: []string{
+				"2017/01/02 03:04:05 foo.go:1: INFO foo\n",
+				"2017/01/02 03:04:05 foo.go:1: WARNING foo\n",
+				"2017/01/02 03:04:05 foo.go:1: ERROR foo\n",
+			},
+			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
+			warn: []item{{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"}},
+			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"}},
+		},
+		{
+			name: "separated log, and sleep",
+			input: []string{
+				"2017/01/02 03:04:05 foo.go:1: INFO foo\n\n2017/01/02 03:04:05 foo.go:1: WARNING foo\n",
+				"2017/01/02 03:04:05 foo.go:1: ERROR foo\n",
+			},
+			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
+			warn: []item{{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"}},
+			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"}},
+		},
+		{
+			name: "separated log, and sleep",
+			input: []string{
+				strings.Repeat("=", 4097) + "\n2017/01/02 03:04:05 foo.go:1: INFO foo\n2017/01/02 03:04:05 foo.go:1: ",
+				"WARNING foo\n2017/01/02 03:04:05 foo.go:1: ERROR foo\n",
+			},
+			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
+			warn: []item{{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"}},
+			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"}},
 		},
 	}
 
@@ -111,13 +140,13 @@ func TestAggregate(t *testing.T) {
 		h.wg.Wait()
 
 		if !reflect.DeepEqual(tl.info, test.info) {
-			t.Fatalf("info log: want: %v, got: %v", test.info, tl.info)
+			t.Fatalf("%s: info log: want: %v, got: %v", test.name, test.info, tl.info)
 		}
 		if !reflect.DeepEqual(tl.warn, test.warn) {
-			t.Fatalf("warn log: want: %v, got: %v", test.warn, tl.warn)
+			t.Fatalf("%s: warn log: want: %v, got: %v", test.name, test.warn, tl.warn)
 		}
 		if !reflect.DeepEqual(tl.err, test.err) {
-			t.Fatalf("err log: want: %v, got: %v", test.err, tl.err)
+			t.Fatalf("%s: err log: want: %v, got: %v", test.name, test.err, tl.err)
 		}
 	}
 }
