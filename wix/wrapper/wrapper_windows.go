@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 	"unsafe"
@@ -70,6 +71,9 @@ type Logger interface {
 type handler struct {
 	elog Logger
 	cmd  *exec.Cmd
+	r    io.Reader
+	w    io.WriteCloser
+	wg   sync.WaitGroup
 }
 
 // ex.
@@ -87,15 +91,19 @@ func (h *handler) start() error {
 	cmd.Dir = dir
 
 	h.cmd = cmd
-	r, w := io.Pipe()
-	cmd.Stderr = w
+	h.r, h.w = io.Pipe()
+	cmd.Stderr = h.w
 
-	err := cmd.Start()
+	err := h.cmd.Start()
 	if err != nil {
 		return err
 	}
 
-	br := bufio.NewReader(r)
+	return h.aggregate()
+}
+
+func (h *handler) aggregate() error {
+	br := bufio.NewReader(h.r)
 	lc := make(chan string, 10)
 	done := make(chan struct{})
 
@@ -103,8 +111,10 @@ func (h *handler) start() error {
 	// when process finished.
 	// read data from pipe. When data arrived at EOL, send line-string to the
 	// channel. Also remaining line to EOF.
+	h.wg.Add(1)
 	go func() {
-		defer w.Close()
+		defer h.wg.Done()
+		defer h.w.Close()
 
 		// pipe stderr to windows event log
 		var body bytes.Buffer
@@ -131,7 +141,10 @@ func (h *handler) start() error {
 		done <- struct{}{}
 	}()
 
+	h.wg.Add(1)
 	go func() {
+		defer h.wg.Done()
+
 		linebuf := []string{}
 	loop:
 		for {
@@ -168,6 +181,7 @@ func (h *handler) start() error {
 		close(lc)
 		close(done)
 	}()
+
 	return nil
 }
 
@@ -193,6 +207,8 @@ func (h *handler) stop() error {
 		}
 		return h.cmd.Process.Kill()
 	}
+
+	h.wg.Wait()
 	return nil
 }
 
