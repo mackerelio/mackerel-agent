@@ -90,14 +90,14 @@ func (h *handler) start() error {
 	r, w := io.Pipe()
 	cmd.Stderr = w
 
-	br := bufio.NewReader(r)
-	lc := make(chan string, 10)
-	done := make(chan struct{})
-
 	err := cmd.Start()
 	if err != nil {
 		return err
 	}
+
+	br := bufio.NewReader(r)
+	lc := make(chan string, 10)
+	done := make(chan struct{})
 
 	// It need to read data from pipe continuously. And it need to close handle
 	// when process finished.
