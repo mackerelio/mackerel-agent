@@ -2,12 +2,14 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"syscall"
 	"time"
 	"unsafe"
@@ -81,36 +83,91 @@ func (h *handler) start() error {
 	h.cmd = cmd
 	r, w := io.Pipe()
 	cmd.Stderr = w
-	scanner := bufio.NewScanner(r)
-	scanner.Split(bufio.ScanLines) // default
-	go func() {
-		// pipe stderr to windows event log
-		for scanner.Scan() {
-			line := scanner.Text()
 
-			if match := logRe.FindStringSubmatch(line); match != nil {
-				level := match[1]
-				switch level {
-				case "TRACE", "DEBUG", "INFO":
-					h.elog.Info(defaultEid, line)
-				case "WARNING":
-					h.elog.Warning(defaultEid, line)
-				case "ERROR", "CRITICAL":
-					h.elog.Error(defaultEid, line)
-				default:
-					h.elog.Error(defaultEid, line)
+	br := bufio.NewReader(r)
+	lc := make(chan string, 10)
+	done := make(chan struct{})
+
+	err := cmd.Start()
+	if err != nil {
+		return err
+	}
+
+	// It need to read data from pipe continuously. And it need to close handle
+	// when process finished.
+	// read data from pipe. When data arrived at EOL, send line-string to the
+	// channel. Also remaining line to EOF.
+	go func() {
+		defer w.Close()
+
+		// pipe stderr to windows event log
+		var body bytes.Buffer
+		for {
+			b, err := br.ReadByte()
+			if err != nil {
+				if err != nil {
+					h.elog.Error(loggerEid, err.Error())
 				}
-			} else {
-				h.elog.Error(defaultEid, line)
+				break
+			}
+			if b == '\n' {
+				if body.Len() > 0 {
+					lc <- body.String()
+					body.Reset()
+				}
+				continue
+			}
+			// Read size should be 4096 because default size of PIPE is 4096.
+			// We know this is not a limit size. This is workaround to avoid
+			// that plugin stop writing to pipe.
+			if body.Len() < 4096 {
+				body.WriteByte(b)
 			}
 		}
-		if err := scanner.Err(); err != nil {
-			h.elog.Error(loggerEid, err.Error())
-		} else {
-			// EOF
+		if body.Len() > 0 {
+			lc <- body.String()
 		}
+		done <- struct{}{}
 	}()
-	return cmd.Start()
+
+	go func() {
+		linebuf := []string{}
+	loop:
+		for {
+			select {
+			case line := <-lc:
+				linebuf = append(linebuf, line)
+			case <-time.After(10 * time.Millisecond):
+				// When it take 10ms, it is located at end of paragraph. Then
+				// slice appended at above should be the paragraph.
+				if len(linebuf) > 0 {
+					if match := logRe.FindStringSubmatch(linebuf[0]); match != nil {
+						line := strings.Join(linebuf, "\n")
+						level := match[1]
+						switch level {
+						case "TRACE", "DEBUG", "INFO":
+							h.elog.Info(defaultEid, line)
+						case "WARNING":
+							h.elog.Warning(defaultEid, line)
+						case "ERROR", "CRITICAL":
+							h.elog.Error(defaultEid, line)
+						default:
+							h.elog.Error(loggerEid, line)
+						}
+					}
+					linebuf = nil
+				}
+				select {
+				case <-done:
+					break loop
+				default:
+				}
+			}
+		}
+		close(lc)
+		close(done)
+	}()
+	return nil
 }
 
 func interrupt(p *os.Process) error {
