@@ -62,14 +62,14 @@ func main() {
 	}
 }
 
-type Logger interface {
+type logger interface {
 	Info(eid uint32, msg string) error
 	Warning(eid uint32, msg string) error
 	Error(eid uint32, msg string) error
 }
 
 type handler struct {
-	elog Logger
+	elog logger
 	cmd  *exec.Cmd
 	r    io.Reader
 	w    io.WriteCloser
@@ -168,13 +168,17 @@ func (h *handler) aggregate() error {
 						default:
 							h.elog.Error(defaultEid, line)
 						}
+						linebuf = nil
+					} else {
+						linebuf = linebuf[1:]
 					}
-					linebuf = nil
 				}
-				select {
-				case <-done:
-					break loop
-				default:
+				if len(linebuf) == 0 {
+					select {
+					case <-done:
+						break loop
+					default:
+					}
 				}
 			}
 		}
