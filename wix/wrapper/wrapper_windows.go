@@ -61,8 +61,14 @@ func main() {
 	}
 }
 
+type Logger interface {
+	Info(eid uint32, msg string) error
+	Warning(eid uint32, msg string) error
+	Error(eid uint32, msg string) error
+}
+
 type handler struct {
-	elog *eventlog.Log
+	elog Logger
 	cmd  *exec.Cmd
 }
 
