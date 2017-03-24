@@ -152,7 +152,7 @@ func (h *handler) start() error {
 						case "ERROR", "CRITICAL":
 							h.elog.Error(defaultEid, line)
 						default:
-							h.elog.Error(loggerEid, line)
+							h.elog.Error(defaultEid, line)
 						}
 					}
 					linebuf = nil
