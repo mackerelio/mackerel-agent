@@ -3,7 +3,7 @@ services:
 - docker
 language: go
 go:
-- 1.7
+- 1.8
 env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
