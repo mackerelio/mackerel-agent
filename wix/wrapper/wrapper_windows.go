@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -150,13 +149,16 @@ func (h *handler) aggregate() error {
 		for {
 			select {
 			case line := <-lc:
-				linebuf = append(linebuf, line)
+				if len(linebuf) == 0 || logRe.MatchString(line) {
+					linebuf = append(linebuf, line)
+				} else {
+					linebuf[len(linebuf)-1] += "\n" + line
+				}
 			case <-time.After(10 * time.Millisecond):
 				// When it take 10ms, it is located at end of paragraph. Then
 				// slice appended at above should be the paragraph.
-				if len(linebuf) > 0 {
-					if match := logRe.FindStringSubmatch(linebuf[0]); match != nil {
-						line := strings.Join(linebuf, "\n")
+				for _, line := range linebuf {
+					if match := logRe.FindStringSubmatch(line); match != nil {
 						level := match[1]
 						switch level {
 						case "TRACE", "DEBUG", "INFO":
@@ -168,18 +170,14 @@ func (h *handler) aggregate() error {
 						default:
 							h.elog.Error(defaultEid, line)
 						}
-						linebuf = nil
-					} else {
-						linebuf = linebuf[1:]
 					}
 				}
-				if len(linebuf) == 0 {
-					select {
-					case <-done:
-						break loop
-					default:
-					}
+				select {
+				case <-done:
+					break loop
+				default:
 				}
+				linebuf = nil
 			}
 		}
 		close(lc)
