@@ -117,12 +117,7 @@ func (h *handler) start() error {
 				}
 				continue
 			}
-			// Read size should be 4096 because default size of PIPE is 4096.
-			// We know this is not a limit size. This is workaround to avoid
-			// that plugin stop writing to pipe.
-			if body.Len() < 4096 {
-				body.WriteByte(b)
-			}
+			body.WriteByte(b)
 		}
 		if body.Len() > 0 {
 			lc <- body.String()
