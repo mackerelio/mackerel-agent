@@ -1,10 +1,9 @@
-// +build linux darwin freebsd netbsd
-
 package util
 
 import (
 	"fmt"
 	"os/exec"
+	"runtime"
 	"time"
 
 	"github.com/Songmu/timeout"
@@ -19,9 +18,17 @@ var TimeoutDuration = 30 * time.Second
 // TimeoutKillAfter is option of `RunCommand()` set waiting limit to `kill -kill` after terminating the command.
 var TimeoutKillAfter = 10 * time.Second
 
+var cmdBase = []string{"sh", "-c"}
+
+func init() {
+	if runtime.GOOS == "windows" {
+		cmdBase = []string{"cmd", "/c"}
+	}
+}
+
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
 func RunCommand(command, user string) (stdout, stderr string, exitCode int, err error) {
-	cmdArgs := []string{"/bin/sh", "-c", command}
+	cmdArgs := append(cmdBase, command)
 	return RunCommandArgs(cmdArgs, user)
 }
 
@@ -29,7 +36,11 @@ func RunCommand(command, user string) (stdout, stderr string, exitCode int, err 
 func RunCommandArgs(cmdArgs []string, user string) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
 	if user != "" {
-		args = append([]string{"sudo", "-Eu", user}, args...)
+		if runtime.GOOS == "windows" {
+			utilLogger.Warningf("RunCommand ignore option: user = %q", user)
+		} else {
+			args = append([]string{"sudo", "-Eu", user}, args...)
+		}
 	}
 	cmd := exec.Command(args[0], args[1:]...)
 	tio := &timeout.Timeout{
