@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/Songmu/timeout"
@@ -42,18 +41,10 @@ func RunCommandArgs(cmdArgs []string, user string) (string, string, int, error) 
 	if err == nil && exitStatus.IsTimedOut() {
 		err = fmt.Errorf("command timed out")
 	}
-
 	if err != nil {
-		if exitErr, ok := err.(*exec.ExitError); ok {
-			if waitStatus, ok := exitErr.Sys().(syscall.WaitStatus); ok {
-				exitCode := waitStatus.ExitStatus()
-				return stdout, stderr, exitCode, nil
-			}
-		}
-		return stdout, stderr, -1, err
+		utilLogger.Errorf("RunCommand error command: %T, error: %s", cmdArgs, err.Error())
 	}
-
-	return stdout, stderr, 0, nil
+	return stdout, stderr, exitStatus.GetChildExitCode(), err
 }
 
 // GetWmic XXX
