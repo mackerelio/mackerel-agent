@@ -1,8 +1,14 @@
-// +build linux darwin freebsd netbsd
+// +build linux darwin freebsd netbsd windows
 
 package util
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 	"testing"
 	"time"
 )
@@ -13,6 +19,10 @@ func init() {
 
 func TestRunCommand(t *testing.T) {
 	stdout, stderr, exitCode, err := RunCommand("echo 1", "")
+	if runtime.GOOS == "windows" {
+		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
+		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
+	}
 	if stdout != "1\n" {
 		t.Errorf("stdout shoud be 1")
 	}
@@ -27,8 +37,31 @@ func TestRunCommand(t *testing.T) {
 	}
 }
 
+func makeSleep(t *testing.T) (string, string) {
+	tmpdir, err := ioutil.TempDir("", "mackerel-agent")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	f := filepath.Join(tmpdir, "sleep.go")
+	err = ioutil.WriteFile(f, []byte(`package main;import "time";func main(){time.Sleep(time.Second*2)}`), 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(f, " ") {
+		f = `"` + f + `"`
+	}
+	return fmt.Sprintf(`go run %s 2`, f), tmpdir
+}
+
 func TestRunCommandWithTimeout(t *testing.T) {
-	stdout, stderr, _, err := RunCommand("sleep 2", "")
+	command := "sleep 2"
+
+	var tmpdir string
+	if runtime.GOOS == "windows" {
+		command, tmpdir = makeSleep(t)
+	}
+	stdout, stderr, _, err := RunCommand(command, "")
 	if stdout != "" {
 		t.Errorf("stdout shoud be empty")
 	}
@@ -37,5 +70,8 @@ func TestRunCommandWithTimeout(t *testing.T) {
 	}
 	if err == nil {
 		t.Error("err should have error but nil")
+	}
+	if tmpdir != "" {
+		os.RemoveAll(tmpdir)
 	}
 }
