@@ -21,7 +21,7 @@ var TimeoutKillAfter = 10 * time.Second
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
 func RunCommand(command, user string) (stdout, stderr string, exitCode int, err error) {
-	cmdArgs := []string{"/bin/sh", "-c", command}
+	cmdArgs := []string{"/bin/sh", "-c", fmt.Sprintf("exec %s", command)}
 	return RunCommandArgs(cmdArgs, user)
 }
 
