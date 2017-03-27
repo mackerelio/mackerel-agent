@@ -1,3 +1,18 @@
+mackerel-agent (0.41.3-1) stable; urgency=low
+
+  * build with Go 1.8 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/342>
+  * [EXPERIMENTAL] Add systemd support for deb packages (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/360>
+  * Timeout for command execution on Windows (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/361>
+  * It need to read output from command continuously. (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/364>
+  * remove util/util_windows.go and commonalize util.RunCommand (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/365>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 27 Mar 2017 02:01:38 +0000
+
 mackerel-agent (0.41.2-1) stable; urgency=low
 
   * Don't raise error when creating pidfile if the contents of pidfile is same as own pid (by Songmu)

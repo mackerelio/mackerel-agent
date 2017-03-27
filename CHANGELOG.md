@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.41.3 (2017-03-27)
+
+* build with Go 1.8 #342 (astj)
+* [EXPERIMENTAL] Add systemd support for deb packages #360 (astj)
+* Timeout for command execution on Windows #361 (mattn)
+* It need to read output from command continuously. #364 (mattn)
+* remove util/util_windows.go and commonalize util.RunCommand #365 (Songmu)
+
+
 ## 0.41.2 (2017-03-22)
 
 * Don't raise error when creating pidfile if the contents of pidfile is same as own pid #357 (Songmu)
