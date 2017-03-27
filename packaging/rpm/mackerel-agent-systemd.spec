@@ -55,6 +55,13 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Mar 27 2017 <mackerel-developers@hatena.ne.jp> - 0.41.3-1
+- build with Go 1.8 (by astj)
+- [EXPERIMENTAL] Add systemd support for deb packages (by astj)
+- Timeout for command execution on Windows (by mattn)
+- It need to read output from command continuously. (by mattn)
+- remove util/util_windows.go and commonalize util.RunCommand (by Songmu)
+
 * Wed Mar 22 2017 <mackerel-developers@hatena.ne.jp> - 0.41.2-1
 - Don't raise error when creating pidfile if the contents of pidfile is same as own pid (by Songmu)
 - Exclude _tools from package (by itchyny)
