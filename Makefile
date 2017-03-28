@@ -82,11 +82,13 @@ rpm-v2: crossbuild-package
 	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
-deb: crossbuild-package
+deb: deb-v1 deb-v2
+
+deb-v1: crossbuild-package
 	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
-deb-systemd: crossbuild-package
+deb-v2: crossbuild-package
 	BUILD_DIRECTORY=build-linux-amd64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
@@ -110,8 +112,14 @@ rpm-kcps-v2: crossbuild-package-kcps
 	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/mackerel-agent-kcps.spec
 
-deb-kcps: crossbuild-package-kcps
+deb-kcps: deb-kcps-v1 deb-kcps-v2
+
+deb-kcps-v1: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
+	cd packaging/deb-build && debuild --no-tgz-check -uc -us
+
+deb-kcps-v2: crossbuild-package-kcps
+	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_SYSTEMD=1 BUILD_DIRECTORY=build-linux-amd64 _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 rpm-stage: rpm-stage-v1 rpm-stage-v2
@@ -129,8 +137,14 @@ rpm-stage-v2: crossbuild-package-stage
 	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/mackerel-agent-stage.spec
 
-deb-stage: crossbuild-package-stage
+deb-stage: deb-stage-v1 deb-stage-v2
+
+deb-stage-v1: crossbuild-package-stage
 	MACKEREL_AGENT_NAME=mackerel-agent-stage BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
+	cd packaging/deb-build && debuild --no-tgz-check -uc -us
+
+deb-stage-v2: crossbuild-package-stage
+	MACKEREL_AGENT_NAME=mackerel-agent-stage BUILD_SYSTEMD=1 BUILD_DIRECTORY=build-linux-amd64 _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
 tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
@@ -156,4 +170,4 @@ clean:
 
 generate: commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-v1 rpm-v2 rpm-stage rpm-stage-v1 rpm-stage-v2 rpm-kcps-v1 rpm-kcps-v2 deb-systemd
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-v1 rpm-v2 rpm-stage rpm-stage-v1 rpm-stage-v2 rpm-kcps-v1 rpm-kcps-v2 deb-v1 deb-v2 deb-kcps deb-kcps-v1 deb-kcps-v2 deb-stage deb-stage-v1 deb-stage-v2
