@@ -6,14 +6,14 @@
 Name:      mackerel-agent
 Version:   %{_version}
 Release:   1%{?dist}
-License:   Commercial
+License:   ASL 2.0
 Summary:   mackerel.io agent
 URL:       https://mackerel.io
-Group:     Hatena
+Group:     Hatena Co., Ltd.
 Source0:   %{name}.sysconfig
 Source1:   %{name}.conf
 Source2:   %{name}.service
-Packager:  Hatena
+Packager:  Hatena Co., Ltd.
 BuildArch: %{buildarch}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 

@@ -6,15 +6,15 @@
 Name:      mackerel-agent
 Version:   %{_version}
 Release:   1
-License:   Commercial
+License:   ASL 2.0
 Summary:   mackerel.io agent
 URL:       https://mackerel.io
-Group:     Hatena
+Group:     Hatena Co., Ltd.
 Source0:   %{name}.initd
 Source1:   %{name}.sysconfig
 Source2:   %{name}.logrotate
 Source3:   %{name}.conf
-Packager:  Hatena
+Packager:  Hatena Co., Ltd.
 BuildArch: %{buildarch}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(post): /sbin/chkconfig
