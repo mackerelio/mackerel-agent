@@ -1,6 +1,6 @@
 This work was packaged for Debian by:
 
-    y_uuki <y_uuki@hatena.ne.jp> on Tue, 11 Mar 2014 11:27:51 +0900
+    astj <astj@hatena.ne.jp> on Tue, 28 Mar 2017 11:09:51 +0900
 
 It was downloaded from:
 
@@ -8,12 +8,12 @@ It was downloaded from:
 
 Copyright:
 
-    <Copyright (C) 2014 Hatena>
+    <Copyright (C) 2017 Hatena Co., Ltd.>
 
 License:
 
-    Commercial
+    Apache-2.0
 
 The Debian packaging is:
 
-    Copyright (C) 2014 Hatena <developers@mackerel.io>
+    Copyright (C) 2017 Hatena Co., Ltd. <developers@mackerel.io>
