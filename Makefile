@@ -82,11 +82,13 @@ rpm-v2: crossbuild-package
 	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
-deb: crossbuild-package
+deb: deb-v1 deb-v2
+
+deb-v1: crossbuild-package
 	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
-deb-systemd: crossbuild-package
+deb-v2: crossbuild-package
 	BUILD_DIRECTORY=build-linux-amd64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
@@ -156,4 +158,4 @@ clean:
 
 generate: commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-v1 rpm-v2 rpm-stage rpm-stage-v1 rpm-stage-v2 rpm-kcps-v1 rpm-kcps-v2 deb-systemd
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-v1 rpm-v2 rpm-stage rpm-stage-v1 rpm-stage-v2 rpm-kcps-v1 rpm-kcps-v2 deb-v1 deb-v2
