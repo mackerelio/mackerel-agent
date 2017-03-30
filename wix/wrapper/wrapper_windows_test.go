@@ -85,6 +85,7 @@ func TestAggregate(t *testing.T) {
 				".go:1: INFO foo",
 			},
 			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
+			err:  []item{{1, strings.Repeat("=", 4097)}},
 		},
 		{
 			name: "concated log",
@@ -124,7 +125,10 @@ func TestAggregate(t *testing.T) {
 			},
 			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
 			warn: []item{{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"}},
-			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"}},
+			err: []item{
+				{1, strings.Repeat("=", 4097)},
+				{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"},
+			},
 		},
 	}
 

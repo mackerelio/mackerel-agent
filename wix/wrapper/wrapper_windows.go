@@ -170,6 +170,8 @@ func (h *handler) aggregate() error {
 						default:
 							h.elog.Error(defaultEid, line)
 						}
+					} else {
+						h.elog.Error(defaultEid, line)
 					}
 				}
 				select {
