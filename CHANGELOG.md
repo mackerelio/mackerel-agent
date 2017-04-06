@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.42.0 (2017-04-06)
+
+* Logs that are not via the mackerel-agent's logger are also output to the eventlog #367 (Songmu)
+* Change package License to Apache 2.0 #368 (astj)
+* Release systemd deb packages to github releases #369 (astj)
+* Change systemd deb package architecture to amd64 #370 (astj)
+
+
 ## 0.41.3 (2017-03-27)
 
 * build with Go 1.8 #342 (astj)
