@@ -62,6 +62,12 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Apr 06 2017 <mackerel-developers@hatena.ne.jp> - 0.42.0-1
+- Logs that are not via the mackerel-agent's logger are also output to the eventlog (by Songmu)
+- Change package License to Apache 2.0 (by astj)
+- Release systemd deb packages to github releases (by astj)
+- Change systemd deb package architecture to amd64 (by astj)
+
 * Mon Mar 27 2017 <mackerel-developers@hatena.ne.jp> - 0.41.3-1
 - build with Go 1.8 (by astj)
 - [EXPERIMENTAL] Add systemd support for deb packages (by astj)
