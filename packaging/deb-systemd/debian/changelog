@@ -1,3 +1,10 @@
+mackerel-agent (0.42.1-1.systemd) stable; urgency=low
+
+  * LC_ALL=C on initialization (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/373>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 11 Apr 2017 01:27:50 +0000
+
 mackerel-agent (0.42.0-1.systemd) stable; urgency=low
 
   * Logs that are not via the mackerel-agent's logger are also output to the eventlog (by Songmu)

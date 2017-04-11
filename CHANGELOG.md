@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.42.1 (2017-04-11)
+
+* LC_ALL=C on initialization #373 (Songmu)
+
+
 ## 0.42.0 (2017-04-06)
 
 * Logs that are not via the mackerel-agent's logger are also output to the eventlog #367 (Songmu)

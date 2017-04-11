@@ -55,6 +55,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Apr 11 2017 <mackerel-developers@hatena.ne.jp> - 0.42.1-1
+- LC_ALL=C on initialization (by Songmu)
+
 * Thu Apr 06 2017 <mackerel-developers@hatena.ne.jp> - 0.42.0-1
 - Logs that are not via the mackerel-agent's logger are also output to the eventlog (by Songmu)
 - Change package License to Apache 2.0 (by astj)
