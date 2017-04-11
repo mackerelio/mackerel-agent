@@ -1,8 +1,10 @@
+// +build linux freebsd netbsd
+
 package config
 
 import "fmt"
 
-// DefaultConfig The default configuration for linux
+// DefaultConfig The default configuration for unix environment
 var DefaultConfig = &Config{
 	Apibase:    getApibase(),
 	Root:       fmt.Sprintf("/var/lib/%s", getAgentName()),
