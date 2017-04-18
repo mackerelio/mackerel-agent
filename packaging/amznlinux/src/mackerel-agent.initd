@@ -1,0 +1,168 @@
+#!/bin/sh
+#
+#       /etc/rc.d/init.d/mackerel-agent
+#
+#       Daemon for mackerel.io
+#
+# chkconfig:   2345 95 5
+# description: Daemon for mackerel.io
+
+### BEGIN INIT INFO
+# Provides:       mackerel-agent
+# Short-Description: start and stop mackerel-agent
+# Description: Daemon for mackerel.io
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+prog="mackerel-agent"
+
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+BIN=${BIN:="/usr/bin/$prog"}
+LOGFILE=${LOGILE:="/var/log/$prog.log"}
+PIDFILE=${PIDFILE:="/var/run/$prog.pid"}
+ROOT=${ROOT:="/var/lib/$prog"}
+
+lockfile=/var/lock/subsys/$prog
+
+# if matched return 0, else return 1
+prefix_match() {
+    [ "${1#$2*}" = "$1" ] && return 1
+    return 0
+}
+
+start() {
+    [ -x $exec ] || exit 5
+
+    echo -n $"Starting $prog:"
+
+    $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
+    sleep 3
+    if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then
+        failure
+        echo
+
+        return 1
+    fi
+
+    touch $lockfile
+    success
+    echo
+
+    return 0
+}
+
+configtest_q() {
+    $BIN configtest ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1
+}
+
+configtest() {
+    echo -n $"Testing configuration of $prog: "
+
+    configtest_q
+    if [ "$?" -eq 0 ]; then
+        success
+        echo
+    else
+        failure
+        echo
+        return 1
+    fi
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+
+    if [ ! -f $PIDFILE ]; then
+        echo
+        echo "pid file ($PIDFILE) not found" >&2
+
+        return 0
+    fi
+
+    pid=$(cat $PIDFILE)
+    process_name=$(ps -p $pid -o comm= )
+    if [ -z $process_name ]; then
+        failure
+        echo
+        echo "No such process (pid: $pid)" >&2
+
+        return 1
+    fi
+
+    prefix_match $prog $process_name
+    retval=$?
+    if [ $retval -eq 1 ]; then
+        failure
+        echo
+        echo "pid file ($PIDFILE) is invalid" >&2
+
+        return 1
+    fi
+
+    killproc -p $PIDFILE -QUIT
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+retire() {
+    echo -n $"Retiring the Host:"
+    $BIN retire -force ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1
+    retval=$?
+    if [ $retval -ne 0 ]; then
+        failure
+        echo
+        return $retval
+    fi
+    success
+    echo
+}
+
+rh_status() {
+    status -p $PIDFILE $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        retval=$?
+        [ "$AUTO_RETIREMENT" != "" ] && [ "$AUTO_RETIREMENT" != "0" ] && retire
+        exit $retval
+        ;;
+    reload)
+        configtest_q || exit 1
+        restart
+        ;;
+    restart)
+        $1
+        ;;
+    status)
+        rh_status
+        ;;
+    configtest)
+        configtest
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|reload|status|configtest}"
+        exit 2
+esac
+
+exit $?
