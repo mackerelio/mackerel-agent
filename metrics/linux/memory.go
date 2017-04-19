@@ -53,6 +53,7 @@ var memItems = map[string]string{
 	"SwapCached":   "swap_cached",
 	"SwapTotal":    "swap_total",
 	"SwapFree":     "swap_free",
+	"SReclaimable": "slab",
 }
 
 func parseMeminfo(out []byte) (metrics.Values, error) {
@@ -72,7 +73,7 @@ func parseMeminfo(out []byte) (metrics.Values, error) {
 			value, _ := strconv.ParseFloat(matches[2], 64)
 			ret["memory."+k] = value * 1024
 			switch k {
-			case "free", "buffers", "cached":
+			case "free", "buffers", "cached", "slab":
 				used -= value
 				usedCnt++
 			case "total":
