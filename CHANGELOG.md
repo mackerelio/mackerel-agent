@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.42.2 (2017-04-19)
+
+* Adjust config package #375 (Songmu)
+* use CRLF in mackerel-agent.conf on windows #377 (Songmu)
+
+
 ## 0.42.1 (2017-04-11)
 
 * LC_ALL=C on initialization #373 (Songmu)
