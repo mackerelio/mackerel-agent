@@ -55,6 +55,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Apr 19 2017 <mackerel-developers@hatena.ne.jp> - 0.42.2-1
+- Adjust config package (by Songmu)
+- use CRLF in mackerel-agent.conf on windows (by Songmu)
+
 * Tue Apr 11 2017 <mackerel-developers@hatena.ne.jp> - 0.42.1-1
 - LC_ALL=C on initialization (by Songmu)
 
