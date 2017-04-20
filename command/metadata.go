@@ -1,10 +1,10 @@
 package command
 
 import (
-	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/mackerelio/golib/pluginutil"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/metadata"
 )
@@ -12,11 +12,7 @@ import (
 func metadataGenerators(conf *config.Config) []*metadata.Generator {
 	generators := make([]*metadata.Generator, 0, len(conf.MetadataPlugins))
 
-	workdir := os.Getenv("MACKEREL_PLUGIN_WORKDIR")
-	if workdir == "" {
-		workdir = os.TempDir()
-	}
-
+	workdir := pluginutil.PluginWorkDir()
 	for name, pluginConfig := range conf.MetadataPlugins {
 		generator := &metadata.Generator{
 			Name:      name,
