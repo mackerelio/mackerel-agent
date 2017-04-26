@@ -163,9 +163,9 @@ func (h *handler) aggregate() error {
 						switch level {
 						case "TRACE", "DEBUG", "INFO":
 							h.elog.Info(defaultEid, line)
-						case "WARNING":
+						case "WARNING", "ERROR":
 							h.elog.Warning(defaultEid, line)
-						case "ERROR", "CRITICAL":
+						case "CRITICAL":
 							h.elog.Error(defaultEid, line)
 						default:
 							h.elog.Error(defaultEid, line)
