@@ -102,32 +102,36 @@ func TestAggregate(t *testing.T) {
 				"2017/01/02 03:04:05 foo.go:1: INFO foo\n",
 				"2017/01/02 03:04:05 foo.go:1: WARNING foo\n",
 				"2017/01/02 03:04:05 foo.go:1: ERROR foo\n",
+				"2017/01/02 03:04:05 foo.go:1: CRITICAL foo\n",
 			},
 			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
-			warn: []item{{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"}},
-			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"}},
+			warn: []item{
+				{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"},
+				{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"},
+			},
+			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: CRITICAL foo"}},
 		},
 		{
 			name: "separated log, and sleep",
 			input: []string{
 				"2017/01/02 03:04:05 foo.go:1: INFO foo\n\n2017/01/02 03:04:05 foo.go:1: WARNING foo\n",
-				"2017/01/02 03:04:05 foo.go:1: ERROR foo\n",
+				"2017/01/02 03:04:05 foo.go:1: CRITICAL foo\n",
 			},
 			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
 			warn: []item{{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"}},
-			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"}},
+			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: CRITICAL foo"}},
 		},
 		{
 			name: "separated log, and sleep",
 			input: []string{
 				strings.Repeat("=", 4097) + "\n2017/01/02 03:04:05 foo.go:1: INFO foo\n2017/01/02 03:04:05 foo.go:1: ",
-				"WARNING foo\n2017/01/02 03:04:05 foo.go:1: ERROR foo\n",
+				"WARNING foo\n2017/01/02 03:04:05 foo.go:1: CRITICAL foo\n",
 			},
 			info: []item{{1, "2017/01/02 03:04:05 foo.go:1: INFO foo"}},
 			warn: []item{{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"}},
 			err: []item{
 				{1, strings.Repeat("=", 4097)},
-				{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"},
+				{1, "2017/01/02 03:04:05 foo.go:1: CRITICAL foo"},
 			},
 		},
 	}
