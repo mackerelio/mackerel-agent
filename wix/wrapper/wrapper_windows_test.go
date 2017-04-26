@@ -109,7 +109,7 @@ func TestAggregate(t *testing.T) {
 				{1, "2017/01/02 03:04:05 foo.go:1: WARNING foo"},
 				{1, "2017/01/02 03:04:05 foo.go:1: ERROR foo"},
 			},
-			err:  []item{{1, "2017/01/02 03:04:05 foo.go:1: CRITICAL foo"}},
+			err: []item{{1, "2017/01/02 03:04:05 foo.go:1: CRITICAL foo"}},
 		},
 		{
 			name: "separated log, and sleep",
