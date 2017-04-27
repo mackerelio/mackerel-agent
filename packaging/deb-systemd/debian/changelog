@@ -1,3 +1,10 @@
+mackerel-agent (0.42.3-1.systemd) stable; urgency=low
+
+  * Output error logs of mackerel-agent as warning log of windows event log (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/380>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 27 Apr 2017 02:45:24 +0000
+
 mackerel-agent (0.42.2-1.systemd) stable; urgency=low
 
   * Adjust config package (by Songmu)
