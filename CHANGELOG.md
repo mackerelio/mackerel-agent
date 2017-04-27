@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.42.3 (2017-04-27)
+
+* Output error logs of mackerel-agent as warning log of windows event log #380 (Songmu)
+
+
 ## 0.42.2 (2017-04-19)
 
 * Adjust config package #375 (Songmu)

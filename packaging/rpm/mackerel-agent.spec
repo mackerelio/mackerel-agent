@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Apr 27 2017 <mackerel-developers@hatena.ne.jp> - 0.42.3-1
+- Output error logs of mackerel-agent as warning log of windows event log (by Songmu)
+
 * Wed Apr 19 2017 <mackerel-developers@hatena.ne.jp> - 0.42.2-1
 - Adjust config package (by Songmu)
 - use CRLF in mackerel-agent.conf on windows (by Songmu)
