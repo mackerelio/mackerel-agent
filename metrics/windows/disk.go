@@ -23,7 +23,7 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 	return &DiskGenerator{interval}, nil
 }
 
-type win32PerfFormattedData struct {
+type win32PerfFormattedDataPerfDiskPhysicalDisk struct {
 	Name             string
 	DiskReadsPerSec  uint64
 	DiskWritesPerSec uint64
@@ -33,7 +33,7 @@ type win32PerfFormattedData struct {
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	time.Sleep(g.Interval)
 
-	var records []win32PerfFormattedData
+	var records []win32PerfFormattedDataPerfDiskPhysicalDisk
 	err := wmi.Query("SELECT * FROM Win32_PerfFormattedData_PerfDisk_LogicalDisk ", &records)
 	if err != nil {
 		return nil, err
