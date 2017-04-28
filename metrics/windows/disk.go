@@ -24,9 +24,9 @@ func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
 }
 
 type win32PerfFormattedData struct {
-	Name                 string
-	DiskReadBytesPersec  uint64
-	DiskWriteBytesPersec uint64
+	Name             string
+	DiskReadsPerSec  uint64
+	DiskWritesPerSec uint64
 }
 
 // Generate XXX
@@ -47,8 +47,8 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 			continue
 		}
 		name = name[:1]
-		results[fmt.Sprintf(`disk.%s.reads.delta`, name)] = float64(record.DiskReadBytesPersec)
-		results[fmt.Sprintf(`disk.%s.writes.delta`, name)] = float64(record.DiskWriteBytesPersec)
+		results[fmt.Sprintf(`disk.%s.reads.delta`, name)] = float64(record.DiskReadsPerSec)
+		results[fmt.Sprintf(`disk.%s.writes.delta`, name)] = float64(record.DiskWritesPerSec)
 	}
 	diskLogger.Debugf("%q", results)
 	return results, nil
