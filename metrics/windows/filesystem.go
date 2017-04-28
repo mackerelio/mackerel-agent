@@ -13,35 +13,33 @@ import (
 
 // FilesystemGenerator XXX
 type FilesystemGenerator struct {
-	IgnoreRegexp *regexp.Regexp
 }
 
 // NewFilesystemGenerator XXX
-func NewFilesystemGenerator(ignoreReg *regexp.Regexp) (*FilesystemGenerator, error) {
-	return &FilesystemGenerator{IgnoreRegexp: ignoreReg}, nil
+func NewFilesystemGenerator() (*FilesystemGenerator, error) {
+	return &FilesystemGenerator{}, nil
 }
 
 var logger = logging.GetLogger("metrics.filesystem")
 
-var driveLetterReg = regexp.MustCompile(`^(.*):`)
-
-// Generate the metrics of filesystems
+// Generate XXX
 func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 	filesystems, err := windows.CollectFilesystemValues()
 	if err != nil {
 		return nil, err
 	}
-	ret := metrics.Values{}
+
+	ret := make(map[string]float64)
 	for name, values := range filesystems {
-		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
-			continue
-		}
-		if matches := driveLetterReg.FindStringSubmatch(name); matches != nil {
+		if matches := regexp.MustCompile(`^(.*):`).FindStringSubmatch(name); matches != nil {
 			device := util.SanitizeMetricKey(matches[1])
+
 			ret["filesystem."+device+".size"] = values.KbSize * 1024
 			ret["filesystem."+device+".used"] = values.KbUsed * 1024
 		}
 	}
+
 	logger.Debugf("%q", ret)
-	return ret, nil
+
+	return metrics.Values(ret), nil
 }
