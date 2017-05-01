@@ -43,13 +43,6 @@ func main() {
 	if os.Getenv("GOMAXPROCS") == "" {
 		runtime.GOMAXPROCS(1)
 	}
-	// force disabling http2 for now
-	godebug := os.Getenv("GODEBUG")
-	if godebug != "" {
-		godebug += ","
-	}
-	godebug += "http2client=0"
-	os.Setenv("GODEBUG", godebug)
 	cli.Run(os.Args[1:])
 }
 
