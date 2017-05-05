@@ -32,9 +32,9 @@ type metadataResult struct {
 	createdAt time.Time
 }
 
-func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan struct{}) {
+func runMetadataLoop(app *App, termMetadataCh <-chan struct{}, quit <-chan struct{}) {
 	resultCh := make(chan *metadataResult)
-	for _, g := range c.Agent.MetadataGenerators {
+	for _, g := range app.Agent.MetadataGenerators {
 		go runEachMetadataLoop(g, resultCh, quit)
 	}
 
@@ -66,7 +66,7 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 		}
 
 		for _, result := range results {
-			resp, err := c.API.PutMetadata(c.Host.ID, result.namespace, result.metadata)
+			resp, err := app.API.PutMetadata(app.Host.ID, result.namespace, result.metadata)
 			// retry on 5XX errors
 			if resp != nil && resp.StatusCode >= 500 {
 				logger.Errorf("put metadata %q failed: status %s", result.namespace, resp.Status)
@@ -77,7 +77,7 @@ func runMetadataLoop(c *Context, termMetadataCh <-chan struct{}, quit <-chan str
 			}
 			if err != nil {
 				logger.Errorf("put metadata %q failed: %v", result.namespace, err)
-				clearMetadataCache(c.Agent.MetadataGenerators, result.namespace)
+				clearMetadataCache(app.Agent.MetadataGenerators, result.namespace)
 				continue
 			}
 		}

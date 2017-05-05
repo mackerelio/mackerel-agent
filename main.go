@@ -168,28 +168,28 @@ func start(conf *config.Config, termCh chan struct{}) error {
 	}
 	defer pidfile.Remove(conf.Pidfile)
 
-	ctx, err := command.Prepare(conf)
+	app, err := command.Prepare(conf)
 	if err != nil {
 		return fmt.Errorf("command.Prepare failed: %s", err)
 	}
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
-	go signalHandler(c, ctx, termCh)
+	go signalHandler(c, app, termCh)
 
-	return command.Run(ctx, termCh)
+	return command.Run(app, termCh)
 }
 
 var maxTerminatingInterval = 30 * time.Second
 
-func signalHandler(c chan os.Signal, ctx *command.Context, termCh chan struct{}) {
+func signalHandler(c chan os.Signal, app *command.App, termCh chan struct{}) {
 	received := false
 	for sig := range c {
 		if sig == syscall.SIGHUP {
 			logger.Debugf("Received signal '%v'", sig)
 			// TODO reload configuration file
 
-			ctx.UpdateHostSpecs()
+			app.UpdateHostSpecs()
 		} else {
 			if !received {
 				received = true
