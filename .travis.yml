@@ -7,7 +7,7 @@ go:
 env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
-  - secure: "bE6r2vPDjGyRvkCLlaeZtpSBIheNwq565DsO/DZpYkmjCcPcJSFH2Xvox92uYMkh8T5DHLZ6FxP+TVJSLsZrO75mhy8X3T/cz6CjoEiQLrsFu2eH3N1cLsEBpS99NVS8sZfnyMuplsPpC/mMjdQ43mGQbIpUukSme/PClsQy2wg="
+  - secure: "VG3xbEjFSuB80QBFchHZqQDB4VF74RTXaNSBPl/bavGr9My2RSqtfXqfEGUHFwo5zPM7LA0bIEC7jsobf6M6vtfVgJKOOXEfF/pfD83n++eHZe0yLN6Wysp1Bn14KH+ont550gDityORqEvX3pK4k9hSb8dXpjGnCtrAwqAS+eg="
 addons:
   apt:
     packages:
