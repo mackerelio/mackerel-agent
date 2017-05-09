@@ -87,6 +87,7 @@ type PluginConfig struct {
 	ExecutionInterval    *int32  `toml:"execution_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
+	DisableAutoClose     *bool   `toml:"disable_auto_close"`
 }
 
 // MetricPlugin represents the configuration of a metric plugin
@@ -136,6 +137,7 @@ type CheckPlugin struct {
 	NotificationInterval *int32
 	CheckInterval        *int32
 	MaxCheckAttempts     *int32
+	DisableAutoClose     bool
 }
 
 func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
@@ -143,14 +145,20 @@ func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &CheckPlugin{
+	plugin := CheckPlugin{
 		Command:              pconf.Command,
 		CommandArgs:          pconf.CommandArgs,
 		User:                 pconf.User,
 		NotificationInterval: pconf.NotificationInterval,
 		CheckInterval:        pconf.CheckInterval,
 		MaxCheckAttempts:     pconf.MaxCheckAttempts,
-	}, nil
+	}
+	if pconf.DisableAutoClose == nil {
+		plugin.DisableAutoClose = false
+	} else {
+		plugin.DisableAutoClose = *pconf.DisableAutoClose
+	}
+	return &plugin, nil
 }
 
 // Run the check plugin.
