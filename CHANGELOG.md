@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.43.0 (2017-05-09)
+
+* Use DiskReadsPerSec/DiskWritesPerSec instead of DiskReadBytesPersec/DiskWriteBytesPersec (on Windows) #382 (mattn)
+* Enable HTTP/2 #383 (astj)
+
+
 ## 0.42.3 (2017-04-27)
 
 * Output error logs of mackerel-agent as warning log of windows event log #380 (Songmu)
