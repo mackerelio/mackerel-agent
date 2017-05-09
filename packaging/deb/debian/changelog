@@ -1,3 +1,12 @@
+mackerel-agent (0.43.0-1) stable; urgency=low
+
+  * Use DiskReadsPerSec/DiskWritesPerSec instead of DiskReadBytesPersec/DiskWriteBytesPersec (on Windows) (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/382>
+  * Enable HTTP/2 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/383>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 09 May 2017 05:57:47 +0000
+
 mackerel-agent (0.42.3-1) stable; urgency=low
 
   * Output error logs of mackerel-agent as warning log of windows event log (by Songmu)
