@@ -147,11 +147,11 @@ func TestCreateAndRemovePidFile(t *testing.T) {
 }
 
 func TestSignalHandler(t *testing.T) {
-	ctx := &command.Context{}
+	app := &command.App{}
 	termCh := make(chan struct{})
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
-	go signalHandler(c, ctx, termCh)
+	go signalHandler(c, app, termCh)
 
 	resultCh := make(chan int)
 

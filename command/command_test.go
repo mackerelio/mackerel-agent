@@ -314,7 +314,7 @@ func TestLoop(t *testing.T) {
 
 	termCh := make(chan struct{})
 	exitCh := make(chan error)
-	c := &Context{
+	c := &App{
 		Agent:  ag,
 		Config: &conf,
 		API:    api,
