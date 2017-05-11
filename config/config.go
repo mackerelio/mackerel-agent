@@ -140,7 +140,7 @@ type CheckPlugin struct {
 	DisableAutoClose     bool
 }
 
-func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
+func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	err := pconf.prepareCommand()
 	if err != nil {
 		return nil, err
@@ -153,6 +153,10 @@ func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
 		CheckInterval:        pconf.CheckInterval,
 		MaxCheckAttempts:     pconf.MaxCheckAttempts,
 		DisableAutoClose:     pconf.DisableAutoClose,
+	}
+	if plugin.MaxCheckAttempts != nil && *plugin.MaxCheckAttempts > 1 && plugin.DisableAutoClose {
+		*plugin.MaxCheckAttempts = 1
+		configLogger.Warningf("'plugin.checks.%s.max_check_attempts' is set to 1 (Unavailable with 'disable_auto_close')", name)
 	}
 	return &plugin, nil
 }
@@ -348,7 +352,7 @@ func (conf *Config) setEachPlugins() error {
 	if pconfs, ok := conf.Plugin["checks"]; ok {
 		var err error
 		for name, pconf := range pconfs {
-			conf.CheckPlugins[name], err = pconf.buildCheckPlugin()
+			conf.CheckPlugins[name], err = pconf.buildCheckPlugin(name)
 			if err != nil {
 				return err
 			}
