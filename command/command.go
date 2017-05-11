@@ -402,8 +402,8 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 				// Do not report if nothing has changed
 				continue
 			}
-			if report.Status == checks.StatusOK && checker.Config.DisableAutoClose {
-				// Do not report `OK` if `DisableAutoClose`
+			if report.Status == checks.StatusOK && checker.Config.PreventAlertAutoClose {
+				// Do not report `OK` if `PreventAlertAutoClose`
 				lastStatus = report.Status
 				lastMessage = report.Message
 				continue
