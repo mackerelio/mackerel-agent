@@ -87,7 +87,7 @@ type PluginConfig struct {
 	ExecutionInterval    *int32  `toml:"execution_interval"`
 	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
 	CustomIdentifier     *string `toml:"custom_identifier"`
-	DisableAutoClose     *bool   `toml:"disable_auto_close"`
+	DisableAutoClose     bool   `toml:"disable_auto_close"`
 }
 
 // MetricPlugin represents the configuration of a metric plugin
@@ -152,11 +152,7 @@ func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
 		NotificationInterval: pconf.NotificationInterval,
 		CheckInterval:        pconf.CheckInterval,
 		MaxCheckAttempts:     pconf.MaxCheckAttempts,
-	}
-	if pconf.DisableAutoClose == nil {
-		plugin.DisableAutoClose = false
-	} else {
-		plugin.DisableAutoClose = *pconf.DisableAutoClose
+		DisableAutoClose:     pconf.DisableAutoClose,
 	}
 	return &plugin, nil
 }
