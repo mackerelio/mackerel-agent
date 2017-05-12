@@ -11,8 +11,6 @@ mackerel-agent executes the following tasks in the foreground:
 
 Your hosts' information will be viewable on [Mackerel](https://mackerel.io/).
 
-As of now, mackerel-agent is officially supported to run on Amazon Linux, CentOS 5/6/7, Ubuntu 12.04LTS/14.04LTS, Debian 6/7 or Windows Server 2008 R2 and later 32-bit/64-bit environments.
-
 SYNOPSIS
 --------
 
