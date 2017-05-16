@@ -78,15 +78,16 @@ type Config struct {
 
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
-	CommandRaw           interface{} `toml:"command"`
-	Command              string
-	CommandArgs          []string
-	User                 string
-	NotificationInterval *int32  `toml:"notification_interval"`
-	CheckInterval        *int32  `toml:"check_interval"`
-	ExecutionInterval    *int32  `toml:"execution_interval"`
-	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
-	CustomIdentifier     *string `toml:"custom_identifier"`
+	CommandRaw            interface{} `toml:"command"`
+	Command               string
+	CommandArgs           []string
+	User                  string
+	NotificationInterval  *int32  `toml:"notification_interval"`
+	CheckInterval         *int32  `toml:"check_interval"`
+	ExecutionInterval     *int32  `toml:"execution_interval"`
+	MaxCheckAttempts      *int32  `toml:"max_check_attempts"`
+	CustomIdentifier      *string `toml:"custom_identifier"`
+	PreventAlertAutoClose bool    `toml:"prevent_alert_auto_close"`
 }
 
 // MetricPlugin represents the configuration of a metric plugin
@@ -130,27 +131,34 @@ func (pconf *MetricPlugin) CommandString() string {
 // CheckPlugin represents the configuration of a check plugin
 // The User option is ignored on Windows
 type CheckPlugin struct {
-	Command              string
-	CommandArgs          []string
-	User                 string
-	NotificationInterval *int32
-	CheckInterval        *int32
-	MaxCheckAttempts     *int32
+	Command               string
+	CommandArgs           []string
+	User                  string
+	NotificationInterval  *int32
+	CheckInterval         *int32
+	MaxCheckAttempts      *int32
+	PreventAlertAutoClose bool
 }
 
-func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
+func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	err := pconf.prepareCommand()
 	if err != nil {
 		return nil, err
 	}
-	return &CheckPlugin{
-		Command:              pconf.Command,
-		CommandArgs:          pconf.CommandArgs,
-		User:                 pconf.User,
-		NotificationInterval: pconf.NotificationInterval,
-		CheckInterval:        pconf.CheckInterval,
-		MaxCheckAttempts:     pconf.MaxCheckAttempts,
-	}, nil
+	plugin := CheckPlugin{
+		Command:               pconf.Command,
+		CommandArgs:           pconf.CommandArgs,
+		User:                  pconf.User,
+		NotificationInterval:  pconf.NotificationInterval,
+		CheckInterval:         pconf.CheckInterval,
+		MaxCheckAttempts:      pconf.MaxCheckAttempts,
+		PreventAlertAutoClose: pconf.PreventAlertAutoClose,
+	}
+	if plugin.MaxCheckAttempts != nil && *plugin.MaxCheckAttempts > 1 && plugin.PreventAlertAutoClose {
+		*plugin.MaxCheckAttempts = 1
+		configLogger.Warningf("'plugin.checks.%s.max_check_attempts' is set to 1 (Unavailable with 'prevent_alert_auto_close')", name)
+	}
+	return &plugin, nil
 }
 
 // Run the check plugin.
@@ -344,7 +352,7 @@ func (conf *Config) setEachPlugins() error {
 	if pconfs, ok := conf.Plugin["checks"]; ok {
 		var err error
 		for name, pconf := range pconfs {
-			conf.CheckPlugins[name], err = pconf.buildCheckPlugin()
+			conf.CheckPlugins[name], err = pconf.buildCheckPlugin(name)
 			if err != nil {
 				return err
 			}
