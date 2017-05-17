@@ -55,6 +55,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed May 17 2017 <mackerel-developers@hatena.ne.jp> - 0.43.1-1
+- rename command.Context to command.App (by Songmu)
+- Add `prevent_alert_auto_close` option for check plugins (by mechairoi)
+- Remove supported OS section from README. (by astj)
+
 * Tue May 09 2017 <mackerel-developers@hatena.ne.jp> - 0.43.0-1
 - Use DiskReadsPerSec/DiskWritesPerSec instead of DiskReadBytesPersec/DiskWriteBytesPersec (on Windows) (by mattn)
 - Enable HTTP/2 (by astj)

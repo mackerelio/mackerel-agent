@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.43.1 (2017-05-17)
+
+* rename command.Context to command.App #384 (Songmu)
+* Add `prevent_alert_auto_close` option for check plugins #387 (mechairoi)
+* Remove supported OS section from README. #388 (astj)
+
+
 ## 0.43.0 (2017-05-09)
 
 * Use DiskReadsPerSec/DiskWritesPerSec instead of DiskReadBytesPersec/DiskWriteBytesPersec (on Windows) #382 (mattn)

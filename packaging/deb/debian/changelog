@@ -1,3 +1,14 @@
+mackerel-agent (0.43.1-1) stable; urgency=low
+
+  * rename command.Context to command.App (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/384>
+  * Add `prevent_alert_auto_close` option for check plugins (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/387>
+  * Remove supported OS section from README. (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/388>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 17 May 2017 03:04:15 +0000
+
 mackerel-agent (0.43.0-1) stable; urgency=low
 
   * Use DiskReadsPerSec/DiskWritesPerSec instead of DiskReadBytesPersec/DiskWriteBytesPersec (on Windows) (by mattn)
