@@ -144,7 +144,7 @@ func TestAggregate(t *testing.T) {
 			w:    &testWriteCloser{},
 			r:    &testReader{test.input, nil},
 		}
-		h.aggregate()
+		h.aggregate(make(chan struct{}))
 		h.wg.Wait()
 
 		if !reflect.DeepEqual(tl.info, test.info) {

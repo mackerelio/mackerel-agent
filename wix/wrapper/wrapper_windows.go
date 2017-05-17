@@ -20,10 +20,12 @@ import (
 
 const name = "mackerel-agent"
 
-const defaultEid = 1
-const startEid = 2
-const stopEid = 3
-const loggerEid = 4
+const (
+	defaultEid = iota + 1
+	startEid
+	stopEid
+	loggerEid
+)
 
 var (
 	kernel32                     = syscall.NewLazyDLL("kernel32")
@@ -80,7 +82,7 @@ type handler struct {
 // normal log:  2017/01/24 14:14:27 INFO <main> Starting mackerel-agent version:0.36.0
 var logRe = regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} (?:\S+\.go:\d+: )?([A-Z]+) `)
 
-func (h *handler) start() error {
+func (h *handler) start(logDone chan struct{}) error {
 	procAllocConsole.Call()
 	dir := execdir()
 	cmd := exec.Command(filepath.Join(dir, "mackerel-agent.exe"))
@@ -98,10 +100,10 @@ func (h *handler) start() error {
 		return err
 	}
 
-	return h.aggregate()
+	return h.aggregate(logDone)
 }
 
-func (h *handler) aggregate() error {
+func (h *handler) aggregate(logDone chan struct{}) error {
 	br := bufio.NewReader(h.r)
 	lc := make(chan string, 10)
 	done := make(chan struct{})
@@ -143,6 +145,7 @@ func (h *handler) aggregate() error {
 	h.wg.Add(1)
 	go func() {
 		defer h.wg.Done()
+		defer close(logDone)
 
 		linebuf := []string{}
 	loop:
@@ -223,7 +226,8 @@ func (h *handler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- sv
 		s <- svc.Status{State: svc.Stopped}
 	}()
 
-	if err := h.start(); err != nil {
+	logDone := make(chan struct{})
+	if err := h.start(logDone); err != nil {
 		h.elog.Error(startEid, err.Error())
 		// https://msdn.microsoft.com/library/windows/desktop/ms681383(v=vs.85).aspx
 		// use ERROR_SERVICE_SPECIFIC_ERROR
@@ -259,6 +263,7 @@ L:
 			break L
 		}
 	}
+	<-logDone
 
 	return
 }
