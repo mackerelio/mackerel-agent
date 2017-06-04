@@ -24,6 +24,12 @@ var metricsInterval = 60 * time.Second
 var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
+// AgentMeta contains meta information about mackerel-agent
+type AgentMeta struct {
+	Version  string
+	Revision string
+}
+
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
 func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error) {
@@ -149,6 +155,7 @@ type App struct {
 	Host                  *mackerel.Host
 	API                   *mackerel.API
 	CustomIdentifierHosts map[string]*mackerel.Host
+	AgentMeta             *AgentMeta
 }
 
 type postValue struct {
@@ -510,6 +517,13 @@ func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, st
 	return hostname, meta, interfaces, customIdentifier, nil
 }
 
+func fillUpSpecMeta(meta map[string]interface{}, ver, rev string) map[string]interface{} {
+	meta["agent-version"] = ver
+	meta["agent-revision"] = rev
+	meta["agent-name"] = buildUA(ver, rev)
+	return meta
+}
+
 // UpdateHostSpecs updates the host information that is already registered on Mackerel.
 func (app *App) UpdateHostSpecs() {
 	logger.Debugf("Updating host specs...")
@@ -519,6 +533,7 @@ func (app *App) UpdateHostSpecs() {
 		logger.Errorf("While collecting host specs: %s", err)
 		return
 	}
+	meta = fillUpSpecMeta(meta, app.AgentMeta.Version, app.AgentMeta.Revision)
 
 	err = app.API.UpdateHost(app.Host.ID, mackerel.HostSpec{
 		Name:             hostname,
@@ -537,10 +552,24 @@ func (app *App) UpdateHostSpecs() {
 	}
 }
 
+func buildUA(ver, rev string) string {
+	return fmt.Sprintf("mackerel-agent/%s (Revision %s)", ver, rev)
+}
+
+// NewMackerelClient returns Mackerel API client for mackerel-agent
+func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool) (*mackerel.API, error) {
+	api, err := mackerel.NewAPI(apibase, apikey, verbose)
+	if err != nil {
+		return nil, err
+	}
+	api.UA = buildUA(ver, rev)
+	return api, nil
+}
+
 // Prepare sets up API and registers the host data to the Mackerel server.
 // Use returned values to call Run().
-func Prepare(conf *config.Config) (*App, error) {
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
+func Prepare(conf *config.Config, ameta *AgentMeta) (*App, error) {
+	api, err := NewMackerelClient(conf.Apibase, conf.Apikey, ameta.Version, ameta.Revision, conf.Verbose)
 	if err != nil {
 		return nil, fmt.Errorf("failed to prepare an api: %s", err.Error())
 	}
@@ -556,12 +585,13 @@ func Prepare(conf *config.Config) (*App, error) {
 		Host:   host,
 		API:    api,
 		CustomIdentifierHosts: prepareCustomIdentiferHosts(conf, api),
+		AgentMeta:             ameta,
 	}, nil
 }
 
 // RunOnce collects specs and metrics, then output them to stdout.
-func RunOnce(conf *config.Config) error {
-	graphdefs, hostSpec, metrics, err := runOncePayload(conf)
+func RunOnce(conf *config.Config, ameta *AgentMeta) error {
+	graphdefs, hostSpec, metrics, err := runOncePayload(conf, ameta)
 	if err != nil {
 		return err
 	}
@@ -578,12 +608,13 @@ func RunOnce(conf *config.Config) error {
 	return nil
 }
 
-func runOncePayload(conf *config.Config) ([]mackerel.CreateGraphDefsPayload, *mackerel.HostSpec, *agent.MetricsResult, error) {
+func runOncePayload(conf *config.Config, ameta *AgentMeta) ([]mackerel.CreateGraphDefsPayload, *mackerel.HostSpec, *agent.MetricsResult, error) {
 	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs()
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
 		return nil, nil, nil, err
 	}
+	meta = fillUpSpecMeta(meta, ameta.Version, ameta.Revision)
 
 	origInterval := metricsInterval
 	metricsInterval = 1 * time.Second

@@ -34,7 +34,7 @@ func TestRunOnce(t *testing.T) {
 			},
 		},
 	}
-	err := RunOnce(conf)
+	err := RunOnce(conf, &AgentMeta{})
 	if err != nil {
 		t.Errorf("RunOnce() should be nomal exit: %s", err)
 	}
@@ -61,7 +61,7 @@ func TestRunOncePayload(t *testing.T) {
 			},
 		},
 	}
-	graphdefs, hostSpec, metrics, err := runOncePayload(conf)
+	graphdefs, hostSpec, metrics, err := runOncePayload(conf, &AgentMeta{})
 	if err != nil {
 		t.Errorf("RunOnce() should be nomal exit: %s", err)
 	}

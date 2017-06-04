@@ -1,22 +1,15 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
 MACKEREL_API_BASE ?= "https://mackerel.io"
-MACKEREL_AGENT_VERSION ?= $(shell git describe --tags --abbrev=0 | sed 's/^v//' | sed 's/[-+].*$$//')
+VERSION = $(shell git log --merges --oneline | perl -ne 'if(m/^.+Merge pull request \#[0-9]+ from .+\/bump-version-([0-9\.]+)/){print $$1;exit}')
+CURRENT_REVISION = $(shell git rev-parse --short HEAD)
 ARGS = "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
-CURRENT_VERSION = $(shell git log --merges --oneline | perl -ne 'if(m/^.+Merge pull request \#[0-9]+ from .+\/bump-version-([0-9\.]+)/){print $$1;exit}')
-
 
 BUILD_LDFLAGS = "\
-	  -X github.com/mackerelio/mackerel-agent/version.GITCOMMIT=`git rev-parse --short HEAD` \
-	  -X github.com/mackerelio/mackerel-agent/version.VERSION=$(CURRENT_VERSION) \
+	  -X main.version=$(VERSION) \
+	  -X main.gitcommit=$(CURRENT_REVISION) \
 	  -X github.com/mackerelio/mackerel-agent/config.agentName=$(MACKEREL_AGENT_NAME) \
 	  -X github.com/mackerelio/mackerel-agent/config.apibase=$(MACKEREL_API_BASE)"
-
-check-variables:
-	echo "CURRENT_VERSION: ${CURRENT_VERSION}"
-	echo "MACKEREL_AGENT_NAME: ${MACKEREL_AGENT_NAME}"
-	echo "MACKEREL_AGENT_VERSION: ${MACKEREL_AGENT_VERSION}"
-	echo "MACKEREL_API_BASE: ${MACKEREL_API_BASE}"
 
 all: clean test build
 
@@ -67,19 +60,19 @@ rpm-v1: crossbuild-package
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
-	--define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
+	--define "_version ${VERSION}" --define "buildarch noarch" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
-	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 rpm-v2: crossbuild-package
 	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c7 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
-	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 deb: deb-v1 deb-v2
@@ -97,19 +90,19 @@ rpm-kcps-v1: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
-	--define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
+	--define "_version ${VERSION}" --define "buildarch noarch" \
 	-bb packaging/rpm-build/mackerel-agent-kcps.spec
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
-	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/mackerel-agent-kcps.spec
 
 rpm-kcps-v2: crossbuild-package-kcps
 	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c7 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
-	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/mackerel-agent-kcps.spec
 
 deb-kcps: deb-kcps-v1 deb-kcps-v2
@@ -127,14 +120,14 @@ rpm-stage-v1: crossbuild-package-stage
 	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-386" \
-	--define "_version ${CURRENT_VERSION}" --define "buildarch noarch" \
+	--define "_version ${VERSION}" --define "buildarch noarch" \
 	-bb packaging/rpm-build/mackerel-agent-stage.spec
 
 rpm-stage-v2: crossbuild-package-stage
 	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c7 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
-	--define "_version ${CURRENT_VERSION}" --define "buildarch x86_64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/mackerel-agent-stage.spec
 
 deb-stage: deb-stage-v1 deb-stage-v2

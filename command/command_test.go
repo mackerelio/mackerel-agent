@@ -107,7 +107,7 @@ func TestPrepareWithCreate(t *testing.T) {
 		}
 	}
 
-	c, _ := Prepare(&conf)
+	c, _ := Prepare(&conf, &AgentMeta{})
 	api := c.API
 	host := c.Host
 
@@ -140,7 +140,7 @@ func TestPrepareWithCreateWithFail(t *testing.T) {
 		retryNum = origRetryNum
 	}()
 
-	_, err := Prepare(&conf)
+	_, err := Prepare(&conf, &AgentMeta{})
 
 	if err == nil {
 		t.Errorf("error should be occurred")
@@ -171,7 +171,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 		}
 	}
 
-	c, _ := Prepare(&conf)
+	c, _ := Prepare(&conf, &AgentMeta{})
 	api := c.API
 	host := c.Host
 
@@ -314,15 +314,16 @@ func TestLoop(t *testing.T) {
 
 	termCh := make(chan struct{})
 	exitCh := make(chan error)
-	c := &App{
-		Agent:  ag,
-		Config: &conf,
-		API:    api,
-		Host:   host,
+	app := &App{
+		Agent:     ag,
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
 	}
 	// Start looping!
 	go func() {
-		exitCh <- loop(c, termCh)
+		exitCh <- loop(app, termCh)
 	}()
 
 	<-done
