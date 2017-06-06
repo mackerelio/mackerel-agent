@@ -1,6 +1,6 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
 MACKEREL_API_BASE ?= "https://mackerel.io"
-VERSION = $(shell git log --merges --oneline | perl -ne 'if(m/^.+Merge pull request \#[0-9]+ from .+\/bump-version-([0-9\.]+)/){print $$1;exit}')
+VERSION = 0.43.1
 CURRENT_REVISION = $(shell git rev-parse --short HEAD)
 ARGS = "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
