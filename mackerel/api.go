@@ -24,10 +24,11 @@ type CreatingMetricsValue struct {
 
 // API is the main interface of Mackerel API.
 type API struct {
-	BaseURL *url.URL
-	APIKey  string
-	Verbose bool
-	UA      string
+	BaseURL        *url.URL
+	APIKey         string
+	Verbose        bool
+	UA             string
+	DefaultHeaders http.Header
 }
 
 // Error represents API error
@@ -83,6 +84,13 @@ func (api *API) getUA() string {
 var apiRequestTimeout = 30 * time.Second
 
 func (api *API) do(req *http.Request) (resp *http.Response, err error) {
+	if api.DefaultHeaders != nil {
+		for k, vs := range api.DefaultHeaders {
+			for _, v := range vs {
+				req.Header.Add(k, v)
+			}
+		}
+	}
 	req.Header.Add("X-Api-Key", api.APIKey)
 	req.Header.Set("User-Agent", api.getUA())
 
