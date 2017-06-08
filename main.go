@@ -15,7 +15,6 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/pidfile"
-	"github.com/mackerelio/mackerel-agent/version"
 	"github.com/motemen/go-cli"
 )
 
@@ -161,14 +160,17 @@ func setLogLevel(silent, verbose bool) {
 
 func start(conf *config.Config, termCh chan struct{}) error {
 	setLogLevel(conf.Silent, conf.Verbose)
-	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version.VERSION, version.GITCOMMIT, conf.Apibase)
+	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version, gitcommit, conf.Apibase)
 
 	if err := pidfile.Create(conf.Pidfile); err != nil {
 		return fmt.Errorf("pidfile.Create(%q) failed: %s", conf.Pidfile, err)
 	}
 	defer pidfile.Remove(conf.Pidfile)
 
-	app, err := command.Prepare(conf)
+	app, err := command.Prepare(conf, &command.AgentMeta{
+		Version:  version,
+		Revision: gitcommit,
+	})
 	if err != nil {
 		return fmt.Errorf("command.Prepare failed: %s", err)
 	}

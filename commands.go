@@ -13,10 +13,8 @@ import (
 	"github.com/Songmu/retry"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/pidfile"
 	"github.com/mackerelio/mackerel-agent/supervisor"
-	"github.com/mackerelio/mackerel-agent/version"
 )
 
 /* +main - mackerel-agent
@@ -91,7 +89,7 @@ display the version of mackerel-agent
 */
 func doVersion(_ *flag.FlagSet, _ []string) error {
 	fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
-		version.VERSION, version.GITCOMMIT, runtime.GOOS, runtime.GOARCH, runtime.Version())
+		version, gitcommit, runtime.GOOS, runtime.GOARCH, runtime.Version())
 	return nil
 }
 
@@ -127,7 +125,7 @@ func doRetire(fs *flag.FlagSet, argv []string) error {
 		return fmt.Errorf("hostID file is not found")
 	}
 
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, conf.Verbose)
+	api, err := command.NewMackerelClient(conf.Apibase, conf.Apikey, version, gitcommit, conf.Verbose)
 	if err != nil {
 		return fmt.Errorf("faild to create api client: %s", err)
 	}
@@ -164,6 +162,9 @@ func doOnce(fs *flag.FlagSet, argv []string) error {
 		logger.Warningf("failed to load config (but `once` must not required conf): %s", err)
 		conf = &config.Config{}
 	}
-	command.RunOnce(conf)
+	command.RunOnce(conf, &command.AgentMeta{
+		Version:  version,
+		Revision: gitcommit,
+	})
 	return nil
 }
