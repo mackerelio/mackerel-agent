@@ -1,6 +1,6 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
 MACKEREL_API_BASE ?= "https://mackerel.io"
-VERSION = $(shell git log --merges --oneline | perl -ne 'if(m/^.+Merge pull request \#[0-9]+ from .+\/bump-version-([0-9\.]+)/){print $$1;exit}')
+VERSION = 0.43.1
 CURRENT_REVISION = $(shell git rev-parse --short HEAD)
 ARGS = "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
@@ -149,8 +149,19 @@ tgz:
 	cp build/$(MACKEREL_AGENT_NAME) $(tgz_dir)/
 	tar cvfz build/$(MACKEREL_AGENT_NAME)-latest.tar.gz -C build/tgz $(MACKEREL_AGENT_NAME)
 
-release:
-	_tools/releng
+check-release-deps:
+	@have_error=0; \
+	for command in cpanm hub ghch gobump; do \
+	  if ! command -v $$command > /dev/null; then \
+	    have_error=1; \
+	    echo "\`$$command\` command is required for releasing"; \
+	  fi; \
+	done; \
+	test $$have_error = 0
+
+release: check-release-deps
+	(cd _tools && cpanm -qn --installdeps .)
+	perl _tools/create-release-pullrequest
 
 commands_gen.go: commands.go
 	go get github.com/motemen/go-cli/gen
@@ -163,4 +174,4 @@ clean:
 
 generate: commands_gen.go
 
-.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-v1 rpm-v2 rpm-stage rpm-stage-v1 rpm-stage-v2 rpm-kcps-v1 rpm-kcps-v2 deb-v1 deb-v2 deb-kcps deb-kcps-v1 deb-kcps-v2 deb-stage deb-stage-v1 deb-stage-v2
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-v1 rpm-v2 rpm-stage rpm-stage-v1 rpm-stage-v2 rpm-kcps-v1 rpm-kcps-v2 deb-v1 deb-v2 deb-kcps deb-kcps-v1 deb-kcps-v2 deb-stage deb-stage-v1 deb-stage-v2 release check-release-deps

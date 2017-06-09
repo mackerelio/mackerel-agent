@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+
+=head DESCRIPTION
+
+releng script for mackerel-agent
+
+=head SYNOPSIS
+
+    % tool/create-release-pullrequest
+
+=head DEPENDENCY
+
+`git`, `hub` and `gobump` command are required.
+
+=cut
+
+use 5.014;
+use warnings;
+
+use Mackerel::ReleaseUtils qw/create_release_pull_request/;
+
+create_release_pull_request 'mackerel-agent';
