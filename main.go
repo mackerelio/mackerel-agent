@@ -42,7 +42,8 @@ func main() {
 	if os.Getenv("GOMAXPROCS") == "" {
 		runtime.GOMAXPROCS(1)
 	}
-	// force disabling http2 for now
+	// force disabling http2, because the http/2 connection sometimes unstable
+	// at a certain data center equipped with particular network switches.
 	godebug := os.Getenv("GODEBUG")
 	if godebug != "" {
 		godebug += ","
