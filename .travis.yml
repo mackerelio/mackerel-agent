@@ -35,12 +35,6 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-- provider: script
-  script: _tools/releng --task=create-pullrequest --current-branch=$TRAVIS_BRANCH
-  skip_cleanup: true
-  on:
-    all_branches: true
-    condition: "$TRAVIS_BRANCH =~ ^bump-version-.*$"
 notifications:
   slack:
     secure: n9Hs5rIlb6MuFVsRp46ykd+CptnE3boI7Q9mNLuHwz77IQ/2mpUmOyBRDeW3BA2EXa4WEYAXu8q7/b7zVV+c+RcPdz8/h9N9EBrHUVeIkCP/Nyp+aUA8GvLNjGuxYC7nov3L+9GHBFXKX8FaV2lZ1/Eeb1Ovbtv6Oi39xNkHqTQ=
