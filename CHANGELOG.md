@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.43.2 (2017-06-14)
+
+* Revert "Enable HTTP/2" #393 (Songmu)
+* [refactoring] remove version package and adjust internal dependencies #391 (Songmu)
+
+
 ## 0.43.1 (2017-05-17)
 
 * rename command.Context to command.App #384 (Songmu)

@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jun 14 2017 <mackerel-developers@hatena.ne.jp> - 0.43.2
+- Revert "Enable HTTP/2" (by Songmu)
+- [refactoring] remove version package and adjust internal dependencies (by Songmu)
+
 * Wed May 17 2017 <mackerel-developers@hatena.ne.jp> - 0.43.1-1
 - rename command.Context to command.App (by Songmu)
 - Add `prevent_alert_auto_close` option for check plugins (by mechairoi)
