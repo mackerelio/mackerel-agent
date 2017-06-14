@@ -1,3 +1,12 @@
+mackerel-agent (0.43.2-1.systemd) stable; urgency=low
+
+  * Revert "Enable HTTP/2" (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/393>
+  * [refactoring] remove version package and adjust internal dependencies (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/391>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 14 Jun 2017 10:32:43 +0900
+
 mackerel-agent (0.43.1-1.systemd) stable; urgency=low
 
   * rename command.Context to command.App (by Songmu)
