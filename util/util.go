@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Songmu/timeout"
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 )
 
 var utilLogger = logging.GetLogger("util")

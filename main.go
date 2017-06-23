@@ -11,9 +11,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/command"
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/pidfile"
 	"github.com/motemen/go-cli"
 )

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/StackExchange/wmi"
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 

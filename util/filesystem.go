@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/Songmu/timeout"
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 )
 
 // DfStat is disk free statistics from df command.

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 )
 
 // This Generator collects metadata about cloud instances.

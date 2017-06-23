@@ -5,7 +5,7 @@ package windows
 import (
 	"regexp"
 
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/util"
 	"github.com/mackerelio/mackerel-agent/util/windows"

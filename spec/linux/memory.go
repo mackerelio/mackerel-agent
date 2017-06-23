@@ -7,7 +7,7 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 )
 
 var memItems = map[string]*regexp.Regexp{
