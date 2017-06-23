@@ -6,6 +6,9 @@ import (
 	"os"
 )
 
+// DEPRECATED
+// Use github.com/mackerelio/golib/logging !
+
 // Logger struct for logging
 type Logger struct {
 	tag string
