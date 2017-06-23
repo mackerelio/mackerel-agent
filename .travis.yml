@@ -14,6 +14,7 @@ addons:
       - devscripts
       - debhelper
       - dh-systemd
+      - fakeroot
 install:
 - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
