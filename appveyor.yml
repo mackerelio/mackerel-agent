@@ -24,7 +24,6 @@ build_script:
   - go get github.com/motemen/go-cli/gen
   - go generate
   - go get golang.org/x/tools/cmd/stringer
-  - go generate ./logging
   - call wix\build.bat
 test_script:
 - FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w
