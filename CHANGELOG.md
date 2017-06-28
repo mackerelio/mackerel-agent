@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.43.3 (2017-06-28)
+
+* Make `make deb` work in Travis #396 (astj)
+* Migrate to mackerelio/golib/logging #395 (astj)
+
+
 ## 0.43.2 (2017-06-14)
 
 * Revert "Enable HTTP/2" #393 (Songmu)

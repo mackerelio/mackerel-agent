@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jun 28 2017 <mackerel-developers@hatena.ne.jp> - 0.43.3
+- Make `make deb` work in Travis (by astj)
+- Migrate to mackerelio/golib/logging (by astj)
+
 * Wed Jun 14 2017 <mackerel-developers@hatena.ne.jp> - 0.43.2
 - Revert "Enable HTTP/2" (by Songmu)
 - [refactoring] remove version package and adjust internal dependencies (by Songmu)
