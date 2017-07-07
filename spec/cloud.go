@@ -16,6 +16,7 @@ import (
 // Currently EC2 and GCE are supported.
 // EC2: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html
 // GCE: https://developers.google.com/compute/docs/metadata
+// AzureVM: https://docs.microsoft.com/azure/virtual-machines/virtual-machines-instancemetadataservice-overview
 
 // CloudGenerator definition
 type CloudGenerator struct {
@@ -84,6 +85,7 @@ func isGCE() bool {
 	return err == nil
 }
 
+// Note: May want to check without using the API.
 func isAzure() bool {
 	cl := httpCli()
 	// '/vmId` is probably Azure VM specific URL
