@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Songmu/retry"
 	"github.com/mackerelio/golib/logging"
 )
 
@@ -82,15 +83,24 @@ func isEC2() bool {
 		}
 	}
 
+	res := false
 	cl := httpCli()
-	// '/ami-id` is may be aws specific URL
-	resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
-	if err != nil {
-		return false
-	}
-	defer resp.Body.Close()
+	err := retry.Retry(3, 2*timeout, func() error {
+		// '/ami-id` is probably an AWS specific URL
+		resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
 
-	return resp.StatusCode == 200
+		res = resp.StatusCode == 200
+		return nil
+	})
+
+	if err != nil {
+		return res
+	}
+	return false
 }
 
 func isGCE() bool {
