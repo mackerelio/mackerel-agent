@@ -97,7 +97,7 @@ func isEC2() bool {
 		return nil
 	})
 
-	if err != nil {
+	if err == nil {
 		return res
 	}
 	return false
