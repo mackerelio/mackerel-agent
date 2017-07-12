@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"runtime"
 	"strings"
 	"time"
 
@@ -67,6 +68,20 @@ func httpCli() *http.Client {
 }
 
 func isEC2() bool {
+	// If the OS is Linux, check /sys/hypervisor/uuid file first.
+	// ref. http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+	if runtime.GOOS == "linux" {
+		data, err := ioutil.ReadFile("/sys/hypervisor/uuid")
+		if err != nil {
+			// Probably not EC2.
+			return false
+		}
+		// Probably not EC2.
+		if !strings.HasPrefix(string(data), "ec2") {
+			return false
+		}
+	}
+
 	cl := httpCli()
 	// '/ami-id` is may be aws specific URL
 	resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
