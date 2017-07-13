@@ -196,31 +196,7 @@ func TestSuggestCloudGenerator(t *testing.T) {
 		}
 	}()
 
-	func() { // suggest EC2Generator
-		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			fmt.Fprint(res, "OK:ami-id")
-		}))
-		defer ts.Close()
-		u, _ := url.Parse(ts.URL)
-		ec2BaseURL = u
-
-		cGen = SuggestCloudGenerator()
-		if cGen == nil {
-			t.Errorf("cGen should not be nil.")
-		}
-
-		ec2gen, ok := cGen.CloudMetaGenerator.(*EC2Generator)
-
-		if !ok {
-			t.Errorf("cGen should be *EC2Generator")
-		}
-
-		if ec2gen.baseURL != ec2BaseURL {
-			t.Errorf("something went wrong")
-		}
-	}()
-
-	func() { // suggest EC2Generator
+	func() { // suggest GCEGenerator
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			fmt.Fprint(res, "GCE:OK")
 		}))
