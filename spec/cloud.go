@@ -397,5 +397,5 @@ func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
 	if instanceID == "" {
 		return "", fmt.Errorf("invalid instance id")
 	}
-	return instanceID + "virtual_machine.azure.microsoft.com", nil
+	return instanceID + ".virtual_machine.azure.microsoft.com", nil
 }
