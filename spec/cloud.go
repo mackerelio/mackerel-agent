@@ -112,15 +112,29 @@ func isGCE() bool {
 
 // Note: May want to check without using the API.
 func isAzure() bool {
+	res := false
 	cl := httpCli()
-	// '/vmId` is probably Azure VM specific URL
-	resp, err := cl.Get(azureVMBaseURL.String() + "/compute/vmId?api-version=2017-04-02&format=text")
-	if err != nil {
-		return false
-	}
-	defer resp.Body.Close()
+	err := retry.Retry(3, 2*timeout, func() error {
+		// '/vmId` is probably Azure VM specific URL
+		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Metadata", "true")
 
-	return resp.StatusCode == 200
+		resp, err := cl.Do(req)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		res = resp.StatusCode == 200
+		return nil
+	})
+
+	if err == nil {
+		return res
+	}
+	return false
 }
 
 func requestGCEMeta() ([]byte, error) {
