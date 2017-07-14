@@ -328,7 +328,7 @@ func (g *AzureVMGenerator) Generate() (interface{}, error) {
 
 	metadata := make(map[string]string)
 	metadata = retrieveAzureVMMetadata(metadata, g.baseURL.String(), "/compute/", metadataComputeKeys)
-	metadata = retrieveAzureVMMetadata(metadata, g.baseURL.String(), "/network/interface/0/ipAddress/", ipAddressKeys)
+	metadata = retrieveAzureVMMetadata(metadata, g.baseURL.String(), "/network/interface/0/ipv4/ipAddress/0/", ipAddressKeys)
 
 	results := make(map[string]interface{})
 	results["provider"] = "AzureVM"
