@@ -341,12 +341,21 @@ func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlS
 	cl := httpCli()
 
 	for _, key := range keys {
-		resp, err := cl.Get(baseURL + urlSuffix + key + "?api-version=2017-04-02&format=text")
+		req, err := http.NewRequest("GET", baseURL+urlSuffix+key+"?api-version=2017-04-02&format=text", nil)
+		if err != nil {
+			cloudLogger.Debugf("This host may not be running on Azure VM. Error while reading '%s'", key)
+			return nil
+		}
+
+		req.Header.Set("Metadata", "true")
+
+		resp, err := cl.Do(req)
 		if err != nil {
 			cloudLogger.Debugf("This host may not be running on Azure VM. Error while reading '%s'", key)
 			return nil
 		}
 		defer resp.Body.Close()
+
 		if resp.StatusCode == 200 {
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
@@ -365,11 +374,18 @@ func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlS
 // SuggestCustomIdentifier suggests the identifier of the Azure VM instance
 func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
 	cl := httpCli()
-	resp, err := cl.Get(azureVMBaseURL.String() + "/compute/vmId?api-version=2017-04-02&format=text")
+	req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
+	if err != nil {
+		return "", fmt.Errorf("error while retrieving vmId")
+	}
+	req.Header.Set("Metadata", "true")
+
+	resp, err := cl.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("error while retrieving vmId")
 	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode != 200 {
 		return "", fmt.Errorf("failed to request vmId. response code: %d", resp.StatusCode)
 	}
