@@ -50,7 +50,7 @@ func init() {
 	case "darwin":
 		dfOpt = []string{"-Pkl"}
 	case "freebsd":
-		dfOpt = []string{"-Pkt", "noprocfs,devfs,fdescfs,nfs,cd9660"}
+		dfOpt = []string{"-Pkt", "noprocfs,devfs,fdescfs,nfs,nullfs,cd9660"}
 	case "netbsd":
 		dfOpt = []string{"-Pkl"}
 	default:
