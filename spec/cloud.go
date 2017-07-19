@@ -18,6 +18,7 @@ import (
 // Currently EC2 and GCE are supported.
 // EC2: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html
 // GCE: https://developers.google.com/compute/docs/metadata
+// AzureVM: https://docs.microsoft.com/azure/virtual-machines/virtual-machines-instancemetadataservice-overview
 
 // CloudGenerator definition
 type CloudGenerator struct {
@@ -37,11 +38,12 @@ func (g *CloudGenerator) Key() string {
 
 var cloudLogger = logging.GetLogger("spec.cloud")
 
-var ec2BaseURL, gceMetaURL *url.URL
+var ec2BaseURL, gceMetaURL, azureVMBaseURL *url.URL
 
 func init() {
 	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
 	gceMetaURL, _ = url.Parse("http://metadata.google.internal/computeMetadata/v1/?recursive=true")
+	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
 }
 
 var timeout = 100 * time.Millisecond
@@ -106,6 +108,24 @@ func isEC2() bool {
 func isGCE() bool {
 	_, err := requestGCEMeta()
 	return err == nil
+}
+
+// Note: May want to check without using the API.
+func isAzure() bool {
+	cl := httpCli()
+	// '/vmId` is probably Azure VM specific URL
+	req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
+	if err != nil {
+		return false
+	}
+	req.Header.Set("Metadata", "true")
+
+	resp, err := cl.Do(req)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode == 200
 }
 
 func requestGCEMeta() ([]byte, error) {
@@ -269,4 +289,104 @@ func (g gceMeta) toGeneratorResults() interface{} {
 // SuggestCustomIdentifier for GCE is not implemented yet
 func (g *GCEGenerator) SuggestCustomIdentifier() (string, error) {
 	return "", nil
+}
+
+// AzureVMGenerator meta generator for Azure VM
+type AzureVMGenerator struct {
+	baseURL *url.URL
+}
+
+// Generate collects metadata from cloud platform.
+func (g *AzureVMGenerator) Generate() (interface{}, error) {
+	metadataComputeKeys := []string{
+		"location",
+		"name",
+		"offer",
+		"osType",
+		"platformFaultDomain",
+		"platformUpdateDomain",
+		"publisher",
+		"sku",
+		"version",
+		"vmId",
+		"vmSize",
+	}
+
+	ipAddressKeys := []string{
+		"privateIpAddress",
+		"publicIpAddress",
+	}
+
+	metadata := make(map[string]string)
+	metadata = retrieveAzureVMMetadata(metadata, g.baseURL.String(), "/compute/", metadataComputeKeys)
+	metadata = retrieveAzureVMMetadata(metadata, g.baseURL.String(), "/network/interface/0/ipv4/ipAddress/0/", ipAddressKeys)
+
+	results := make(map[string]interface{})
+	results["provider"] = "AzureVM"
+	results["metadata"] = metadata
+
+	return results, nil
+}
+
+func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlSuffix string, keys []string) map[string]string {
+	cl := httpCli()
+
+	for _, key := range keys {
+		req, err := http.NewRequest("GET", baseURL+urlSuffix+key+"?api-version=2017-04-02&format=text", nil)
+		if err != nil {
+			cloudLogger.Debugf("This host may not be running on Azure VM. Error while reading '%s'", key)
+			return nil
+		}
+
+		req.Header.Set("Metadata", "true")
+
+		resp, err := cl.Do(req)
+		if err != nil {
+			cloudLogger.Debugf("This host may not be running on Azure VM. Error while reading '%s'", key)
+			return nil
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode == 200 {
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
+				break
+			}
+			metadataMap[key] = string(body)
+			cloudLogger.Debugf("results %s:%s", key, string(body))
+		} else {
+			cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
+		}
+	}
+	return metadataMap
+}
+
+// SuggestCustomIdentifier suggests the identifier of the Azure VM instance
+func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
+	cl := httpCli()
+	req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
+	if err != nil {
+		return "", fmt.Errorf("error while retrieving vmId")
+	}
+	req.Header.Set("Metadata", "true")
+
+	resp, err := cl.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("error while retrieving vmId")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("failed to request vmId. response code: %d", resp.StatusCode)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("results of requesting vmId cannot be read: '%s'", err)
+	}
+	instanceID := string(body)
+	if instanceID == "" {
+		return "", fmt.Errorf("invalid instance id")
+	}
+	return instanceID + ".virtual_machine.azure.microsoft.com", nil
 }
