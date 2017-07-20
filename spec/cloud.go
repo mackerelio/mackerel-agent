@@ -87,7 +87,7 @@ func isEC2() bool {
 
 	res := false
 	cl := httpCli()
-	err := retry.Retry(3, 2*timeout, func() error {
+	err := retry.Retry(3, 2*time.Second, func() error {
 		// '/ami-id` is probably an AWS specific URL
 		resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
 		if err != nil {
