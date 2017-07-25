@@ -6,11 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"runtime"
 	"strings"
 	"time"
 
-	"github.com/Songmu/retry"
 	"github.com/mackerelio/golib/logging"
 )
 
@@ -68,41 +66,6 @@ func httpCli() *http.Client {
 			Proxy: nil,
 		},
 	}
-}
-
-func isEC2() bool {
-	// If the OS is Linux, check /sys/hypervisor/uuid file first.
-	// ref. http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
-	if runtime.GOOS == "linux" {
-		data, err := ioutil.ReadFile("/sys/hypervisor/uuid")
-		if err != nil {
-			// Probably not EC2.
-			return false
-		}
-		// Probably not EC2.
-		if !strings.HasPrefix(string(data), "ec2") {
-			return false
-		}
-	}
-
-	res := false
-	cl := httpCli()
-	err := retry.Retry(3, 2*timeout, func() error {
-		// '/ami-id` is probably an AWS specific URL
-		resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-
-		res = resp.StatusCode == 200
-		return nil
-	})
-
-	if err == nil {
-		return res
-	}
-	return false
 }
 
 func isGCE() bool {
