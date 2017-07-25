@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Songmu/retry"
 	"github.com/mackerelio/golib/logging"
 )
 
@@ -74,44 +73,11 @@ func isEC2() bool {
 	// If the OS is Linux, check /sys/hypervisor/uuid file first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
 	// ref. http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
 	if runtime.GOOS == "linux" {
-		data, err := ioutil.ReadFile("/sys/hypervisor/uuid")
-		if err != nil {
-			// Probably not EC2.
-			return false
-		}
-		// Probably not EC2.
-		if !strings.HasPrefix(string(data), "ec2") {
-			return false
-		}
-		res := false
-		cl := httpCli()
-		err = retry.Retry(3, 2*time.Second, func() error {
-			// '/ami-id` is probably an AWS specific URL
-			resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
-			if err != nil {
-				return err
-			}
-			defer resp.Body.Close()
-
-			res = resp.StatusCode == 200
-			return nil
-		})
-
-		if err == nil {
-			return res
-		}
+		return isEC2ForLinux()
 	}
 
 	// For instances other than Linux, call Metadata API only once.
-	cl := httpCli()
-	// '/ami-id` is probably an AWS specific URL
-	resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
-	if err != nil {
-		return false
-	}
-	defer resp.Body.Close()
-
-	return resp.StatusCode == 200
+	return isEC2ForNonLinux()
 }
 
 func isGCE() bool {
