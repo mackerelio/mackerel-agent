@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"runtime"
 	"strings"
 	"time"
 
@@ -67,17 +66,6 @@ func httpCli() *http.Client {
 			Proxy: nil,
 		},
 	}
-}
-
-func isEC2() bool {
-	// If the OS is Linux, check /sys/hypervisor/uuid file first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
-	// ref. http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
-	if runtime.GOOS == "linux" {
-		return isEC2ForLinux()
-	}
-
-	// For instances other than Linux, call Metadata API only once.
-	return isEC2ForNonLinux()
 }
 
 func isGCE() bool {

@@ -8,7 +8,9 @@ import (
 	"github.com/Songmu/retry"
 )
 
-func isEC2ForLinux() bool {
+// If the OS is Linux, check /sys/hypervisor/uuid file first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
+// ref. http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+func isEC2() bool {
 	data, err := ioutil.ReadFile("/sys/hypervisor/uuid")
 	if err != nil {
 		// Probably not EC2.

@@ -1,6 +1,9 @@
+// +build !linux
+
 package spec
 
-func isEC2ForNonLinux() bool {
+// For instances other than Linux, call Metadata API only once.
+func isEC2() bool {
 	cl := httpCli()
 	// '/ami-id` is probably an AWS specific URL
 	resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
