@@ -13,10 +13,10 @@ import (
 func isEC2() bool {
 	data, err := ioutil.ReadFile("/sys/hypervisor/uuid")
 	if err != nil {
-		// Probably not EC2.
+		// Not EC2.
 		return false
 	}
-	// Probably not EC2.
+	// Not EC2.
 	if !strings.HasPrefix(string(data), "ec2") {
 		return false
 	}
