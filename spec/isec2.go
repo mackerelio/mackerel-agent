@@ -13,5 +13,4 @@ func isEC2() bool {
 	defer resp.Body.Close()
 
 	return resp.StatusCode == 200
-
 }
