@@ -62,6 +62,12 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jul 26 2017 <mackerel-developers@hatena.ne.jp> - 0.44.0
+- Adjust isEC2 check  (by stefafafan)
+- Support Azure VM Metadata (by stefafafan)
+- FreeBSD: don't collect nullfs disk stat (by kyontan)
+- Improve the EC2 Instance check (by stefafafan)
+
 * Wed Jun 14 2017 <mackerel-developers@hatena.ne.jp> - 0.43.2
 - Revert "Enable HTTP/2" (by Songmu)
 - [refactoring] remove version package and adjust internal dependencies (by Songmu)

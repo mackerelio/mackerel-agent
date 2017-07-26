@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.44.0 (2017-07-26)
+
+* Adjust isEC2 check  #401 (stefafafan)
+* Support Azure VM Metadata #399 (stefafafan)
+* FreeBSD: don't collect nullfs disk stat #400 (kyontan)
+* Improve the EC2 Instance check #398 (stefafafan)
+
+
 ## 0.43.2 (2017-06-14)
 
 * Revert "Enable HTTP/2" #393 (Songmu)

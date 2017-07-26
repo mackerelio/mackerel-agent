@@ -1,3 +1,16 @@
+mackerel-agent (0.44.0-1.systemd) stable; urgency=low
+
+  * Adjust isEC2 check  (by stefafafan)
+    <https://github.com/mackerelio/mackerel-agent/pull/401>
+  * Support Azure VM Metadata (by stefafafan)
+    <https://github.com/mackerelio/mackerel-agent/pull/399>
+  * FreeBSD: don't collect nullfs disk stat (by kyontan)
+    <https://github.com/mackerelio/mackerel-agent/pull/400>
+  * Improve the EC2 Instance check (by stefafafan)
+    <https://github.com/mackerelio/mackerel-agent/pull/398>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 26 Jul 2017 12:43:23 +0900
+
 mackerel-agent (0.43.2-1.systemd) stable; urgency=low
 
   * Revert "Enable HTTP/2" (by Songmu)
