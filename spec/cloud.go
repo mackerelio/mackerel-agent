@@ -54,6 +54,9 @@ func SuggestCloudGenerator() *CloudGenerator {
 	if isGCE() {
 		return &CloudGenerator{&GCEGenerator{gceMetaURL}}
 	}
+	if isAzure() {
+		return &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+	}
 
 	return nil
 }
