@@ -261,23 +261,19 @@ type AzureVMGenerator struct {
 
 // Generate collects metadata from cloud platform.
 func (g *AzureVMGenerator) Generate() (interface{}, error) {
-	metadataComputeKeys := []string{
-		"location",
-		"name",
-		"offer",
-		"osType",
-		"platformFaultDomain",
-		"platformUpdateDomain",
-		"publisher",
-		"sku",
-		"version",
-		"vmId",
-		"vmSize",
+	metadataComputeKeys := map[string]string{
+		"location":  "location",
+		"offer":     "imageReferenceOffer",
+		"osType":    "osSystemType",
+		"publisher": "imageReferencePublisher",
+		"sku":       "imageReferenceSku",
+		"vmId":      "vmID",
+		"vmSize":    "virtualMachineSizeType",
 	}
 
-	ipAddressKeys := []string{
-		"privateIpAddress",
-		"publicIpAddress",
+	ipAddressKeys := map[string]string{
+		"privateIpAddress": "privateIpAddress",
+		"publicIpAddress":  "publicIpAddress",
 	}
 
 	metadata := make(map[string]string)
@@ -291,10 +287,10 @@ func (g *AzureVMGenerator) Generate() (interface{}, error) {
 	return results, nil
 }
 
-func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlSuffix string, keys []string) map[string]string {
+func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlSuffix string, keys map[string]string) map[string]string {
 	cl := httpCli()
 
-	for _, key := range keys {
+	for key, value := range keys {
 		req, err := http.NewRequest("GET", baseURL+urlSuffix+key+"?api-version=2017-04-02&format=text", nil)
 		if err != nil {
 			cloudLogger.Debugf("This host may not be running on Azure VM. Error while reading '%s'", key)
@@ -316,7 +312,7 @@ func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlS
 				cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
 				break
 			}
-			metadataMap[key] = string(body)
+			metadataMap[value] = string(body)
 			cloudLogger.Debugf("results %s:%s", key, string(body))
 		} else {
 			cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
