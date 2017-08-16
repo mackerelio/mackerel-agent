@@ -105,6 +105,12 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 			}
 			return nil, fmt.Errorf("failed to find this host on mackerel: %s", lastErr.Error())
 		}
+		if result.CustomIdentifier != "" && result.CustomIdentifier != customIdentifier {
+			if fsStorage, ok := conf.HostIDStorage.(*config.FileSystemHostIDStorage); ok {
+				return nil, fmt.Errorf("custom identifiers mismatch: this host = \"%s\", the host whose id is \"%s\" on mackerel.io = \"%s\" (File \"%s\" may be copied from another host. Try deleting it and restarting agent)", customIdentifier, hostID, result.CustomIdentifier, fsStorage.HostIDFile())
+			}
+			return nil, fmt.Errorf("custom identifiers mismatch: this host = \"%s\", the host whose id is \"%s\" on mackerel.io = \"%s\" (Host ID file may be copied from another host. Try deleting it and restarting agent)", customIdentifier, hostID, result.CustomIdentifier)
+		}
 	}
 
 	hostSt := conf.HostStatus.OnStart

@@ -376,10 +376,11 @@ func TestFindHost(t *testing.T) {
 	}
 
 	if reflect.DeepEqual(host, &Host{
-		ID:     "9rxGOHfVF8F",
-		Name:   "mydb001",
-		Type:   "",
-		Status: "working",
+		ID:               "9rxGOHfVF8F",
+		Name:             "mydb001",
+		Type:             "",
+		Status:           "working",
+		CustomIdentifier: "",
 	}) != true {
 		t.Error("request sends json including memo but: ", host)
 	}
@@ -419,10 +420,11 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 	}
 
 	if reflect.DeepEqual(host, &Host{
-		ID:     "9rxGOHfVF8F",
-		Name:   "mydb001",
-		Type:   "",
-		Status: "working",
+		ID:               "9rxGOHfVF8F",
+		Name:             "mydb001",
+		Type:             "",
+		Status:           "working",
+		CustomIdentifier: "foo-bar",
 	}) != true {
 		t.Error("request sends json including memo but: ", host)
 	}
