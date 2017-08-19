@@ -412,6 +412,12 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 			nextInterval = interval - (now.Sub(nextTime) % interval)
 			nextTime = now.Add(nextInterval)
 
+			// If status has changed, trigger `on_change_state` command immediately
+			// but if the status was OK and it's first invocation of a check, do not
+			if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
+				checker.TriggerStatusChange(report.Status)
+			}
+
 			if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
 				// Do not report if nothing has changed
 				continue

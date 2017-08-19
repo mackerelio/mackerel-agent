@@ -78,16 +78,19 @@ type Config struct {
 
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
-	CommandRaw            interface{} `toml:"command"`
-	Command               string
-	CommandArgs           []string
-	User                  string
-	NotificationInterval  *int32  `toml:"notification_interval"`
-	CheckInterval         *int32  `toml:"check_interval"`
-	ExecutionInterval     *int32  `toml:"execution_interval"`
-	MaxCheckAttempts      *int32  `toml:"max_check_attempts"`
-	CustomIdentifier      *string `toml:"custom_identifier"`
-	PreventAlertAutoClose bool    `toml:"prevent_alert_auto_close"`
+	CommandRaw                interface{} `toml:"command"`
+	Command                   string
+	CommandArgs               []string
+	User                      string
+	NotificationInterval      *int32      `toml:"notification_interval"`
+	CheckInterval             *int32      `toml:"check_interval"`
+	ExecutionInterval         *int32      `toml:"execution_interval"`
+	MaxCheckAttempts          *int32      `toml:"max_check_attempts"`
+	CustomIdentifier          *string     `toml:"custom_identifier"`
+	PreventAlertAutoClose     bool        `toml:"prevent_alert_auto_close"`
+	OnStatusChangeCommandRaw  interface{} `toml:"on_status_change"`
+	OnStatusChangeCommand     string
+	OnStatusChangeCommandArgs []string
 }
 
 // MetricPlugin represents the configuration of a metric plugin
@@ -115,9 +118,9 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 // Run the metric plugin.
 func (pconf *MetricPlugin) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User, []string{})
 	}
-	return util.RunCommand(pconf.Command, pconf.User)
+	return util.RunCommand(pconf.Command, pconf.User, []string{})
 }
 
 // CommandString returns the command string for log messages
@@ -131,13 +134,15 @@ func (pconf *MetricPlugin) CommandString() string {
 // CheckPlugin represents the configuration of a check plugin
 // The User option is ignored on Windows
 type CheckPlugin struct {
-	Command               string
-	CommandArgs           []string
-	User                  string
-	NotificationInterval  *int32
-	CheckInterval         *int32
-	MaxCheckAttempts      *int32
-	PreventAlertAutoClose bool
+	Command                   string
+	CommandArgs               []string
+	User                      string
+	NotificationInterval      *int32
+	CheckInterval             *int32
+	MaxCheckAttempts          *int32
+	PreventAlertAutoClose     bool
+	OnStatusChangeCommand     string
+	OnStatusChangeCommandArgs []string
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
@@ -145,14 +150,20 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = pconf.prepareOnStatusChangeCommand()
+	if err != nil {
+		return nil, err
+	}
 	plugin := CheckPlugin{
-		Command:               pconf.Command,
-		CommandArgs:           pconf.CommandArgs,
-		User:                  pconf.User,
-		NotificationInterval:  pconf.NotificationInterval,
-		CheckInterval:         pconf.CheckInterval,
-		MaxCheckAttempts:      pconf.MaxCheckAttempts,
-		PreventAlertAutoClose: pconf.PreventAlertAutoClose,
+		Command:                   pconf.Command,
+		CommandArgs:               pconf.CommandArgs,
+		User:                      pconf.User,
+		NotificationInterval:      pconf.NotificationInterval,
+		CheckInterval:             pconf.CheckInterval,
+		MaxCheckAttempts:          pconf.MaxCheckAttempts,
+		PreventAlertAutoClose:     pconf.PreventAlertAutoClose,
+		OnStatusChangeCommand:     pconf.OnStatusChangeCommand,
+		OnStatusChangeCommandArgs: pconf.OnStatusChangeCommandArgs,
 	}
 	if plugin.MaxCheckAttempts != nil && *plugin.MaxCheckAttempts > 1 && plugin.PreventAlertAutoClose {
 		*plugin.MaxCheckAttempts = 1
@@ -164,9 +175,9 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 // Run the check plugin.
 func (pconf *CheckPlugin) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User, []string{})
 	}
-	return util.RunCommand(pconf.Command, pconf.User)
+	return util.RunCommand(pconf.Command, pconf.User, []string{})
 }
 
 // MetadataPlugin represents the configuration of a metadata plugin
@@ -194,9 +205,9 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 // Run the metadata plugin.
 func (pconf *MetadataPlugin) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+		return util.RunCommandArgs(pconf.CommandArgs, pconf.User, []string{})
 	}
-	return util.RunCommand(pconf.Command, pconf.User)
+	return util.RunCommand(pconf.Command, pconf.User, []string{})
 }
 
 func (pconf *PluginConfig) prepareCommand() error {
@@ -219,6 +230,32 @@ func (pconf *PluginConfig) prepareCommand() error {
 		}
 	case []string:
 		pconf.CommandArgs = t
+	default:
+		return fmt.Errorf(errFmt, v)
+	}
+	return nil
+}
+
+func (pconf *PluginConfig) prepareOnStatusChangeCommand() error {
+	const errFmt = "failed to prepare plugin on status change command. A configuration value of `on_status_change` should be string or string slice, but %T"
+	v := pconf.OnStatusChangeCommandRaw
+	switch t := v.(type) {
+	case string:
+		pconf.OnStatusChangeCommand = t
+	case []interface{}:
+		if len(t) > 0 {
+			for _, vv := range t {
+				str, ok := vv.(string)
+				if !ok {
+					return fmt.Errorf(errFmt, v)
+				}
+				pconf.OnStatusChangeCommandArgs = append(pconf.OnStatusChangeCommandArgs, str)
+			}
+		} else {
+			return fmt.Errorf(errFmt, v)
+		}
+	case []string:
+		pconf.OnStatusChangeCommandArgs = t
 	default:
 		return fmt.Errorf(errFmt, v)
 	}
