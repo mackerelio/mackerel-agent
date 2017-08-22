@@ -256,6 +256,7 @@ func (pconf *PluginConfig) prepareOnStatusChangeCommand() error {
 		}
 	case []string:
 		pconf.OnStatusChangeCommandArgs = t
+	case nil:
 	default:
 		return fmt.Errorf(errFmt, v)
 	}
