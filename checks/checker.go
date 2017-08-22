@@ -99,7 +99,7 @@ func (c *Checker) Interval() time.Duration {
 	return defaultCheckInterval
 }
 
-// Trigger `on_status_change` Command
+// TriggerStatusChange execute `on_status_change` command.
 func (c *Checker) TriggerStatusChange(status Status) {
 	env := []string{fmt.Sprintf("MACKEREL_STATUS=%s", status)}
 	if c.Config.OnStatusChangeCommand != "" {
