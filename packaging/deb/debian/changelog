@@ -1,3 +1,14 @@
+mackerel-agent (0.44.1-1) stable; urgency=low
+
+  * Fail to start when custom identifiers are mismatched (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/405>
+  * Fix the Azure VM check (by stefafafan)
+    <https://github.com/mackerelio/mackerel-agent/pull/404>
+  * Adjust the Azure Virtual Machine metadata keys (by stefafafan)
+    <https://github.com/mackerelio/mackerel-agent/pull/403>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 23 Aug 2017 12:23:27 +0900
+
 mackerel-agent (0.44.0-1) stable; urgency=low
 
   * Adjust isEC2 check  (by stefafafan)
