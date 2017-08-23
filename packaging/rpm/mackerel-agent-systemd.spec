@@ -55,6 +55,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Aug 23 2017 <mackerel-developers@hatena.ne.jp> - 0.44.1
+- Fail to start when custom identifiers are mismatched (by mechairoi)
+- Fix the Azure VM check (by stefafafan)
+- Adjust the Azure Virtual Machine metadata keys (by stefafafan)
+
 * Wed Jul 26 2017 <mackerel-developers@hatena.ne.jp> - 0.44.0
 - Adjust isEC2 check  (by stefafafan)
 - Support Azure VM Metadata (by stefafafan)

@@ -1,6 +1,6 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
 MACKEREL_API_BASE ?= "https://mackerel.io"
-VERSION = 0.44.0
+VERSION = 0.44.1
 CURRENT_REVISION = $(shell git rev-parse --short HEAD)
 ARGS = "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"

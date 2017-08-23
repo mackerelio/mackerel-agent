@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.44.1 (2017-08-23)
+
+* Fail to start when custom identifiers are mismatched #405 (mechairoi)
+* Fix the Azure VM check #404 (stefafafan)
+* Adjust the Azure Virtual Machine metadata keys #403 (stefafafan)
+
+
 ## 0.44.0 (2017-07-26)
 
 * Adjust isEC2 check  #401 (stefafafan)
