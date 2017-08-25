@@ -44,7 +44,7 @@ func (g *CPUGenerator) generate(file io.Reader) (interface{}, error) {
 				cur["model_name"] = modelName
 			}
 			results = append(results, cur)
-		case "Processor":
+		case "Processor", "system type":
 			modelName = val
 		case "vendor_id", "model", "stepping", "physical id", "core id", "model name", "cache size":
 			cur[strings.Replace(key, " ", "_", -1)] = val
