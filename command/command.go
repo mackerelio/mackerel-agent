@@ -308,7 +308,7 @@ func loop(app *App, termCh chan struct{}) error {
 			}
 			err := app.API.PostMetricsValues(postValues)
 			if err != nil {
-				logger.Errorf("Failed to post metrics value (will retry): %s", err.Error())
+				logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
 				if lState != loopStateTerminating {
 					lState = loopStateHadError
 				}
