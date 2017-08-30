@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.44.2 (2017-08-30)
+
+* Change the log level for failure of posting metric values #409 (itchyny)
+* Show CPU/SoC model name on Linux/MIPS #408 (hnw)
+
+
 ## 0.44.1 (2017-08-23)
 
 * Fail to start when custom identifiers are mismatched #405 (mechairoi)
