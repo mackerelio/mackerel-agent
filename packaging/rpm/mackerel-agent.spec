@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Aug 30 2017 <mackerel-developers@hatena.ne.jp> - 0.44.2
+- Change the log level for failure of posting metric values (by itchyny)
+- Show CPU/SoC model name on Linux/MIPS (by hnw)
+
 * Wed Aug 23 2017 <mackerel-developers@hatena.ne.jp> - 0.44.1
 - Fail to start when custom identifiers are mismatched (by mechairoi)
 - Fix the Azure VM check (by stefafafan)

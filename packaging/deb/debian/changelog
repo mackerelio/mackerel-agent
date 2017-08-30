@@ -1,3 +1,12 @@
+mackerel-agent (0.44.2-1) stable; urgency=low
+
+  * Change the log level for failure of posting metric values (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/409>
+  * Show CPU/SoC model name on Linux/MIPS (by hnw)
+    <https://github.com/mackerelio/mackerel-agent/pull/408>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 30 Aug 2017 15:17:58 +0900
+
 mackerel-agent (0.44.1-1) stable; urgency=low
 
   * Fail to start when custom identifiers are mismatched (by mechairoi)
