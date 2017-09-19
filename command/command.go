@@ -600,11 +600,11 @@ func Prepare(conf *config.Config, ameta *AgentMeta) (*App, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to prepare a secondary api: %s", err.Error())
 	}
-	api, secondaryApi := clientA, clientB
+	api, secondaryAPI := clientA, clientB
 	// In the future, we would like to assign primary and secondary probabilistically
 	// to some extent, but now fix it.
 	if (rand.Int() % 100) > 100 {
-		api, secondaryApi = clientB, clientA
+		api, secondaryAPI = clientB, clientA
 	}
 
 	host, err := prepareHost(conf, api)
@@ -617,7 +617,7 @@ func Prepare(conf *config.Config, ameta *AgentMeta) (*App, error) {
 		Config:                conf,
 		Host:                  host,
 		API:                   api,
-		SecondaryAPI:          secondaryApi,
+		SecondaryAPI:          secondaryAPI,
 		CustomIdentifierHosts: prepareCustomIdentiferHosts(conf, api),
 		AgentMeta:             ameta,
 	}, nil
