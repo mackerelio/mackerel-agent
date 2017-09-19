@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -161,8 +162,17 @@ type App struct {
 	Config                *config.Config
 	Host                  *mackerel.Host
 	API                   *mackerel.API
+	SecondaryAPI          *mackerel.API
+	useSecondaryAPI          bool
 	CustomIdentifierHosts map[string]*mackerel.Host
 	AgentMeta             *AgentMeta
+}
+
+func (app *App) currentAPI() *mackerel.API {
+	if app.useSecondaryAPI {
+		return app.SecondaryAPI
+	}
+	return app.API
 }
 
 type postValue struct {
@@ -201,7 +211,7 @@ func loop(app *App, termCh chan struct{}) error {
 	case <-termCh:
 		return nil
 	case <-time.After(time.Duration(initialDelay) * time.Second):
-		app.Agent.InitPluginGenerators(app.API)
+		app.Agent.InitPluginGenerators(app.currentAPI())
 	}
 
 	termMetricsCh := make(chan struct{})
@@ -306,9 +316,10 @@ func loop(app *App, termCh chan struct{}) error {
 			for _, v := range origPostValues {
 				postValues = append(postValues, v.values...)
 			}
-			err := app.API.PostMetricsValues(postValues)
+			err := app.currentAPI().PostMetricsValues(postValues)
 			if err != nil {
 				logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
+				app.useSecondaryAPI = !app.useSecondaryAPI
 				if lState != loopStateTerminating {
 					lState = loopStateHadError
 				}
@@ -480,9 +491,10 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 			logger.Debugf("reports[%d]: %#v", i, report)
 		}
 
-		err := app.API.ReportCheckMonitors(app.Host.ID, reports)
+		err := app.currentAPI().ReportCheckMonitors(app.Host.ID, reports)
 		if err != nil {
 			logger.Errorf("ReportCheckMonitors: %s", err)
+			app.useSecondaryAPI = !app.useSecondaryAPI
 
 			// queue back the reports
 			go func() {
@@ -542,7 +554,7 @@ func (app *App) UpdateHostSpecs() {
 	}
 	meta = fillUpSpecMeta(meta, app.AgentMeta.Version, app.AgentMeta.Revision)
 
-	err = app.API.UpdateHost(app.Host.ID, mackerel.HostSpec{
+	err = app.currentAPI().UpdateHost(app.Host.ID, mackerel.HostSpec{
 		Name:             hostname,
 		Meta:             meta,
 		Interfaces:       interfaces,
@@ -554,6 +566,7 @@ func (app *App) UpdateHostSpecs() {
 
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
+		app.useSecondaryAPI = !app.useSecondaryAPI
 	} else {
 		logger.Debugf("Host specs sent.")
 	}
@@ -579,9 +592,19 @@ func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool) (*mackere
 // Prepare sets up API and registers the host data to the Mackerel server.
 // Use returned values to call Run().
 func Prepare(conf *config.Config, ameta *AgentMeta) (*App, error) {
-	api, err := NewMackerelClient(conf.Apibase, conf.Apikey, ameta.Version, ameta.Revision, conf.Verbose)
+	clientA, err := NewMackerelClient(conf.Apibase, conf.Apikey, ameta.Version, ameta.Revision, conf.Verbose)
 	if err != nil {
 		return nil, fmt.Errorf("failed to prepare an api: %s", err.Error())
+	}
+	clientB, err := NewMackerelClient(conf.SecondaryApibase, conf.Apikey, ameta.Version, ameta.Revision, conf.Verbose)
+	if err != nil {
+		return nil, fmt.Errorf("failed to prepare a secondary api: %s", err.Error())
+	}
+	api, secondaryApi := clientA, clientB
+	// In the future, we would like to assign primary and secondary probabilistically
+	// to some extent, but now fix it.
+	if (rand.Int() % 100) > 100 {
+		api, secondaryApi = clientB, clientA
 	}
 
 	host, err := prepareHost(conf, api)
@@ -590,10 +613,11 @@ func Prepare(conf *config.Config, ameta *AgentMeta) (*App, error) {
 	}
 
 	return &App{
-		Agent:  NewAgent(conf),
-		Config: conf,
-		Host:   host,
-		API:    api,
+		Agent:                 NewAgent(conf),
+		Config:                conf,
+		Host:                  host,
+		API:                   api,
+		SecondaryAPI:          secondaryApi,
 		CustomIdentifierHosts: prepareCustomIdentiferHosts(conf, api),
 		AgentMeta:             ameta,
 	}, nil
@@ -662,9 +686,10 @@ func Run(app *App, termCh chan struct{}) error {
 	err := loop(app, termCh)
 	if err == nil && app.Config.HostStatus.OnStop != "" {
 		// TODO error handling. support retire(?)
-		e := app.API.UpdateHostStatus(app.Host.ID, app.Config.HostStatus.OnStop)
+		e := app.currentAPI().UpdateHostStatus(app.Host.ID, app.Config.HostStatus.OnStop)
 		if e != nil {
 			logger.Errorf("Failed update host status on stop: %s", e)
+			app.useSecondaryAPI = !app.useSecondaryAPI
 		}
 	}
 	return err

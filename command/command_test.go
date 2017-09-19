@@ -315,11 +315,12 @@ func TestLoop(t *testing.T) {
 	termCh := make(chan struct{})
 	exitCh := make(chan error)
 	app := &App{
-		Agent:     ag,
-		Config:    &conf,
-		API:       api,
-		Host:      host,
-		AgentMeta: &AgentMeta{},
+		Agent:        ag,
+		Config:       &conf,
+		API:          api,
+		SecondaryAPI: api,
+		Host:         host,
+		AgentMeta:    &AgentMeta{},
 	}
 	// Start looping!
 	go func() {

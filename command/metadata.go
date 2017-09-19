@@ -66,7 +66,7 @@ func runMetadataLoop(app *App, termMetadataCh <-chan struct{}, quit <-chan struc
 		}
 
 		for _, result := range results {
-			resp, err := app.API.PutMetadata(app.Host.ID, result.namespace, result.metadata)
+			resp, err := app.currentAPI().PutMetadata(app.Host.ID, result.namespace, result.metadata)
 			// retry on 5XX errors
 			if resp != nil && resp.StatusCode >= 500 {
 				logger.Errorf("put metadata %q failed: status %s", result.namespace, resp.Status)
@@ -77,6 +77,7 @@ func runMetadataLoop(app *App, termMetadataCh <-chan struct{}, quit <-chan struc
 			}
 			if err != nil {
 				logger.Errorf("put metadata %q failed: %v", result.namespace, err)
+				app.useSecondaryAPI = !app.useSecondaryAPI
 				clearMetadataCache(app.Agent.MetadataGenerators, result.namespace)
 				continue
 			}
