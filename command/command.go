@@ -415,7 +415,7 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 			// If status has changed, execute `on_status_change` command immediately
 			// but if the status was OK and it's first invocation of a check, do not
 			if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
-				checker.TriggerStatusChange(report.Status)
+				checker.OnStatusChange(report.Status)
 			}
 
 			if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
