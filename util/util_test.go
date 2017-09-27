@@ -18,7 +18,7 @@ func init() {
 }
 
 func TestRunCommand(t *testing.T) {
-	stdout, stderr, exitCode, err := RunCommand("echo 1", "")
+	stdout, stderr, exitCode, err := RunCommand("echo 1", "", []string{})
 	if runtime.GOOS == "windows" {
 		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
 		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
@@ -61,7 +61,7 @@ func TestRunCommandWithTimeout(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		command, tmpdir = makeSleep(t)
 	}
-	stdout, stderr, _, err := RunCommand(command, "")
+	stdout, stderr, _, err := RunCommand(command, "", []string{})
 	if stdout != "" {
 		t.Errorf("stdout shoud be empty")
 	}

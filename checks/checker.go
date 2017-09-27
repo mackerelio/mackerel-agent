@@ -6,6 +6,7 @@ import (
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/config"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 var logger = logging.GetLogger("checks")
@@ -96,4 +97,23 @@ func (c *Checker) Interval() time.Duration {
 		return interval
 	}
 	return defaultCheckInterval
+}
+
+// OnStatusChange execute `on_status_change` command.
+func (c *Checker) OnStatusChange(status Status) {
+	env := []string{fmt.Sprintf("MACKEREL_STATUS=%s", status)}
+	if c.Config.OnStatusChangeCommand != "" {
+		go func() {
+			if len(c.Config.OnStatusChangeCommandArgs) > 0 {
+				_, _, _, err := util.RunCommandArgs(c.Config.OnStatusChangeCommandArgs, c.Config.User, env)
+				if err != nil {
+					logger.Warningf("Checker %q failed to exec `on_status_change` command: %s", c.Name, err)
+				}
+			}
+			_, _, _, err := util.RunCommand(c.Config.OnStatusChangeCommand, c.Config.User, env)
+			if err != nil {
+				logger.Warningf("Checker %q failed to exec `on_status_change` command: %s", c.Name, err)
+			}
+		}()
+	}
 }

@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"runtime"
 	"time"
@@ -27,13 +28,13 @@ func init() {
 }
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
-func RunCommand(command, user string) (stdout, stderr string, exitCode int, err error) {
+func RunCommand(command, user string, env []string) (stdout, stderr string, exitCode int, err error) {
 	cmdArgs := append(cmdBase, command)
-	return RunCommandArgs(cmdArgs, user)
+	return RunCommandArgs(cmdArgs, user, env)
 }
 
 // RunCommandArgs run the command
-func RunCommandArgs(cmdArgs []string, user string) (stdout, stderr string, exitCode int, err error) {
+func RunCommandArgs(cmdArgs []string, user string, env []string) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
 	if user != "" {
 		if runtime.GOOS == "windows" {
@@ -43,6 +44,7 @@ func RunCommandArgs(cmdArgs []string, user string) (stdout, stderr string, exitC
 		}
 	}
 	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Env = append(os.Environ(), env...)
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  TimeoutDuration,
