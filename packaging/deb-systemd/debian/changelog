@@ -1,3 +1,10 @@
+mackerel-agent (0.45.0-1.systemd) stable; urgency=low
+
+  * build with Go 1.9 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/414>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 27 Sep 2017 12:06:52 +0900
+
 mackerel-agent (0.44.2-1.systemd) stable; urgency=low
 
   * Change the log level for failure of posting metric values (by itchyny)

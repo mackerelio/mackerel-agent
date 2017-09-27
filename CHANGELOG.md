@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.45.0 (2017-09-27)
+
+* build with Go 1.9 #414 (astj)
+
+
 ## 0.44.2 (2017-08-30)
 
 * Change the log level for failure of posting metric values #409 (itchyny)

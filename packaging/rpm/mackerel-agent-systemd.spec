@@ -55,6 +55,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Sep 27 2017 <mackerel-developers@hatena.ne.jp> - 0.45.0
+- build with Go 1.9 (by astj)
+
 * Wed Aug 30 2017 <mackerel-developers@hatena.ne.jp> - 0.44.2
 - Change the log level for failure of posting metric values (by itchyny)
 - Show CPU/SoC model name on Linux/MIPS (by hnw)
