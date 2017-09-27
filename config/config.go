@@ -47,20 +47,21 @@ var defaultConnectionConfig = ConnectionConfig{
 
 // Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase     string
-	Apikey      string
-	Root        string
-	Pidfile     string
-	Conffile    string
-	Roles       []string
-	Verbose     bool
-	Silent      bool
-	Diagnostic  bool `toml:"diagnostic"`
-	Connection  ConnectionConfig
-	DisplayName string      `toml:"display_name"`
-	HostStatus  HostStatus  `toml:"host_status"`
-	Filesystems Filesystems `toml:"filesystems"`
-	HTTPProxy   string      `toml:"http_proxy"`
+	Apibase          string
+	SecondaryApibase string
+	Apikey           string
+	Root             string
+	Pidfile          string
+	Conffile         string
+	Roles            []string
+	Verbose          bool
+	Silent           bool
+	Diagnostic       bool `toml:"diagnostic"`
+	Connection       ConnectionConfig
+	DisplayName      string      `toml:"display_name"`
+	HostStatus       HostStatus  `toml:"host_status"`
+	Filesystems      Filesystems `toml:"filesystems"`
+	HTTPProxy        string      `toml:"http_proxy"`
 
 	// This Plugin field is used to decode the toml file. After reading the
 	// configuration from file, this field is set to nil.
@@ -301,6 +302,9 @@ func LoadConfig(conffile string) (*Config, error) {
 
 	// set default values if config does not have values
 	if config.Apibase == "" {
+		config.Apibase = DefaultConfig.Apibase
+	}
+	if config.SecondaryApibase == "" {
 		config.Apibase = DefaultConfig.Apibase
 	}
 	if config.Root == "" {
