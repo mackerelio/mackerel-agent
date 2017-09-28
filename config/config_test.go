@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -26,6 +27,10 @@ post_metrics_retry_max = 5
 command = "ruby /path/to/your/plugin/mysql.rb"
 user = "mysql"
 custom_identifier = "app1.example.com"
+
+[plugin.metrics.mysql2]
+command = "ruby /path/to/your/plugin/mysql.rb"
+metric_name_pattern = "custom\.mysql\.innodb.+"
 
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
@@ -215,6 +220,14 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if customIdentifiers[0] != "app1.example.com" {
 		t.Errorf("first custom_identifier should be 'app1.example.com'")
+	}
+	if pluginConf.MetricNamePattern != nil {
+		t.Errorf("plugin metric_name_pattern should be nil but got %v", pluginConf.MetricNamePattern)
+	}
+
+	pluginConf2 := config.MetricPlugins["mysql2"]
+	if pluginConf2.MetricNamePattern != regexp.MustCompile(`custom\.mysql\.innodb.+`) {
+		t.Errorf("plugin metric_name_pattern should be nil but got %v", pluginConf.MetricNamePattern)
 	}
 
 	if config.CheckPlugins == nil {

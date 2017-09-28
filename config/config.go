@@ -88,15 +88,17 @@ type PluginConfig struct {
 	MaxCheckAttempts      *int32  `toml:"max_check_attempts"`
 	CustomIdentifier      *string `toml:"custom_identifier"`
 	PreventAlertAutoClose bool    `toml:"prevent_alert_auto_close"`
+	MetricNamePattern     *string `toml:"metric_name_pattern"`
 }
 
 // MetricPlugin represents the configuration of a metric plugin
 // The User option is ignored on Windows
 type MetricPlugin struct {
-	Command          string
-	CommandArgs      []string
-	User             string
-	CustomIdentifier *string
+	Command           string
+	CommandArgs       []string
+	User              string
+	CustomIdentifier  *string
+	MetricNamePattern *regexp.Regexp
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
@@ -104,11 +106,21 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	var pattern *regexp.Regexp
+	if pconf.MetricNamePattern != nil {
+		pattern, err = regexp.Compile(*pconf.MetricNamePattern)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &MetricPlugin{
-		Command:          pconf.Command,
-		CommandArgs:      pconf.CommandArgs,
-		User:             pconf.User,
-		CustomIdentifier: pconf.CustomIdentifier,
+		Command:           pconf.Command,
+		CommandArgs:       pconf.CommandArgs,
+		User:              pconf.User,
+		CustomIdentifier:  pconf.CustomIdentifier,
+		MetricNamePattern: pattern,
 	}, nil
 }
 
