@@ -48,8 +48,8 @@ func TestPluginCollectValues(t *testing.T) {
 
 func TestPluginCollectValuesWithPattern(t *testing.T) {
 	g := &pluginGenerator{Config: &config.MetricPlugin{
-		Command:           "ruby ../example/metrics-plugins/dice-with-meta.rb",
-		MetricNamePattern: regexp.MustCompile(`^dice\.d6`),
+		Command:        "ruby ../example/metrics-plugins/dice-with-meta.rb",
+		IncludePattern: regexp.MustCompile(`^dice\.d6`),
 	},
 	}
 	values, err := g.collectValues()

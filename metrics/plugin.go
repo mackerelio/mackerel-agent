@@ -237,7 +237,7 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 
 		key := items[0]
 
-		if g.Config.MetricNamePattern != nil && !g.Config.MetricNamePattern.MatchString(key) {
+		if g.Config.IncludePattern != nil && !g.Config.IncludePattern.MatchString(key) {
 			continue
 		}
 
