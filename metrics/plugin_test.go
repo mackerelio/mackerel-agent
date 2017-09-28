@@ -46,6 +46,24 @@ func TestPluginCollectValues(t *testing.T) {
 	}
 }
 
+func TestPluginCollectValuesWithPattern(t *testing.T) {
+	g := &pluginGenerator{Config: &config.MetricPlugin{
+		Command:           "ruby ../example/metrics-plugins/dice-with-meta.rb",
+		MetricNamePattern: regexp.MustCompile(`dice\.d6`),
+	},
+	}
+	values, err := g.collectValues()
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	if len(values) != 1 {
+		t.Errorf("Collected metrics are unexpected ")
+	}
+	if _, ok := values["dice.d6"]; !ok {
+		t.Errorf("Value for dice.d6 should be present ")
+	}
+}
+
 func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 	// this plugin emits "one.foo1", "one.foo2" and "two.bar1" metrics
 	g := &pluginGenerator{

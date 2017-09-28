@@ -234,13 +234,18 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 		if len(items) != 3 {
 			continue
 		}
+
+		key := items[0]
+
+		if g.Config.MetricNamePattern != nil && !g.Config.MetricNamePattern.MatchString(key) {
+			continue
+		}
+
 		value, err := strconv.ParseFloat(items[1], 64)
 		if err != nil {
 			pluginLogger.Warningf("Failed to parse values: %s", err)
 			continue
 		}
-
-		key := items[0]
 
 		results[pluginPrefix+key] = value
 	}
