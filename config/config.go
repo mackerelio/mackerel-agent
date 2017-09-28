@@ -89,6 +89,7 @@ type PluginConfig struct {
 	CustomIdentifier      *string `toml:"custom_identifier"`
 	PreventAlertAutoClose bool    `toml:"prevent_alert_auto_close"`
 	IncludePattern        *string `toml:"include_pattern"`
+	ExcludePattern        *string `toml:"exclude_pattern"`
 }
 
 // MetricPlugin represents the configuration of a metric plugin
@@ -99,6 +100,7 @@ type MetricPlugin struct {
 	User             string
 	CustomIdentifier *string
 	IncludePattern   *regexp.Regexp
+	ExcludePattern   *regexp.Regexp
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
@@ -107,9 +109,18 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 		return nil, err
 	}
 
-	var pattern *regexp.Regexp
+	var (
+		includePattern *regexp.Regexp
+		excludePattern *regexp.Regexp
+	)
 	if pconf.IncludePattern != nil {
-		pattern, err = regexp.Compile(*pconf.IncludePattern)
+		includePattern, err = regexp.Compile(*pconf.IncludePattern)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if pconf.ExcludePattern != nil {
+		excludePattern, err = regexp.Compile(*pconf.ExcludePattern)
 		if err != nil {
 			return nil, err
 		}
@@ -120,7 +131,8 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 		CommandArgs:      pconf.CommandArgs,
 		User:             pconf.User,
 		CustomIdentifier: pconf.CustomIdentifier,
-		IncludePattern:   pattern,
+		IncludePattern:   includePattern,
+		ExcludePattern:   excludePattern,
 	}, nil
 }
 

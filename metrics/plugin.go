@@ -241,6 +241,10 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 			continue
 		}
 
+		if g.Config.ExcludePattern != nil && g.Config.ExcludePattern.MatchString(key) {
+			continue
+		}
+
 		value, err := strconv.ParseFloat(items[1], 64)
 		if err != nil {
 			pluginLogger.Warningf("Failed to parse values: %s", err)
