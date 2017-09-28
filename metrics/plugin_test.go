@@ -59,7 +59,7 @@ func TestPluginCollectValuesWithPattern(t *testing.T) {
 	if len(values) != 1 {
 		t.Errorf("Collected metrics are unexpected ")
 	}
-	if _, ok := values["dice.d6"]; !ok {
+	if _, ok := values["custom.dice.d6"]; !ok {
 		t.Errorf("Value for dice.d6 should be present ")
 	}
 }
