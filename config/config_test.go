@@ -30,8 +30,8 @@ custom_identifier = "app1.example.com"
 
 [plugin.metrics.mysql2]
 command = "ruby /path/to/your/plugin/mysql.rb"
-include_pattern = 'mysql\.innodb\..+'
-exclude_pattern = 'mysql\.innodb\.ignore'
+include_pattern = '^mysql\.innodb\..+'
+exclude_pattern = '^mysql\.innodb\.ignore'
 
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
@@ -230,10 +230,10 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 
 	pluginConf2 := config.MetricPlugins["mysql2"]
-	if pluginConf2.IncludePattern.String() != regexp.MustCompile(`mysql\.innodb\..+`).String() {
+	if pluginConf2.IncludePattern.String() != regexp.MustCompile(`^mysql\.innodb\..+`).String() {
 		t.Errorf("unexpected include_pattern: %v", pluginConf2.IncludePattern)
 	}
-	if pluginConf2.ExcludePattern.String() != regexp.MustCompile(`mysql\.innodb\.ignore`).String() {
+	if pluginConf2.ExcludePattern.String() != regexp.MustCompile(`^mysql\.innodb\.ignore`).String() {
 		t.Errorf("unexpected exclude_pattern: %v", pluginConf2.ExcludePattern)
 	}
 
