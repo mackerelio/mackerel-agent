@@ -103,7 +103,7 @@ func TestResolveConfigForRetire(t *testing.T) {
 	// Because, these options are potentially passed in initd script by using $OTHER_OPTS.
 	argv := []string{
 		"-conf=" + confFile.Name(),
-		"-apibase=https://mackerel.io",
+		"-apibase=https://api.mackerelio.com",
 		"-pidfile=hoge",
 		"-root=hoge",
 		"-verbose",
