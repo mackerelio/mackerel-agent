@@ -127,6 +127,9 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
+	if cmd == nil {
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+	}
 
 	var (
 		includePattern *regexp.Regexp
@@ -146,7 +149,7 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	}
 
 	return &MetricPlugin{
-		Command:          cmd,
+		Command:          *cmd,
 		CustomIdentifier: pconf.CustomIdentifier,
 		IncludePattern:   includePattern,
 		ExcludePattern:   excludePattern,
@@ -168,8 +171,11 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
+	if cmd == nil {
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+	}
 	plugin := CheckPlugin{
-		Command:               cmd,
+		Command:               *cmd,
 		NotificationInterval:  pconf.NotificationInterval,
 		CheckInterval:         pconf.CheckInterval,
 		MaxCheckAttempts:      pconf.MaxCheckAttempts,
@@ -194,17 +200,20 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
+	if cmd == nil {
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+	}
 	return &MetadataPlugin{
-		Command:           cmd,
+		Command:           *cmd,
 		ExecutionInterval: pconf.ExecutionInterval,
 	}, nil
 }
 
-func parseCommand(commandRaw interface{}, user string) (command Command, err error) {
+func parseCommand(commandRaw interface{}, user string) (command *Command, err error) {
 	const errFmt = "failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T"
 	switch t := commandRaw.(type) {
 	case string:
-		return Command{
+		return &Command{
 			Cmd:  t,
 			User: user,
 		}, nil
@@ -214,24 +223,26 @@ func parseCommand(commandRaw interface{}, user string) (command Command, err err
 			for _, vv := range t {
 				str, ok := vv.(string)
 				if !ok {
-					return Command{}, fmt.Errorf(errFmt, commandRaw)
+					return nil, fmt.Errorf(errFmt, commandRaw)
 				}
 
 				args = append(args, str)
 			}
-			return Command{
+			return &Command{
 				Args: args,
 				User: user,
 			}, nil
 		}
-		return Command{}, fmt.Errorf(errFmt, commandRaw)
+		return nil, fmt.Errorf(errFmt, commandRaw)
 	case []string:
-		return Command{
+		return &Command{
 			Args: t,
 			User: user,
 		}, nil
+	case nil:
+		return nil, nil
 	default:
-		return Command{}, fmt.Errorf(errFmt, commandRaw)
+		return nil, fmt.Errorf(errFmt, commandRaw)
 	}
 }
 
