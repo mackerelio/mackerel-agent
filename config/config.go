@@ -123,7 +123,7 @@ type MetricPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
-	cmd, err := pconf.parseCommand()
+	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +164,7 @@ type CheckPlugin struct {
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
-	cmd, err := pconf.parseCommand()
+	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +190,7 @@ type MetadataPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
-	cmd, err := pconf.parseCommand()
+	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
 	if err != nil {
 		return nil, err
 	}
@@ -200,14 +200,13 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 	}, nil
 }
 
-func (pconf *PluginConfig) parseCommand() (command Command, err error) {
+func parseCommand(commandRaw interface{}, user string) (command Command, err error) {
 	const errFmt = "failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T"
-	v := pconf.CommandRaw
-	switch t := v.(type) {
+	switch t := commandRaw.(type) {
 	case string:
 		return Command{
 			Cmd:  t,
-			User: pconf.User,
+			User: user,
 		}, nil
 	case []interface{}:
 		if len(t) > 0 {
@@ -215,24 +214,24 @@ func (pconf *PluginConfig) parseCommand() (command Command, err error) {
 			for _, vv := range t {
 				str, ok := vv.(string)
 				if !ok {
-					return Command{}, fmt.Errorf(errFmt, v)
+					return Command{}, fmt.Errorf(errFmt, commandRaw)
 				}
 
 				args = append(args, str)
 			}
 			return Command{
 				Args: args,
-				User: pconf.User,
+				User: user,
 			}, nil
 		}
-		return Command{}, fmt.Errorf(errFmt, v)
+		return Command{}, fmt.Errorf(errFmt, commandRaw)
 	case []string:
 		return Command{
 			Args: t,
-			User: pconf.User,
+			User: user,
 		}, nil
 	default:
-		return Command{}, fmt.Errorf(errFmt, v)
+		return Command{}, fmt.Errorf(errFmt, commandRaw)
 	}
 }
 
