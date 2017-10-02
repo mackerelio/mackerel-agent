@@ -79,8 +79,6 @@ type Config struct {
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
 	CommandRaw            interface{} `toml:"command"`
-	Command               string
-	CommandArgs           []string
 	User                  string
 	NotificationInterval  *int32  `toml:"notification_interval"`
 	CheckInterval         *int32  `toml:"check_interval"`
@@ -92,19 +90,40 @@ type PluginConfig struct {
 	ExcludePattern        *string `toml:"exclude_pattern"`
 }
 
+// Command represents an executable command.
+type Command struct {
+	Cmd  string
+	Args []string
+	User string
+}
+
+// Run the Command.
+func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
+	if len(cmd.Args) > 0 {
+		return util.RunCommandArgs(cmd.Args, cmd.User)
+	}
+	return util.RunCommand(cmd.Cmd, cmd.User)
+}
+
+// CommandString returns the command string for log messages
+func (cmd *Command) CommandString() string {
+	if len(cmd.Args) > 0 {
+		return strings.Join(cmd.Args, " ")
+	}
+	return cmd.Cmd
+}
+
 // MetricPlugin represents the configuration of a metric plugin
 // The User option is ignored on Windows
 type MetricPlugin struct {
-	Command          string
-	CommandArgs      []string
-	User             string
+	Command          Command
 	CustomIdentifier *string
 	IncludePattern   *regexp.Regexp
 	ExcludePattern   *regexp.Regexp
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
-	err := pconf.prepareCommand()
+	cmd, err := pconf.parseCommand()
 	if err != nil {
 		return nil, err
 	}
@@ -127,37 +146,17 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	}
 
 	return &MetricPlugin{
-		Command:          pconf.Command,
-		CommandArgs:      pconf.CommandArgs,
-		User:             pconf.User,
+		Command:          cmd,
 		CustomIdentifier: pconf.CustomIdentifier,
 		IncludePattern:   includePattern,
 		ExcludePattern:   excludePattern,
 	}, nil
 }
 
-// Run the metric plugin.
-func (pconf *MetricPlugin) Run() (stdout, stderr string, exitCode int, err error) {
-	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
-	}
-	return util.RunCommand(pconf.Command, pconf.User)
-}
-
-// CommandString returns the command string for log messages
-func (pconf *MetricPlugin) CommandString() string {
-	if len(pconf.CommandArgs) > 0 {
-		return strings.Join(pconf.CommandArgs, " ")
-	}
-	return pconf.Command
-}
-
 // CheckPlugin represents the configuration of a check plugin
 // The User option is ignored on Windows
 type CheckPlugin struct {
-	Command               string
-	CommandArgs           []string
-	User                  string
+	Command               Command
 	NotificationInterval  *int32
 	CheckInterval         *int32
 	MaxCheckAttempts      *int32
@@ -165,14 +164,12 @@ type CheckPlugin struct {
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
-	err := pconf.prepareCommand()
+	cmd, err := pconf.parseCommand()
 	if err != nil {
 		return nil, err
 	}
 	plugin := CheckPlugin{
-		Command:               pconf.Command,
-		CommandArgs:           pconf.CommandArgs,
-		User:                  pconf.User,
+		Command:               cmd,
 		NotificationInterval:  pconf.NotificationInterval,
 		CheckInterval:         pconf.CheckInterval,
 		MaxCheckAttempts:      pconf.MaxCheckAttempts,
@@ -185,68 +182,58 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	return &plugin, nil
 }
 
-// Run the check plugin.
-func (pconf *CheckPlugin) Run() (stdout, stderr string, exitCode int, err error) {
-	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
-	}
-	return util.RunCommand(pconf.Command, pconf.User)
-}
-
 // MetadataPlugin represents the configuration of a metadata plugin
 // The User option is ignored on Windows
 type MetadataPlugin struct {
-	Command           string
-	CommandArgs       []string
-	User              string
+	Command           Command
 	ExecutionInterval *int32
 }
 
 func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
-	err := pconf.prepareCommand()
+	cmd, err := pconf.parseCommand()
 	if err != nil {
 		return nil, err
 	}
 	return &MetadataPlugin{
-		Command:           pconf.Command,
-		CommandArgs:       pconf.CommandArgs,
-		User:              pconf.User,
+		Command:           cmd,
 		ExecutionInterval: pconf.ExecutionInterval,
 	}, nil
 }
 
-// Run the metadata plugin.
-func (pconf *MetadataPlugin) Run() (stdout, stderr string, exitCode int, err error) {
-	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
-	}
-	return util.RunCommand(pconf.Command, pconf.User)
-}
-
-func (pconf *PluginConfig) prepareCommand() error {
-	const errFmt = "failed to prepare plugin command. A configuration value of `command` should be string or string slice, but %T"
+func (pconf *PluginConfig) parseCommand() (command Command, err error) {
+	const errFmt = "failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T"
 	v := pconf.CommandRaw
 	switch t := v.(type) {
 	case string:
-		pconf.Command = t
+		return Command{
+			Cmd:  t,
+			User: pconf.User,
+		}, nil
 	case []interface{}:
 		if len(t) > 0 {
+			args := []string{}
 			for _, vv := range t {
 				str, ok := vv.(string)
 				if !ok {
-					return fmt.Errorf(errFmt, v)
+					return Command{}, fmt.Errorf(errFmt, v)
 				}
-				pconf.CommandArgs = append(pconf.CommandArgs, str)
+
+				args = append(args, str)
 			}
-		} else {
-			return fmt.Errorf(errFmt, v)
+			return Command{
+				Args: args,
+				User: pconf.User,
+			}, nil
 		}
+		return Command{}, fmt.Errorf(errFmt, v)
 	case []string:
-		pconf.CommandArgs = t
+		return Command{
+			Args: t,
+			User: pconf.User,
+		}, nil
 	default:
-		return fmt.Errorf(errFmt, v)
+		return Command{}, fmt.Errorf(errFmt, v)
 	}
-	return nil
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
