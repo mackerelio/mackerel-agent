@@ -46,6 +46,58 @@ func TestPluginCollectValues(t *testing.T) {
 	}
 }
 
+func TestPluginCollectValuesWithIncludePattern(t *testing.T) {
+	g := &pluginGenerator{Config: &config.MetricPlugin{
+		Command:        "ruby ../example/metrics-plugins/dice-with-meta.rb",
+		IncludePattern: regexp.MustCompile(`^dice\.d6`),
+	},
+	}
+	values, err := g.collectValues()
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	if len(values) != 1 {
+		t.Errorf("Collected metrics are unexpected ")
+	}
+	if _, ok := values["custom.dice.d6"]; !ok {
+		t.Errorf("Value for dice.d6 should be present ")
+	}
+}
+
+func TestPluginCollectValuesWithExcludePattern(t *testing.T) {
+	g := &pluginGenerator{Config: &config.MetricPlugin{
+		Command:        "ruby ../example/metrics-plugins/dice-with-meta.rb",
+		ExcludePattern: regexp.MustCompile(`^dice\.d20`),
+	},
+	}
+	values, err := g.collectValues()
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	if len(values) != 1 {
+		t.Errorf("Collected metrics are unexpected ")
+	}
+	if _, ok := values["custom.dice.d6"]; !ok {
+		t.Errorf("Value for dice.d6 should be present ")
+	}
+}
+
+func TestPluginCollectValuesWithBothPattern(t *testing.T) {
+	g := &pluginGenerator{Config: &config.MetricPlugin{
+		Command:        "ruby ../example/metrics-plugins/dice-with-meta.rb",
+		IncludePattern: regexp.MustCompile(`^dice\.d20`),
+		ExcludePattern: regexp.MustCompile(`^dice\.d20`),
+	},
+	}
+	values, err := g.collectValues()
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	if len(values) != 0 {
+		t.Errorf("No values should be present")
+	}
+}
+
 func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 	// this plugin emits "one.foo1", "one.foo2" and "two.bar1" metrics
 	g := &pluginGenerator{
