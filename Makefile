@@ -1,5 +1,5 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
-MACKEREL_API_BASE ?= "https://mackerel.io"
+MACKEREL_API_BASE ?= "https://api.mackerelio.com"
 VERSION = 0.45.0
 CURRENT_REVISION = $(shell git rev-parse --short HEAD)
 ARGS = "-conf=mackerel-agent.conf"
