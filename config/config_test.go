@@ -57,8 +57,8 @@ func TestLoadConfig(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	if config.Apibase != "https://mackerel.io" {
-		t.Error("should be https://mackerel.io (arg value should be used)")
+	if config.Apibase != "https://api.mackerelio.com" {
+		t.Error("should be https://api.mackerelio.com (arg value should be used)")
 	}
 
 	if config.Apikey != "abcde" {

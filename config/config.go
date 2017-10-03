@@ -23,7 +23,7 @@ func getApibase() string {
 	if apibase != "" {
 		return apibase
 	}
-	return "https://mackerel.io"
+	return "https://api.mackerelio.com"
 }
 
 var agentName string
