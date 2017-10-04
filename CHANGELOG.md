@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.46.0 (2017-10-04)
+
+* Use new API BaseURL #417 (astj)
+* Filter plugin metrics value by include_pattern and exclude_pattern option #416 (astj)
+
+
 ## 0.45.0 (2017-09-27)
 
 * build with Go 1.9 #414 (astj)
