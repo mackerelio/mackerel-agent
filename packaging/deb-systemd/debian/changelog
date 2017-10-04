@@ -1,3 +1,12 @@
+mackerel-agent (0.46.0-1.systemd) stable; urgency=low
+
+  * Use new API BaseURL (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/417>
+  * Filter plugin metrics value by include_pattern and exclude_pattern option (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/416>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 04 Oct 2017 11:24:22 +0900
+
 mackerel-agent (0.45.0-1.systemd) stable; urgency=low
 
   * build with Go 1.9 (by astj)

@@ -55,6 +55,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Oct 04 2017 <mackerel-developers@hatena.ne.jp> - 0.46.0
+- Use new API BaseURL (by astj)
+- Filter plugin metrics value by include_pattern and exclude_pattern option (by astj)
+
 * Wed Sep 27 2017 <mackerel-developers@hatena.ne.jp> - 0.45.0
 - build with Go 1.9 (by astj)
 
