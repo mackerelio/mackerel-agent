@@ -70,7 +70,7 @@ func TestMetadataGeneratorFetch(t *testing.T) {
 	for _, test := range tests {
 		g := Generator{
 			Config: &config.MetadataPlugin{
-				CommandArgs: test.command,
+				Command: config.Command{Args: test.command},
 			},
 		}
 		metadata, err := g.Fetch()

@@ -10,7 +10,7 @@ import (
 
 func TestPluginCollectValuesCommand(t *testing.T) {
 	g := &pluginGenerator{Config: &config.MetricPlugin{
-		Command: "echo \"just.echo.1\t1\t1397822016\"",
+		Command: config.Command{Cmd: "echo \"just.echo.1\t1\t1397822016\""},
 	},
 	}
 
@@ -35,7 +35,7 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 
 func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
 	g := &pluginGenerator{Config: &config.MetricPlugin{
-		Command: `echo "just.echo.2   2   1397822016"`,
+		Command: config.Command{Cmd: `echo "just.echo.2   2   1397822016"`},
 	}}
 
 	values, err := g.collectValues()
@@ -60,7 +60,7 @@ func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
 func TestPluginLoadPluginMeta(t *testing.T) {
 	g := &pluginGenerator{
 		Config: &config.MetricPlugin{
-			Command: `echo '# mackerel-agent-plugin version=1
+			Command: config.Command{Cmd: `echo '# mackerel-agent-plugin version=1
 {
   "graphs": {
     "query": {
@@ -95,6 +95,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
   }
 }
 '`,
+			},
 		},
 	}
 
@@ -116,7 +117,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 
 	generatorWithoutConf := &pluginGenerator{
 		Config: &config.MetricPlugin{
-			Command: "echo \"just.echo.1\t1\t1397822016\"",
+			Command: config.Command{Cmd: "echo \"just.echo.1\t1\t1397822016\""},
 		},
 	}
 
@@ -127,7 +128,7 @@ func TestPluginLoadPluginMeta(t *testing.T) {
 
 	generatorWithBadVersion := &pluginGenerator{
 		Config: &config.MetricPlugin{
-			Command: `echo "# mackerel-agent-plugin version=666"`,
+			Command: config.Command{Cmd: `echo "# mackerel-agent-plugin version=666"`},
 		},
 	}
 

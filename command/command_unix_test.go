@@ -25,12 +25,12 @@ func TestRunOnce(t *testing.T) {
 	conf := &config.Config{
 		MetricPlugins: map[string]*config.MetricPlugin{
 			"metric1": {
-				Command: diceCommand,
+				Command: config.Command{Cmd: diceCommand},
 			},
 		},
 		CheckPlugins: map[string]*config.CheckPlugin{
 			"check1": {
-				Command: "echo 1",
+				Command: config.Command{Cmd: "echo 1"},
 			},
 		},
 	}
@@ -52,12 +52,12 @@ func TestRunOncePayload(t *testing.T) {
 	conf := &config.Config{
 		MetricPlugins: map[string]*config.MetricPlugin{
 			"metric1": {
-				Command: diceCommand,
+				Command: config.Command{Cmd: diceCommand},
 			},
 		},
 		CheckPlugins: map[string]*config.CheckPlugin{
 			"check1": {
-				Command: "echo 1",
+				Command: config.Command{Cmd: "echo 1"},
 			},
 		},
 	}
