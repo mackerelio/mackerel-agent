@@ -80,14 +80,21 @@ type Config struct {
 type PluginConfig struct {
 	CommandRaw            interface{} `toml:"command"`
 	User                  string
-	NotificationInterval  *int32  `toml:"notification_interval"`
-	CheckInterval         *int32  `toml:"check_interval"`
-	ExecutionInterval     *int32  `toml:"execution_interval"`
-	MaxCheckAttempts      *int32  `toml:"max_check_attempts"`
-	CustomIdentifier      *string `toml:"custom_identifier"`
-	PreventAlertAutoClose bool    `toml:"prevent_alert_auto_close"`
-	IncludePattern        *string `toml:"include_pattern"`
-	ExcludePattern        *string `toml:"exclude_pattern"`
+	NotificationInterval  *int32        `toml:"notification_interval"`
+	CheckInterval         *int32        `toml:"check_interval"`
+	ExecutionInterval     *int32        `toml:"execution_interval"`
+	MaxCheckAttempts      *int32        `toml:"max_check_attempts"`
+	CustomIdentifier      *string       `toml:"custom_identifier"`
+	PreventAlertAutoClose bool          `toml:"prevent_alert_auto_close"`
+	IncludePattern        *string       `toml:"include_pattern"`
+	ExcludePattern        *string       `toml:"exclude_pattern"`
+	Action                CommandConfig `toml:"action"`
+}
+
+// CommandConfig represents an executable command configuration.
+type CommandConfig struct {
+	Raw  interface{} `toml:"command"`
+	User string
 }
 
 // Command represents an executable command.
@@ -164,6 +171,7 @@ type CheckPlugin struct {
 	CheckInterval         *int32
 	MaxCheckAttempts      *int32
 	PreventAlertAutoClose bool
+	Action                *Command
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
@@ -174,12 +182,17 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	if cmd == nil {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
 	}
+	action, err := parseCommand(pconf.Action.Raw, pconf.Action.User)
+	if err != nil {
+		return nil, err
+	}
 	plugin := CheckPlugin{
 		Command:               *cmd,
 		NotificationInterval:  pconf.NotificationInterval,
 		CheckInterval:         pconf.CheckInterval,
 		MaxCheckAttempts:      pconf.MaxCheckAttempts,
 		PreventAlertAutoClose: pconf.PreventAlertAutoClose,
+		Action:                action,
 	}
 	if plugin.MaxCheckAttempts != nil && *plugin.MaxCheckAttempts > 1 && plugin.PreventAlertAutoClose {
 		*plugin.MaxCheckAttempts = 1
