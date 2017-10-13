@@ -476,23 +476,35 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 			continue
 		}
 
+		// Do not report too many reports at once.
+		const checkReportMaxSize = 10
+		partialReports := make([]*checks.Report, 0, checkReportMaxSize)
 		for i, report := range reports {
 			logger.Debugf("reports[%d]: %#v", i, report)
+			partialReports = append(partialReports, report)
+			if len(partialReports) >= checkReportMaxSize {
+				reportCheckMonitors(app, checkReportCh, partialReports)
+				partialReports = make([]*checks.Report, 0, checkReportMaxSize)
+			}
 		}
-
-		err := app.API.ReportCheckMonitors(app.Host.ID, reports)
-		if err != nil {
-			logger.Errorf("ReportCheckMonitors: %s", err)
-
-			// queue back the reports
-			go func() {
-				for _, report := range reports {
-					logger.Debugf("queue back report: %#v", report)
-					checkReportCh <- report
-				}
-			}()
-		}
+		reportCheckMonitors(app, checkReportCh, partialReports)
 	}
+}
+
+func reportCheckMonitors(app *App, checkReportCh chan *checks.Report, reports []*checks.Report) {
+	err := app.API.ReportCheckMonitors(app.Host.ID, reports)
+	if err != nil {
+		logger.Errorf("ReportCheckMonitors: %s", err)
+
+		// queue back the reports
+		go func() {
+			for _, report := range reports {
+				logger.Debugf("queue back report: %#v", report)
+				checkReportCh <- report
+			}
+		}()
+	}
+
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta", "interfaces" and "customIdentifier" fields in API v0)
