@@ -107,9 +107,9 @@ type Command struct {
 // Run the Command.
 func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(cmd.Args) > 0 {
-		return util.RunCommandArgs(cmd.Args, cmd.User)
+		return util.RunCommandArgs(cmd.Args, cmd.User, nil)
 	}
-	return util.RunCommand(cmd.Cmd, cmd.User)
+	return util.RunCommand(cmd.Cmd, cmd.User, nil)
 }
 
 // CommandString returns the command string for log messages
