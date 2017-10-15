@@ -11,14 +11,18 @@ func TestMemoryGenerator(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	for _, name := range []string{
+	metricNames := []string{
 		"total",
 		"free",
 		"cached",
 		"active",
 		"inactive",
 		"used",
-	} {
+		"swap_total",
+		"swap_free",
+	}
+
+	for _, name := range metricNames {
 		if v, ok := values["memory."+name]; !ok {
 			t.Errorf("memory should has %s", name)
 		} else {
