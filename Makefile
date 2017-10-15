@@ -29,6 +29,7 @@ deps: generate
 	go get github.com/pierrre/gotestcover
 	go get github.com/laher/goxc
 	go get github.com/mattn/goveralls
+	go get github.com/mackerelio/go-osstat # to build darwin on TravisCI (can be deleted after we use go-osstat on linux)
 
 lint: deps
 	go tool vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
