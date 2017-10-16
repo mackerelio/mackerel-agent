@@ -7,8 +7,9 @@ import "testing"
 func TestMemoryGenerator(t *testing.T) {
 	g := &MemoryGenerator{}
 	values, err := g.Generate()
+
 	if err != nil {
-		t.Errorf("should not raise error: %v", err)
+		t.Errorf("error should be nil but got: %s", err)
 	}
 
 	metricNames := []string{
@@ -23,10 +24,10 @@ func TestMemoryGenerator(t *testing.T) {
 	}
 
 	for _, name := range metricNames {
-		if v, ok := values["memory."+name]; !ok {
+		if _, ok := values["memory."+name]; !ok {
 			t.Errorf("memory should has %s", name)
-		} else {
-			t.Logf("memory '%s' collected: %+v", name, v)
 		}
 	}
+
+	t.Logf("memory metrics: %+v", values)
 }
