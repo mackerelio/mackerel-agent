@@ -112,6 +112,14 @@ func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
 	return util.RunCommand(cmd.Cmd, cmd.User, nil)
 }
 
+// RunWithEnv runs the Command with Environment.
+func (cmd *Command) RunWithEnv(env []string) (stdout, stderr string, exitCode int, err error) {
+	if len(cmd.Args) > 0 {
+		return util.RunCommandArgs(cmd.Args, cmd.User, env)
+	}
+	return util.RunCommand(cmd.Cmd, cmd.User, env)
+}
+
 // CommandString returns the command string for log messages
 func (cmd *Command) CommandString() string {
 	if len(cmd.Args) > 0 {
