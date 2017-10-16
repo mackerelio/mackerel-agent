@@ -74,8 +74,8 @@ func generateMemorySpec(out io.Reader) (map[string]string, error) {
 			continue
 		}
 		if k, ok := memItems[fields[0]]; ok {
-			// ex) MemTotal:        3916792 kB
-			//       -> "total": "3916782kB"
+			// ex) MemTotal:  3916792 kB
+			//   -> "total": "3916782kB"
 			result[k] = strings.Join(fields[1:], "")
 		}
 	}
