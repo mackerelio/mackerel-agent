@@ -22,10 +22,20 @@ func (g *BlockDeviceGenerator) Key() string {
 
 var blockDeviceLogger = logging.GetLogger("spec.block_device")
 
+var sysBlockUnavailable = false
+
 // Generate generate metric values
 func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
+	if sysBlockUnavailable {
+		return nil, nil
+	}
 	fileInfos, err := ioutil.ReadDir("/sys/block")
 	if err != nil {
+		// /sys/block is unavailable on some PaaS (Heroku, for example)
+		if os.IsNotExist(err) {
+			sysBlockUnavailable = true
+			return nil, nil
+		}
 		blockDeviceLogger.Errorf("Failed (skip this spec): %s", err)
 		return nil, err
 	}
