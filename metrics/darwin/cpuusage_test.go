@@ -2,26 +2,20 @@
 
 package darwin
 
-import (
-	"testing"
-	"time"
-)
+import "testing"
 
 func TestCPUUsageGenerator_Generate(t *testing.T) {
-	g := &CPUUsageGenerator{1 * time.Second}
+	g := &CPUUsageGenerator{}
 	values, err := g.Generate()
 
 	if err != nil {
 		t.Errorf("error should not have occurred: %s", err)
 	}
 
-	metricNames := []string{"cpu.user.percentage", "cpu.system.percentage", "cpu.idle.percentage"}
-
-	for _, name := range metricNames {
-		if v, ok := values[name]; !ok {
-			t.Errorf("cpu should has %s", name)
-		} else {
-			t.Logf("cpu '%s' collected: %+v", name, v)
+	metricName := []string{"cpu.user.percentage", "cpu.system.percentage", "cpu.idle.percentage"}
+	for _, n := range metricName {
+		if _, ok := values[n]; !ok {
+			t.Errorf("should have '%s': %v", n, values)
 		}
 	}
 }
