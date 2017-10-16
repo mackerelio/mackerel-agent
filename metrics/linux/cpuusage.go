@@ -127,9 +127,11 @@ func (g *CPUUsageGenerator) collectProcStatValues() ([]float64, float64, uint, e
 	// Since cpustat[CPUTIME_USER] includes cpustat[CPUTIME_GUEST], subtract the duplicated values from total.
 	// https://github.com/torvalds/linux/blob/4ec9f7a18/kernel/sched/cputime.c#L151-L158
 	// https://github.com/mackerelio/mackerel-agent/issues/419
-	totalValues -= values[8]
-	// Also, subtract guest from user.
-	values[0] -= values[8]
+	if len(values) >= 9 {
+		totalValues -= values[8]
+		// Also, subtract guest from user.
+		values[0] -= values[8]
+	}
 
 	return values, totalValues, cpuCount, nil
 }
