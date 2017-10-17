@@ -29,4 +29,14 @@ func TestKernelGenerate(t *testing.T) {
 	if len(kernel["name"]) == 0 {
 		t.Error("kernel.name should be filled")
 	}
+
+	if len(kernel["platform_name"]) == 0 {
+		t.Error("kernel.platform_name should be filled")
+	}
+
+	if len(kernel["platform_version"]) == 0 {
+		t.Error("kernel.platform_version should be filled")
+	}
+
+	t.Logf("kernel spec: %+v", kernel)
 }
