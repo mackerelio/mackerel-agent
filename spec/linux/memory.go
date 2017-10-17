@@ -4,41 +4,42 @@ package linux
 
 import (
 	"bufio"
+	"io"
 	"os"
-	"regexp"
+	"strings"
 
 	"github.com/mackerelio/golib/logging"
 )
 
-var memItems = map[string]*regexp.Regexp{
-	"total":            regexp.MustCompile(`^MemTotal:\s+(\d+) (.+)$`),
-	"free":             regexp.MustCompile(`^MemFree:\s+(\d+) (.+)$`),
-	"buffers":          regexp.MustCompile(`^Buffers:\s+(\d+) (.+)$`),
-	"cached":           regexp.MustCompile(`^Cached:\s+(\d+) (.+)$`),
-	"active":           regexp.MustCompile(`^Active:\s+(\d+) (.+)$`),
-	"inactive":         regexp.MustCompile(`^Inactive:\s+(\d+) (.+)$`),
-	"high_total":       regexp.MustCompile(`^HighTotal:\s+(\d+) (.+)$`),
-	"high_free":        regexp.MustCompile(`^HighFree:\s+(\d+) (.+)$`),
-	"low_total":        regexp.MustCompile(`^LowTotal:\s+(\d+) (.+)$`),
-	"low_free":         regexp.MustCompile(`^LowFree:\s+(\d+) (.+)$`),
-	"dirty":            regexp.MustCompile(`^Dirty:\s+(\d+) (.+)$`),
-	"writeback":        regexp.MustCompile(`^Writeback:\s+(\d+) (.+)$`),
-	"anon_pages":       regexp.MustCompile(`^AnonPages:\s+(\d+) (.+)$`),
-	"mapped":           regexp.MustCompile(`^Mapped:\s+(\d+) (.+)$`),
-	"slab":             regexp.MustCompile(`^Slab:\s+(\d+) (.+)$`),
-	"slab_reclaimable": regexp.MustCompile(`^SReclaimable:\s+(\d+) (.+)$`),
-	"slab_unreclaim":   regexp.MustCompile(`^SUnreclaim:\s+(\d+) (.+)$`),
-	"page_tables":      regexp.MustCompile(`^PageTables:\s+(\d+) (.+)$`),
-	"nfs_unstable":     regexp.MustCompile(`^NFS_Unstable:\s+(\d+) (.+)$`),
-	"bounce":           regexp.MustCompile(`^Bounce:\s+(\d+) (.+)$`),
-	"commit_limit":     regexp.MustCompile(`^CommitLimit:\s+(\d+) (.+)$`),
-	"committed_as":     regexp.MustCompile(`^Committed_AS:\s+(\d+) (.+)$`),
-	"vmalloc_total":    regexp.MustCompile(`^VmallocTotal:\s+(\d+) (.+)$`),
-	"vmalloc_used":     regexp.MustCompile(`^VmallocUsed:\s+(\d+) (.+)$`),
-	"vmalloc_chunk":    regexp.MustCompile(`^VmallocChunk:\s+(\d+) (.+)$`),
-	"swap_cached":      regexp.MustCompile(`^SwapCached:\s+(\d+) (.+)$`),
-	"swap_total":       regexp.MustCompile(`^SwapTotal:\s+(\d+) (.+)$`),
-	"swap_free":        regexp.MustCompile(`^SwapFree:\s+(\d+) (.+)$`),
+var memItems = map[string]string{
+	"MemTotal:":     "total",
+	"MemFree:":      "free",
+	"Buffers:":      "buffers",
+	"Cached:":       "cached",
+	"Active:":       "active",
+	"Inactive:":     "inactive",
+	"HighTotal:":    "high_total",
+	"HighFree:":     "high_free",
+	"LowTotal:":     "low_total",
+	"LowFree:":      "low_free",
+	"Dirty:":        "dirty",
+	"Writeback:":    "writeback",
+	"AnonPages:":    "anon_pages",
+	"Mapped:":       "mapped",
+	"Slab:":         "slab",
+	"SReclaimable:": "slab_reclaimable",
+	"SUnreclaim:":   "slab_unreclaim",
+	"PageTables:":   "page_tables",
+	"NFS_Unstable:": "nfs_unstable",
+	"Bounce:":       "bounce",
+	"CommitLimit:":  "commit_limit",
+	"Committed_AS:": "committed_as",
+	"VmallocTotal:": "vmalloc_total",
+	"VmallocUsed:":  "vmalloc_used",
+	"VmallocChunk:": "vmalloc_chunk",
+	"SwapCached:":   "swap_cached",
+	"SwapTotal:":    "swap_total",
+	"SwapFree:":     "swap_free",
 }
 
 // MemoryGenerator collects the host's memory specs.
@@ -59,20 +60,23 @@ func (g *MemoryGenerator) Generate() (interface{}, error) {
 		memoryLogger.Errorf("Failed (skip this spec): %s", err)
 		return nil, err
 	}
+	defer file.Close()
+	return generateMemorySpec(file)
+}
 
-	scanner := bufio.NewScanner(file)
+func generateMemorySpec(out io.Reader) (map[string]string, error) {
+	scanner := bufio.NewScanner(out)
 
-	result := make(map[string]interface{})
+	result := make(map[string]string)
 	for scanner.Scan() {
-		line := scanner.Text()
-
-		for k, v := range memItems {
-			if matches := v.FindStringSubmatch(line); matches != nil {
-				// ex.) MemTotal:        3916792 kB
-				// matches[1] = 3916792, matches[2] = kB
-				result[k] = matches[1] + matches[2]
-				break
-			}
+		fields := strings.Fields(scanner.Text())
+		if len(fields) < 2 {
+			continue
+		}
+		if k, ok := memItems[fields[0]]; ok {
+			// ex) MemTotal:  3916792 kB
+			//   -> "total": "3916782kB"
+			result[k] = strings.Join(fields[1:], "")
 		}
 	}
 	if err := scanner.Err(); err != nil {
