@@ -413,7 +413,7 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 			nextTime = now.Add(nextInterval)
 
 			if checker.Config.Action != nil {
-				env := []string{fmt.Sprintf("MACKEREL_STATUS=%s", report.Status), fmt.Sprintf("MACKEREL_PREV_STATUS=%s", lastStatus)}
+				env := []string{fmt.Sprintf("MACKEREL_STATUS=%s", report.Status), fmt.Sprintf("MACKEREL_PREVIOUS_STATUS=%s", lastStatus)}
 				go func() {
 					checker.Config.Action.RunWithEnv(env)
 				}()
