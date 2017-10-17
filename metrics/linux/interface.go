@@ -3,18 +3,12 @@
 package linux
 
 import (
-	"bufio"
-	"bytes"
-	"fmt"
-	"io/ioutil"
 	"regexp"
-	"strconv"
-	"strings"
 	"time"
 
+	"github.com/mackerelio/go-osstat/network"
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
-	"github.com/mackerelio/mackerel-agent/util"
 )
 
 /*
@@ -59,65 +53,28 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	}
 
 	ret := make(map[string]float64)
-	for name, value := range prevValues {
-		if !postInterfaceMetricsRegexp.MatchString(name) {
-			continue
-		}
-		currValue, ok := currValues[name]
-		if ok {
-			ret[name+".delta"] = (currValue - value) / g.Interval.Seconds()
+	for name, prevValue := range prevValues {
+		if currValue, ok := currValues[name]; ok && currValue >= prevValue {
+			ret[name+".delta"] = float64(currValue-prevValue) / g.Interval.Seconds()
 		}
 	}
 
 	return metrics.Values(ret), nil
 }
 
-func (g *InterfaceGenerator) collectInterfacesValues() (metrics.Values, error) {
-	out, err := ioutil.ReadFile("/proc/net/dev")
+func (g *InterfaceGenerator) collectInterfacesValues() (map[string]uint64, error) {
+	networks, err := network.Get()
 	if err != nil {
-		interfaceLogger.Errorf("Failed (skip these metrics): %s", err)
+		interfaceLogger.Errorf("failed to get network statistics: %s", err)
 		return nil, err
 	}
-	return parseNetdev(out)
-}
-
-func parseNetdev(out []byte) (metrics.Values, error) {
-	lineScanner := bufio.NewScanner(bytes.NewReader(out))
-	results := make(map[string]float64)
-	for lineScanner.Scan() {
-		line := lineScanner.Text()
-		if kv := strings.SplitN(line, ":", 2); len(kv) == 2 {
-			name := util.SanitizeMetricKey(strings.TrimSpace(kv[0]))
-			if name == "lo" {
-				continue
-			}
-
-			cols := strings.Fields(kv[1])
-			if len(cols) < len(interfaceMetrics) {
-				continue
-			}
-
-			interfaceResult := make(map[string]float64)
-			hasNonZeroValue := false
-			for i, metricName := range interfaceMetrics {
-				key := fmt.Sprintf("interface.%s.%s", name, metricName)
-				value, err := strconv.ParseFloat(cols[i], 64)
-				if err != nil {
-					interfaceLogger.Warningf("Failed to parse host interfaces: %s", err)
-					break
-				}
-				if value != 0 {
-					hasNonZeroValue = true
-				}
-				interfaceResult[key] = value
-			}
-			if hasNonZeroValue {
-				for k, v := range interfaceResult {
-					results[k] = v
-				}
-			}
-		}
+	if len(networks) == 0 {
+		return nil, nil
 	}
-
-	return metrics.Values(results), nil
+	results := make(map[string]uint64, len(networks)*2)
+	for _, network := range networks {
+		results["interface."+network.Name+".rxBytes"] = network.RxBytes
+		results["interface."+network.Name+".txBytes"] = network.TxBytes
+	}
+	return results, nil
 }
