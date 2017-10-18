@@ -297,7 +297,7 @@ func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlS
 		req, err := http.NewRequest("GET", baseURL+urlSuffix+key+"?api-version=2017-04-02&format=text", nil)
 		if err != nil {
 			cloudLogger.Debugf("This host may not be running on Azure VM. Error while reading '%s'", key)
-			return nil
+			return metadataMap
 		}
 
 		req.Header.Set("Metadata", "true")
@@ -305,7 +305,7 @@ func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlS
 		resp, err := cl.Do(req)
 		if err != nil {
 			cloudLogger.Debugf("This host may not be running on Azure VM. Error while reading '%s'", key)
-			return nil
+			return metadataMap
 		}
 		defer resp.Body.Close()
 
