@@ -9,13 +9,13 @@ import (
 func TestChecker_Check(t *testing.T) {
 	checkerOK := Checker{
 		Config: &config.CheckPlugin{
-			Command: "go run testdata/exit.go -code 0 -message OK",
+			Command: config.Command{Cmd: "go run testdata/exit.go -code 0 -message OK"},
 		},
 	}
 
 	checkerWarning := Checker{
 		Config: &config.CheckPlugin{
-			Command: "go run testdata/exit.go -code 1 -message something_is_going_wrong",
+			Command: config.Command{Cmd: "go run testdata/exit.go -code 1 -message something_is_going_wrong"},
 		},
 	}
 

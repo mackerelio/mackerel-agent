@@ -18,7 +18,7 @@ func init() {
 }
 
 func TestRunCommand(t *testing.T) {
-	stdout, stderr, exitCode, err := RunCommand("echo 1", "")
+	stdout, stderr, exitCode, err := RunCommand("echo 1", "", nil)
 	if runtime.GOOS == "windows" {
 		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
 		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
@@ -61,7 +61,7 @@ func TestRunCommandWithTimeout(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		command, tmpdir = makeSleep(t)
 	}
-	stdout, stderr, _, err := RunCommand(command, "")
+	stdout, stderr, _, err := RunCommand(command, "", nil)
 	if stdout != "" {
 		t.Errorf("stdout shoud be empty")
 	}
@@ -73,5 +73,30 @@ func TestRunCommandWithTimeout(t *testing.T) {
 	}
 	if tmpdir != "" {
 		os.RemoveAll(tmpdir)
+	}
+}
+
+func TestRunCommandWithEnv(t *testing.T) {
+	command := `echo $TEST_RUN_COMMAND_ENV`
+	if runtime.GOOS == "windows" {
+		command = `echo %TEST_RUN_COMMAND_ENV%`
+	}
+
+	stdout, stderr, exitCode, err := RunCommand(command, "", []string{"TEST_RUN_COMMAND_ENV=mackerel-agent"})
+	if runtime.GOOS == "windows" {
+		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
+		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
+	}
+	if stdout != "mackerel-agent\n" {
+		t.Errorf("stdout shoud be 1")
+	}
+	if stderr != "" {
+		t.Errorf("stderr shoud be empty")
+	}
+	if exitCode != 0 {
+		t.Errorf("exitCode should be zero")
+	}
+	if err != nil {
+		t.Error("err should be nil but:", err)
 	}
 }

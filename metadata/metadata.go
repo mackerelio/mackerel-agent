@@ -25,7 +25,7 @@ type Generator struct {
 
 // Fetch invokes the command and returns the result
 func (g *Generator) Fetch() (interface{}, error) {
-	message, stderr, exitCode, err := g.Config.Run()
+	message, stderr, exitCode, err := g.Config.Command.Run()
 
 	if err != nil {
 		logger.Warningf("Error occurred while executing a metadata plugin %q: %v", g.Name, err)

@@ -38,6 +38,7 @@ command = "heartbeat.sh"
 user = "xyz"
 notification_interval = 60
 max_check_attempts = 3
+action = { command = "cardiac_massage", user = "doctor" }
 
 [plugin.metadata.hostinfo]
 command = "hostinfo.sh"
@@ -206,10 +207,10 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("plugin should have metrics")
 	}
 	pluginConf := config.MetricPlugins["mysql"]
-	if pluginConf.Command != "ruby /path/to/your/plugin/mysql.rb" {
-		t.Errorf("plugin conf command should be 'ruby /path/to/your/plugin/mysql.rb' but %v", pluginConf.Command)
+	if pluginConf.Command.Cmd != "ruby /path/to/your/plugin/mysql.rb" {
+		t.Errorf("plugin conf command should be 'ruby /path/to/your/plugin/mysql.rb' but %v", pluginConf.Command.Cmd)
 	}
-	if pluginConf.User != "mysql" {
+	if pluginConf.Command.User != "mysql" {
 		t.Error("plugin user_name should be 'mysql'")
 	}
 	if *pluginConf.CustomIdentifier != "app1.example.com" {
@@ -241,10 +242,10 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("plugin should have checks")
 	}
 	checks := config.CheckPlugins["heartbeat"]
-	if checks.Command != "heartbeat.sh" {
+	if checks.Command.Cmd != "heartbeat.sh" {
 		t.Error("check command should be 'heartbeat.sh'")
 	}
-	if checks.User != "xyz" {
+	if checks.Command.User != "xyz" {
 		t.Error("check user_name should be 'xyz'")
 	}
 	if *checks.NotificationInterval != 60 {
@@ -253,16 +254,22 @@ func TestLoadConfigFile(t *testing.T) {
 	if *checks.MaxCheckAttempts != 3 {
 		t.Error("max_check_attempts should be 3")
 	}
+	if checks.Action.Cmd != "cardiac_massage" {
+		t.Error("action.command should be 'cardiac_massage'")
+	}
+	if checks.Action.User != "doctor" {
+		t.Error("action.user should be 'doctor'")
+	}
 
 	if config.MetadataPlugins == nil {
 		t.Error("config should have metadata plugin list")
 	}
 	metadataPlugin := config.MetadataPlugins["hostinfo"]
-	if metadataPlugin.Command != "hostinfo.sh" {
-		t.Errorf("command of metadata plugin should be 'hostinfo.sh' but got '%v'", metadataPlugin.Command)
+	if metadataPlugin.Command.Cmd != "hostinfo.sh" {
+		t.Errorf("command of metadata plugin should be 'hostinfo.sh' but got '%v'", metadataPlugin.Command.Cmd)
 	}
-	if metadataPlugin.User != "zzz" {
-		t.Errorf("user of metadata plugin should be 'zzz' but got '%v'", metadataPlugin.User)
+	if metadataPlugin.Command.User != "zzz" {
+		t.Errorf("user of metadata plugin should be 'zzz' but got '%v'", metadataPlugin.Command.User)
 	}
 	if *metadataPlugin.ExecutionInterval != 60 {
 		t.Errorf("execution interval of metadata plugin should be 60 but got '%v'", *metadataPlugin.ExecutionInterval)
@@ -345,9 +352,9 @@ command = "bar"
 	assert(t, config.Verbose == false, "verbose should be kept as it is when not configured in the included file")
 	assert(t, len(config.Roles) == 1, "roles should be overwritten")
 	assert(t, config.Roles[0] == "Service:role", "roles should be overwritten")
-	assert(t, config.MetricPlugins["foo1"].Command == "foo1", "plugin.metrics.foo1 should exist")
-	assert(t, config.MetricPlugins["foo2"].Command == "foo2", "plugin.metrics.foo2 should exist")
-	assert(t, config.MetricPlugins["bar"].Command == "bar", "plugin.metrics.bar should be overwritten")
+	assert(t, config.MetricPlugins["foo1"].Command.Cmd == "foo1", "plugin.metrics.foo1 should exist")
+	assert(t, config.MetricPlugins["foo2"].Command.Cmd == "foo2", "plugin.metrics.foo2 should exist")
+	assert(t, config.MetricPlugins["bar"].Command.Cmd == "bar", "plugin.metrics.bar should be overwritten")
 }
 
 func TestLoadConfigFileIncludeOverwritten(t *testing.T) {
@@ -456,14 +463,14 @@ command = ["perl", "-E", "say 'Hello'"]
 
 	expected := []string{"perl", "-E", "say 'Hello'"}
 	p := config.MetricPlugins["hoge"]
-	output := p.CommandArgs
+	output := p.Command.Args
 
 	if !reflect.DeepEqual(expected, output) {
 		t.Errorf("command args not expected: %+v", output)
 	}
 
-	if p.Command != "" {
-		t.Errorf("p.Command should be empty but: %s", p.Command)
+	if p.Command.Cmd != "" {
+		t.Errorf("p.Command should be empty but: %s", p.Command.Cmd)
 	}
 }
 
