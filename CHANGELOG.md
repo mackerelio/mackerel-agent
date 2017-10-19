@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.47.0 (2017-10-19)
+
+* Trigger action command after check plugin running. #425 (mechairoi)
+* Ensure returned value of retrieveAzureVMMetadata is not null #429 (astj)
+* Use go-osstat library on darwin #422 (itchyny)
+* Subtract cpu.guest from cpu.user on Linux #423 (itchyny)
+* Improve kernel spec generator performance for Linux #427 (itchyny)
+* Improve implementation for memory spec on Linux #426 (itchyny)
+* Do not send too many reports in one API request. #420 (astj)
+
+
 ## 0.46.0 (2017-10-04)
 
 * Use new API BaseURL #417 (astj)
