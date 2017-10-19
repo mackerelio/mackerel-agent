@@ -415,7 +415,14 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 			if checker.Config.Action != nil {
 				env := []string{fmt.Sprintf("MACKEREL_STATUS=%s", report.Status), fmt.Sprintf("MACKEREL_PREVIOUS_STATUS=%s", lastStatus)}
 				go func() {
-					checker.Config.Action.RunWithEnv(env)
+					_, stderr, _, err := checker.Config.Action.RunWithEnv(env)
+
+					if stderr != "" {
+						logger.Warningf("Checker %q action output stderr: %s", checker.Name, stderr)
+					}
+					if err != nil {
+						logger.Errorf("Checker %q action failed: %s", checker.Name, err)
+					}
 				}()
 			}
 
