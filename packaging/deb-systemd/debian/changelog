@@ -1,3 +1,22 @@
+mackerel-agent (0.47.0-1.systemd) stable; urgency=low
+
+  * Trigger action command after check plugin running. (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/425>
+  * Ensure returned value of retrieveAzureVMMetadata is not null (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/429>
+  * Use go-osstat library on darwin (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/422>
+  * Subtract cpu.guest from cpu.user on Linux (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/423>
+  * Improve kernel spec generator performance for Linux (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/427>
+  * Improve implementation for memory spec on Linux (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/426>
+  * Do not send too many reports in one API request. (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/420>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 19 Oct 2017 10:57:13 +0900
+
 mackerel-agent (0.46.0-1.systemd) stable; urgency=low
 
   * Use new API BaseURL (by astj)
