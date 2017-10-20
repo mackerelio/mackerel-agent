@@ -20,14 +20,14 @@ metric = "user", "nice", "system", "idle", "iowait", "irq", "softirq", "steal", 
 graph: stacks `cpu.{metric}.percentage`
 */
 
-// CPUUsageGenerator XXX
+// CPUUsageGenerator generates CPU metric values
 type CPUUsageGenerator struct {
 	Interval time.Duration
 }
 
 var cpuUsageLogger = logging.GetLogger("metrics.cpuUsage")
 
-// Generate XXX
+// Generate CPU metric values
 func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 	before, err := g.collectProcStatValues()
 	if err != nil {

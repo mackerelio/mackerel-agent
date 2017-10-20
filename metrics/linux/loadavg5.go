@@ -11,7 +11,7 @@ import (
 // loadavg5
 //   - loadavg5: load average per 5 minutes
 
-// Loadavg5Generator XXX
+// Loadavg5Generator generates load average values
 type Loadavg5Generator struct {
 }
 

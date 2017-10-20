@@ -21,7 +21,7 @@ interface = "eth0", "eth1" and so on...
 see interface_test.go for sample input/output
 */
 
-// InterfaceGenerator XXX
+// InterfaceGenerator generates interface metric values
 type InterfaceGenerator struct {
 	Interval time.Duration
 }
@@ -38,7 +38,7 @@ var postInterfaceMetricsRegexp = regexp.MustCompile(`^interface\..+\.(?:rxBytes|
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
-// Generate XXX
+// Generate interface metric values
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	prevValues, err := g.collectInterfacesValues()
 	if err != nil {

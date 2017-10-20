@@ -4,8 +4,6 @@ package linux
 
 import (
 	"math"
-)
-import (
 	"testing"
 	"time"
 )
