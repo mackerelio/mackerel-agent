@@ -36,6 +36,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	ret := map[string]float64{
 		"memory.total":       float64(memory.Total),
 		"memory.used":        float64(memory.Used),
+		"memory.available":   float64(memory.Available),
 		"memory.buffers":     float64(memory.Buffers),
 		"memory.cached":      float64(memory.Cached),
 		"memory.free":        float64(memory.Free),
