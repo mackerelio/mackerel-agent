@@ -44,6 +44,9 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 	totalDiff := float64(current.Total - previous.Total)
 	cpuCount := float64(current.CPUCount)
 
+	// Since cpustat[CPUTIME_USER] includes cpustat[CPUTIME_GUEST], we subtract guest from user for the stacked graph of Mackerel.
+	// https://github.com/torvalds/linux/blob/4ec9f7a18/kernel/sched/cputime.c#L151-L158
+	// We should also subtract guest_nice from nice, but guest_nice is not supported in Mackerel yet.
 	ret := map[string]float64{
 		"cpu.user.percentage":    float64((current.User-current.Guest)-(previous.User-previous.Guest)) * cpuCount * 100.0 / totalDiff,
 		"cpu.nice.percentage":    float64(current.Nice-previous.Nice) * cpuCount * 100.0 / totalDiff,
