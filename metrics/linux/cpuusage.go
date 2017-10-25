@@ -48,18 +48,30 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 	// https://github.com/torvalds/linux/blob/4ec9f7a18/kernel/sched/cputime.c#L151-L158
 	// We should also subtract guest_nice from nice, but guest_nice is not supported in Mackerel yet.
 	ret := map[string]float64{
-		"cpu.user.percentage":    float64((current.User-current.Guest)-(previous.User-previous.Guest)) * cpuCount * 100.0 / totalDiff,
-		"cpu.nice.percentage":    float64(current.Nice-previous.Nice) * cpuCount * 100.0 / totalDiff,
-		"cpu.system.percentage":  float64(current.System-previous.System) * cpuCount * 100.0 / totalDiff,
-		"cpu.idle.percentage":    float64(current.Idle-previous.Idle) * cpuCount * 100.0 / totalDiff,
-		"cpu.iowait.percentage":  float64(current.Iowait-previous.Iowait) * cpuCount * 100.0 / totalDiff,
-		"cpu.irq.percentage":     float64(current.Irq-previous.Irq) * cpuCount * 100.0 / totalDiff,
-		"cpu.softirq.percentage": float64(current.Softirq-previous.Softirq) * cpuCount * 100.0 / totalDiff,
-		"cpu.steal.percentage":   float64(current.Steal-previous.Steal) * cpuCount * 100.0 / totalDiff,
-		"cpu.guest.percentage":   float64(current.Guest-previous.Guest) * cpuCount * 100.0 / totalDiff,
-		// guest_nice is not yet supported in Mackerel
-		// "cpu.guest_nice.percentage": float64(current.GuestNice - previous.GuestNice) * cpuCount * 100.0 / totalDiff,
+		"cpu.user.percentage":   float64((current.User-current.Guest)-(previous.User-previous.Guest)) * cpuCount * 100.0 / totalDiff,
+		"cpu.nice.percentage":   float64(current.Nice-previous.Nice) * cpuCount * 100.0 / totalDiff,
+		"cpu.system.percentage": float64(current.System-previous.System) * cpuCount * 100.0 / totalDiff,
+		"cpu.idle.percentage":   float64(current.Idle-previous.Idle) * cpuCount * 100.0 / totalDiff,
 	}
+	if current.StatCount >= 5 {
+		ret["cpu.iowait.percentage"] = float64(current.Iowait-previous.Iowait) * cpuCount * 100.0 / totalDiff
+	}
+	if current.StatCount >= 6 {
+		ret["cpu.irq.percentage"] = float64(current.Irq-previous.Irq) * cpuCount * 100.0 / totalDiff
+	}
+	if current.StatCount >= 7 {
+		ret["cpu.softirq.percentage"] = float64(current.Softirq-previous.Softirq) * cpuCount * 100.0 / totalDiff
+	}
+	if current.StatCount >= 8 {
+		ret["cpu.steal.percentage"] = float64(current.Steal-previous.Steal) * cpuCount * 100.0 / totalDiff
+	}
+	if current.StatCount >= 9 {
+		ret["cpu.guest.percentage"] = float64(current.Guest-previous.Guest) * cpuCount * 100.0 / totalDiff
+	}
+	// guest_nice is not yet supported in Mackerel
+	// if current.StatCount >= 10 {
+	// 	ret["cpu.guest_nice.percentage"]=   float64(current.GuestNice - previous.GuestNice) * cpuCount * 100.0 / totalDiff
+	// }
 	return metrics.Values(ret), nil
 }
 
