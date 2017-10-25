@@ -18,8 +18,6 @@ collect network interface I/O
 `interface.{interface}.{metric}.delta`: The increased amount of network I/O per minute retrieved from /proc/net/dev
 
 interface = "eth0", "eth1" and so on...
-
-see interface_test.go for sample input/output
 */
 
 // InterfaceGenerator generates interface metric values
