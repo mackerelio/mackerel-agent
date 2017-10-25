@@ -3,12 +3,7 @@
 package linux
 
 import (
-	"bufio"
-	"bytes"
-	"io/ioutil"
-	"regexp"
-	"strconv"
-
+	"github.com/mackerelio/go-osstat/memory"
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
@@ -30,64 +25,27 @@ type MemoryGenerator struct {
 
 var memoryLogger = logging.GetLogger("metrics.memory")
 
-// Generate generate metrics values
+// Generate memory values
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
-	out, err := ioutil.ReadFile("/proc/meminfo")
+	memory, err := memory.Get()
 	if err != nil {
-		memoryLogger.Errorf("Failed (skip these metrics): %s", err)
+		memoryLogger.Errorf("failed to get memory statistics: %s", err)
 		return nil, err
 	}
-	return parseMeminfo(out)
-}
 
-var memReg = regexp.MustCompile(`^([A-Za-z]+):\s+([0-9]+)\s+kB`)
-
-var memItems = map[string]string{
-	"MemTotal":     "total",
-	"MemFree":      "free",
-	"MemAvailable": "available",
-	"Buffers":      "buffers",
-	"Cached":       "cached",
-	"Active":       "active",
-	"Inactive":     "inactive",
-	"SwapCached":   "swap_cached",
-	"SwapTotal":    "swap_total",
-	"SwapFree":     "swap_free",
-}
-
-func parseMeminfo(out []byte) (metrics.Values, error) {
-	scanner := bufio.NewScanner(bytes.NewReader(out))
-
-	ret := metrics.Values{}
-	used := float64(0)
-	usedCnt := 0
-	for scanner.Scan() {
-		line := scanner.Text()
-		// ex.) MemTotal:        3916792 kB
-		if matches := memReg.FindStringSubmatch(line); len(matches) == 3 {
-			k, ok := memItems[matches[1]]
-			if !ok {
-				continue
-			}
-			value, _ := strconv.ParseFloat(matches[2], 64)
-			ret["memory."+k] = value * 1024
-			switch k {
-			case "free", "buffers", "cached":
-				used -= value
-				usedCnt++
-			case "total":
-				used += value
-				usedCnt++
-			}
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		memoryLogger.Errorf("Failed (skip these metrics): %s", err)
-		return nil, err
-	}
-	if usedCnt == 4 { // 4 is free, buffers, cached and total
-		ret["memory.used"] = used * 1024
+	ret := map[string]float64{
+		"memory.total":       float64(memory.Total),
+		"memory.used":        float64(memory.Total - memory.Free - memory.Buffers - memory.Cached),
+		"memory.available":   float64(memory.Available),
+		"memory.buffers":     float64(memory.Buffers),
+		"memory.cached":      float64(memory.Cached),
+		"memory.free":        float64(memory.Free),
+		"memory.active":      float64(memory.Active),
+		"memory.inactive":    float64(memory.Inactive),
+		"memory.swap_total":  float64(memory.SwapTotal),
+		"memory.swap_cached": float64(memory.SwapCached),
+		"memory.swap_free":   float64(memory.SwapFree),
 	}
 
-	return ret, nil
+	return metrics.Values(ret), nil
 }

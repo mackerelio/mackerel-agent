@@ -4,8 +4,6 @@ package linux
 
 import (
 	"math"
-)
-import (
 	"testing"
 	"time"
 )
@@ -14,16 +12,18 @@ func TestCPUUsageGenerate(t *testing.T) {
 	g := &CPUUsageGenerator{1 * time.Second}
 	values, _ := g.Generate()
 
+	var metricNames = []string{
+		"user", "nice", "system", "idle", "iowait",
+		"irq", "softirq", "steal", "guest",
+	}
+
 	sumPercentage := float64(0)
-	for _, metricName := range cpuUsageMetricNames {
-		metricName += ".percentage"
+	for _, name := range metricNames {
+		metricName := "cpu." + name + ".percentage"
 		value, ok := values[metricName]
 		if !ok {
-			t.Errorf("CPUUsageGenerator should generate metric value for '%s'", metricName)
-		} else {
-			t.Logf("CPUUsage '%s' collected: %+v", metricName, value)
+			t.Errorf("cpu values shuold have '%s': %v", metricName, values)
 		}
-
 		sumPercentage += value
 	}
 
@@ -35,10 +35,5 @@ func TestCPUUsageGenerate(t *testing.T) {
 		t.Logf("Sum of CPU usage percentage values: %f", sumPercentage)
 	}
 
-	// Checks any errors will not occure
-	// when the number of retrieved values from /proc/spec is less than length of cpuUsageMetricNames
-	cpuUsageMetricNames = append(cpuUsageMetricNames, "unimplemented-new-metric")
-	defer func() { cpuUsageMetricNames = cpuUsageMetricNames[0 : len(cpuUsageMetricNames)-1] }()
-
-	g.Generate()
+	t.Logf("cpu metric metrics: %+v", values)
 }
