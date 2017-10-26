@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.47.1 (2017-10-26)
+
+* Use go-osstat library on linux #428 (itchyny)
+
+
 ## 0.47.0 (2017-10-19)
 
 * Trigger action command after check plugin running. #425 (mechairoi)

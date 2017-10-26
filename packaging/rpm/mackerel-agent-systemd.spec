@@ -55,6 +55,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Oct 26 2017 <mackerel-developers@hatena.ne.jp> - 0.47.1
+- Use go-osstat library on linux (by itchyny)
+
 * Thu Oct 19 2017 <mackerel-developers@hatena.ne.jp> - 0.47.0
 - Trigger action command after check plugin running. (by mechairoi)
 - Ensure returned value of retrieveAzureVMMetadata is not null (by astj)
