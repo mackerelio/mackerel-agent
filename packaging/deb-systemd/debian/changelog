@@ -1,3 +1,10 @@
+mackerel-agent (0.47.1-1.systemd) stable; urgency=low
+
+  * Use go-osstat library on linux (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/428>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 26 Oct 2017 11:10:39 +0900
+
 mackerel-agent (0.47.0-1.systemd) stable; urgency=low
 
   * Trigger action command after check plugin running. (by mechairoi)
