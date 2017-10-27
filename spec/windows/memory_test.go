@@ -27,11 +27,11 @@ func TestMemoryGenerator(t *testing.T) {
 	}
 
 	if _, ok := memory["total"]; !ok {
-		t.Error("memory should has total")
+		t.Error("memory should have total")
 	}
 
 	if _, ok := memory["free"]; !ok {
-		t.Error("memory should has free")
+		t.Error("memory should have free")
 	}
 
 	if _, ok := memory["buffers"]; !ok {

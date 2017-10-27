@@ -25,7 +25,7 @@ func TestMemoryGenerator(t *testing.T) {
 
 	for _, name := range metricNames {
 		if _, ok := values["memory."+name]; !ok {
-			t.Errorf("memory should has %s", name)
+			t.Errorf("memory should have %s", name)
 		}
 	}
 
