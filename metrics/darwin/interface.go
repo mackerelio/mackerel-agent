@@ -29,14 +29,14 @@ var interfaceLogger = logging.GetLogger("metrics.interface")
 
 // Generate XXX
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
-	prevValues, err := g.collectIntarfacesValues()
+	prevValues, err := g.collectInterfacesValues()
 	if err != nil {
 		return nil, err
 	}
 
 	time.Sleep(g.Interval)
 
-	currValues, err := g.collectIntarfacesValues()
+	currValues, err := g.collectInterfacesValues()
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	return metrics.Values(ret), nil
 }
 
-func (g *InterfaceGenerator) collectIntarfacesValues() (map[string]uint64, error) {
+func (g *InterfaceGenerator) collectInterfacesValues() (map[string]uint64, error) {
 	networks, err := network.Get()
 	if err != nil {
 		interfaceLogger.Errorf("failed to get network statistics: %s", err)
