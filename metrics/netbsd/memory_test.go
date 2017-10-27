@@ -24,7 +24,7 @@ func TestMemoryGenerator(t *testing.T) {
 		"swap_free",
 	} {
 		if _, ok := values["memory."+name]; !ok {
-			t.Errorf("memory should has %s", name)
+			t.Errorf("memory should have %s", name)
 		}
 	}
 }
