@@ -24,7 +24,7 @@ func interfaceGenerator() spec.InterfaceGenerator {
 
 func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
-		&metricsLinux.Loadavg5Generator{},
+		&metrics.Loadavg5Generator{},
 		&metricsLinux.CPUUsageGenerator{Interval: metricsInterval},
 		&metricsLinux.MemoryGenerator{},
 		&metricsLinux.InterfaceGenerator{Interval: metricsInterval},

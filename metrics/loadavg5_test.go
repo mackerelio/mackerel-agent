@@ -1,8 +1,10 @@
-// +build linux
+// +build !windows
 
-package linux
+package metrics
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestLoadAvg5Generate(t *testing.T) {
 	g := &Loadavg5Generator{}
