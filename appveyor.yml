@@ -15,8 +15,8 @@ install:
   - echo %Path%
   - choco install -y ruby
   - rd c:\go /s /q
-  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.9.windows-386.zip
-  - 7z x go1.9.windows-386.zip -oC:\ >nul
+  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.9.2.windows-386.zip
+  - 7z x go1.9.2.windows-386.zip -oC:\ >nul
   - go version
   - go env
   - set CERT= & set CERTPASS= & set
