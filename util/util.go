@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/Songmu/timeout"
@@ -56,7 +57,7 @@ func RunCommandArgs(cmdArgs []string, user string, env []string) (stdout, stderr
 		err = fmt.Errorf("command timed out")
 	}
 	if err != nil {
-		utilLogger.Errorf("RunCommand error command: %T, error: %s", cmdArgs, err.Error())
+		utilLogger.Errorf("RunCommand error command: %s, error: %s", strings.Join(cmdArgs, " "), err.Error())
 	}
 	return stdout, stderr, exitStatus.GetChildExitCode(), err
 }
