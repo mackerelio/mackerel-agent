@@ -8,6 +8,7 @@ import (
 	"github.com/mackerelio/go-osstat/network"
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 /*
@@ -29,14 +30,14 @@ var interfaceLogger = logging.GetLogger("metrics.interface")
 
 // Generate XXX
 func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
-	prevValues, err := g.collectIntarfacesValues()
+	prevValues, err := g.collectInterfacesValues()
 	if err != nil {
 		return nil, err
 	}
 
 	time.Sleep(g.Interval)
 
-	currValues, err := g.collectIntarfacesValues()
+	currValues, err := g.collectInterfacesValues()
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +53,7 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 	return metrics.Values(ret), nil
 }
 
-func (g *InterfaceGenerator) collectIntarfacesValues() (map[string]uint64, error) {
+func (g *InterfaceGenerator) collectInterfacesValues() (map[string]uint64, error) {
 	networks, err := network.Get()
 	if err != nil {
 		interfaceLogger.Errorf("failed to get network statistics: %s", err)
@@ -63,8 +64,9 @@ func (g *InterfaceGenerator) collectIntarfacesValues() (map[string]uint64, error
 	}
 	results := make(map[string]uint64, len(networks)*2)
 	for _, network := range networks {
-		results["interface."+network.Name+".rxBytes"] = network.RxBytes
-		results["interface."+network.Name+".txBytes"] = network.TxBytes
+		name := util.SanitizeMetricKey(network.Name)
+		results["interface."+name+".rxBytes"] = network.RxBytes
+		results["interface."+name+".txBytes"] = network.TxBytes
 	}
 	return results, nil
 }

@@ -3,7 +3,6 @@
 package linux
 
 import (
-	"regexp"
 	"time"
 
 	"github.com/mackerelio/go-osstat/network"
@@ -24,16 +23,6 @@ interface = "eth0", "eth1" and so on...
 type InterfaceGenerator struct {
 	Interval time.Duration
 }
-
-var interfaceMetrics = []string{
-	"rxBytes", "rxPackets", "rxErrors", "rxDrops",
-	"rxFifo", "rxFrame", "rxCompressed", "rxMulticast",
-	"txBytes", "txPackets", "txErrors", "txDrops",
-	"txFifo", "txColls", "txCarrier", "txCompressed",
-}
-
-// metrics for posting to Mackerel
-var postInterfaceMetricsRegexp = regexp.MustCompile(`^interface\..+\.(?:rxBytes|txBytes)$`)
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
 
