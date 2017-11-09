@@ -1,3 +1,14 @@
+mackerel-agent (0.47.2-1.systemd) stable; urgency=low
+
+  * Use go 1.9.2 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/437>
+  * Commonize loadavg5 generators for Linux, Darwin and BSD systems (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/435>
+  * Change log level in device generator if /sys/block does not exist (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/424>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 09 Nov 2017 11:35:16 +0900
+
 mackerel-agent (0.47.1-1.systemd) stable; urgency=low
 
   * Use go-osstat library on linux (by itchyny)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.47.2 (2017-11-09)
+
+* Use go 1.9.2 #437 (astj)
+* Commonize loadavg5 generators for Linux, Darwin and BSD systems #435 (itchyny)
+* Change log level in device generator if /sys/block does not exist #424 (itchyny)
+
+
 ## 0.47.1 (2017-10-26)
 
 * Use go-osstat library on linux #428 (itchyny)
