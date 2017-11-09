@@ -27,6 +27,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metricsNetbsd.CPUUsageGenerator{},
 		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp, UseMountpoint: conf.Filesystems.UseMountpoint},
 		&metricsNetbsd.MemoryGenerator{},
+		&metrics.InterfaceGenerator{Interval: metricsInterval},
 	}
 
 	return generators
