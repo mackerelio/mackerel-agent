@@ -55,6 +55,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Nov 09 2017 <mackerel-developers@hatena.ne.jp> - 0.47.2
+- Use go 1.9.2 (by astj)
+- Commonize loadavg5 generators for Linux, Darwin and BSD systems (by itchyny)
+- Change log level in device generator if /sys/block does not exist (by itchyny)
+
 * Thu Oct 26 2017 <mackerel-developers@hatena.ne.jp> - 0.47.1
 - Use go-osstat library on linux (by itchyny)
 
