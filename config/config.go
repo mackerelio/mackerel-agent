@@ -12,6 +12,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/util"
+	"github.com/pkg/errors"
 )
 
 var configLogger = logging.GetLogger("config")
@@ -387,7 +388,7 @@ func (conf *Config) setEachPlugins() error {
 		for name, pconf := range pconfs {
 			conf.MetricPlugins[name], err = pconf.buildMetricPlugin()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "plugin.metrics."+name)
 			}
 		}
 	}
@@ -396,7 +397,7 @@ func (conf *Config) setEachPlugins() error {
 		for name, pconf := range pconfs {
 			conf.CheckPlugins[name], err = pconf.buildCheckPlugin(name)
 			if err != nil {
-				return err
+				return errors.Wrap(err, "plugin.checks."+name)
 			}
 		}
 	}
@@ -405,7 +406,7 @@ func (conf *Config) setEachPlugins() error {
 		for name, pconf := range pconfs {
 			conf.MetadataPlugins[name], err = pconf.buildMetadataPlugin()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "plugin.metadata."+name)
 			}
 		}
 	}
