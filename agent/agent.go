@@ -58,8 +58,14 @@ func (agent *Agent) Watch(quit chan struct{}) chan *MetricsResult {
 				// Because ticks may not be accurate,
 				// fire an event if t - last is more than 1 minute
 				if t.Second()%int(interval.Seconds()) == 0 || t.After(last.Add(interval)) {
-					last = t
-					ticker <- t
+					// Non-blocking send of time.
+					// If `collectMetrics` runs with max concurrency, we drop ticks.
+					// Because the time is used as agent.MetricsResult.Created.
+					select {
+					case ticker <- t:
+						last = t
+					default:
+					}
 				}
 			}
 		}
