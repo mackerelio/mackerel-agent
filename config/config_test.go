@@ -175,6 +175,84 @@ func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
 	}
 }
 
+var sampleConfigWithInvalidMetricsCommand = `
+apikey = "abcde"
+
+[plugin.metrics.mysql]
+command = 100
+user = "mysql"
+`
+
+func TestLoadConfigWithInvalidMetricsCommand(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithInvalidMetricsCommand)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: %v", err)
+	}
+	if !strings.Contains(err.Error(), "should be string or string slice, but int64") {
+		t.Errorf("should raise error containing type information: %v", err)
+	}
+	if !strings.Contains(err.Error(), "plugin.metrics.mysql") {
+		t.Errorf("should raise error containing metrics key: %v", err)
+	}
+}
+
+var sampleConfigWithInvalidCheckCommand = `
+apikey = "abcde"
+
+[plugin.checks.dice]
+`
+
+func TestLoadConfigWithInvalidCheckCommand(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithInvalidCheckCommand)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: %v", err)
+	}
+	if !strings.Contains(err.Error(), "should be string or string slice, but <nil>") {
+		t.Errorf("should raise error containing type information: %v", err)
+	}
+	if !strings.Contains(err.Error(), "plugin.checks.dice") {
+		t.Errorf("should raise error containing metrics key: %v", err)
+	}
+}
+
+var sampleConfigWithInvalidMetadataCommand = `
+apikey = "abcde"
+
+[plugin.metadata.sample]
+command = [ 10, 20, 30 ]
+`
+
+func TestLoadConfigWithInvalidMetadataCommand(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithInvalidMetadataCommand)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: %v", err)
+	}
+	if !strings.Contains(err.Error(), "should be string or string slice, but []interface {}") {
+		t.Errorf("should raise error containing type information: %v", err)
+	}
+	if !strings.Contains(err.Error(), "plugin.metadata.sample") {
+		t.Errorf("should raise error containing metrics key: %v", err)
+	}
+}
+
 func TestLoadConfigFile(t *testing.T) {
 	tmpFile, err := newTempFileWithContent(sampleConfig)
 	if err != nil {
