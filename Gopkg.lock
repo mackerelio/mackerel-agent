@@ -40,8 +40,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/mackerelio/go-osstat"
-  packages = ["loadavg","memory","network"]
-  revision = "b3701073cd6ad9fb1001b2d4c167a26cf236bdf8"
+  packages = ["cpu","loadavg","memory","network"]
+  revision = "10e5e82d3413f609324e53a34da0d4231f705c88"
 
 [[projects]]
   branch = "master"
@@ -68,32 +68,38 @@
   revision = "2b028b94b900761aeb60610d3f6cf1564f4b2736"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
+  version = "v0.8.0"
+
+[[projects]]
   name = "github.com/shirou/gopsutil"
   packages = ["host","internal/common","process"]
-  revision = "6e221c482653ef05c9f6a7bf71ddceea0e40bac5"
-  version = "v2.17.09"
+  revision = "48fc5612898a1213aa5d6a0fb2d4f7b968e898fb"
+  version = "v2.17.10"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "ed5229da99e3a6df35c756cd64b6982d19505d86"
+  revision = "9f005a07e0d31d45e6656d241bb5c0f2efd4bc94"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows","windows/registry","windows/svc","windows/svc/eventlog","windows/svc/mgr"]
-  revision = "8dbc5d05d6edcc104950cc299a1ce6641235bc86"
+  revision = "328643532ee3c60c099171d4ce2cad0ca0354ca9"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
   packages = ["encoding","encoding/charmap","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","encoding/unicode","internal/gen","internal/utf8internal","runes","transform","unicode/cldr"]
-  revision = "c01e4764d870b77f8abe5096ee19ad20d80e8075"
+  revision = "88f656faf3f37f690df1a32515b479415e1a6769"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8e050f2c692a441fb866bedb8f157422b53f539c049ba1a054f9292c900e886e"
+  inputs-digest = "140cd2fcca7f83895d9216d2531ffc995a17ed534ee3d16967deb8876c8eb381"
   solver-name = "gps-cdcl"
   solver-version = 1
