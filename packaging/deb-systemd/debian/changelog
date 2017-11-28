@@ -1,3 +1,18 @@
+mackerel-agent (0.47.3-1.systemd) stable; urgency=low
+
+  * Fix interface metrics of large counter values on Linux (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/445>
+  * Refine license notice (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/444>
+  * Improve plugin command parsing error message (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/443>
+  * Log stderr and err of check action (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/432>
+  * Commonize interface generators for Linux, Darwin and add support for BSD systems (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/441>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 28 Nov 2017 12:56:51 +0900
+
 mackerel-agent (0.47.2-1.systemd) stable; urgency=low
 
   * Use go 1.9.2 (by astj)
