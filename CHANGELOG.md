@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.47.3 (2017-11-28)
+
+* Fix interface metrics of large counter values on Linux #445 (itchyny)
+* Refine license notice #444 (itchyny)
+* Improve plugin command parsing error message #443 (itchyny)
+* Log stderr and err of check action #432 (mechairoi)
+* Commonize interface generators for Linux, Darwin and add support for BSD systems #441 (itchyny)
+
+
 ## 0.47.2 (2017-11-09)
 
 * Use go 1.9.2 #437 (astj)

@@ -55,6 +55,13 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Nov 28 2017 <mackerel-developers@hatena.ne.jp> - 0.47.3
+- Fix interface metrics of large counter values on Linux (by itchyny)
+- Refine license notice (by itchyny)
+- Improve plugin command parsing error message (by itchyny)
+- Log stderr and err of check action (by mechairoi)
+- Commonize interface generators for Linux, Darwin and add support for BSD systems (by itchyny)
+
 * Thu Nov 09 2017 <mackerel-developers@hatena.ne.jp> - 0.47.2
 - Use go 1.9.2 (by astj)
 - Commonize loadavg5 generators for Linux, Darwin and BSD systems (by itchyny)
