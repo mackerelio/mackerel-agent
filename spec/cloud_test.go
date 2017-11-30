@@ -252,3 +252,70 @@ func TestSuggestCloudGenerator(t *testing.T) {
 		}
 	}()
 }
+
+func TestSuggestCloudGenerator_CloudPlatformSpecified(t *testing.T) {
+	// All Cloud meta URLs are unreachable
+	unreachableURL, _ := url.Parse("http://unreachable.localhost")
+	ec2BaseURL = unreachableURL
+	gceMetaURL = unreachableURL
+	azureVMBaseURL = unreachableURL
+
+	func() {
+		conf := config.Config{
+			CloudPlatform: config.CloudPlatformNone,
+		}
+
+		cGen := SuggestCloudGenerator(&conf)
+		if cGen != nil {
+			t.Errorf("cGen should be nil.")
+		}
+	}()
+
+	func() {
+		conf := config.Config{
+			CloudPlatform: config.CloudPlatformEC2,
+		}
+
+		cGen := SuggestCloudGenerator(&conf)
+		if cGen == nil {
+			t.Errorf("cGen should not be nil.")
+		}
+
+		_, ok := cGen.CloudMetaGenerator.(*EC2Generator)
+		if !ok {
+			t.Errorf("cGen should be *EC2Generator")
+		}
+	}()
+
+	func() {
+		conf := config.Config{
+			CloudPlatform: config.CloudPlatformGCE,
+		}
+
+		cGen := SuggestCloudGenerator(&conf)
+		if cGen == nil {
+			t.Errorf("cGen should not be nil.")
+		}
+
+		_, ok := cGen.CloudMetaGenerator.(*GCEGenerator)
+		if !ok {
+			t.Errorf("cGen should be *GCEGenerator")
+		}
+	}()
+
+	func() {
+		conf := config.Config{
+			CloudPlatform: config.CloudPlatformAzureVM,
+		}
+
+		cGen := SuggestCloudGenerator(&conf)
+		if cGen == nil {
+			t.Errorf("cGen should not be nil.")
+		}
+
+		_, ok := cGen.CloudMetaGenerator.(*AzureVMGenerator)
+		if !ok {
+			t.Errorf("cGen should be *AzureVMGenerator")
+		}
+	}()
+}
