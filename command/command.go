@@ -342,7 +342,7 @@ func loop(app *App, termCh chan struct{}) error {
 
 func updateHostSpecsLoop(app *App, quit chan struct{}) {
 	for {
-		app.UpdateHostSpecs(app.Config)
+		app.UpdateHostSpecs()
 		select {
 		case <-quit:
 			return
@@ -555,10 +555,10 @@ func fillUpSpecMeta(meta map[string]interface{}, ver, rev string) map[string]int
 }
 
 // UpdateHostSpecs updates the host information that is already registered on Mackerel.
-func (app *App) UpdateHostSpecs(conf *config.Config) {
+func (app *App) UpdateHostSpecs() {
 	logger.Debugf("Updating host specs...")
 
-	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs(conf)
+	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs(app.Config)
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
 		return
