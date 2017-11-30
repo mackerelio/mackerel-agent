@@ -46,22 +46,72 @@ var defaultConnectionConfig = ConnectionConfig{
 	PostMetricsBufferSize:          6 * 60, // Keep metric values of 6 hours span in the queue
 }
 
+type CloudPlatform int
+
+const (
+	CloudPlatformAuto CloudPlatform = iota
+	CloudPlatformNone
+	CloudPlatformEC2
+	CloudPlatformGCE
+	CloudPlatformAzureVM
+)
+
+func (c CloudPlatform) String() string {
+	switch c {
+	case CloudPlatformAuto:
+		return "auto"
+	case CloudPlatformNone:
+		return "none"
+	case CloudPlatformEC2:
+		return "ec2"
+	case CloudPlatformGCE:
+		return "gce"
+	case CloudPlatformAzureVM:
+		return "azurevm"
+	}
+	return ""
+}
+
+func (c *CloudPlatform) UnmarshalText(text []byte) error {
+	switch string(text) {
+	case "auto", "":
+		*c = CloudPlatformAuto
+		return nil
+	case "none":
+		*c = CloudPlatformNone
+		return nil
+	case "ec2":
+		*c = CloudPlatformEC2
+		return nil
+	case "gce":
+		*c = CloudPlatformGCE
+		return nil
+	case "azurevm":
+		*c = CloudPlatformAzureVM
+		return nil
+	default:
+		*c = CloudPlatformNone // Avoid panic
+		return fmt.Errorf("failed to parse")
+	}
+}
+
 // Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase     string
-	Apikey      string
-	Root        string
-	Pidfile     string
-	Conffile    string
-	Roles       []string
-	Verbose     bool
-	Silent      bool
-	Diagnostic  bool `toml:"diagnostic"`
-	Connection  ConnectionConfig
-	DisplayName string      `toml:"display_name"`
-	HostStatus  HostStatus  `toml:"host_status"`
-	Filesystems Filesystems `toml:"filesystems"`
-	HTTPProxy   string      `toml:"http_proxy"`
+	Apibase       string
+	Apikey        string
+	Root          string
+	Pidfile       string
+	Conffile      string
+	Roles         []string
+	Verbose       bool
+	Silent        bool
+	Diagnostic    bool `toml:"diagnostic"`
+	Connection    ConnectionConfig
+	DisplayName   string        `toml:"display_name"`
+	HostStatus    HostStatus    `toml:"host_status"`
+	Filesystems   Filesystems   `toml:"filesystems"`
+	HTTPProxy     string        `toml:"http_proxy"`
+	CloudPlatform CloudPlatform `toml:"cloud_platform"`
 
 	// This Plugin field is used to decode the toml file. After reading the
 	// configuration from file, this field is set to nil.
