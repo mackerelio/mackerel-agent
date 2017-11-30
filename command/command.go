@@ -49,7 +49,7 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 		return err
 	}
 
-	hostname, meta, interfaces, customIdentifier, lastErr := collectHostSpecs()
+	hostname, meta, interfaces, customIdentifier, lastErr := collectHostSpecs(conf)
 	if lastErr != nil {
 		return nil, fmt.Errorf("error while collecting host specs: %s", lastErr.Error())
 	}
@@ -519,14 +519,14 @@ func reportCheckMonitors(app *App, checkReportCh chan *checks.Report, reports []
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta", "interfaces" and "customIdentifier" fields in API v0)
-func collectHostSpecs() (string, map[string]interface{}, []spec.NetInterface, string, error) {
+func collectHostSpecs(conf *config.Config) (string, map[string]interface{}, []spec.NetInterface, string, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
 		return "", nil, nil, "", fmt.Errorf("failed to obtain hostname: %s", err.Error())
 	}
 
 	specGens := specGenerators()
-	cGen := spec.SuggestCloudGenerator()
+	cGen := spec.SuggestCloudGenerator(conf)
 	if cGen != nil {
 		specGens = append(specGens, cGen)
 	}

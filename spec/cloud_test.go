@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"reflect"
 	"testing"
+
+	"github.com/mackerelio/mackerel-agent/config"
 )
 
 func TestCloudKey(t *testing.T) {
@@ -179,7 +181,10 @@ func TestSuggestCloudGenerator(t *testing.T) {
 	unreachableURL, _ := url.Parse("http://unreachable.localhost")
 	ec2BaseURL = unreachableURL
 	gceMetaURL = unreachableURL
-	cGen := SuggestCloudGenerator()
+
+	conf := config.Config{}
+
+	cGen := SuggestCloudGenerator(&conf)
 	if cGen != nil {
 		t.Errorf("cGen should be nil but, %s", cGen)
 	}
@@ -190,7 +195,7 @@ func TestSuggestCloudGenerator(t *testing.T) {
 		u, _ := url.Parse(ts.URL)
 		ec2BaseURL = u
 
-		cGen = SuggestCloudGenerator()
+		cGen = SuggestCloudGenerator(&conf)
 		if cGen != nil {
 			t.Errorf("cGen should be nil but, %s", cGen)
 		}
@@ -205,7 +210,7 @@ func TestSuggestCloudGenerator(t *testing.T) {
 		u, _ := url.Parse(ts.URL)
 		gceMetaURL = u
 
-		cGen = SuggestCloudGenerator()
+		cGen = SuggestCloudGenerator(&conf)
 		if cGen == nil {
 			t.Errorf("cGen should not be nil.")
 		}
