@@ -189,7 +189,8 @@ func TestPrepareWithUpdate(t *testing.T) {
 }
 
 func TestCollectHostSpecs(t *testing.T) {
-	hostname, meta, _ /*interfaces*/, _ /*customIdentifier*/, err := collectHostSpecs()
+	conf := config.Config{}
+	hostname, meta, _ /*interfaces*/, _ /*customIdentifier*/, err := collectHostSpecs(&conf)
 
 	if err != nil {
 		t.Errorf("collectHostSpecs should not fail: %s", err)

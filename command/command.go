@@ -342,7 +342,7 @@ func loop(app *App, termCh chan struct{}) error {
 
 func updateHostSpecsLoop(app *App, quit chan struct{}) {
 	for {
-		app.UpdateHostSpecs()
+		app.UpdateHostSpecs(app.Config)
 		select {
 		case <-quit:
 			return
@@ -555,10 +555,10 @@ func fillUpSpecMeta(meta map[string]interface{}, ver, rev string) map[string]int
 }
 
 // UpdateHostSpecs updates the host information that is already registered on Mackerel.
-func (app *App) UpdateHostSpecs() {
+func (app *App) UpdateHostSpecs(conf *config.Config) {
 	logger.Debugf("Updating host specs...")
 
-	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs()
+	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs(conf)
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
 		return
@@ -642,7 +642,7 @@ func RunOnce(conf *config.Config, ameta *AgentMeta) error {
 }
 
 func runOncePayload(conf *config.Config, ameta *AgentMeta) ([]mackerel.CreateGraphDefsPayload, *mackerel.HostSpec, *agent.MetricsResult, error) {
-	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs()
+	hostname, meta, interfaces, customIdentifier, err := collectHostSpecs(conf)
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)
 		return nil, nil, nil, err
