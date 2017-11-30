@@ -46,8 +46,10 @@ var defaultConnectionConfig = ConnectionConfig{
 	PostMetricsBufferSize:          6 * 60, // Keep metric values of 6 hours span in the queue
 }
 
+// CloudPlatform is an enum to represent which cloud platform the host is running on.
 type CloudPlatform int
 
+// CloudPlatform enum values
 const (
 	CloudPlatformAuto CloudPlatform = iota
 	CloudPlatformNone
@@ -72,6 +74,7 @@ func (c CloudPlatform) String() string {
 	return ""
 }
 
+// UnmarshalText is used by toml unmarshaller
 func (c *CloudPlatform) UnmarshalText(text []byte) error {
 	switch string(text) {
 	case "auto", "":
