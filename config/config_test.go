@@ -253,6 +253,61 @@ func TestLoadConfigWithInvalidMetadataCommand(t *testing.T) {
 	}
 }
 
+var sampleConfigWithCloudPlatformTemplate = `
+apikey = "abcde"
+cloud_platform = "%s"
+`
+
+var LoadConfigWithCloudPlatformTests = []struct {
+	value    string
+	expected CloudPlatform
+}{
+	{"", CloudPlatformAuto},
+	{"auto", CloudPlatformAuto},
+	{"none", CloudPlatformNone},
+	{"ec2", CloudPlatformEC2},
+	{"gce", CloudPlatformGCE},
+	{"azurevm", CloudPlatformAzureVM},
+}
+
+func TestLoadConfigWithCloudPlatform(t *testing.T) {
+	for _, test := range LoadConfigWithCloudPlatformTests {
+		content := fmt.Sprintf(sampleConfigWithCloudPlatformTemplate, test.value)
+		tmpFile, err := newTempFileWithContent(content)
+		if err != nil {
+			t.Errorf("should not raise error: %v", err)
+		}
+		defer os.Remove(tmpFile.Name())
+
+		config, err := LoadConfig(tmpFile.Name())
+		if err != nil {
+			t.Errorf("should not raise error: %v", err)
+		}
+
+		if config.CloudPlatform != test.expected {
+			t.Errorf("CloudPlatform should be set to %s, but %s", test.expected, config.CloudPlatform)
+		}
+	}
+}
+
+var sampleConfigWithInvalidCloudPlatform = `
+apikey = "abcde"
+cloud_platform = "unknown"
+`
+
+func TestLoadConfigWithInvalidCloudPlatform(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithInvalidCloudPlatform)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: %v", err)
+	}
+}
+
 func TestLoadConfigFile(t *testing.T) {
 	tmpFile, err := newTempFileWithContent(sampleConfig)
 	if err != nil {

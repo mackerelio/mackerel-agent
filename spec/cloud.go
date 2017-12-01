@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-agent/config"
 )
 
 // This Generator collects metadata about cloud instances.
@@ -47,7 +48,19 @@ func init() {
 var timeout = 100 * time.Millisecond
 
 // SuggestCloudGenerator returns suitable CloudGenerator
-func SuggestCloudGenerator() *CloudGenerator {
+func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
+	// if CloudPlatform is specified, return corresponding one
+	switch conf.CloudPlatform {
+	case config.CloudPlatformNone:
+		return nil
+	case config.CloudPlatformEC2:
+		return &CloudGenerator{&EC2Generator{ec2BaseURL}}
+	case config.CloudPlatformGCE:
+		return &CloudGenerator{&GCEGenerator{gceMetaURL}}
+	case config.CloudPlatformAzureVM:
+		return &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+	}
+
 	if isEC2() {
 		return &CloudGenerator{&EC2Generator{ec2BaseURL}}
 	}
