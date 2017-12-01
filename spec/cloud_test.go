@@ -260,7 +260,7 @@ func TestSuggestCloudGenerator_CloudPlatformSpecified(t *testing.T) {
 	gceMetaURL = unreachableURL
 	azureVMBaseURL = unreachableURL
 
-	func() {
+	{
 		conf := config.Config{
 			CloudPlatform: config.CloudPlatformNone,
 		}
@@ -269,9 +269,9 @@ func TestSuggestCloudGenerator_CloudPlatformSpecified(t *testing.T) {
 		if cGen != nil {
 			t.Errorf("cGen should be nil.")
 		}
-	}()
+	}
 
-	func() {
+	{
 		conf := config.Config{
 			CloudPlatform: config.CloudPlatformEC2,
 		}
@@ -285,9 +285,9 @@ func TestSuggestCloudGenerator_CloudPlatformSpecified(t *testing.T) {
 		if !ok {
 			t.Errorf("cGen should be *EC2Generator")
 		}
-	}()
+	}
 
-	func() {
+	{
 		conf := config.Config{
 			CloudPlatform: config.CloudPlatformGCE,
 		}
@@ -301,9 +301,9 @@ func TestSuggestCloudGenerator_CloudPlatformSpecified(t *testing.T) {
 		if !ok {
 			t.Errorf("cGen should be *GCEGenerator")
 		}
-	}()
+	}
 
-	func() {
+	{
 		conf := config.Config{
 			CloudPlatform: config.CloudPlatformAzureVM,
 		}
@@ -317,5 +317,5 @@ func TestSuggestCloudGenerator_CloudPlatformSpecified(t *testing.T) {
 		if !ok {
 			t.Errorf("cGen should be *AzureVMGenerator")
 		}
-	}()
+	}
 }
