@@ -33,6 +33,10 @@ command = "ruby /path/to/your/plugin/mysql.rb"
 include_pattern = '^mysql\.innodb\..+'
 exclude_pattern = '^mysql\.innodb\.ignore'
 
+[plugin.metrics.mysql3]
+command = "ruby /path/to/your/plugin/mysql.rb"
+env = { "MYSQL_USERNAME" = "USERNAME", "MYSQL_PASSWORD" = "PASSWORD" }
+
 [plugin.checks.heartbeat]
 command = "heartbeat.sh"
 user = "xyz"
@@ -40,10 +44,19 @@ notification_interval = 60
 max_check_attempts = 3
 action = { command = "cardiac_massage", user = "doctor" }
 
+[plugin.checks.heartbeat2]
+command = "heartbeat.sh"
+env = { "ES_HOSTS" = "10.45.3.2:9220,10.45.3.1:9230" }
+action = { command = "cardiac_massage", user = "doctor", env = { "NAME_1" = "VALUE_1", "NAME_2" = "VALUE_2", "NAME_3" = "VALUE_3" } }
+
 [plugin.metadata.hostinfo]
 command = "hostinfo.sh"
 user = "zzz"
 execution_interval = 60
+
+[plugin.metadata.hostinfo2]
+command = "hostinfo.sh"
+env = { "NAME_1" = "VALUE_1" }
 `
 
 func TestLoadConfig(t *testing.T) {
@@ -371,6 +384,20 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Errorf("unexpected exclude_pattern: %v", pluginConf2.ExcludePattern)
 	}
 
+	pluginConf3 := config.MetricPlugins["mysql3"]
+	if pluginConf3.Command.Env == nil {
+		t.Error("config should have env")
+	}
+	if len(pluginConf3.Command.Env) != 2 {
+		t.Errorf("env should have 2 keys: %v", pluginConf3.Command.Env)
+	}
+	if !containsString(pluginConf3.Command.Env, "MYSQL_USERNAME=USERNAME") {
+		t.Errorf("Command.Env should contain 'MYSQL_USERNAME=USERNAME'")
+	}
+	if !containsString(pluginConf3.Command.Env, "MYSQL_PASSWORD=PASSWORD") {
+		t.Errorf("Command.Env should contain 'MYSQL_PASSWORD=PASSWORD'")
+	}
+
 	if config.CheckPlugins == nil {
 		t.Error("plugin should have checks")
 	}
@@ -394,6 +421,33 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("action.user should be 'doctor'")
 	}
 
+	checks2 := config.CheckPlugins["heartbeat2"]
+	if checks2.Command.Env == nil {
+		t.Error("config should have env of check plugin")
+	}
+	if len(checks2.Command.Env) != 1 {
+		t.Errorf("env of check plugin should have a key: %v", checks2.Command.Env)
+	}
+	if !containsString(checks2.Command.Env, "ES_HOSTS=10.45.3.2:9220,10.45.3.1:9230") {
+		t.Errorf("Command.Env should contain 'ES_HOSTS=10.45.3.2:9220,10.45.3.1:9230'")
+	}
+	if checks2.Action.Env == nil {
+		t.Error("config should have action.env of check plugin")
+	}
+	if len(checks2.Action.Env) != 3 {
+		t.Errorf("action.env of check plugin should have 3 keys: %v", checks2.Action.Env)
+	}
+	if !containsString(checks2.Action.Env, "NAME_1=VALUE_1") {
+		t.Errorf("Command.Env should contain 'NAME_1=VALUE_1'")
+	}
+	if !containsString(checks2.Action.Env, "NAME_2=VALUE_2") {
+		t.Errorf("Command.Env should contain 'NAME_2=VALUE_2'")
+	}
+
+	if !containsString(checks2.Action.Env, "NAME_3=VALUE_3") {
+		t.Errorf("Command.Env should contain 'NAME_3=VALUE_3'")
+	}
+
 	if config.MetadataPlugins == nil {
 		t.Error("config should have metadata plugin list")
 	}
@@ -406,6 +460,17 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if *metadataPlugin.ExecutionInterval != 60 {
 		t.Errorf("execution interval of metadata plugin should be 60 but got '%v'", *metadataPlugin.ExecutionInterval)
+	}
+
+	metadataPlugin2 := config.MetadataPlugins["hostinfo2"]
+	if metadataPlugin2.Command.Env == nil {
+		t.Error("config should have env of metadata plugin")
+	}
+	if len(metadataPlugin2.Command.Env) != 1 {
+		t.Errorf("env of metadata plugin should have a key: %v", metadataPlugin2.Command.Env)
+	}
+	if !containsString(metadataPlugin2.Command.Env, "NAME_1=VALUE_1") {
+		t.Errorf("Command.Env should contain 'NAME_1=VALUE_1'")
 	}
 
 	if config.Plugin != nil {
@@ -607,6 +672,33 @@ command = ["perl", "-E", "say 'Hello'"]
 	}
 }
 
+func TestEnv_ConvertToStrings(t *testing.T) {
+	cases := []struct {
+		env      Env
+		expected []string
+	}{
+		{Env{}, []string{}},
+		{Env{"KEY": "VALUE"}, []string{"KEY=VALUE"}},
+		{Env{"KEY1": "VALUE1", "KEY2": "VALUE2", "KEY3": "VALUE3"}, []string{"KEY1=VALUE1", "KEY2=VALUE2", "KEY3=VALUE3"}},
+		{Env{"KEY1": "VALUE1 VALUE2 VALUE3", "KEY2": "VALUE4 VALUE5 VALUE6"}, []string{"KEY1=VALUE1 VALUE2 VALUE3", "KEY2=VALUE4 VALUE5 VALUE6"}},
+		{Env{"KEY": ""}, []string{"KEY="}},
+		{Env{"   KEY   ": "   VALUE   "}, []string{"KEY=   VALUE   "}},
+		{Env{"": ""}, []string{}},
+	}
+
+	for _, c := range cases {
+		got := c.env.ConvertToStrings()
+		if len(got) != len(c.expected) {
+			t.Errorf("env strings should contains %d keys but: %d", len(c.expected), len(got))
+		}
+		for _, v := range got {
+			if !containsString(c.expected, v) {
+				t.Errorf("env strings not expected %+v", got)
+			}
+		}
+	}
+}
+
 func newTempFileWithContent(content string) (*os.File, error) {
 	tmpf, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
@@ -619,4 +711,13 @@ func newTempFileWithContent(content string) (*os.File, error) {
 	tmpf.Sync()
 	tmpf.Close()
 	return tmpf, nil
+}
+
+func containsString(slice []string, contains string) bool {
+	for _, v := range slice {
+		if v == contains {
+			return true
+		}
+	}
+	return false
 }

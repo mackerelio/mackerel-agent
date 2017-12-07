@@ -143,12 +143,30 @@ type PluginConfig struct {
 	IncludePattern        *string       `toml:"include_pattern"`
 	ExcludePattern        *string       `toml:"exclude_pattern"`
 	Action                CommandConfig `toml:"action"`
+	Env                   Env           `toml:"env"`
 }
 
 // CommandConfig represents an executable command configuration.
 type CommandConfig struct {
 	Raw  interface{} `toml:"command"`
 	User string
+	Env  Env `toml:"env"`
+}
+
+// Env represents environments.
+type Env map[string]string
+
+// ConvertToStrings converts to a slice of the form "key=value".
+func (e Env) ConvertToStrings() []string {
+	env := make([]string, 0, len(e))
+	for k, v := range e {
+		k = strings.Trim(k, " ")
+		if k == "" {
+			continue
+		}
+		env = append(env, k+"="+v)
+	}
+	return env
 }
 
 // Command represents an executable command.
@@ -156,18 +174,20 @@ type Command struct {
 	Cmd  string
 	Args []string
 	User string
+	Env  []string
 }
 
 // Run the Command.
 func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(cmd.Args) > 0 {
-		return util.RunCommandArgs(cmd.Args, cmd.User, nil)
+		return util.RunCommandArgs(cmd.Args, cmd.User, cmd.Env)
 	}
-	return util.RunCommand(cmd.Cmd, cmd.User, nil)
+	return util.RunCommand(cmd.Cmd, cmd.User, cmd.Env)
 }
 
 // RunWithEnv runs the Command with Environment.
 func (cmd *Command) RunWithEnv(env []string) (stdout, stderr string, exitCode int, err error) {
+	env = append(cmd.Env, env...)
 	if len(cmd.Args) > 0 {
 		return util.RunCommandArgs(cmd.Args, cmd.User, env)
 	}
@@ -199,6 +219,7 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	if cmd == nil {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
 	}
+	cmd.Env = pconf.Env.ConvertToStrings()
 
 	var (
 		includePattern *regexp.Regexp
@@ -244,10 +265,14 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	if cmd == nil {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
 	}
+	cmd.Env = pconf.Env.ConvertToStrings()
+
 	action, err := parseCommand(pconf.Action.Raw, pconf.Action.User)
 	if err != nil {
 		return nil, err
 	}
+	action.Env = pconf.Action.Env.ConvertToStrings()
+
 	plugin := CheckPlugin{
 		Command:               *cmd,
 		NotificationInterval:  pconf.NotificationInterval,
@@ -278,6 +303,7 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 	if cmd == nil {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
 	}
+	cmd.Env = pconf.Env.ConvertToStrings()
 	return &MetadataPlugin{
 		Command:           *cmd,
 		ExecutionInterval: pconf.ExecutionInterval,
