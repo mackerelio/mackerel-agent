@@ -157,16 +157,19 @@ type CommandConfig struct {
 type Env map[string]string
 
 // ConvertToStrings converts to a slice of the form "key=value".
-func (e Env) ConvertToStrings() []string {
+func (e Env) ConvertToStrings() ([]string, error) {
 	env := make([]string, 0, len(e))
 	for k, v := range e {
+		if strings.Contains(k, "=") {
+			return nil, fmt.Errorf("failed to parse plugin env. A key of env should not contain \"=\", but %q", k)
+		}
 		k = strings.Trim(k, " ")
 		if k == "" {
 			continue
 		}
 		env = append(env, k+"="+v)
 	}
-	return env
+	return env, nil
 }
 
 // Command represents an executable command.
@@ -219,7 +222,11 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	if cmd == nil {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
 	}
-	cmd.Env = pconf.Env.ConvertToStrings()
+
+	cmd.Env, err = pconf.Env.ConvertToStrings()
+	if err != nil {
+		return nil, err
+	}
 
 	var (
 		includePattern *regexp.Regexp
@@ -265,13 +272,21 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	if cmd == nil {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
 	}
-	cmd.Env = pconf.Env.ConvertToStrings()
+
+	cmd.Env, err = pconf.Env.ConvertToStrings()
+	if err != nil {
+		return nil, err
+	}
 
 	action, err := parseCommand(pconf.Action.Raw, pconf.Action.User)
 	if err != nil {
 		return nil, err
 	}
-	action.Env = pconf.Action.Env.ConvertToStrings()
+
+	action.Env, err = pconf.Action.Env.ConvertToStrings()
+	if err != nil {
+		return nil, err
+	}
 
 	plugin := CheckPlugin{
 		Command:               *cmd,
@@ -303,7 +318,12 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 	if cmd == nil {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
 	}
-	cmd.Env = pconf.Env.ConvertToStrings()
+
+	cmd.Env, err = pconf.Env.ConvertToStrings()
+	if err != nil {
+		return nil, err
+	}
+
 	return &MetadataPlugin{
 		Command:           *cmd,
 		ExecutionInterval: pconf.ExecutionInterval,

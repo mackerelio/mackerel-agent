@@ -674,20 +674,25 @@ command = ["perl", "-E", "say 'Hello'"]
 
 func TestEnv_ConvertToStrings(t *testing.T) {
 	cases := []struct {
-		env      Env
-		expected []string
+		env         Env
+		expected    []string
+		expectError bool
 	}{
-		{Env{}, []string{}},
-		{Env{"KEY": "VALUE"}, []string{"KEY=VALUE"}},
-		{Env{"KEY1": "VALUE1", "KEY2": "VALUE2", "KEY3": "VALUE3"}, []string{"KEY1=VALUE1", "KEY2=VALUE2", "KEY3=VALUE3"}},
-		{Env{"KEY1": "VALUE1 VALUE2 VALUE3", "KEY2": "VALUE4 VALUE5 VALUE6"}, []string{"KEY1=VALUE1 VALUE2 VALUE3", "KEY2=VALUE4 VALUE5 VALUE6"}},
-		{Env{"KEY": ""}, []string{"KEY="}},
-		{Env{"   KEY   ": "   VALUE   "}, []string{"KEY=   VALUE   "}},
-		{Env{"": ""}, []string{}},
+		{Env{}, []string{}, false},
+		{Env{"KEY": "VALUE"}, []string{"KEY=VALUE"}, false},
+		{Env{"KEY1": "VALUE1", "KEY2": "VALUE2", "KEY3": "VALUE3"}, []string{"KEY1=VALUE1", "KEY2=VALUE2", "KEY3=VALUE3"}, false},
+		{Env{"KEY1": "VALUE1 VALUE2 VALUE3", "KEY2": "VALUE4 VALUE5 VALUE6"}, []string{"KEY1=VALUE1 VALUE2 VALUE3", "KEY2=VALUE4 VALUE5 VALUE6"}, false},
+		{Env{"KEY": ""}, []string{"KEY="}, false},
+		{Env{"   KEY   ": "   VALUE   "}, []string{"KEY=   VALUE   "}, false},
+		{Env{"": ""}, []string{}, false},
+		{Env{"KEY=KEY": "VALUE"}, nil, true},
 	}
 
 	for _, c := range cases {
-		got := c.env.ConvertToStrings()
+		got, err := c.env.ConvertToStrings()
+		if err != nil && c.expectError == false {
+			t.Errorf("should raise error: %v", c.env)
+		}
 		if len(got) != len(c.expected) {
 			t.Errorf("env strings should contains %d keys but: %d", len(c.expected), len(got))
 		}
