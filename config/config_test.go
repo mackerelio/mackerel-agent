@@ -704,6 +704,90 @@ func TestEnv_ConvertToStrings(t *testing.T) {
 	}
 }
 
+func TestCommandRunWithEnv(t *testing.T) {
+	tmpf, err := newTempFileWithContent(`
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	fmt.Print(os.Getenv("SAMPLE_KEY1"), os.Getenv("SAMPLE_KEY2"))
+}`)
+	if err != nil {
+		os.Remove(tmpf.Name())
+		t.Fatalf("should not raise error: %s", err)
+	}
+
+	gof := tmpf.Name() + ".go"
+
+	err = os.Rename(tmpf.Name(), gof)
+
+	if err != nil {
+		os.Remove(tmpf.Name())
+		t.Fatalf("should not raise error: %s", err)
+	}
+	defer os.Remove(gof)
+
+	conf := fmt.Sprintf(`
+apikey = "abcde"
+
+[plugin.metrics.sample]
+command = ["go", "run", "%s"]
+env = { "SAMPLE_KEY1" = " foo bar ", "SAMPLE_KEY2" = " baz qux " }
+`, gof)
+
+	cases := []struct {
+		env      []string
+		expected string
+	}{
+		{nil, " foo bar  baz qux "},
+		{[]string{"SAMPLE_KEY1=v1 v2", "SAMPLE_KEY2= v3 v4"}, "v1 v2 v3 v4"},
+	}
+
+	for _, c := range cases {
+		var stdout, stderr string
+		var exitCode int
+		var err error
+
+		conff, err := newTempFileWithContent(conf)
+
+		if err != nil {
+			t.Fatalf("should not raise error: %s", err)
+		}
+		defer os.Remove(conff.Name())
+
+		config, err := loadConfigFile(conff.Name())
+		assertNoError(t, err)
+
+		p := config.MetricPlugins["sample"]
+
+		if c.env != nil {
+			stdout, stderr, exitCode, err = p.Command.RunWithEnv(c.env)
+		} else {
+			stdout, stderr, exitCode, err = p.Command.Run()
+		}
+
+		if stdout != c.expected {
+			t.Errorf("stdout not expected: %+v", stdout)
+		}
+
+		if stderr != "" {
+			t.Errorf("stderr not expected: %+v", stderr)
+		}
+
+		if exitCode != 0 {
+			t.Errorf("exitCode not expected: %+v", exitCode)
+		}
+
+		if err != nil {
+			t.Errorf("err not expected: %+v", err)
+		}
+	}
+}
+
 func newTempFileWithContent(content string) (*os.File, error) {
 	tmpf, err := ioutil.TempFile("", "mackerel-config-test")
 	if err != nil {
