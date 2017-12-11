@@ -735,7 +735,7 @@ func main() {
 apikey = "abcde"
 
 [plugin.metrics.sample]
-command = ["go", "run", "%s"]
+command = ["go", "run", '%s']
 env = { "SAMPLE_KEY1" = " foo bar ", "SAMPLE_KEY2" = " baz qux " }
 `, gof)
 
