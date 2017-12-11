@@ -391,10 +391,10 @@ func TestLoadConfigFile(t *testing.T) {
 	if len(pluginConf3.Command.Env) != 2 {
 		t.Errorf("env should have 2 keys: %v", pluginConf3.Command.Env)
 	}
-	if !containsString(pluginConf3.Command.Env, "MYSQL_USERNAME=USERNAME") {
+	if !expectContainsString(pluginConf3.Command.Env, "MYSQL_USERNAME=USERNAME") {
 		t.Errorf("Command.Env should contain 'MYSQL_USERNAME=USERNAME'")
 	}
-	if !containsString(pluginConf3.Command.Env, "MYSQL_PASSWORD=PASSWORD") {
+	if !expectContainsString(pluginConf3.Command.Env, "MYSQL_PASSWORD=PASSWORD") {
 		t.Errorf("Command.Env should contain 'MYSQL_PASSWORD=PASSWORD'")
 	}
 
@@ -428,7 +428,7 @@ func TestLoadConfigFile(t *testing.T) {
 	if len(checks2.Command.Env) != 1 {
 		t.Errorf("env of check plugin should have a key: %v", checks2.Command.Env)
 	}
-	if !containsString(checks2.Command.Env, "ES_HOSTS=10.45.3.2:9220,10.45.3.1:9230") {
+	if !expectContainsString(checks2.Command.Env, "ES_HOSTS=10.45.3.2:9220,10.45.3.1:9230") {
 		t.Errorf("Command.Env should contain 'ES_HOSTS=10.45.3.2:9220,10.45.3.1:9230'")
 	}
 	if checks2.Action.Env == nil {
@@ -437,14 +437,14 @@ func TestLoadConfigFile(t *testing.T) {
 	if len(checks2.Action.Env) != 3 {
 		t.Errorf("action.env of check plugin should have 3 keys: %v", checks2.Action.Env)
 	}
-	if !containsString(checks2.Action.Env, "NAME_1=VALUE_1") {
+	if !expectContainsString(checks2.Action.Env, "NAME_1=VALUE_1") {
 		t.Errorf("Command.Env should contain 'NAME_1=VALUE_1'")
 	}
-	if !containsString(checks2.Action.Env, "NAME_2=VALUE_2") {
+	if !expectContainsString(checks2.Action.Env, "NAME_2=VALUE_2") {
 		t.Errorf("Command.Env should contain 'NAME_2=VALUE_2'")
 	}
 
-	if !containsString(checks2.Action.Env, "NAME_3=VALUE_3") {
+	if !expectContainsString(checks2.Action.Env, "NAME_3=VALUE_3") {
 		t.Errorf("Command.Env should contain 'NAME_3=VALUE_3'")
 	}
 
@@ -469,7 +469,7 @@ func TestLoadConfigFile(t *testing.T) {
 	if len(metadataPlugin2.Command.Env) != 1 {
 		t.Errorf("env of metadata plugin should have a key: %v", metadataPlugin2.Command.Env)
 	}
-	if !containsString(metadataPlugin2.Command.Env, "NAME_1=VALUE_1") {
+	if !expectContainsString(metadataPlugin2.Command.Env, "NAME_1=VALUE_1") {
 		t.Errorf("Command.Env should contain 'NAME_1=VALUE_1'")
 	}
 
@@ -697,7 +697,7 @@ func TestEnv_ConvertToStrings(t *testing.T) {
 			t.Errorf("env strings should contains %d keys but: %d", len(c.expected), len(got))
 		}
 		for _, v := range got {
-			if !containsString(c.expected, v) {
+			if !expectContainsString(c.expected, v) {
 				t.Errorf("env strings not expected %+v", got)
 			}
 		}
@@ -802,7 +802,7 @@ func newTempFileWithContent(content string) (*os.File, error) {
 	return tmpf, nil
 }
 
-func containsString(slice []string, contains string) bool {
+func expectContainsString(slice []string, contains string) bool {
 	for _, v := range slice {
 		if v == contains {
 			return true
