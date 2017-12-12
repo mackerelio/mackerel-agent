@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Dec 12 2017 <mackerel-developers@hatena.ne.jp> - 0.48.0
+- Set environment variables for plugins (by hayajo)
+- Add an option to declare cloud platform explicitly (by astj)
+
 * Tue Nov 28 2017 <mackerel-developers@hatena.ne.jp> - 0.47.3
 - Fix interface metrics of large counter values on Linux (by itchyny)
 - Refine license notice (by itchyny)

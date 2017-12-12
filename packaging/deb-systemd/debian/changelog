@@ -1,3 +1,12 @@
+mackerel-agent (0.48.0-1.systemd) stable; urgency=low
+
+  * Set environment variables for plugins (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/448>
+  * Add an option to declare cloud platform explicitly (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/447>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 12 Dec 2017 12:41:00 +0900
+
 mackerel-agent (0.47.3-1.systemd) stable; urgency=low
 
   * Fix interface metrics of large counter values on Linux (by itchyny)

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.48.0 (2017-12-12)
+
+* Set environment variables for plugins #448 (hayajo)
+* Add an option to declare cloud platform explicitly #447 (astj)
+
+
 ## 0.47.3 (2017-11-28)
 
 * Fix interface metrics of large counter values on Linux #445 (itchyny)
