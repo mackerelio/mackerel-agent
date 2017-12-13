@@ -49,6 +49,9 @@ command = "heartbeat.sh"
 env = { "ES_HOSTS" = "10.45.3.2:9220,10.45.3.1:9230" }
 action = { command = "cardiac_massage", user = "doctor", env = { "NAME_1" = "VALUE_1", "NAME_2" = "VALUE_2", "NAME_3" = "VALUE_3" } }
 
+[plugin.checks.heartbeat3]
+command = "heartbeat.sh"
+
 [plugin.metadata.hostinfo]
 command = "hostinfo.sh"
 user = "zzz"
@@ -444,8 +447,9 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Errorf("Command.Env should contain 'NAME_2=VALUE_2'")
 	}
 
-	if !expectContainsString(checks2.Action.Env, "NAME_3=VALUE_3") {
-		t.Errorf("Command.Env should contain 'NAME_3=VALUE_3'")
+	checks3 := config.CheckPlugins["heartbeat3"]
+	if checks3.Action != nil {
+		t.Error("config should not have action of check plugin")
 	}
 
 	if config.MetadataPlugins == nil {
