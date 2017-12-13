@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.48.1 (2017-12-13)
+
+* fix a bug when action of check-plugin was not specified #450 (hayajo)
+
+
 ## 0.48.0 (2017-12-12)
 
 * Set environment variables for plugins #448 (hayajo)

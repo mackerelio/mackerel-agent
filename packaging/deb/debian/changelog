@@ -1,3 +1,10 @@
+mackerel-agent (0.48.1-1) stable; urgency=low
+
+  * fix a bug when action of check-plugin was not specified (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/450>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 13 Dec 2017 12:10:06 +0900
+
 mackerel-agent (0.48.0-1) stable; urgency=low
 
   * Set environment variables for plugins (by hayajo)
