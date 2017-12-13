@@ -283,9 +283,11 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		return nil, err
 	}
 
-	action.Env, err = pconf.Action.Env.ConvertToStrings()
-	if err != nil {
-		return nil, err
+	if action != nil {
+		action.Env, err = pconf.Action.Env.ConvertToStrings()
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	plugin := CheckPlugin{
