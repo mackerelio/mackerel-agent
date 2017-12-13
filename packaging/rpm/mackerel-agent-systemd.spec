@@ -55,6 +55,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Dec 13 2017 <mackerel-developers@hatena.ne.jp> - 0.48.1
+- fix a bug when action of check-plugin was not specified (by hayajo)
+
 * Tue Dec 12 2017 <mackerel-developers@hatena.ne.jp> - 0.48.0
 - Set environment variables for plugins (by hayajo)
 - Add an option to declare cloud platform explicitly (by astj)
