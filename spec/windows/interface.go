@@ -59,6 +59,8 @@ func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
 			switch v := addr.(type) {
 			case *net.IPAddr:
 				ip = v.IP
+			case *net.IPNet:
+				ip = v.IP
 			}
 			if ip == nil || ip.IsLoopback() {
 				continue
