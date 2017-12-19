@@ -692,6 +692,41 @@ command = ["perl", "-E", "say 'Hello'"]
 	}
 }
 
+func TestLoadCOnfigWithConnectionReportChecksConfigs(t *testing.T) {
+	conff, err := newTempFileWithContent(`
+apikey = "abcde"
+
+[connection]
+report_checks_delay_seconds = 3
+report_checks_delay_seconds_max = 60
+report_checks_retry_delay_seconds = 60
+report_checks_buffer_size = 720
+`)
+	if err != nil {
+		t.Fatalf("should not raise error: %s", err)
+	}
+	defer os.Remove(conff.Name())
+
+	config, err := LoadConfig(conff.Name())
+	assertNoError(t, err)
+
+	if config.Connection.ReportCheckDelaySeconds != 3 {
+		t.Error("should be 3 (config value should be used)")
+	}
+
+	if config.Connection.ReportCheckDelaySecondsMax != 60 {
+		t.Error("should be 60 (config value should be used)")
+	}
+
+	if config.Connection.ReportCheckRetryDelaySeconds != 60 {
+		t.Error("should be 60 (config value should be used)")
+	}
+
+	if config.Connection.ReportCheckBufferSize != 720 {
+		t.Error("should be 720 (config value should be used)")
+	}
+}
+
 func TestEnv_ConvertToStrings(t *testing.T) {
 	cases := []struct {
 		env         Env
