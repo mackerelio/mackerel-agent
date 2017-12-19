@@ -44,6 +44,10 @@ var defaultConnectionConfig = ConnectionConfig{
 	PostMetricsRetryDelaySeconds:   60,     // Wait a minute before retrying metric value posts
 	PostMetricsRetryMax:            60,     // Retry up to 60 times (30s * 60 = 30min)
 	PostMetricsBufferSize:          6 * 60, // Keep metric values of 6 hours span in the queue
+	ReportCheckDelaySeconds:        1,      // Wait a second before reporting the next check
+	ReportCheckDelaySecondsMax:     30,     // Wait 30 seconds before reporting the next check when many reports in queue
+	ReportCheckRetryDelaySeconds:   30,     // Wait 30 seconds before retrying report the next check
+	ReportCheckBufferSize:          6 * 60, // Keep check reports of 6 hours span in the queue
 }
 
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
@@ -381,6 +385,10 @@ type ConnectionConfig struct {
 	PostMetricsRetryDelaySeconds   int `toml:"post_metrics_retry_delay_seconds"`   // delay for retrying a request that caused errors
 	PostMetricsRetryMax            int `toml:"post_metrics_retry_max"`             // max numbers of retries for a request that causes errors
 	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
+	ReportCheckDelaySeconds        int `toml:"report_checks_delay_seconds"`        // delay for request reports
+	ReportCheckDelaySecondsMax     int `toml:"report_checks_delay_seconds_max"`    // max delay for request reports
+	ReportCheckRetryDelaySeconds   int `toml:"report_checks_retry_delay_seconds"`  // delay for retrying a request that caused errors
+	ReportCheckBufferSize          int `toml:"report_checks_buffer_size"`          // max numbers of requests stored in buffer queue.
 }
 
 // HostStatus configure host status on agent start/stop
@@ -478,6 +486,18 @@ func LoadConfig(conffile string) (*Config, error) {
 	}
 	if config.Connection.PostMetricsBufferSize == 0 {
 		config.Connection.PostMetricsBufferSize = DefaultConfig.Connection.PostMetricsBufferSize
+	}
+	if config.Connection.ReportCheckDelaySeconds == 0 {
+		config.Connection.ReportCheckDelaySeconds = DefaultConfig.Connection.ReportCheckDelaySeconds
+	}
+	if config.Connection.ReportCheckDelaySecondsMax == 0 {
+		config.Connection.ReportCheckDelaySecondsMax = DefaultConfig.Connection.ReportCheckDelaySecondsMax
+	}
+	if config.Connection.ReportCheckRetryDelaySeconds == 0 {
+		config.Connection.ReportCheckRetryDelaySeconds = DefaultConfig.Connection.ReportCheckRetryDelaySeconds
+	}
+	if config.Connection.ReportCheckBufferSize == 0 {
+		config.Connection.ReportCheckBufferSize = DefaultConfig.Connection.ReportCheckBufferSize
 	}
 
 	return config, err

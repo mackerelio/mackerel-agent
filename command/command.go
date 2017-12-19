@@ -454,8 +454,9 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 // which run for each checker commands and one for HTTP POSTing
 // the reports to Mackerel API.
 func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
-	checkReportCh := make(chan *checks.Report)
-	reportImmediateCh := make(chan struct{})
+	// Do not block checking.
+	checkReportCh := make(chan *checks.Report, app.Config.Connection.ReportCheckBufferSize*len(app.Agent.Checkers))
+	reportImmediateCh := make(chan struct{}, app.Config.Connection.ReportCheckBufferSize*len(app.Agent.Checkers))
 
 	for _, checker := range app.Agent.Checkers {
 		go runChecker(checker, checkReportCh, reportImmediateCh, quit)
@@ -478,6 +479,7 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 			select {
 			case report := <-checkReportCh:
 				reports = append(reports, report)
+			case <-reportImmediateCh: // drain all
 			default:
 				break DrainCheckReport
 			}
@@ -489,33 +491,42 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 
 		// Do not report too many reports at once.
 		const checkReportMaxSize = 10
+
+		// Do not report many times in a short time.
+		reportCheckDelay := app.Config.Connection.ReportCheckDelaySeconds
+		// Extend the delay when there are lots of reports
+		if len(reports) > len(app.Agent.Checkers) {
+			delay := app.Config.Connection.ReportCheckDelaySecondsMax
+			logger.Debugf("RunChekcerLoop: Extend the delay to %d seconds. There are %d reports.", delay, len(reports))
+			reportCheckDelay = delay
+		}
+
 		partialReports := make([]*checks.Report, 0, checkReportMaxSize)
 		for i, report := range reports {
 			logger.Debugf("reports[%d]: %#v", i, report)
 			partialReports = append(partialReports, report)
 			if len(partialReports) >= checkReportMaxSize {
-				reportCheckMonitors(app, checkReportCh, partialReports)
+				reportCheckMonitors(app, partialReports)
 				partialReports = make([]*checks.Report, 0, checkReportMaxSize)
+				time.Sleep(time.Duration(reportCheckDelay) * time.Second)
 			}
 		}
-		reportCheckMonitors(app, checkReportCh, partialReports)
+		reportCheckMonitors(app, partialReports)
 	}
 }
 
-func reportCheckMonitors(app *App, checkReportCh chan *checks.Report, reports []*checks.Report) {
-	err := app.API.ReportCheckMonitors(app.Host.ID, reports)
-	if err != nil {
+func reportCheckMonitors(app *App, reports []*checks.Report) {
+	for {
+		err := app.API.ReportCheckMonitors(app.Host.ID, reports)
+		if err == nil {
+			break
+		}
 		logger.Errorf("ReportCheckMonitors: %s", err)
+		logger.Debugf("ReportCheckMonitors: Sleep %d seconds before reporting", app.Config.Connection.ReportCheckRetryDelaySeconds)
 
-		// queue back the reports
-		go func() {
-			for _, report := range reports {
-				logger.Debugf("queue back report: %#v", report)
-				checkReportCh <- report
-			}
-		}()
+		// retry until report succeeds
+		time.Sleep(time.Duration(app.Config.Connection.ReportCheckRetryDelaySeconds) * time.Second)
 	}
-
 }
 
 // collectHostSpecs collects host specs (correspond to "name", "meta", "interfaces" and "customIdentifier" fields in API v0)

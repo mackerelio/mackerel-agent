@@ -105,6 +105,22 @@ func TestLoadConfig(t *testing.T) {
 	if config.Connection.PostMetricsRetryMax != 5 {
 		t.Error("should be 5 (config value should be used)")
 	}
+
+	if config.Connection.ReportCheckDelaySeconds != 1 {
+		t.Error("should be 1 (config value should be used)")
+	}
+
+	if config.Connection.ReportCheckDelaySecondsMax != 30 {
+		t.Error("should be 30 (config value should be used)")
+	}
+
+	if config.Connection.ReportCheckRetryDelaySeconds != 30 {
+		t.Error("should be 30 (config value should be used)")
+	}
+
+	if config.Connection.ReportCheckBufferSize != 360 {
+		t.Error("should be 360 (config value should be used)")
+	}
 }
 
 var sampleConfigWithHostStatus = `
