@@ -496,9 +496,8 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 		reportCheckDelay := app.Config.Connection.ReportCheckDelaySeconds
 		// Extend the delay when there are lots of reports
 		if len(reports) > len(app.Agent.Checkers) {
-			delay := app.Config.Connection.ReportCheckDelaySecondsMax
-			logger.Debugf("RunChekcerLoop: Extend the delay to %d seconds. There are %d reports.", delay, len(reports))
-			reportCheckDelay = delay
+			reportCheckDelay := app.Config.Connection.ReportCheckDelaySecondsMax
+			logger.Debugf("RunChekcerLoop: Extend the delay to %d seconds. There are %d reports.", reportCheckDelay, len(reports))
 		}
 
 		partialReports := make([]*checks.Report, 0, checkReportMaxSize)
