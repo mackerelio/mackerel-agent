@@ -520,7 +520,13 @@ func reportCheckMonitors(app *App, reports []*checks.Report) {
 		if err == nil {
 			break
 		}
+
 		logger.Errorf("ReportCheckMonitors: %s", err)
+
+		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
+			break
+		}
+
 		logger.Debugf("ReportCheckMonitors: Sleep %d seconds before reporting", app.Config.Connection.ReportCheckRetryDelaySeconds)
 
 		// retry until report succeeds
