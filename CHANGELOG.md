@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.48.2 (2017-12-20)
+
+* Fix network interface spec collector on Windows #452 (itchyny)
+
+
 ## 0.48.1 (2017-12-13)
 
 * fix a bug when action of check-plugin was not specified #450 (hayajo)
