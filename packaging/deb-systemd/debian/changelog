@@ -1,3 +1,10 @@
+mackerel-agent (0.48.2-1.systemd) stable; urgency=low
+
+  * Fix network interface spec collector on Windows (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/452>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 20 Dec 2017 11:10:33 +0900
+
 mackerel-agent (0.48.1-1.systemd) stable; urgency=low
 
   * fix a bug when action of check-plugin was not specified (by hayajo)
