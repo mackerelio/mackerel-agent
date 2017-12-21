@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"sort"
@@ -357,70 +356,68 @@ func TestReportCheckMonitors(t *testing.T) {
 		logging.SetLogLevel(logging.DEBUG)
 	}
 
-	conf, mockHandlers, ts := newMockAPIServer(t)
-	defer ts.Close()
-
-	if testing.Short() {
-		conf.Connection.ReportCheckRetryDelaySeconds = 1
+	cases := []struct {
+		Status      int
+		expectRetry bool
+	}{
+		{http.StatusOK, false},
+		{http.StatusBadRequest, false},
+		{http.StatusInternalServerError, true},
 	}
 
-	var unexpectedReports []checks.Report
-	totalPosts := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(3) + 3
-	postCount := 0
-	done := make(chan struct{})
+	for _, tc := range cases {
+		conf, mockHandlers, ts := newMockAPIServer(t)
+		defer ts.Close()
 
-	now := time.Now()
+		if testing.Short() {
+			conf.Connection.ReportCheckRetryDelaySeconds = 1
+		}
 
-	reports := []*checks.Report{
-		&checks.Report{Name: "check_test", Status: checks.StatusOK, OccurredAt: now},
-		&checks.Report{Name: "check_test", Status: checks.StatusCritical, OccurredAt: now.Add(1 * time.Second)},
-		&checks.Report{Name: "check_test", Status: checks.StatusOK, OccurredAt: now.Add(2 * time.Second)},
-	}
+		postCount := 0
+		retried := false
+		mu := &sync.Mutex{}
 
-	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
-		payload := []checks.Report{}
-		json.NewDecoder(req.Body).Decode(&payload)
+		mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+			mu.Lock()
+			defer mu.Unlock()
+			postCount++
+			if postCount > 1 {
+				retried = true
+			}
+			return tc.Status, jsonObject{}
+		}
 
-		for i, v := range payload {
-			if v.Name != reports[i].Name || v.Status != reports[i].Status || v.OccurredAt != now.Add(time.Duration(i)*time.Second) {
-				unexpectedReports = append(unexpectedReports, v)
-				continue
+		api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		host := &mackerel.Host{ID: "xyzabc12345"}
+
+		app := &App{
+			Agent:     &agent.Agent{},
+			Config:    &conf,
+			API:       api,
+			Host:      host,
+			AgentMeta: &AgentMeta{},
+		}
+
+		go func() {
+			reportCheckMonitors(app, []*checks.Report{})
+		}()
+
+		time.Sleep(time.Duration(conf.Connection.ReportCheckRetryDelaySeconds) * 3 * time.Second)
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if retried != tc.expectRetry {
+			text := http.StatusText(tc.Status)
+			if tc.expectRetry {
+				t.Errorf("the agent should have resend reports when got %d %q", tc.Status, text)
+			} else {
+				t.Errorf("the agent should not have resend reports when got %d %q", tc.Status, text)
 			}
 		}
-
-		postCount++
-
-		if postCount == totalPosts {
-			defer func() { done <- struct{}{} }()
-		}
-
-		return 503, jsonObject{
-			"failure": len(payload),
-		}
-	}
-
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	host := &mackerel.Host{ID: "xyzabc12345"}
-
-	app := &App{
-		Agent:     &agent.Agent{},
-		Config:    &conf,
-		API:       api,
-		Host:      host,
-		AgentMeta: &AgentMeta{},
-	}
-
-	go func() {
-		reportCheckMonitors(app, reports)
-	}()
-
-	<-done
-
-	if len(unexpectedReports) != 0 {
-		t.Errorf("the agent should have resend same reports. got %+v", unexpectedReports)
 	}
 }
