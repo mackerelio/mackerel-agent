@@ -13,6 +13,7 @@ import (
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/agent"
+	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
@@ -347,5 +348,76 @@ func TestLoop(t *testing.T) {
 	exitErr := <-exitCh
 	if exitErr != nil {
 		t.Errorf("exitErr should be nil, got: %s", exitErr)
+	}
+}
+
+func TestReportCheckMonitors(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	cases := []struct {
+		Status      int
+		expectRetry bool
+	}{
+		{http.StatusOK, false},
+		{http.StatusBadRequest, false},
+		{http.StatusInternalServerError, true},
+	}
+
+	for _, tc := range cases {
+		conf, mockHandlers, ts := newMockAPIServer(t)
+		defer ts.Close()
+
+		if testing.Short() {
+			conf.Connection.ReportCheckRetryDelaySeconds = 1
+		}
+
+		postCount := 0
+		retried := false
+		mu := &sync.Mutex{}
+
+		mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+			mu.Lock()
+			defer mu.Unlock()
+			postCount++
+			if postCount > 1 {
+				retried = true
+			}
+			return tc.Status, jsonObject{}
+		}
+
+		api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		host := &mackerel.Host{ID: "xyzabc12345"}
+
+		app := &App{
+			Agent:     &agent.Agent{},
+			Config:    &conf,
+			API:       api,
+			Host:      host,
+			AgentMeta: &AgentMeta{},
+		}
+
+		go func() {
+			reportCheckMonitors(app, []*checks.Report{})
+		}()
+
+		time.Sleep(time.Duration(conf.Connection.ReportCheckRetryDelaySeconds) * 3 * time.Second)
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if retried != tc.expectRetry {
+			text := http.StatusText(tc.Status)
+			if tc.expectRetry {
+				t.Errorf("the agent should have resend reports when got %d %q", tc.Status, text)
+			} else {
+				t.Errorf("the agent should not have resend reports when got %d %q", tc.Status, text)
+			}
+		}
 	}
 }
