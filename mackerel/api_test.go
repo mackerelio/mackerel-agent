@@ -386,6 +386,24 @@ func TestFindHost(t *testing.T) {
 	}
 }
 
+func TestFindHostEmpty(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		t.Error("The request should not happen")
+	}))
+	defer ts.Close()
+
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	_, err := api.FindHost("")
+
+	if err == nil {
+		t.Error("err should not be nil")
+	}
+
+	if apiErr, ok := err.(*Error); !ok || !apiErr.IsPermanentError() {
+		t.Error("err should be a permanent error but: ", err)
+	}
+}
+
 func TestFindHostByCustomIdentifier(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		if req.URL.Path != "/api/v0/hosts" {
