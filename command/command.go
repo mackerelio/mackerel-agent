@@ -42,7 +42,7 @@ func prepareHost(conf *config.Config, api *mackerel.API) (*mackerel.Host, error)
 		if err != nil {
 			logger.Warningf("%s", err.Error())
 		}
-		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
+		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsPermanentError() {
 			// don't retry when client error (APIKey error etc.) occurred
 			return nil
 		}

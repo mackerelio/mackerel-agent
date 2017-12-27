@@ -46,6 +46,11 @@ func (aperr *Error) IsClientError() bool {
 	return 400 <= aperr.StatusCode && aperr.StatusCode < 500
 }
 
+// IsPermanentError means the error is permanent and caller should not retry on this error.
+func (aperr *Error) IsPermanentError() bool {
+	return aperr.IsClientError() || aperr.StatusCode == 0
+}
+
 // IsServerError 5xx
 func (aperr *Error) IsServerError() bool {
 	return 500 <= aperr.StatusCode && aperr.StatusCode < 600
@@ -54,6 +59,13 @@ func (aperr *Error) IsServerError() bool {
 func apiError(code int, msg string) *Error {
 	return &Error{
 		StatusCode: code,
+		Message:    msg,
+	}
+}
+
+func nonRetryableError(msg string) *Error {
+	return &Error{
+		StatusCode: 0,
 		Message:    msg,
 	}
 }
@@ -124,6 +136,9 @@ func closeResp(resp *http.Response) {
 
 // FindHost find the host
 func (api *API) FindHost(id string) (*Host, error) {
+	if id == "" {
+		return nil, nonRetryableError("hostId is empty")
+	}
 	resp, err := api.get(fmt.Sprintf("/api/v0/hosts/%s", id), "")
 	defer closeResp(resp)
 	if err != nil {
