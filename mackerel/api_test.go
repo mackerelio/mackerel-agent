@@ -400,7 +400,7 @@ func TestFindHostEmpty(t *testing.T) {
 	}
 
 	if apiErr, ok := err.(*Error); !ok || !apiErr.IsPermanentError() {
-		t.Errorf("err should be a permanent error but: ", err)
+		t.Error("err should be a permanent error but: ", err)
 	}
 }
 
