@@ -21,6 +21,7 @@ tmpfs                                   517224        0  517224         0% /lib/
 udev                                    512780       96  512684         1% /dev
 tmpfs                                   517224        4  517220         1% /dev/shm
 /dev/mapper/docker-000:0-000-00000    10190136   168708 9480756         2% /var/lib/docker/devicemapper/mnt/00000
+/dev/dm-4                             10474496   149684 10324812        2% /var/lib/docker/devicemapper/mnt/11111
 `
 	expect := []*DfStat{
 		{
