@@ -9,6 +9,7 @@
 /wix/mackerel-agent.wxs
 /wix/mackerel-agent.wixobj
 /rpmbuild/
+/vendor
 
 packaging/rpm/src/mackerel-agent.conf
 packaging/deb/debian/mackerel-agent.conf

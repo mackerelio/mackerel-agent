@@ -3,8 +3,8 @@ set -e
 
 for os in $@; do
   if [ $os != "windows" ]; then
-    GOOS=$os golint -set_exit_status ./...
+    GOOS=$os golint -set_exit_status $(go list ./...)
   else
-    GOOS=$os golint -set_exit_status --min_confidence=0.9 ./...
+    GOOS=$os golint -set_exit_status --min_confidence=0.9 $(go list ./...)
   fi
 done
