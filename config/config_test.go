@@ -637,7 +637,8 @@ func TestFileSystemHostIDStorage(t *testing.T) {
 	assert(t, err != nil, "LoadHostID after DeleteSavedHostID must fail")
 
 	// Write an empty id to simulate a case that could not save id properly
-	s.SaveHostID("")
+	err = s.SaveHostID("")
+	assertNoError(t, err)
 
 	_, err = s.LoadHostID()
 	assert(t, err != nil, "LoadHostID from empty HostID file must fail")
