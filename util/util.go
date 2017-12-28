@@ -13,13 +13,20 @@ import (
 
 var utilLogger = logging.GetLogger("util")
 
-// TimeoutDuration is option of `Runcommand()` set timeout limit of command execution.
-var TimeoutDuration = 30 * time.Second
+const (
+	// defaultTimeoutDuration is the duration after which a command execution will be timeout.
+	defaultTimeoutDuration = 30 * time.Second
+)
 
 // TimeoutKillAfter is option of `RunCommand()` set waiting limit to `kill -kill` after terminating the command.
 var TimeoutKillAfter = 10 * time.Second
 
 var cmdBase = []string{"sh", "-c"}
+
+// CommandContext carries a timeout duration.
+type CommandContext struct {
+	TimeoutDuration time.Duration
+}
 
 func init() {
 	if runtime.GOOS == "windows" {
@@ -28,13 +35,13 @@ func init() {
 }
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
-func RunCommand(command, user string, env []string) (stdout, stderr string, exitCode int, err error) {
+func RunCommand(ctx CommandContext, command, user string, env []string) (stdout, stderr string, exitCode int, err error) {
 	cmdArgs := append(cmdBase, command)
-	return RunCommandArgs(cmdArgs, user, env)
+	return RunCommandArgs(ctx, cmdArgs, user, env)
 }
 
 // RunCommandArgs run the command
-func RunCommandArgs(cmdArgs []string, user string, env []string) (stdout, stderr string, exitCode int, err error) {
+func RunCommandArgs(ctx CommandContext, cmdArgs []string, user string, env []string) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
 	if user != "" {
 		if runtime.GOOS == "windows" {
@@ -47,8 +54,11 @@ func RunCommandArgs(cmdArgs []string, user string, env []string) (stdout, stderr
 	cmd.Env = append(os.Environ(), env...)
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
-		Duration:  TimeoutDuration,
+		Duration:  defaultTimeoutDuration,
 		KillAfter: TimeoutKillAfter,
+	}
+	if ctx.TimeoutDuration != 0 {
+		tio.Duration = ctx.TimeoutDuration
 	}
 	exitStatus, stdout, stderr, err := tio.Run()
 

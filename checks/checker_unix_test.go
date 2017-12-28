@@ -11,15 +11,14 @@ import (
 )
 
 func TestChecker_CheckTimeout(t *testing.T) {
-	origTimeoutDur := util.TimeoutDuration
-	defer func() {
-		util.TimeoutDuration = origTimeoutDur
-	}()
-	util.TimeoutDuration = 1 * time.Second
-
 	checkerTimeout := Checker{
 		Config: &config.CheckPlugin{
-			Command: config.Command{Cmd: "sleep 2"},
+			Command: config.Command{
+				Cmd: "sleep 2",
+				CommandContext: util.CommandContext{
+					TimeoutDuration: 1 * time.Second,
+				},
+			},
 		},
 	}
 

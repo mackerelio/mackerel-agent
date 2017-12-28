@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 )
 
 var sampleConfig = `
@@ -42,6 +43,7 @@ command = "heartbeat.sh"
 user = "xyz"
 notification_interval = 60
 max_check_attempts = 3
+timeout_duration = 60
 action = { command = "cardiac_massage", user = "doctor" }
 
 [plugin.checks.heartbeat2]
@@ -426,6 +428,9 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if checks.Command.User != "xyz" {
 		t.Error("check user_name should be 'xyz'")
+	}
+	if checks.Command.TimeoutDuration != 60*time.Second {
+		t.Error("check timeout_duration should be 60s")
 	}
 	if *checks.NotificationInterval != 60 {
 		t.Error("notification_interval should be 60")
