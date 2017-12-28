@@ -643,11 +643,11 @@ func (s FileSystemHostIDStorage) LoadHostID() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	hostId := strings.TrimRight(string(content), "\r\n")
-	if hostId == "" {
+	hostID := strings.TrimRight(string(content), "\r\n")
+	if hostID == "" {
 		return "", fmt.Errorf("HostIDFile found, but the content is empty")
 	}
-	return hostId, nil
+	return hostID, nil
 }
 
 // SaveHostID saves the host ID to the mackerel-agent's id file.
