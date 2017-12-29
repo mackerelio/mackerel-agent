@@ -4,6 +4,7 @@ package metrics
 
 import (
 	"runtime"
+	"strings"
 	"testing"
 	"time"
 )
@@ -36,6 +37,14 @@ func TestInterfaceGenerator(t *testing.T) {
 		metricName := "interface." + name + "." + metric + ".delta"
 		if _, ok := values[metricName]; ok {
 			t.Errorf("Value for %s should NOT be collected", metricName)
+		}
+	}
+
+	if runtime.GOOS == "linux" {
+		for k := range values {
+			if strings.HasPrefix(k, "interface.veth") {
+				t.Errorf("Value for %s should NOT be collected", k)
+			}
 		}
 	}
 

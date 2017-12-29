@@ -3,6 +3,7 @@
 package metrics
 
 import (
+	"strings"
 	"time"
 
 	"github.com/mackerelio/go-osstat/network"
@@ -61,6 +62,9 @@ func (g *InterfaceGenerator) collectInterfacesValues() (map[string]uint64, error
 	results := make(map[string]uint64, len(networks)*2)
 	for _, network := range networks {
 		name := util.SanitizeMetricKey(network.Name)
+		if strings.HasPrefix(name, "veth") {
+			continue
+		}
 		results["interface."+name+".rxBytes"] = network.RxBytes
 		results["interface."+name+".txBytes"] = network.TxBytes
 	}
