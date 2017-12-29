@@ -373,22 +373,19 @@ func parseCommand(commandRaw interface{}, user string) (command *Command, err er
 	}
 }
 
-const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
-const postMetricsRetryDelaySecondsMax = 3 * 60 // max delay seconds for retrying a request that caused errors
-
 // PostMetricsInterval XXX
 var PostMetricsInterval = 1 * time.Minute
 
 // ConnectionConfig XXX
 type ConnectionConfig struct {
-	PostMetricsDequeueDelaySeconds int `toml:"post_metrics_dequeue_delay_seconds"` // delay for dequeuing from buffer queue
-	PostMetricsRetryDelaySeconds   int `toml:"post_metrics_retry_delay_seconds"`   // delay for retrying a request that caused errors
-	PostMetricsRetryMax            int `toml:"post_metrics_retry_max"`             // max numbers of retries for a request that causes errors
-	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
-	ReportCheckDelaySeconds        int `toml:"report_checks_delay_seconds"`        // delay for request reports
-	ReportCheckDelaySecondsMax     int `toml:"report_checks_delay_seconds_max"`    // max delay for request reports
-	ReportCheckRetryDelaySeconds   int `toml:"report_checks_retry_delay_seconds"`  // delay for retrying a request that caused errors
-	ReportCheckBufferSize          int `toml:"report_checks_buffer_size"`          // max numbers of requests stored in buffer queue.
+	PostMetricsDequeueDelaySeconds int // delay for dequeuing from buffer queue
+	PostMetricsRetryDelaySeconds   int // delay for retrying a request that caused errors
+	PostMetricsRetryMax            int // max numbers of retries for a request that causes errors
+	PostMetricsBufferSize          int // max numbers of requests stored in buffer queue.
+	ReportCheckDelaySeconds        int // delay for request reports
+	ReportCheckDelaySecondsMax     int // max delay for request reports
+	ReportCheckRetryDelaySeconds   int // delay for retrying a request that caused errors
+	ReportCheckBufferSize          int // max numbers of requests stored in buffer queue.
 }
 
 // HostStatus configure host status on agent start/stop
@@ -467,38 +464,7 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Diagnostic == false {
 		config.Diagnostic = DefaultConfig.Diagnostic
 	}
-	if config.Connection.PostMetricsDequeueDelaySeconds == 0 {
-		config.Connection.PostMetricsDequeueDelaySeconds = DefaultConfig.Connection.PostMetricsDequeueDelaySeconds
-	}
-	if config.Connection.PostMetricsDequeueDelaySeconds > postMetricsDequeueDelaySecondsMax {
-		configLogger.Warningf("'post_metrics_dequese_delay_seconds' is set to %d (Maximum Value).", postMetricsDequeueDelaySecondsMax)
-		config.Connection.PostMetricsDequeueDelaySeconds = postMetricsDequeueDelaySecondsMax
-	}
-	if config.Connection.PostMetricsRetryDelaySeconds == 0 {
-		config.Connection.PostMetricsRetryDelaySeconds = DefaultConfig.Connection.PostMetricsRetryDelaySeconds
-	}
-	if config.Connection.PostMetricsRetryDelaySeconds > postMetricsRetryDelaySecondsMax {
-		configLogger.Warningf("'post_metrics_retry_delay_seconds' is set to %d (Maximum Value).", postMetricsRetryDelaySecondsMax)
-		config.Connection.PostMetricsRetryDelaySeconds = postMetricsRetryDelaySecondsMax
-	}
-	if config.Connection.PostMetricsRetryMax == 0 {
-		config.Connection.PostMetricsRetryMax = DefaultConfig.Connection.PostMetricsRetryMax
-	}
-	if config.Connection.PostMetricsBufferSize == 0 {
-		config.Connection.PostMetricsBufferSize = DefaultConfig.Connection.PostMetricsBufferSize
-	}
-	if config.Connection.ReportCheckDelaySeconds == 0 {
-		config.Connection.ReportCheckDelaySeconds = DefaultConfig.Connection.ReportCheckDelaySeconds
-	}
-	if config.Connection.ReportCheckDelaySecondsMax == 0 {
-		config.Connection.ReportCheckDelaySecondsMax = DefaultConfig.Connection.ReportCheckDelaySecondsMax
-	}
-	if config.Connection.ReportCheckRetryDelaySeconds == 0 {
-		config.Connection.ReportCheckRetryDelaySeconds = DefaultConfig.Connection.ReportCheckRetryDelaySeconds
-	}
-	if config.Connection.ReportCheckBufferSize == 0 {
-		config.Connection.ReportCheckBufferSize = DefaultConfig.Connection.ReportCheckBufferSize
-	}
+	config.Connection = DefaultConfig.Connection
 
 	return config, err
 }
