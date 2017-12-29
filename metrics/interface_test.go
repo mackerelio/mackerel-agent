@@ -41,7 +41,7 @@ func TestInterfaceGenerator(t *testing.T) {
 	}
 
 	if runtime.GOOS == "linux" {
-		for k, _ := range values {
+		for k := range values {
 			if strings.HasPrefix(k, "interface.veth") {
 				t.Errorf("Value for %s should NOT be collected", k)
 			}
