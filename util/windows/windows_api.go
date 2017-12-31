@@ -48,12 +48,6 @@ type MEMORY_STATUS_EX struct {
 	AvailExtendedVirtual uint64
 }
 
-// PDH_FMT_COUNTERVALUE_DOUBLE XXX
-type PDH_FMT_COUNTERVALUE_DOUBLE struct {
-	CStatus     uint32
-	DoubleValue float64
-}
-
 // windows system const
 const (
 	ERROR_SUCCESS        = 0
