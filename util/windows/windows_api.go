@@ -8,6 +8,8 @@ import (
 	"unsafe"
 )
 
+// ref. https://github.com/mackerelio/mackerel-agent/pull/134
+
 /*
 //#include <pdh.h>
 typedef unsigned long DWORD;
