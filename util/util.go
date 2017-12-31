@@ -1,14 +1,14 @@
-// +build linux darwin freebsd netbsd
-
 package util
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
+	"runtime"
 	"time"
 
 	"github.com/Songmu/timeout"
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 )
 
 var utilLogger = logging.GetLogger("util")
@@ -19,19 +19,32 @@ var TimeoutDuration = 30 * time.Second
 // TimeoutKillAfter is option of `RunCommand()` set waiting limit to `kill -kill` after terminating the command.
 var TimeoutKillAfter = 10 * time.Second
 
+var cmdBase = []string{"sh", "-c"}
+
+func init() {
+	if runtime.GOOS == "windows" {
+		cmdBase = []string{"cmd", "/c"}
+	}
+}
+
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
-func RunCommand(command, user string) (stdout, stderr string, exitCode int, err error) {
-	cmdArgs := []string{"/bin/sh", "-c", command}
-	return RunCommandArgs(cmdArgs, user)
+func RunCommand(command, user string, env []string) (stdout, stderr string, exitCode int, err error) {
+	cmdArgs := append(cmdBase, command)
+	return RunCommandArgs(cmdArgs, user, env)
 }
 
 // RunCommandArgs run the command
-func RunCommandArgs(cmdArgs []string, user string) (stdout, stderr string, exitCode int, err error) {
+func RunCommandArgs(cmdArgs []string, user string, env []string) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
 	if user != "" {
-		args = append([]string{"sudo", "-u", user}, args...)
+		if runtime.GOOS == "windows" {
+			utilLogger.Warningf("RunCommand ignore option: user = %q", user)
+		} else {
+			args = append([]string{"sudo", "-Eu", user}, args...)
+		}
 	}
 	cmd := exec.Command(args[0], args[1:]...)
+	cmd.Env = append(os.Environ(), env...)
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  TimeoutDuration,
@@ -43,7 +56,7 @@ func RunCommandArgs(cmdArgs []string, user string) (stdout, stderr string, exitC
 		err = fmt.Errorf("command timed out")
 	}
 	if err != nil {
-		utilLogger.Errorf("RunCommand error command: %T, error: %s", cmdArgs, err.Error())
+		utilLogger.Errorf("RunCommand error command: %v, error: %s", cmdArgs, err.Error())
 	}
 	return stdout, stderr, exitStatus.GetChildExitCode(), err
 }

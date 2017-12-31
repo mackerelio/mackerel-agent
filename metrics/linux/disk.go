@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/util"
 )
@@ -121,6 +121,9 @@ func parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, erro
 		}
 
 		deviceLabel := util.SanitizeMetricKey(device)
+		if strings.HasPrefix(deviceLabel, "dm-") {
+			continue
+		}
 		mountpoint, exists := mapping[device]
 		if exists {
 			deviceLabel = util.SanitizeMetricKey(mountpoint)

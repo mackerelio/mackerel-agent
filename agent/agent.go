@@ -6,14 +6,16 @@ import (
 	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	"github.com/mackerelio/mackerel-agent/metadata"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 // Agent is the root of metrics collectors
 type Agent struct {
-	MetricsGenerators []metrics.Generator
-	PluginGenerators  []metrics.PluginGenerator
-	Checkers          []*checks.Checker
+	MetricsGenerators  []metrics.Generator
+	PluginGenerators   []metrics.PluginGenerator
+	Checkers           []*checks.Checker
+	MetadataGenerators []*metadata.Generator
 }
 
 // MetricsResult XXX
@@ -89,7 +91,7 @@ func (agent *Agent) CollectGraphDefsOfPlugins() []mackerel.CreateGraphDefsPayloa
 	for _, g := range agent.PluginGenerators {
 		p, err := g.PrepareGraphDefs()
 		if err != nil {
-			logger.Debugf("Failed to fetch meta information from plugin %s (non critical); seems that this plugin does not have meta information: %s", g, err)
+			logger.Debugf("Failed to fetch meta information from plugin %v (non critical); seems that this plugin does not have meta information: %v", g, err)
 		}
 		if p != nil {
 			payloads = append(payloads, p...)

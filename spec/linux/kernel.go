@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 	"github.com/shirou/gopsutil/host"
 )
 
@@ -43,18 +43,18 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		results[key] = str
 	}
 
-	hostInfo, err := host.Info()
+	platform, _, version, err := host.PlatformInformation()
 	if err != nil {
 		kernelLogger.Errorf("Failed to get platform information: %s", err)
 		return results, nil
 	}
 
-	if platformName := normalizePlatform(hostInfo.Platform); platformName != "" {
+	if platformName := normalizePlatform(platform); platformName != "" {
 		results["platform_name"] = platformName
 	}
 
-	if platformVersion := hostInfo.PlatformVersion; platformVersion != "" {
-		results["platform_version"] = platformVersion
+	if version != "" {
+		results["platform_version"] = version
 	}
 
 	return results, nil

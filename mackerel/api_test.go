@@ -8,8 +8,6 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
-
-	"github.com/mackerelio/mackerel-agent/version"
 )
 
 func TestNewAPI(t *testing.T) {
@@ -53,28 +51,10 @@ func TestUrlFor(t *testing.T) {
 }
 
 func TestDo(t *testing.T) {
-	version.VERSION = "1.0.0"
-	version.GITCOMMIT = "1234beaf"
 	handler := func(res http.ResponseWriter, req *http.Request) {
-		userAgent := "mackerel-agent/1.0.0 (Revision 1234beaf)"
 		if req.Header.Get("X-Api-Key") != "dummy-key" {
 			t.Error("X-Api-Key header should contains passed key")
 		}
-
-		if h := req.Header.Get("X-Agent-Version"); h != version.VERSION {
-			t.Errorf("X-Agent-Version shoud be %s but %s", version.VERSION, h)
-		}
-
-		if h := req.Header.Get("X-Revision"); h != version.GITCOMMIT {
-			t.Errorf("X-Revision shoud be %s but %s", version.GITCOMMIT, h)
-		}
-
-		if h := req.Header.Get("User-Agent"); h != userAgent {
-			t.Errorf("User-Agent shoud be '%s' but %s", userAgent, h)
-		}
-
-		version.GITCOMMIT = ""
-		version.VERSION = ""
 	}
 	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		handler(res, req)
@@ -396,10 +376,11 @@ func TestFindHost(t *testing.T) {
 	}
 
 	if reflect.DeepEqual(host, &Host{
-		ID:     "9rxGOHfVF8F",
-		Name:   "mydb001",
-		Type:   "",
-		Status: "working",
+		ID:               "9rxGOHfVF8F",
+		Name:             "mydb001",
+		Type:             "",
+		Status:           "working",
+		CustomIdentifier: "",
 	}) != true {
 		t.Error("request sends json including memo but: ", host)
 	}
@@ -439,10 +420,11 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 	}
 
 	if reflect.DeepEqual(host, &Host{
-		ID:     "9rxGOHfVF8F",
-		Name:   "mydb001",
-		Type:   "",
-		Status: "working",
+		ID:               "9rxGOHfVF8F",
+		Name:             "mydb001",
+		Type:             "",
+		Status:           "working",
+		CustomIdentifier: "foo-bar",
 	}) != true {
 		t.Error("request sends json including memo but: ", host)
 	}

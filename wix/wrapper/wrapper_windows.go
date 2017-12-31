@@ -2,12 +2,14 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sync"
 	"syscall"
 	"time"
 	"unsafe"
@@ -59,15 +61,24 @@ func main() {
 	}
 }
 
+type logger interface {
+	Info(eid uint32, msg string) error
+	Warning(eid uint32, msg string) error
+	Error(eid uint32, msg string) error
+}
+
 type handler struct {
-	elog *eventlog.Log
+	elog logger
 	cmd  *exec.Cmd
+	r    io.Reader
+	w    io.WriteCloser
+	wg   sync.WaitGroup
 }
 
 // ex.
 // verbose log: 2017/01/21 22:21:08 command.go:434: DEBUG <command> received 'immediate' chan
 // normal log:  2017/01/24 14:14:27 INFO <main> Starting mackerel-agent version:0.36.0
-var logRe = regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} (?:.+\.go:\d+: )?([A-Z]+) `)
+var logRe = regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} (?:\S+\.go:\d+: )?([A-Z]+) `)
 
 func (h *handler) start() error {
 	procAllocConsole.Call()
@@ -79,38 +90,103 @@ func (h *handler) start() error {
 	cmd.Dir = dir
 
 	h.cmd = cmd
-	r, w := io.Pipe()
-	cmd.Stderr = w
-	scanner := bufio.NewScanner(r)
-	scanner.Split(bufio.ScanLines) // default
-	go func() {
-		// pipe stderr to windows event log
-		for scanner.Scan() {
-			line := scanner.Text()
+	h.r, h.w = io.Pipe()
+	cmd.Stderr = h.w
 
-			if match := logRe.FindStringSubmatch(line); match != nil {
-				level := match[1]
-				switch level {
-				case "TRACE", "DEBUG", "INFO":
-					h.elog.Info(defaultEid, line)
-				case "WARNING":
-					h.elog.Warning(defaultEid, line)
-				case "ERROR", "CRITICAL":
-					h.elog.Error(defaultEid, line)
-				default:
-					h.elog.Error(defaultEid, line)
+	err := h.cmd.Start()
+	if err != nil {
+		return err
+	}
+
+	return h.aggregate()
+}
+
+func (h *handler) aggregate() error {
+	br := bufio.NewReader(h.r)
+	lc := make(chan string, 10)
+	done := make(chan struct{})
+
+	// It need to read data from pipe continuously. And it need to close handle
+	// when process finished.
+	// read data from pipe. When data arrived at EOL, send line-string to the
+	// channel. Also remaining line to EOF.
+	h.wg.Add(1)
+	go func() {
+		defer h.wg.Done()
+		defer h.w.Close()
+
+		// pipe stderr to windows event log
+		var body bytes.Buffer
+		for {
+			b, err := br.ReadByte()
+			if err != nil {
+				if err != io.EOF {
+					h.elog.Error(loggerEid, err.Error())
 				}
-			} else {
-				h.elog.Error(defaultEid, line)
+				break
+			}
+			if b == '\n' {
+				if body.Len() > 0 {
+					lc <- body.String()
+					body.Reset()
+				}
+				continue
+			}
+			body.WriteByte(b)
+		}
+		if body.Len() > 0 {
+			lc <- body.String()
+		}
+		done <- struct{}{}
+	}()
+
+	h.wg.Add(1)
+	go func() {
+		defer h.wg.Done()
+
+		linebuf := []string{}
+	loop:
+		for {
+			select {
+			case line := <-lc:
+				if len(linebuf) == 0 || logRe.MatchString(line) {
+					linebuf = append(linebuf, line)
+				} else {
+					linebuf[len(linebuf)-1] += "\n" + line
+				}
+			case <-time.After(10 * time.Millisecond):
+				// When it take 10ms, it is located at end of paragraph. Then
+				// slice appended at above should be the paragraph.
+				for _, line := range linebuf {
+					if match := logRe.FindStringSubmatch(line); match != nil {
+						level := match[1]
+						switch level {
+						case "TRACE", "DEBUG", "INFO":
+							h.elog.Info(defaultEid, line)
+						case "WARNING", "ERROR":
+							h.elog.Warning(defaultEid, line)
+						case "CRITICAL":
+							h.elog.Error(defaultEid, line)
+						default:
+							h.elog.Error(defaultEid, line)
+						}
+					} else {
+						h.elog.Error(defaultEid, line)
+					}
+				}
+				select {
+				case <-done:
+					break loop
+				default:
+				}
+				linebuf = nil
 			}
 		}
-		if err := scanner.Err(); err != nil {
-			h.elog.Error(loggerEid, err.Error())
-		} else {
-			// EOF
-		}
+		close(lc)
+		close(done)
 	}()
-	return cmd.Start()
+
+	return nil
 }
 
 func interrupt(p *os.Process) error {
@@ -135,6 +211,8 @@ func (h *handler) stop() error {
 		}
 		return h.cmd.Process.Kill()
 	}
+
+	h.wg.Wait()
 	return nil
 }
 

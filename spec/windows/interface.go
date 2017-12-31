@@ -5,7 +5,7 @@ package windows
 import (
 	"net"
 
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/spec"
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
@@ -58,6 +58,8 @@ func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
 			var ip net.IP
 			switch v := addr.(type) {
 			case *net.IPAddr:
+				ip = v.IP
+			case *net.IPNet:
 				ip = v.IP
 			}
 			if ip == nil || ip.IsLoopback() {

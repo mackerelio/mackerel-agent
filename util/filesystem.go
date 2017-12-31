@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/Songmu/timeout"
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 )
 
 // DfStat is disk free statistics from df command.
@@ -50,7 +50,7 @@ func init() {
 	case "darwin":
 		dfOpt = []string{"-Pkl"}
 	case "freebsd":
-		dfOpt = []string{"-Pkt", "noprocfs,devfs,fdescfs,nfs,cd9660"}
+		dfOpt = []string{"-Pkt", "noprocfs,devfs,fdescfs,nfs,nullfs,cd9660"}
 	case "netbsd":
 		dfOpt = []string{"-Pkl"}
 	default:
@@ -92,6 +92,12 @@ func parseDfLines(out string) []*DfStat {
 		}
 		// https://github.com/docker/docker/blob/v1.5.0/daemon/graphdriver/devmapper/deviceset.go#L981
 		if strings.HasPrefix(dfstat.Name, "/dev/mapper/docker-") {
+			continue
+		}
+		// https://debbugs.gnu.org/cgi/bugreport.cgi?bug=10363
+		// http://git.savannah.gnu.org/gitweb/?p=coreutils.git;a=commit;h=1e18d8416f9ef43bf08982cabe54220587061a08
+		// coreutils >= 8.15
+		if strings.HasPrefix(dfstat.Name, "/dev/dm-") && strings.Contains(dfstat.Mounted, "devicemapper/mnt") {
 			continue
 		}
 		filesystems = append(filesystems, dfstat)

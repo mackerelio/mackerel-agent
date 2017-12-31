@@ -25,16 +25,16 @@ func TestRunOnce(t *testing.T) {
 	conf := &config.Config{
 		MetricPlugins: map[string]*config.MetricPlugin{
 			"metric1": {
-				Command: diceCommand,
+				Command: config.Command{Cmd: diceCommand},
 			},
 		},
 		CheckPlugins: map[string]*config.CheckPlugin{
 			"check1": {
-				Command: "echo 1",
+				Command: config.Command{Cmd: "echo 1"},
 			},
 		},
 	}
-	err := RunOnce(conf)
+	err := RunOnce(conf, &AgentMeta{})
 	if err != nil {
 		t.Errorf("RunOnce() should be nomal exit: %s", err)
 	}
@@ -52,16 +52,16 @@ func TestRunOncePayload(t *testing.T) {
 	conf := &config.Config{
 		MetricPlugins: map[string]*config.MetricPlugin{
 			"metric1": {
-				Command: diceCommand,
+				Command: config.Command{Cmd: diceCommand},
 			},
 		},
 		CheckPlugins: map[string]*config.CheckPlugin{
 			"check1": {
-				Command: "echo 1",
+				Command: config.Command{Cmd: "echo 1"},
 			},
 		},
 	}
-	graphdefs, hostSpec, metrics, err := runOncePayload(conf)
+	graphdefs, hostSpec, metrics, err := runOncePayload(conf, &AgentMeta{})
 	if err != nil {
 		t.Errorf("RunOnce() should be nomal exit: %s", err)
 	}

@@ -8,12 +8,13 @@ It was downloaded from:
 
 Copyright:
 
-    <Copyright (C) 2014 Hatena>
+    <Copyright (C) 2014 Hatena Co., Ltd.>
 
 License:
 
-    Commercial
+    Apache-2.0
+    To obtain full license text, see /usr/share/common-licenses/Apache-2.0
 
 The Debian packaging is:
 
-    Copyright (C) 2014 Hatena <developers@mackerel.io>
+    Copyright (C) 2014 Hatena Co., Ltd. <developers@mackerel.io>

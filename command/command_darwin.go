@@ -23,12 +23,11 @@ func interfaceGenerator() spec.InterfaceGenerator {
 
 func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
-		&metricsDarwin.Loadavg5Generator{},
+		&metrics.Loadavg5Generator{},
 		&metricsDarwin.CPUUsageGenerator{},
 		&metricsDarwin.MemoryGenerator{},
-		&metricsDarwin.SwapGenerator{},
 		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp, UseMountpoint: conf.Filesystems.UseMountpoint},
-		&metricsDarwin.InterfaceGenerator{Interval: metricsInterval},
+		&metrics.InterfaceGenerator{Interval: metricsInterval},
 	}
 
 	return generators

@@ -5,7 +5,7 @@ package windows
 import (
 	"unsafe"
 
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 

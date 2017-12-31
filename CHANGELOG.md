@@ -1,5 +1,172 @@
 # Changelog
 
+## 0.48.2 (2017-12-20)
+
+* Fix network interface spec collector on Windows #452 (itchyny)
+
+
+## 0.48.1 (2017-12-13)
+
+* fix a bug when action of check-plugin was not specified #450 (hayajo)
+
+
+## 0.48.0 (2017-12-12)
+
+* Set environment variables for plugins #448 (hayajo)
+* Add an option to declare cloud platform explicitly #447 (astj)
+
+
+## 0.47.3 (2017-11-28)
+
+* Fix interface metrics of large counter values on Linux #445 (itchyny)
+* Refine license notice #444 (itchyny)
+* Improve plugin command parsing error message #443 (itchyny)
+* Log stderr and err of check action #432 (mechairoi)
+* Commonize interface generators for Linux, Darwin and add support for BSD systems #441 (itchyny)
+
+
+## 0.47.2 (2017-11-09)
+
+* Use go 1.9.2 #437 (astj)
+* Commonize loadavg5 generators for Linux, Darwin and BSD systems #435 (itchyny)
+* Change log level in device generator if /sys/block does not exist #424 (itchyny)
+
+
+## 0.47.1 (2017-10-26)
+
+* Use go-osstat library on linux #428 (itchyny)
+
+
+## 0.47.0 (2017-10-19)
+
+* Trigger action command after check plugin running. #425 (mechairoi)
+* Ensure returned value of retrieveAzureVMMetadata is not null #429 (astj)
+* Use go-osstat library on darwin #422 (itchyny)
+* Subtract cpu.guest from cpu.user on Linux #423 (itchyny)
+* Improve kernel spec generator performance for Linux #427 (itchyny)
+* Improve implementation for memory spec on Linux #426 (itchyny)
+* Do not send too many reports in one API request. #420 (astj)
+
+
+## 0.46.0 (2017-10-04)
+
+* Use new API BaseURL #417 (astj)
+* Filter plugin metrics value by include_pattern and exclude_pattern option #416 (astj)
+
+
+## 0.45.0 (2017-09-27)
+
+* build with Go 1.9 #414 (astj)
+
+
+## 0.44.2 (2017-08-30)
+
+* Change the log level for failure of posting metric values #409 (itchyny)
+* Show CPU/SoC model name on Linux/MIPS #408 (hnw)
+
+
+## 0.44.1 (2017-08-23)
+
+* Fail to start when custom identifiers are mismatched #405 (mechairoi)
+* Fix the Azure VM check #404 (stefafafan)
+* Adjust the Azure Virtual Machine metadata keys #403 (stefafafan)
+
+
+## 0.44.0 (2017-07-26)
+
+* Adjust isEC2 check  #401 (stefafafan)
+* Support Azure VM Metadata #399 (stefafafan)
+* FreeBSD: don't collect nullfs disk stat #400 (kyontan)
+* Improve the EC2 Instance check #398 (stefafafan)
+
+
+## 0.43.2 (2017-06-14)
+
+* Revert "Enable HTTP/2" #393 (Songmu)
+* [refactoring] remove version package and adjust internal dependencies #391 (Songmu)
+
+
+## 0.43.1 (2017-05-17)
+
+* rename command.Context to command.App #384 (Songmu)
+* Add `prevent_alert_auto_close` option for check plugins #387 (mechairoi)
+* Remove supported OS section from README. #388 (astj)
+
+
+## 0.43.0 (2017-05-09)
+
+* Use DiskReadsPerSec/DiskWritesPerSec instead of DiskReadBytesPersec/DiskWriteBytesPersec (on Windows) #382 (mattn)
+* Enable HTTP/2 #383 (astj)
+
+
+## 0.42.3 (2017-04-27)
+
+* Output error logs of mackerel-agent as warning log of windows event log #380 (Songmu)
+
+
+## 0.42.2 (2017-04-19)
+
+* Adjust config package #375 (Songmu)
+* use CRLF in mackerel-agent.conf on windows #377 (Songmu)
+
+
+## 0.42.1 (2017-04-11)
+
+* LC_ALL=C on initialization #373 (Songmu)
+
+
+## 0.42.0 (2017-04-06)
+
+* Logs that are not via the mackerel-agent's logger are also output to the eventlog #367 (Songmu)
+* Change package License to Apache 2.0 #368 (astj)
+* Release systemd deb packages to github releases #369 (astj)
+* Change systemd deb package architecture to amd64 #370 (astj)
+
+
+## 0.41.3 (2017-03-27)
+
+* build with Go 1.8 #342 (astj)
+* [EXPERIMENTAL] Add systemd support for deb packages #360 (astj)
+* Timeout for command execution on Windows #361 (mattn)
+* It need to read output from command continuously. #364 (mattn)
+* remove util/util_windows.go and commonalize util.RunCommand #365 (Songmu)
+
+
+## 0.41.2 (2017-03-22)
+
+* Don't raise error when creating pidfile if the contents of pidfile is same as own pid #357 (Songmu)
+* Exclude _tools from package #358 (itchyny)
+* Add workaround for docker0 interface in docker-enabled Travis #359 (astj)
+
+
+## 0.41.1 (2017-03-09)
+
+* add check-tcp on pluginlist.txt #351 (daiksy)
+
+
+## 0.41.0 (2017-03-07)
+
+* [EXPERIMENTAL] systemd support for CentOS 7 #317 (astj)
+* add `supervise` subcommand (supervisor mode) #327 (Songmu)
+* Build RPM packages with Docker #330 (astj)
+* run test with -race in CI #339 (haya14busa)
+* Use hw.physmem64 instead of hw.physmem in NetBSD #343 (miwarin, astj)
+* Build RPM files on CentOS5 on Docker #344 (astj)
+* Keep environment variables when Agent runs commands with sudo #346 (astj)
+* Release systemd RPMs to github releases #347 (astj)
+* Fix disk metrics on Windows #348 (mattn)
+
+
+## 0.40.0 (2017-02-22)
+
+* support metadata plugins in configuration #331 (itchyny)
+* Add metadata plugin feature #333 (itchyny)
+* Use Named Result Parameters as document #334 (haya14busa)
+* Set large number of file descriptors for the safety sake in init scripts #337 (Songmu)
+* Improve darwin cpu spec #338 (astj)
+* Fix format verb: use '%v' #340 (haya14busa)
+
+
 ## 0.39.4 (2017-02-08)
 
 * prepare windows eventlog #319 (daiksy)

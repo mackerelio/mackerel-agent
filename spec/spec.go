@@ -1,8 +1,7 @@
 package spec
 
 import (
-	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/version"
+	"github.com/mackerelio/golib/logging"
 )
 
 var logger = logging.GetLogger("spec")
@@ -24,8 +23,5 @@ func Collect(specGenerators []Generator) map[string]interface{} {
 		}
 		specs[g.Key()] = value
 	}
-	specs["agent-version"] = version.VERSION
-	specs["agent-revision"] = version.GITCOMMIT
-	specs["agent-name"] = version.UserAgent()
 	return specs
 }

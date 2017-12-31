@@ -15,8 +15,8 @@ install:
   - echo %Path%
   - choco install -y ruby
   - rd c:\go /s /q
-  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.7.windows-386.zip
-  - 7z x go1.7.windows-386.zip -oC:\ >nul
+  - appveyor DownloadFile https://storage.googleapis.com/golang/go1.9.2.windows-386.zip
+  - 7z x go1.9.2.windows-386.zip -oC:\ >nul
   - go version
   - go env
   - set CERT= & set CERTPASS= & set
@@ -24,7 +24,6 @@ build_script:
   - go get github.com/motemen/go-cli/gen
   - go generate
   - go get golang.org/x/tools/cmd/stringer
-  - go generate ./logging
   - call wix\build.bat
 test_script:
 - FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w

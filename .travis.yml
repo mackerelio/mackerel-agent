@@ -1,18 +1,20 @@
-sudo: false
+sudo: required
+services:
+- docker
 language: go
 go:
-- 1.7
+- 1.9.x
 env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
-  - secure: "B34YsRebWxyx/UAHNAL5YWOgx2RE13TVfDC8FCCc7gAlogJcyAcPnC88fe8ECChHQC3GNnsHSi+GqgxTxzfoVkV+LUAFgHWbcF5O4O/4qHztKj7//72RwO+gXVr4U1Laz45bBr2r68XW0llj5tIlaEYxROJNLSAVDE4yDzmAHgc="
-sudo: false
+  - secure: "VG3xbEjFSuB80QBFchHZqQDB4VF74RTXaNSBPl/bavGr9My2RSqtfXqfEGUHFwo5zPM7LA0bIEC7jsobf6M6vtfVgJKOOXEfF/pfD83n++eHZe0yLN6Wysp1Bn14KH+ont550gDityORqEvX3pK4k9hSb8dXpjGnCtrAwqAS+eg="
 addons:
   apt:
     packages:
-      - rpm
       - devscripts
       - debhelper
+      - dh-systemd
+      - fakeroot
 install:
 - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
@@ -23,29 +25,17 @@ script:
 after_script:
 - goveralls -coverprofile=.profile.cov
 before_deploy:
+- docker pull astj/mackerel-rpm-builder:c5
+- docker pull astj/mackerel-rpm-builder:c7
 - make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
-- go get github.com/aktau/github-release
-- mkdir -p ~/bin
-- git clone https://github.com/github/hub.git && cd hub && script/build -o ~/bin/hub && cd ..
-- echo $TRAVIS_BRANCH
-- git config --add remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
-- git fetch
-- git checkout master || git checkout -b master origin/master
-- git checkout $TRAVIS_BRANCH
-- git fetch --depth=1000
-- git fetch --tags --depth=1000 || true
+- go get github.com/motemen/gobump/cmd/gobump
+- go get github.com/mackerelio/golib/cmd/mackerel-github-release
 deploy:
 - provider: script
-  script: _tools/releng --task=upload-to-github-release -v && _tools/releng --task=upload-master-to-github-release -v
+  script: mackerel-github-release && mackerel-github-release -staging
   skip_cleanup: true
   on:
     branch: master
-- provider: script
-  script: _tools/releng --task=create-pullrequest --current-branch=$TRAVIS_BRANCH -v
-  skip_cleanup: true
-  on:
-    all_branches: true
-    condition: "$TRAVIS_BRANCH =~ ^bump-version-.*$"
 notifications:
   slack:
     secure: n9Hs5rIlb6MuFVsRp46ykd+CptnE3boI7Q9mNLuHwz77IQ/2mpUmOyBRDeW3BA2EXa4WEYAXu8q7/b7zVV+c+RcPdz8/h9N9EBrHUVeIkCP/Nyp+aUA8GvLNjGuxYC7nov3L+9GHBFXKX8FaV2lZ1/Eeb1Ovbtv6Oi39xNkHqTQ=

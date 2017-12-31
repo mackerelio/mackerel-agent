@@ -8,7 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 )
 
 // BlockDeviceGenerator XXX
@@ -26,6 +26,11 @@ var blockDeviceLogger = logging.GetLogger("spec.block_device")
 func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 	fileInfos, err := ioutil.ReadDir("/sys/block")
 	if err != nil {
+		// /sys/block is unavailable on some PaaS (Heroku, for example)
+		if os.IsNotExist(err) {
+			blockDeviceLogger.Debugf("Failed (skip this spec): %s", err)
+			return nil, nil
+		}
 		blockDeviceLogger.Errorf("Failed (skip this spec): %s", err)
 		return nil, err
 	}

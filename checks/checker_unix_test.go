@@ -19,7 +19,7 @@ func TestChecker_CheckTimeout(t *testing.T) {
 
 	checkerTimeout := Checker{
 		Config: &config.CheckPlugin{
-			Command: "sleep 2",
+			Command: config.Command{Cmd: "sleep 2"},
 		},
 	}
 

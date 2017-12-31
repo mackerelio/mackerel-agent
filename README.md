@@ -12,14 +12,11 @@ Once `mackerel-agent` is installed, it runs following tasks on the installed hos
 
 Collected information will be visualized on [Mackerel](https://mackerel.io/).
 
-As of now, mackerel-agent is officially supported to run on Amazon Linux, CentOS 5/6/7, Ubuntu 12.04LTS/14.04LTS, Debian 6/7 or Windows Server 2008 R2 and later 32-bit/64-bit environments.
-
 PREREQUISITES
 -------------
 
 You have to create an organization on [Mackerel](https://mackerel.io/) at first.
 After that, set `apikey` in `mackerel-agent.conf`.
-
 
 SYNOPSIS
 --------
@@ -65,11 +62,18 @@ make test
 
 License
 ----------
-
+```
 Copyright 2014 Hatena Co., Ltd.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```

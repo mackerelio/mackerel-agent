@@ -9,8 +9,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/mackerelio/mackerel-agent/logging"
-	"github.com/mackerelio/mackerel-agent/version"
+	"github.com/mackerelio/golib/logging"
 )
 
 var logger = logging.GetLogger("api")
@@ -25,9 +24,11 @@ type CreatingMetricsValue struct {
 
 // API is the main interface of Mackerel API.
 type API struct {
-	BaseURL *url.URL
-	APIKey  string
-	Verbose bool
+	BaseURL        *url.URL
+	APIKey         string
+	Verbose        bool
+	UA             string
+	DefaultHeaders http.Header
 }
 
 // Error represents API error
@@ -63,7 +64,7 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &API{u, apiKey, verbose}, nil
+	return &API{BaseURL: u, APIKey: apiKey, Verbose: verbose}, nil
 }
 
 func (api *API) urlFor(path string, query string) *url.URL {
@@ -73,13 +74,25 @@ func (api *API) urlFor(path string, query string) *url.URL {
 	return newURL
 }
 
+func (api *API) getUA() string {
+	if api.UA != "" {
+		return api.UA
+	}
+	return "mackerel-agent/0.0.0"
+}
+
 var apiRequestTimeout = 30 * time.Second
 
 func (api *API) do(req *http.Request) (resp *http.Response, err error) {
+	if api.DefaultHeaders != nil {
+		for k, vs := range api.DefaultHeaders {
+			for _, v := range vs {
+				req.Header.Add(k, v)
+			}
+		}
+	}
 	req.Header.Add("X-Api-Key", api.APIKey)
-	req.Header.Add("X-Agent-Version", version.VERSION)
-	req.Header.Add("X-Revision", version.GITCOMMIT)
-	req.Header.Set("User-Agent", version.UserAgent())
+	req.Header.Set("User-Agent", api.getUA())
 
 	if api.Verbose {
 		dump, err := httputil.DumpRequest(req, true)

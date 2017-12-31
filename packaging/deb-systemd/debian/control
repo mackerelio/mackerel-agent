@@ -1,0 +1,15 @@
+Source: mackerel-agent
+Section: admin
+Priority: extra
+Maintainer: Hatena <mackerel-developers@hatena.ne.jp>
+Build-Depends: debhelper (>= 9), dh-systemd
+Standards-Version: 3.9.6
+Vcs-Browser: https://github.com/mackerelio/mackerel-agent
+Vcs-Git: https://github.com/mackerelio/mackerel-agent.git
+Homepage: https://mackerel.io
+
+Package: mackerel-agent
+Architecture: amd64
+Depends: ${misc:Depends}, systemd
+Description: mackerel.io agent
+ Server monitoring agent for https://mackerel.io (Monitoring SaaS)

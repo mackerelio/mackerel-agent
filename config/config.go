@@ -10,8 +10,9 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/mackerelio/mackerel-agent/logging"
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/util"
+	"github.com/pkg/errors"
 )
 
 var configLogger = logging.GetLogger("config")
@@ -23,7 +24,7 @@ func getApibase() string {
 	if apibase != "" {
 		return apibase
 	}
-	return "https://mackerel.io"
+	return "https://api.mackerelio.com"
 }
 
 var agentName string
@@ -35,22 +36,89 @@ func getAgentName() string {
 	return "mackerel-agent"
 }
 
+// DefaultConfig stores standard settings for each environment
+var DefaultConfig *Config
+
+var defaultConnectionConfig = ConnectionConfig{
+	PostMetricsDequeueDelaySeconds: 30,     // Check the metric values queue for every half minute
+	PostMetricsRetryDelaySeconds:   60,     // Wait a minute before retrying metric value posts
+	PostMetricsRetryMax:            60,     // Retry up to 60 times (30s * 60 = 30min)
+	PostMetricsBufferSize:          6 * 60, // Keep metric values of 6 hours span in the queue
+	ReportCheckDelaySeconds:        1,      // Wait a second before reporting the next check
+	ReportCheckDelaySecondsMax:     30,     // Wait 30 seconds before reporting the next check when many reports in queue
+	ReportCheckRetryDelaySeconds:   30,     // Wait 30 seconds before retrying report the next check
+	ReportCheckBufferSize:          6 * 60, // Keep check reports of 6 hours span in the queue
+}
+
+// CloudPlatform is an enum to represent which cloud platform the host is running on.
+type CloudPlatform int
+
+// CloudPlatform enum values
+const (
+	CloudPlatformAuto CloudPlatform = iota
+	CloudPlatformNone
+	CloudPlatformEC2
+	CloudPlatformGCE
+	CloudPlatformAzureVM
+)
+
+func (c CloudPlatform) String() string {
+	switch c {
+	case CloudPlatformAuto:
+		return "auto"
+	case CloudPlatformNone:
+		return "none"
+	case CloudPlatformEC2:
+		return "ec2"
+	case CloudPlatformGCE:
+		return "gce"
+	case CloudPlatformAzureVM:
+		return "azurevm"
+	}
+	return ""
+}
+
+// UnmarshalText is used by toml unmarshaller
+func (c *CloudPlatform) UnmarshalText(text []byte) error {
+	switch string(text) {
+	case "auto", "":
+		*c = CloudPlatformAuto
+		return nil
+	case "none":
+		*c = CloudPlatformNone
+		return nil
+	case "ec2":
+		*c = CloudPlatformEC2
+		return nil
+	case "gce":
+		*c = CloudPlatformGCE
+		return nil
+	case "azurevm":
+		*c = CloudPlatformAzureVM
+		return nil
+	default:
+		*c = CloudPlatformNone // Avoid panic
+		return fmt.Errorf("failed to parse")
+	}
+}
+
 // Config represents mackerel-agent's configuration file.
 type Config struct {
-	Apibase     string
-	Apikey      string
-	Root        string
-	Pidfile     string
-	Conffile    string
-	Roles       []string
-	Verbose     bool
-	Silent      bool
-	Diagnostic  bool `toml:"diagnostic"`
-	Connection  ConnectionConfig
-	DisplayName string      `toml:"display_name"`
-	HostStatus  HostStatus  `toml:"host_status"`
-	Filesystems Filesystems `toml:"filesystems"`
-	HTTPProxy   string      `toml:"http_proxy"`
+	Apibase       string
+	Apikey        string
+	Root          string
+	Pidfile       string
+	Conffile      string
+	Roles         []string
+	Verbose       bool
+	Silent        bool
+	Diagnostic    bool `toml:"diagnostic"`
+	Connection    ConnectionConfig
+	DisplayName   string        `toml:"display_name"`
+	HostStatus    HostStatus    `toml:"host_status"`
+	Filesystems   Filesystems   `toml:"filesystems"`
+	HTTPProxy     string        `toml:"http_proxy"`
+	CloudPlatform CloudPlatform `toml:"cloud_platform"`
 
 	// This Plugin field is used to decode the toml file. After reading the
 	// configuration from file, this field is set to nil.
@@ -68,143 +136,241 @@ type Config struct {
 
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
-	CommandRaw           interface{} `toml:"command"`
-	Command              string
-	CommandArgs          []string
-	User                 string
-	NotificationInterval *int32  `toml:"notification_interval"`
-	CheckInterval        *int32  `toml:"check_interval"`
-	ExecutionInterval    *int32  `toml:"execution_interval"`
-	MaxCheckAttempts     *int32  `toml:"max_check_attempts"`
-	CustomIdentifier     *string `toml:"custom_identifier"`
+	CommandRaw            interface{} `toml:"command"`
+	User                  string
+	NotificationInterval  *int32        `toml:"notification_interval"`
+	CheckInterval         *int32        `toml:"check_interval"`
+	ExecutionInterval     *int32        `toml:"execution_interval"`
+	MaxCheckAttempts      *int32        `toml:"max_check_attempts"`
+	CustomIdentifier      *string       `toml:"custom_identifier"`
+	PreventAlertAutoClose bool          `toml:"prevent_alert_auto_close"`
+	IncludePattern        *string       `toml:"include_pattern"`
+	ExcludePattern        *string       `toml:"exclude_pattern"`
+	Action                CommandConfig `toml:"action"`
+	Env                   Env           `toml:"env"`
+}
+
+// CommandConfig represents an executable command configuration.
+type CommandConfig struct {
+	Raw  interface{} `toml:"command"`
+	User string
+	Env  Env `toml:"env"`
+}
+
+// Env represents environments.
+type Env map[string]string
+
+// ConvertToStrings converts to a slice of the form "key=value".
+func (e Env) ConvertToStrings() ([]string, error) {
+	env := make([]string, 0, len(e))
+	for k, v := range e {
+		if strings.Contains(k, "=") {
+			return nil, fmt.Errorf("failed to parse plugin env. A key of env should not contain \"=\", but %q", k)
+		}
+		k = strings.Trim(k, " ")
+		if k == "" {
+			continue
+		}
+		env = append(env, k+"="+v)
+	}
+	return env, nil
+}
+
+// Command represents an executable command.
+type Command struct {
+	Cmd  string
+	Args []string
+	User string
+	Env  []string
+}
+
+// Run the Command.
+func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
+	if len(cmd.Args) > 0 {
+		return util.RunCommandArgs(cmd.Args, cmd.User, cmd.Env)
+	}
+	return util.RunCommand(cmd.Cmd, cmd.User, cmd.Env)
+}
+
+// RunWithEnv runs the Command with Environment.
+func (cmd *Command) RunWithEnv(env []string) (stdout, stderr string, exitCode int, err error) {
+	env = append(cmd.Env, env...)
+	if len(cmd.Args) > 0 {
+		return util.RunCommandArgs(cmd.Args, cmd.User, env)
+	}
+	return util.RunCommand(cmd.Cmd, cmd.User, env)
+}
+
+// CommandString returns the command string for log messages
+func (cmd *Command) CommandString() string {
+	if len(cmd.Args) > 0 {
+		return strings.Join(cmd.Args, " ")
+	}
+	return cmd.Cmd
 }
 
 // MetricPlugin represents the configuration of a metric plugin
 // The User option is ignored on Windows
 type MetricPlugin struct {
-	Command          string
-	CommandArgs      []string
-	User             string
+	Command          Command
 	CustomIdentifier *string
+	IncludePattern   *regexp.Regexp
+	ExcludePattern   *regexp.Regexp
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
-	err := pconf.prepareCommand()
+	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
 	if err != nil {
 		return nil, err
 	}
+	if cmd == nil {
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+	}
+
+	cmd.Env, err = pconf.Env.ConvertToStrings()
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		includePattern *regexp.Regexp
+		excludePattern *regexp.Regexp
+	)
+	if pconf.IncludePattern != nil {
+		includePattern, err = regexp.Compile(*pconf.IncludePattern)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if pconf.ExcludePattern != nil {
+		excludePattern, err = regexp.Compile(*pconf.ExcludePattern)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &MetricPlugin{
-		Command:          pconf.Command,
-		CommandArgs:      pconf.CommandArgs,
-		User:             pconf.User,
+		Command:          *cmd,
 		CustomIdentifier: pconf.CustomIdentifier,
+		IncludePattern:   includePattern,
+		ExcludePattern:   excludePattern,
 	}, nil
-}
-
-// Run the metric plugin.
-func (pconf *MetricPlugin) Run() (stdout, stderr string, exitCode int, err error) {
-	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
-	}
-	return util.RunCommand(pconf.Command, pconf.User)
-}
-
-// CommandString returns the command string for log messages
-func (pconf *MetricPlugin) CommandString() string {
-	if len(pconf.CommandArgs) > 0 {
-		return strings.Join(pconf.CommandArgs, " ")
-	}
-	return pconf.Command
 }
 
 // CheckPlugin represents the configuration of a check plugin
 // The User option is ignored on Windows
 type CheckPlugin struct {
-	Command              string
-	CommandArgs          []string
-	User                 string
-	NotificationInterval *int32
-	CheckInterval        *int32
-	MaxCheckAttempts     *int32
+	Command               Command
+	NotificationInterval  *int32
+	CheckInterval         *int32
+	MaxCheckAttempts      *int32
+	PreventAlertAutoClose bool
+	Action                *Command
 }
 
-func (pconf *PluginConfig) buildCheckPlugin() (*CheckPlugin, error) {
-	err := pconf.prepareCommand()
+func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
+	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
 	if err != nil {
 		return nil, err
 	}
-	return &CheckPlugin{
-		Command:              pconf.Command,
-		CommandArgs:          pconf.CommandArgs,
-		User:                 pconf.User,
-		NotificationInterval: pconf.NotificationInterval,
-		CheckInterval:        pconf.CheckInterval,
-		MaxCheckAttempts:     pconf.MaxCheckAttempts,
-	}, nil
-}
-
-// Run the check plugin.
-func (pconf *CheckPlugin) Run() (stdout, stderr string, exitCode int, err error) {
-	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
+	if cmd == nil {
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
 	}
-	return util.RunCommand(pconf.Command, pconf.User)
+
+	cmd.Env, err = pconf.Env.ConvertToStrings()
+	if err != nil {
+		return nil, err
+	}
+
+	action, err := parseCommand(pconf.Action.Raw, pconf.Action.User)
+	if err != nil {
+		return nil, err
+	}
+
+	if action != nil {
+		action.Env, err = pconf.Action.Env.ConvertToStrings()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	plugin := CheckPlugin{
+		Command:               *cmd,
+		NotificationInterval:  pconf.NotificationInterval,
+		CheckInterval:         pconf.CheckInterval,
+		MaxCheckAttempts:      pconf.MaxCheckAttempts,
+		PreventAlertAutoClose: pconf.PreventAlertAutoClose,
+		Action:                action,
+	}
+	if plugin.MaxCheckAttempts != nil && *plugin.MaxCheckAttempts > 1 && plugin.PreventAlertAutoClose {
+		*plugin.MaxCheckAttempts = 1
+		configLogger.Warningf("'plugin.checks.%s.max_check_attempts' is set to 1 (Unavailable with 'prevent_alert_auto_close')", name)
+	}
+	return &plugin, nil
 }
 
 // MetadataPlugin represents the configuration of a metadata plugin
 // The User option is ignored on Windows
 type MetadataPlugin struct {
-	Command           string
-	CommandArgs       []string
-	User              string
+	Command           Command
 	ExecutionInterval *int32
 }
 
 func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
-	err := pconf.prepareCommand()
+	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
 	if err != nil {
 		return nil, err
 	}
+	if cmd == nil {
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+	}
+
+	cmd.Env, err = pconf.Env.ConvertToStrings()
+	if err != nil {
+		return nil, err
+	}
+
 	return &MetadataPlugin{
-		Command:           pconf.Command,
-		CommandArgs:       pconf.CommandArgs,
-		User:              pconf.User,
+		Command:           *cmd,
 		ExecutionInterval: pconf.ExecutionInterval,
 	}, nil
 }
 
-// Run the metadata plugin.
-func (pconf *MetadataPlugin) Run() (stdout, stderr string, exitCode int, err error) {
-	if len(pconf.CommandArgs) > 0 {
-		return util.RunCommandArgs(pconf.CommandArgs, pconf.User)
-	}
-	return util.RunCommand(pconf.Command, pconf.User)
-}
-
-func (pconf *PluginConfig) prepareCommand() error {
-	const errFmt = "failed to prepare plugin command. A configuration value of `command` should be string or string slice, but %T"
-	v := pconf.CommandRaw
-	switch t := v.(type) {
+func parseCommand(commandRaw interface{}, user string) (command *Command, err error) {
+	const errFmt = "failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T"
+	switch t := commandRaw.(type) {
 	case string:
-		pconf.Command = t
+		return &Command{
+			Cmd:  t,
+			User: user,
+		}, nil
 	case []interface{}:
 		if len(t) > 0 {
+			args := []string{}
 			for _, vv := range t {
 				str, ok := vv.(string)
 				if !ok {
-					return fmt.Errorf(errFmt, v)
+					return nil, fmt.Errorf(errFmt, commandRaw)
 				}
-				pconf.CommandArgs = append(pconf.CommandArgs, str)
+
+				args = append(args, str)
 			}
-		} else {
-			return fmt.Errorf(errFmt, v)
+			return &Command{
+				Args: args,
+				User: user,
+			}, nil
 		}
+		return nil, fmt.Errorf(errFmt, commandRaw)
 	case []string:
-		pconf.CommandArgs = t
+		return &Command{
+			Args: t,
+			User: user,
+		}, nil
+	case nil:
+		return nil, nil
 	default:
-		return fmt.Errorf(errFmt, v)
+		return nil, fmt.Errorf(errFmt, commandRaw)
 	}
-	return nil
 }
 
 const postMetricsDequeueDelaySecondsMax = 59   // max delay seconds for dequeuing from buffer queue
@@ -219,6 +385,10 @@ type ConnectionConfig struct {
 	PostMetricsRetryDelaySeconds   int `toml:"post_metrics_retry_delay_seconds"`   // delay for retrying a request that caused errors
 	PostMetricsRetryMax            int `toml:"post_metrics_retry_max"`             // max numbers of retries for a request that causes errors
 	PostMetricsBufferSize          int `toml:"post_metrics_buffer_size"`           // max numbers of requests stored in buffer queue.
+	ReportCheckDelaySeconds        int `toml:"report_checks_delay_seconds"`        // delay for request reports
+	ReportCheckDelaySecondsMax     int `toml:"report_checks_delay_seconds_max"`    // max delay for request reports
+	ReportCheckRetryDelaySeconds   int `toml:"report_checks_retry_delay_seconds"`  // delay for retrying a request that caused errors
+	ReportCheckBufferSize          int `toml:"report_checks_buffer_size"`          // max numbers of requests stored in buffer queue.
 }
 
 // HostStatus configure host status on agent start/stop
@@ -317,6 +487,18 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Connection.PostMetricsBufferSize == 0 {
 		config.Connection.PostMetricsBufferSize = DefaultConfig.Connection.PostMetricsBufferSize
 	}
+	if config.Connection.ReportCheckDelaySeconds == 0 {
+		config.Connection.ReportCheckDelaySeconds = DefaultConfig.Connection.ReportCheckDelaySeconds
+	}
+	if config.Connection.ReportCheckDelaySecondsMax == 0 {
+		config.Connection.ReportCheckDelaySecondsMax = DefaultConfig.Connection.ReportCheckDelaySecondsMax
+	}
+	if config.Connection.ReportCheckRetryDelaySeconds == 0 {
+		config.Connection.ReportCheckRetryDelaySeconds = DefaultConfig.Connection.ReportCheckRetryDelaySeconds
+	}
+	if config.Connection.ReportCheckBufferSize == 0 {
+		config.Connection.ReportCheckBufferSize = DefaultConfig.Connection.ReportCheckBufferSize
+	}
 
 	return config, err
 }
@@ -327,16 +509,16 @@ func (conf *Config) setEachPlugins() error {
 		for name, pconf := range pconfs {
 			conf.MetricPlugins[name], err = pconf.buildMetricPlugin()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "plugin.metrics."+name)
 			}
 		}
 	}
 	if pconfs, ok := conf.Plugin["checks"]; ok {
 		var err error
 		for name, pconf := range pconfs {
-			conf.CheckPlugins[name], err = pconf.buildCheckPlugin()
+			conf.CheckPlugins[name], err = pconf.buildCheckPlugin(name)
 			if err != nil {
-				return err
+				return errors.Wrap(err, "plugin.checks."+name)
 			}
 		}
 	}
@@ -345,7 +527,7 @@ func (conf *Config) setEachPlugins() error {
 		for name, pconf := range pconfs {
 			conf.MetadataPlugins[name], err = pconf.buildMetadataPlugin()
 			if err != nil {
-				return err
+				return errors.Wrap(err, "plugin.metadata."+name)
 			}
 		}
 	}
@@ -461,7 +643,11 @@ func (s FileSystemHostIDStorage) LoadHostID() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.TrimRight(string(content), "\r\n"), nil
+	hostID := strings.TrimRight(string(content), "\r\n")
+	if hostID == "" {
+		return "", fmt.Errorf("HostIDFile found, but the content is empty")
+	}
+	return hostID, nil
 }
 
 // SaveHostID saves the host ID to the mackerel-agent's id file.

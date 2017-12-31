@@ -11,9 +11,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/agent"
+	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 )
@@ -107,7 +108,7 @@ func TestPrepareWithCreate(t *testing.T) {
 		}
 	}
 
-	c, _ := Prepare(&conf)
+	c, _ := Prepare(&conf, &AgentMeta{})
 	api := c.API
 	host := c.Host
 
@@ -140,7 +141,7 @@ func TestPrepareWithCreateWithFail(t *testing.T) {
 		retryNum = origRetryNum
 	}()
 
-	_, err := Prepare(&conf)
+	_, err := Prepare(&conf, &AgentMeta{})
 
 	if err == nil {
 		t.Errorf("error should be occurred")
@@ -171,7 +172,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 		}
 	}
 
-	c, _ := Prepare(&conf)
+	c, _ := Prepare(&conf, &AgentMeta{})
 	api := c.API
 	host := c.Host
 
@@ -189,7 +190,8 @@ func TestPrepareWithUpdate(t *testing.T) {
 }
 
 func TestCollectHostSpecs(t *testing.T) {
-	hostname, meta, _ /*interfaces*/, _ /*customIdentifier*/, err := collectHostSpecs()
+	conf := config.Config{}
+	hostname, meta, _ /*interfaces*/, _ /*customIdentifier*/, err := collectHostSpecs(&conf)
 
 	if err != nil {
 		t.Errorf("collectHostSpecs should not fail: %s", err)
@@ -314,15 +316,16 @@ func TestLoop(t *testing.T) {
 
 	termCh := make(chan struct{})
 	exitCh := make(chan error)
-	c := &Context{
-		Agent:  ag,
-		Config: &conf,
-		API:    api,
-		Host:   host,
+	app := &App{
+		Agent:     ag,
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
 	}
 	// Start looping!
 	go func() {
-		exitCh <- loop(c, termCh)
+		exitCh <- loop(app, termCh)
 	}()
 
 	<-done
@@ -345,5 +348,76 @@ func TestLoop(t *testing.T) {
 	exitErr := <-exitCh
 	if exitErr != nil {
 		t.Errorf("exitErr should be nil, got: %s", exitErr)
+	}
+}
+
+func TestReportCheckMonitors(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	cases := []struct {
+		Status      int
+		expectRetry bool
+	}{
+		{http.StatusOK, false},
+		{http.StatusBadRequest, false},
+		{http.StatusInternalServerError, true},
+	}
+
+	for _, tc := range cases {
+		conf, mockHandlers, ts := newMockAPIServer(t)
+		defer ts.Close()
+
+		if testing.Short() {
+			conf.Connection.ReportCheckRetryDelaySeconds = 1
+		}
+
+		postCount := 0
+		retried := false
+		mu := &sync.Mutex{}
+
+		mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+			mu.Lock()
+			defer mu.Unlock()
+			postCount++
+			if postCount > 1 {
+				retried = true
+			}
+			return tc.Status, jsonObject{}
+		}
+
+		api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		host := &mackerel.Host{ID: "xyzabc12345"}
+
+		app := &App{
+			Agent:     &agent.Agent{},
+			Config:    &conf,
+			API:       api,
+			Host:      host,
+			AgentMeta: &AgentMeta{},
+		}
+
+		go func() {
+			reportCheckMonitors(app, []*checks.Report{})
+		}()
+
+		time.Sleep(time.Duration(conf.Connection.ReportCheckRetryDelaySeconds) * 3 * time.Second)
+
+		mu.Lock()
+		defer mu.Unlock()
+
+		if retried != tc.expectRetry {
+			text := http.StatusText(tc.Status)
+			if tc.expectRetry {
+				t.Errorf("the agent should have resend reports when got %d %q", tc.Status, text)
+			} else {
+				t.Errorf("the agent should not have resend reports when got %d %q", tc.Status, text)
+			}
+		}
 	}
 }

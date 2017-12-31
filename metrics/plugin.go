@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/logging"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 )
 
@@ -124,9 +124,9 @@ func (g *pluginGenerator) loadPluginMeta() error {
 	os.Setenv(pluginConfigurationEnvName, "1")
 	defer os.Setenv(pluginConfigurationEnvName, "")
 
-	stdout, stderr, exitCode, err := g.Config.Run()
+	stdout, stderr, exitCode, err := g.Config.Command.Run()
 	if err != nil {
-		return fmt.Errorf("running %s failed: %s, exit=%d stderr=%q", g.Config.CommandString(), err, exitCode, stderr)
+		return fmt.Errorf("running %s failed: %s, exit=%d stderr=%q", g.Config.Command.CommandString(), err, exitCode, stderr)
 	}
 
 	outBuffer := bufio.NewReader(strings.NewReader(stdout))
@@ -134,7 +134,7 @@ func (g *pluginGenerator) loadPluginMeta() error {
 
 	headerLine, err := outBuffer.ReadString('\n')
 	if err != nil {
-		return fmt.Errorf("while reading the first line of command %s: %s", g.Config.CommandString(), err)
+		return fmt.Errorf("while reading the first line of command %s: %s", g.Config.Command.CommandString(), err)
 	}
 
 	// Parse the header line of format:
@@ -216,13 +216,13 @@ var delimReg = regexp.MustCompile(`[\s\t]+`)
 
 func (g *pluginGenerator) collectValues() (Values, error) {
 	os.Setenv(pluginConfigurationEnvName, "")
-	stdout, stderr, _, err := g.Config.Run()
+	stdout, stderr, _, err := g.Config.Command.Run()
 
 	if stderr != "" {
-		pluginLogger.Infof("command %s outputted to STDERR: %q", g.Config.CommandString(), stderr)
+		pluginLogger.Infof("command %s outputted to STDERR: %q", g.Config.Command.CommandString(), stderr)
 	}
 	if err != nil {
-		pluginLogger.Errorf("Failed to execute command %s (skip these metrics):\n", g.Config.CommandString())
+		pluginLogger.Errorf("Failed to execute command %s (skip these metrics):\n", g.Config.Command.CommandString())
 		return nil, err
 	}
 
@@ -234,13 +234,22 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 		if len(items) != 3 {
 			continue
 		}
+
+		key := items[0]
+
+		if g.Config.IncludePattern != nil && !g.Config.IncludePattern.MatchString(key) {
+			continue
+		}
+
+		if g.Config.ExcludePattern != nil && g.Config.ExcludePattern.MatchString(key) {
+			continue
+		}
+
 		value, err := strconv.ParseFloat(items[1], 64)
 		if err != nil {
 			pluginLogger.Warningf("Failed to parse values: %s", err)
 			continue
 		}
-
-		key := items[0]
 
 		results[pluginPrefix+key] = value
 	}

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/logging"
 )
 
 var logger = logging.GetLogger("checks")
@@ -58,7 +58,7 @@ func (c *Checker) String() string {
 // Check invokes the command and transforms its result to a Report.
 func (c *Checker) Check() *Report {
 	now := time.Now()
-	message, stderr, exitCode, err := c.Config.Run()
+	message, stderr, exitCode, err := c.Config.Command.Run()
 	if stderr != "" {
 		logger.Warningf("Checker %q output stderr: %s", c.Name, stderr)
 	}
