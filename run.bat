@@ -1,1 +1,0 @@
-%CD%\build\mackerel-agent.exe -conf=%CD%\mackerel-agent.conf

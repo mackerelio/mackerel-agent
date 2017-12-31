@@ -50,7 +50,6 @@ Use `.bat` files instead of `make` commands.
 
 ```console
 % build.bat
-% run.bat
 ```
 
 Test
