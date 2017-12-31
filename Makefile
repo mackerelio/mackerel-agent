@@ -34,6 +34,10 @@ lint: deps
 	go tool vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
 	_tools/go-linter $(BUILD_OS_TARGETS)
 
+convention:
+	go generate ./... && git diff --exit-code || \
+	  (echo 'please `go generate ./...` and commit them' && false)
+
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxc -build-ldflags=$(BUILD_LDFLAGS) \
