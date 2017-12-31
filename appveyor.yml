@@ -12,10 +12,8 @@ install:
   - md c:\mackerel-secure
   - ps: if ($env:CERT) { Set-Content c:\mackerel-secure\cert.p12.base64 $env:CERT }
   - ps: if ($env:CERTPASS) { Set-Content c:\mackerel-secure\certpass $env:CERTPASS }
-  - set PATH=%GOROOT%\bin;%GOPATH%\bin;c:\tools\ruby215\bin;%PATH%;C:\MinGW\bin
+  - set PATH=%GOROOT%\bin;%GOPATH%\bin;%PATH%;C:\MinGW\bin
   - echo %Path%
-  - choco install -y ruby
-  - rd c:\go /s /q
   - go version
   - go env
   - set CERT= & set CERTPASS= & set
