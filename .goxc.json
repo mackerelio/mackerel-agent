@@ -1,8 +1,0 @@
-{
-    "ConfigVersion": "0.9",
-    "TasksExclude": [
-        "go-test"
-    ],
-    "MainDirsExclude": "_tools,wix,checks/testdata,metadata/testdata,supervisor/testdata",
-    "ResourcesInclude": "README*,mackerel-agent.conf"
-}

@@ -27,7 +27,7 @@ deps: generate
 	go get -d -v -t ./...
 	go get github.com/golang/lint/golint
 	go get github.com/pierrre/gotestcover
-	go get github.com/laher/goxc
+	go get github.com/Songmu/goxz/cmd/goxz
 	go get github.com/mattn/goveralls
 
 lint: deps
@@ -36,8 +36,14 @@ lint: deps
 
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
-	goxc -build-ldflags=$(BUILD_LDFLAGS) \
-		-os="linux darwin freebsd netbsd" -arch="386 amd64 arm" -d . -n $(MACKEREL_AGENT_NAME)
+	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+		-os=linux,darwin,freebsd,netbsd -arch=386,amd64 -d ./snapshot \
+		-include=mackerel-agent.conf \
+		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
+	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+		-os=linux,freebsd,netbsd -arch=arm -d ./snapshot \
+		-include=mackerel-agent.conf \
+		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
 
 cover: deps
 	gotestcover -v -race -short -covermode=atomic -coverprofile=.profile.cov -parallelpackages=4 ./...
