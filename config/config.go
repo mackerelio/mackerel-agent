@@ -234,6 +234,8 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 		return nil, err
 	}
 
+	cmd.TimeoutDuration = time.Duration(pconf.TimeoutDuration * int64(time.Second))
+
 	var (
 		includePattern *regexp.Regexp
 		excludePattern *regexp.Regexp
@@ -333,6 +335,8 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	cmd.TimeoutDuration = time.Duration(pconf.TimeoutDuration * int64(time.Second))
 
 	return &MetadataPlugin{
 		Command:           *cmd,

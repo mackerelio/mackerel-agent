@@ -28,6 +28,7 @@ post_metrics_retry_max = 5
 command = "ruby /path/to/your/plugin/mysql.rb"
 user = "mysql"
 custom_identifier = "app1.example.com"
+timeout_duration = 60
 
 [plugin.metrics.mysql2]
 command = "ruby /path/to/your/plugin/mysql.rb"
@@ -58,6 +59,7 @@ command = "heartbeat.sh"
 command = "hostinfo.sh"
 user = "zzz"
 execution_interval = 60
+timeout_duration = 60
 
 [plugin.metadata.hostinfo2]
 command = "hostinfo.sh"
@@ -383,6 +385,9 @@ func TestLoadConfigFile(t *testing.T) {
 	if *pluginConf.CustomIdentifier != "app1.example.com" {
 		t.Errorf("plugin custom_identifier should be 'app1.example.com' but got %v", *pluginConf.CustomIdentifier)
 	}
+	if pluginConf.Command.TimeoutDuration != 60*time.Second {
+		t.Error("plugin timeout_duration should be 60s")
+	}
 	customIdentifiers := config.ListCustomIdentifiers()
 	if len(customIdentifiers) != 1 {
 		t.Errorf("config should have 1 custom_identifier")
@@ -485,6 +490,10 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if *metadataPlugin.ExecutionInterval != 60 {
 		t.Errorf("execution interval of metadata plugin should be 60 but got '%v'", *metadataPlugin.ExecutionInterval)
+	}
+	if metadataPlugin.Command.TimeoutDuration != 60*time.Second {
+		t.Errorf("time duration of metadata plugin should be 60s, but got '%v'",
+			metadataPlugin.Command.TimeoutDuration)
 	}
 
 	metadataPlugin2 := config.MetadataPlugins["hostinfo2"]
