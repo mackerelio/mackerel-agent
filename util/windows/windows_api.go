@@ -8,6 +8,8 @@ import (
 	"unsafe"
 )
 
+// ref. https://github.com/mackerelio/mackerel-agent/pull/134
+
 /*
 //#include <pdh.h>
 typedef unsigned long DWORD;
@@ -46,12 +48,6 @@ type MEMORY_STATUS_EX struct {
 	AvailExtendedVirtual uint64
 }
 
-// PDH_FMT_COUNTERVALUE_DOUBLE XXX
-type PDH_FMT_COUNTERVALUE_DOUBLE struct {
-	CStatus     uint32
-	DoubleValue float64
-}
-
 // windows system const
 const (
 	ERROR_SUCCESS        = 0
@@ -81,7 +77,6 @@ var (
 	QueryDosDevice              = modkernel32.NewProc("QueryDosDeviceW")
 	GetVolumeInformationW       = modkernel32.NewProc("GetVolumeInformationW")
 	GlobalMemoryStatusEx        = modkernel32.NewProc("GlobalMemoryStatusEx")
-	GetModuleFileName           = modkernel32.NewProc("GetModuleFileNameW")
 	GetLastError                = modkernel32.NewProc("GetLastError")
 	MultiByteToWideChar         = modkernel32.NewProc("MultiByteToWideChar")
 	PdhOpenQuery                = modpdh.NewProc("PdhOpenQuery")
@@ -236,14 +231,4 @@ func AnsiBytePtrToString(p *uint8) (string, error) {
 		return "", syscall.GetLastError()
 	}
 	return syscall.UTF16ToString(us), nil
-}
-
-// ExecPath returns path of executable file (self).
-func ExecPath() (string, error) {
-	var wpath [syscall.MAX_PATH]uint16
-	r1, _, err := GetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
-	if r1 == 0 {
-		return "", err
-	}
-	return syscall.UTF16ToString(wpath[:]), nil
 }

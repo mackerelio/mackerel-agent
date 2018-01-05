@@ -12,7 +12,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-	"unsafe"
 
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/eventlog"
@@ -29,7 +28,6 @@ var (
 	kernel32                     = syscall.NewLazyDLL("kernel32")
 	procAllocConsole             = kernel32.NewProc("AllocConsole")
 	procGenerateConsoleCtrlEvent = kernel32.NewProc("GenerateConsoleCtrlEvent")
-	procGetModuleFileName        = kernel32.NewProc("GetModuleFileNameW")
 )
 
 func main() {
@@ -264,10 +262,9 @@ L:
 }
 
 func execdir() string {
-	var wpath [syscall.MAX_PATH]uint16
-	r1, _, err := procGetModuleFileName.Call(0, uintptr(unsafe.Pointer(&wpath[0])), uintptr(len(wpath)))
-	if r1 == 0 {
+	p, err := os.Executable()
+	if err != nil {
 		log.Fatal(err)
 	}
-	return filepath.Dir(syscall.UTF16ToString(wpath[:]))
+	return filepath.Dir(p)
 }

@@ -2,13 +2,12 @@ package config
 
 import (
 	"log"
+	"os"
 	"path/filepath"
-
-	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
 func init() {
-	path, err := windows.ExecPath()
+	path, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
 	}
