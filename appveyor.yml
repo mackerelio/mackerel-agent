@@ -18,8 +18,6 @@ install:
   - go env
   - set CERT= & set CERTPASS= & set
 build_script:
-  - go get github.com/motemen/go-cli/gen
-  - go generate
   - call wix\build.bat
 test_script:
 - FOR /F "usebackq" %%w IN (`git rev-parse --show-cdup`) DO SET CDUP=%%w

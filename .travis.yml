@@ -19,6 +19,7 @@ install:
 - mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
 script:
 - make lint
+- make convention
 - make cover
 - test `gofmt -l . | wc -l` = 0
 - make crossbuild

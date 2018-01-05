@@ -23,16 +23,21 @@ build: deps
 run: build
 	./build/$(MACKEREL_AGENT_NAME) $(ARGS)
 
-deps: generate
+deps:
 	go get -d -v -t ./...
 	go get github.com/golang/lint/golint
 	go get github.com/pierrre/gotestcover
 	go get github.com/laher/goxc
 	go get github.com/mattn/goveralls
+	go get github.com/motemen/go-cli/gen
 
 lint: deps
 	go tool vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
 	_tools/go-linter $(BUILD_OS_TARGETS)
+
+convention:
+	go generate ./... && git diff --exit-code || \
+	  (echo 'please `go generate ./...` and commit them' && false)
 
 crossbuild: deps
 	cp mackerel-agent.sample.conf mackerel-agent.conf
@@ -163,15 +168,8 @@ release: check-release-deps
 	(cd _tools && cpanm -qn --installdeps .)
 	perl _tools/create-release-pullrequest
 
-commands_gen.go: commands.go
-	go get github.com/motemen/go-cli/gen
-	go generate
-
 clean:
 	rm -f build/$(MACKEREL_AGENT_NAME) build-linux-amd64/$(MACKEREL_AGENT_NAME) build-linux-386/$(MACKEREL_AGENT_NAME)
 	go clean
-	rm -f commands_gen.go
 
-generate: commands_gen.go
-
-.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz generate crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-v1 rpm-v2 rpm-stage rpm-stage-v1 rpm-stage-v2 rpm-kcps-v1 rpm-kcps-v2 deb-v1 deb-v2 deb-kcps deb-kcps-v1 deb-kcps-v2 deb-stage deb-stage-v1 deb-stage-v2 release check-release-deps
+.PHONY: test build run deps clean lint crossbuild cover rpm deb tgz crossbuild-package crossbuild-package-kcps crossbuild-package-stage rpm-v1 rpm-v2 rpm-stage rpm-stage-v1 rpm-stage-v2 rpm-kcps-v1 rpm-kcps-v2 deb-v1 deb-v2 deb-kcps deb-kcps-v1 deb-kcps-v2 deb-stage deb-stage-v1 deb-stage-v2 release check-release-deps
