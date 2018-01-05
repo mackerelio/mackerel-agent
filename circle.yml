@@ -1,3 +1,4 @@
+# circle.yml is needed for private repository (hatena/mackerel-agent)
 machine:
   timezone:
     Asia/Tokyo
