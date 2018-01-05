@@ -21,8 +21,6 @@ install:
   - go env
   - set CERT= & set CERTPASS= & set
 build_script:
-  - go get github.com/motemen/go-cli/gen
-  - go generate
   - go get golang.org/x/tools/cmd/stringer
   - call wix\build.bat
 test_script:
