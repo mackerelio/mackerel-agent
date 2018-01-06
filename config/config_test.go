@@ -437,6 +437,9 @@ func TestLoadConfigFile(t *testing.T) {
 	if checks.Command.TimeoutDuration != 60*time.Second {
 		t.Error("check timeout_seconds should be 60s")
 	}
+	if checks.Action.TimeoutDuration != 60*time.Second {
+		t.Error("check timeout_seconds in action should also be 60s")
+	}
 	if *checks.NotificationInterval != 60 {
 		t.Error("notification_interval should be 60")
 	}

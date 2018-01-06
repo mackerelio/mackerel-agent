@@ -298,6 +298,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		if err != nil {
 			return nil, err
 		}
+		action.TimeoutDuration = cmd.TimeoutDuration
 	}
 
 	plugin := CheckPlugin{
