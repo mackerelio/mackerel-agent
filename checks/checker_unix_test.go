@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mackerelio/mackerel-agent/cmdutil"
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/util"
 )
 
 func TestChecker_CheckTimeout(t *testing.T) {
@@ -15,7 +15,7 @@ func TestChecker_CheckTimeout(t *testing.T) {
 		Config: &config.CheckPlugin{
 			Command: config.Command{
 				Cmd: "sleep 2",
-				CommandOption: util.CommandOption{
+				CommandOption: cmdutil.CommandOption{
 					TimeoutDuration: 1 * time.Second,
 				},
 			},

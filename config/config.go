@@ -11,7 +11,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/golib/logging"
-	"github.com/mackerelio/mackerel-agent/util"
+	"github.com/mackerelio/mackerel-agent/cmdutil"
 	"github.com/pkg/errors"
 )
 
@@ -180,7 +180,7 @@ func (e Env) ConvertToStrings() ([]string, error) {
 
 // Command represents an executable command.
 type Command struct {
-	util.CommandOption
+	cmdutil.CommandOption
 	Cmd  string
 	Args []string
 	User string
@@ -190,18 +190,18 @@ type Command struct {
 // Run the Command.
 func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(cmd.Args) > 0 {
-		return util.RunCommandArgs(cmd.Args, cmd.User, cmd.Env, cmd.CommandOption)
+		return cmdutil.RunCommandArgs(cmd.Args, cmd.User, cmd.Env, cmd.CommandOption)
 	}
-	return util.RunCommand(cmd.Cmd, cmd.User, cmd.Env, cmd.CommandOption)
+	return cmdutil.RunCommand(cmd.Cmd, cmd.User, cmd.Env, cmd.CommandOption)
 }
 
 // RunWithEnv runs the Command with Environment.
 func (cmd *Command) RunWithEnv(env []string) (stdout, stderr string, exitCode int, err error) {
 	env = append(cmd.Env, env...)
 	if len(cmd.Args) > 0 {
-		return util.RunCommandArgs(cmd.Args, cmd.User, env, cmd.CommandOption)
+		return cmdutil.RunCommandArgs(cmd.Args, cmd.User, env, cmd.CommandOption)
 	}
-	return util.RunCommand(cmd.Cmd, cmd.User, env, cmd.CommandOption)
+	return cmdutil.RunCommand(cmd.Cmd, cmd.User, env, cmd.CommandOption)
 }
 
 // CommandString returns the command string for log messages
