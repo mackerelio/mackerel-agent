@@ -136,7 +136,7 @@ type Config struct {
 
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
-	CommandRaw            interface{} `toml:"command"`
+	CommandRaw            interface{}   `toml:"command"`
 	User                  string
 	NotificationInterval  *int32        `toml:"notification_interval"`
 	CheckInterval         *int32        `toml:"check_interval"`
@@ -144,7 +144,7 @@ type PluginConfig struct {
 	MaxCheckAttempts      *int32        `toml:"max_check_attempts"`
 	CustomIdentifier      *string       `toml:"custom_identifier"`
 	PreventAlertAutoClose bool          `toml:"prevent_alert_auto_close"`
-	TimeoutDuration       int64         `toml:"timeout_duration"`
+	TimeoutSeconds        int64         `toml:"timeout_seconds"`
 	IncludePattern        *string       `toml:"include_pattern"`
 	ExcludePattern        *string       `toml:"exclude_pattern"`
 	Action                CommandConfig `toml:"action"`
@@ -179,7 +179,7 @@ func (e Env) ConvertToStrings() ([]string, error) {
 
 // Command represents an executable command.
 type Command struct {
-	util.CommandContext
+	util.CommandOption
 	Cmd  string
 	Args []string
 	User string
@@ -189,18 +189,18 @@ type Command struct {
 // Run the Command.
 func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(cmd.Args) > 0 {
-		return util.RunCommandArgs(cmd.CommandContext, cmd.Args, cmd.User, cmd.Env)
+		return util.RunCommandArgs(cmd.Args, cmd.User, cmd.Env, cmd.CommandOption)
 	}
-	return util.RunCommand(cmd.CommandContext, cmd.Cmd, cmd.User, cmd.Env)
+	return util.RunCommand(cmd.Cmd, cmd.User, cmd.Env, cmd.CommandOption)
 }
 
 // RunWithEnv runs the Command with Environment.
 func (cmd *Command) RunWithEnv(env []string) (stdout, stderr string, exitCode int, err error) {
 	env = append(cmd.Env, env...)
 	if len(cmd.Args) > 0 {
-		return util.RunCommandArgs(cmd.CommandContext, cmd.Args, cmd.User, env)
+		return util.RunCommandArgs(cmd.Args, cmd.User, env, cmd.CommandOption)
 	}
-	return util.RunCommand(cmd.CommandContext, cmd.Cmd, cmd.User, env)
+	return util.RunCommand(cmd.Cmd, cmd.User, env, cmd.CommandOption)
 }
 
 // CommandString returns the command string for log messages
@@ -234,7 +234,7 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 		return nil, err
 	}
 
-	cmd.TimeoutDuration = time.Duration(pconf.TimeoutDuration * int64(time.Second))
+	cmd.TimeoutDuration = time.Duration(pconf.TimeoutSeconds * int64(time.Second))
 
 	var (
 		includePattern *regexp.Regexp
@@ -286,7 +286,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		return nil, err
 	}
 
-	cmd.TimeoutDuration = time.Duration(pconf.TimeoutDuration * int64(time.Second))
+	cmd.TimeoutDuration = time.Duration(pconf.TimeoutSeconds * int64(time.Second))
 
 	action, err := parseCommand(pconf.Action.Raw, pconf.Action.User)
 	if err != nil {
@@ -336,7 +336,7 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 		return nil, err
 	}
 
-	cmd.TimeoutDuration = time.Duration(pconf.TimeoutDuration * int64(time.Second))
+	cmd.TimeoutDuration = time.Duration(pconf.TimeoutSeconds * int64(time.Second))
 
 	return &MetadataPlugin{
 		Command:           *cmd,

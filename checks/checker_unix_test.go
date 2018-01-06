@@ -15,7 +15,7 @@ func TestChecker_CheckTimeout(t *testing.T) {
 		Config: &config.CheckPlugin{
 			Command: config.Command{
 				Cmd: "sleep 2",
-				CommandContext: util.CommandContext{
+				CommandOption: util.CommandOption{
 					TimeoutDuration: 1 * time.Second,
 				},
 			},

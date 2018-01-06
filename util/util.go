@@ -23,8 +23,8 @@ var TimeoutKillAfter = 10 * time.Second
 
 var cmdBase = []string{"sh", "-c"}
 
-// CommandContext carries a timeout duration.
-type CommandContext struct {
+// CommandOption carries a timeout duration.
+type CommandOption struct {
 	TimeoutDuration time.Duration
 }
 
@@ -35,13 +35,13 @@ func init() {
 }
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
-func RunCommand(ctx CommandContext, command, user string, env []string) (stdout, stderr string, exitCode int, err error) {
+func RunCommand(command, user string, env []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
 	cmdArgs := append(cmdBase, command)
-	return RunCommandArgs(ctx, cmdArgs, user, env)
+	return RunCommandArgs(cmdArgs, user, env, opt)
 }
 
 // RunCommandArgs run the command
-func RunCommandArgs(ctx CommandContext, cmdArgs []string, user string, env []string) (stdout, stderr string, exitCode int, err error) {
+func RunCommandArgs(cmdArgs []string, user string, env []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
 	if user != "" {
 		if runtime.GOOS == "windows" {
@@ -57,8 +57,8 @@ func RunCommandArgs(ctx CommandContext, cmdArgs []string, user string, env []str
 		Duration:  defaultTimeoutDuration,
 		KillAfter: TimeoutKillAfter,
 	}
-	if ctx.TimeoutDuration != 0 {
-		tio.Duration = ctx.TimeoutDuration
+	if opt.TimeoutDuration != 0 {
+		tio.Duration = opt.TimeoutDuration
 	}
 	exitStatus, stdout, stderr, err := tio.Run()
 

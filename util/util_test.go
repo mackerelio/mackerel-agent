@@ -13,12 +13,12 @@ import (
 	"time"
 )
 
-var testCmdCtx = CommandContext{
+var testCmdOpt = CommandOption{
 	TimeoutDuration: 1 * time.Second,
 }
 
 func TestRunCommand(t *testing.T) {
-	stdout, stderr, exitCode, err := RunCommand(testCmdCtx, "echo 1", "", nil)
+	stdout, stderr, exitCode, err := RunCommand("echo 1", "", nil, testCmdOpt)
 	if runtime.GOOS == "windows" {
 		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
 		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
@@ -61,7 +61,7 @@ func TestRunCommandWithTimeout(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		command, tmpdir = makeSleep(t)
 	}
-	stdout, stderr, _, err := RunCommand(testCmdCtx, command, "", nil)
+	stdout, stderr, _, err := RunCommand(command, "", nil, testCmdOpt)
 	if stdout != "" {
 		t.Errorf("stdout shoud be empty")
 	}
@@ -82,7 +82,7 @@ func TestRunCommandWithEnv(t *testing.T) {
 		command = `echo %TEST_RUN_COMMAND_ENV%`
 	}
 
-	stdout, stderr, exitCode, err := RunCommand(testCmdCtx, command, "", []string{"TEST_RUN_COMMAND_ENV=mackerel-agent"})
+	stdout, stderr, exitCode, err := RunCommand(command, "", []string{"TEST_RUN_COMMAND_ENV=mackerel-agent"}, testCmdOpt)
 	if runtime.GOOS == "windows" {
 		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
 		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
