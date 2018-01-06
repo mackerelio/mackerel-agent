@@ -136,7 +136,7 @@ type Config struct {
 
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
-	CommandRaw            interface{}   `toml:"command"`
+	CommandRaw            interface{} `toml:"command"`
 	User                  string
 	NotificationInterval  *int32        `toml:"notification_interval"`
 	CheckInterval         *int32        `toml:"check_interval"`
