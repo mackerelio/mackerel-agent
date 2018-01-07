@@ -13,27 +13,27 @@ import (
 
 var logger = logging.GetLogger("cmdutil")
 
-const (
-	// defaultTimeoutDuration is the duration after which a command execution will be timeout.
+// defaultTimeoutDuration is the duration after which a command execution will be timeout.
+// timeoutKillAfter is option of `RunCommand()` set waiting limit to `kill -kill` after
+// terminating the command.
+var (
 	defaultTimeoutDuration = 30 * time.Second
+	timeoutKillAfter       = 10 * time.Second
 )
 
-// TimeoutKillAfter is option of `RunCommand()` set waiting limit to `kill -kill` after terminating the command.
-var TimeoutKillAfter = 10 * time.Second
-
 var cmdBase = []string{"sh", "-c"}
+
+func init() {
+	if runtime.GOOS == "windows" {
+		cmdBase = []string{"cmd", "/c"}
+	}
+}
 
 // CommandOption carries a timeout duration.
 type CommandOption struct {
 	User            string
 	Env             []string
 	TimeoutDuration time.Duration
-}
-
-func init() {
-	if runtime.GOOS == "windows" {
-		cmdBase = []string{"cmd", "/c"}
-	}
 }
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
@@ -57,7 +57,7 @@ func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string,
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  defaultTimeoutDuration,
-		KillAfter: TimeoutKillAfter,
+		KillAfter: timeoutKillAfter,
 	}
 	if opt.TimeoutDuration != 0 {
 		tio.Duration = opt.TimeoutDuration
