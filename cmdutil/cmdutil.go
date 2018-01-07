@@ -25,6 +25,8 @@ var cmdBase = []string{"sh", "-c"}
 
 // CommandOption carries a timeout duration.
 type CommandOption struct {
+	User            string
+	Env             []string
 	TimeoutDuration time.Duration
 }
 
@@ -35,23 +37,23 @@ func init() {
 }
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
-func RunCommand(command, user string, env []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
+func RunCommand(command string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
 	cmdArgs := append(cmdBase, command)
-	return RunCommandArgs(cmdArgs, user, env, opt)
+	return RunCommandArgs(cmdArgs, opt)
 }
 
 // RunCommandArgs run the command
-func RunCommandArgs(cmdArgs []string, user string, env []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
+func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
-	if user != "" {
+	if opt.User != "" {
 		if runtime.GOOS == "windows" {
-			logger.Warningf("RunCommand ignore option: user = %q", user)
+			logger.Warningf("RunCommand ignore option: user = %q", opt.User)
 		} else {
-			args = append([]string{"sudo", "-Eu", user}, args...)
+			args = append([]string{"sudo", "-Eu", opt.User}, args...)
 		}
 	}
 	cmd := exec.Command(args[0], args[1:]...)
-	cmd.Env = append(os.Environ(), env...)
+	cmd.Env = append(os.Environ(), opt.Env...)
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  defaultTimeoutDuration,

@@ -180,25 +180,27 @@ type Command struct {
 	cmdutil.CommandOption
 	Cmd  string
 	Args []string
-	User string
-	Env  []string
 }
 
 // Run the Command.
 func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(cmd.Args) > 0 {
-		return cmdutil.RunCommandArgs(cmd.Args, cmd.User, cmd.Env, cmd.CommandOption)
+		return cmdutil.RunCommandArgs(cmd.Args, cmd.CommandOption)
 	}
-	return cmdutil.RunCommand(cmd.Cmd, cmd.User, cmd.Env, cmd.CommandOption)
+	return cmdutil.RunCommand(cmd.Cmd, cmd.CommandOption)
 }
 
 // RunWithEnv runs the Command with Environment.
 func (cmd *Command) RunWithEnv(env []string) (stdout, stderr string, exitCode int, err error) {
-	env = append(cmd.Env, env...)
-	if len(cmd.Args) > 0 {
-		return cmdutil.RunCommandArgs(cmd.Args, cmd.User, env, cmd.CommandOption)
+	opt := cmdutil.CommandOption{
+		TimeoutDuration: cmd.TimeoutDuration,
+		User:            cmd.User,
+		Env:             append(cmd.Env, env...),
 	}
-	return cmdutil.RunCommand(cmd.Cmd, cmd.User, env, cmd.CommandOption)
+	if len(cmd.Args) > 0 {
+		return cmdutil.RunCommandArgs(cmd.Args, opt)
+	}
+	return cmdutil.RunCommand(cmd.Cmd, opt)
 }
 
 // CommandString returns the command string for log messages
