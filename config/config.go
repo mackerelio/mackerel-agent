@@ -153,9 +153,10 @@ type PluginConfig struct {
 
 // CommandConfig represents an executable command configuration.
 type CommandConfig struct {
-	Raw  interface{} `toml:"command"`
-	User string
-	Env  Env `toml:"env"`
+	Raw            interface{} `toml:"command"`
+	User           string
+	Env            Env   `toml:"env"`
+	TimeoutSeconds int64 `toml:"timeout_seconds"`
 }
 
 // Env represents environments.
@@ -298,7 +299,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		if err != nil {
 			return nil, err
 		}
-		action.TimeoutDuration = cmd.TimeoutDuration
+		action.TimeoutDuration = time.Duration(pconf.Action.TimeoutSeconds * int64(time.Second))
 	}
 
 	plugin := CheckPlugin{
