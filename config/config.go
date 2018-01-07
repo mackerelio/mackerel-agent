@@ -219,20 +219,13 @@ type MetricPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
-	cmd, err := parseCommand(pconf.Raw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
+	cmd, err := pconf.CommandConfig.parse()
 	if err != nil {
 		return nil, err
 	}
 	if cmd == nil {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.Raw)
 	}
-
-	cmd.Env, err = pconf.Env.ConvertToStrings()
-	if err != nil {
-		return nil, err
-	}
-
-	cmd.TimeoutDuration = time.Duration(pconf.TimeoutSeconds * int64(time.Second))
 
 	var (
 		includePattern *regexp.Regexp
@@ -271,7 +264,7 @@ type CheckPlugin struct {
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
-	cmd, err := parseCommand(pconf.Raw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
+	cmd, err := pconf.CommandConfig.parse()
 	if err != nil {
 		return nil, err
 	}
@@ -279,7 +272,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.Raw)
 	}
 
-	action, err := parseCommand(pconf.Action.Raw, pconf.Action.User, pconf.Action.Env, pconf.Action.TimeoutSeconds)
+	action, err := pconf.Action.parse()
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +300,7 @@ type MetadataPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
-	cmd, err := parseCommand(pconf.Raw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
+	cmd, err := pconf.CommandConfig.parse()
 	if err != nil {
 		return nil, err
 	}
@@ -321,9 +314,9 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 	}, nil
 }
 
-func parseCommand(commandRaw interface{}, user string, env Env, timeoutSeconds int64) (cmd *Command, err error) {
+func (cc CommandConfig) parse() (cmd *Command, err error) {
 	const errFmt = "failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T"
-	switch t := commandRaw.(type) {
+	switch t := cc.Raw.(type) {
 	case string:
 		cmd = &Command{Cmd: t}
 	case []interface{}:
@@ -332,28 +325,27 @@ func parseCommand(commandRaw interface{}, user string, env Env, timeoutSeconds i
 			for _, vv := range t {
 				str, ok := vv.(string)
 				if !ok {
-					return nil, fmt.Errorf(errFmt, commandRaw)
+					return nil, fmt.Errorf(errFmt, cc.Raw)
 				}
-
 				args = append(args, str)
 			}
 			cmd = &Command{Args: args}
 		} else {
-			return nil, fmt.Errorf(errFmt, commandRaw)
+			return nil, fmt.Errorf(errFmt, cc.Raw)
 		}
 	case []string:
 		cmd = &Command{Args: t}
 	case nil:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf(errFmt, commandRaw)
+		return nil, fmt.Errorf(errFmt, cc.Raw)
 	}
-	cmd.User = user
-	cmd.Env, err = env.ConvertToStrings()
+	cmd.User = cc.User
+	cmd.Env, err = cc.Env.ConvertToStrings()
 	if err != nil {
 		return nil, err
 	}
-	cmd.TimeoutDuration = time.Duration(timeoutSeconds * int64(time.Second))
+	cmd.TimeoutDuration = time.Duration(cc.TimeoutSeconds * int64(time.Second))
 	return cmd, nil
 }
 
