@@ -136,27 +136,24 @@ type Config struct {
 
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
-	CommandRaw            interface{} `toml:"command"`
-	User                  string
+	CommandConfig
 	NotificationInterval  *int32        `toml:"notification_interval"`
 	CheckInterval         *int32        `toml:"check_interval"`
 	ExecutionInterval     *int32        `toml:"execution_interval"`
 	MaxCheckAttempts      *int32        `toml:"max_check_attempts"`
 	CustomIdentifier      *string       `toml:"custom_identifier"`
 	PreventAlertAutoClose bool          `toml:"prevent_alert_auto_close"`
-	TimeoutSeconds        int64         `toml:"timeout_seconds"`
 	IncludePattern        *string       `toml:"include_pattern"`
 	ExcludePattern        *string       `toml:"exclude_pattern"`
 	Action                CommandConfig `toml:"action"`
-	Env                   Env           `toml:"env"`
 }
 
 // CommandConfig represents an executable command configuration.
 type CommandConfig struct {
 	Raw            interface{} `toml:"command"`
-	User           string
-	Env            Env   `toml:"env"`
-	TimeoutSeconds int64 `toml:"timeout_seconds"`
+	User           string      `toml:"user"`
+	Env            Env         `toml:"env"`
+	TimeoutSeconds int64       `toml:"timeout_seconds"`
 }
 
 // Env represents environments.
@@ -222,12 +219,12 @@ type MetricPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
-	cmd, err := parseCommand(pconf.CommandRaw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
+	cmd, err := parseCommand(pconf.Raw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
 	if err != nil {
 		return nil, err
 	}
 	if cmd == nil {
-		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.Raw)
 	}
 
 	cmd.Env, err = pconf.Env.ConvertToStrings()
@@ -274,12 +271,12 @@ type CheckPlugin struct {
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
-	cmd, err := parseCommand(pconf.CommandRaw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
+	cmd, err := parseCommand(pconf.Raw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
 	if err != nil {
 		return nil, err
 	}
 	if cmd == nil {
-		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.Raw)
 	}
 
 	action, err := parseCommand(pconf.Action.Raw, pconf.Action.User, pconf.Action.Env, pconf.Action.TimeoutSeconds)
@@ -310,12 +307,12 @@ type MetadataPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
-	cmd, err := parseCommand(pconf.CommandRaw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
+	cmd, err := parseCommand(pconf.Raw, pconf.User, pconf.Env, pconf.TimeoutSeconds)
 	if err != nil {
 		return nil, err
 	}
 	if cmd == nil {
-		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.Raw)
 	}
 
 	return &MetadataPlugin{
