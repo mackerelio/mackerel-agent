@@ -20,10 +20,6 @@ diagnostic = true
 [filesystems]
 ignore = "/dev/ram.*"
 
-[connection]
-post_metrics_retry_delay_seconds = 600
-post_metrics_retry_max = 5
-
 [plugin.metrics.mysql]
 command = "ruby /path/to/your/plugin/mysql.rb"
 user = "mysql"
@@ -99,31 +95,31 @@ func TestLoadConfig(t *testing.T) {
 	}
 
 	if config.Connection.PostMetricsDequeueDelaySeconds != 30 {
-		t.Error("should be 30 (default value should be used)")
+		t.Errorf("should be 30 but got: %d", config.Connection.PostMetricsDequeueDelaySeconds)
 	}
 
-	if config.Connection.PostMetricsRetryDelaySeconds != 180 {
-		t.Error("should be 180 (max retry delay seconds is 180)")
+	if config.Connection.PostMetricsRetryDelaySeconds != 60 {
+		t.Errorf("should be 60 but got: %d", config.Connection.PostMetricsRetryDelaySeconds)
 	}
 
-	if config.Connection.PostMetricsRetryMax != 5 {
-		t.Error("should be 5 (config value should be used)")
+	if config.Connection.PostMetricsRetryMax != 60 {
+		t.Errorf("should be 60 but got: %d", config.Connection.PostMetricsRetryMax)
 	}
 
 	if config.Connection.ReportCheckDelaySeconds != 1 {
-		t.Error("should be 1 (config value should be used)")
+		t.Errorf("should be 1 but got: %d", config.Connection.ReportCheckDelaySeconds)
 	}
 
 	if config.Connection.ReportCheckDelaySecondsMax != 30 {
-		t.Error("should be 30 (config value should be used)")
+		t.Errorf("should be 30 but got: %d", config.Connection.ReportCheckDelaySecondsMax)
 	}
 
 	if config.Connection.ReportCheckRetryDelaySeconds != 30 {
-		t.Error("should be 30 (config value should be used)")
+		t.Errorf("should be 30 but got: %d", config.Connection.ReportCheckRetryDelaySeconds)
 	}
 
 	if config.Connection.ReportCheckBufferSize != 360 {
-		t.Error("should be 360 (config value should be used)")
+		t.Errorf("should be 360 but got: %d", config.Connection.ReportCheckBufferSize)
 	}
 }
 
@@ -366,10 +362,6 @@ func TestLoadConfigFile(t *testing.T) {
 
 	if config.Diagnostic != true {
 		t.Error("Diagnostic should be true")
-	}
-
-	if config.Connection.PostMetricsRetryMax != 5 {
-		t.Error("PostMetricsRetryMax should be 5")
 	}
 
 	if config.MetricPlugins == nil {
@@ -710,41 +702,6 @@ command = ["perl", "-E", "say 'Hello'"]
 
 	if p.Command.Cmd != "" {
 		t.Errorf("p.Command should be empty but: %s", p.Command.Cmd)
-	}
-}
-
-func TestLoadCOnfigWithConnectionReportChecksConfigs(t *testing.T) {
-	conff, err := newTempFileWithContent(`
-apikey = "abcde"
-
-[connection]
-report_checks_delay_seconds = 3
-report_checks_delay_seconds_max = 60
-report_checks_retry_delay_seconds = 60
-report_checks_buffer_size = 720
-`)
-	if err != nil {
-		t.Fatalf("should not raise error: %s", err)
-	}
-	defer os.Remove(conff.Name())
-
-	config, err := LoadConfig(conff.Name())
-	assertNoError(t, err)
-
-	if config.Connection.ReportCheckDelaySeconds != 3 {
-		t.Error("should be 3 (config value should be used)")
-	}
-
-	if config.Connection.ReportCheckDelaySecondsMax != 60 {
-		t.Error("should be 60 (config value should be used)")
-	}
-
-	if config.Connection.ReportCheckRetryDelaySeconds != 60 {
-		t.Error("should be 60 (config value should be used)")
-	}
-
-	if config.Connection.ReportCheckBufferSize != 720 {
-		t.Error("should be 720 (config value should be used)")
 	}
 }
 
