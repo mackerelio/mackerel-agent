@@ -87,14 +87,14 @@ func TestStart(t *testing.T) {
 	}
 	conf.SaveHostID(hostID)
 	termCh := make(chan struct{})
-	done := make(chan struct{})
+	done := make(chan error)
 	go func() {
 		err = start(conf, termCh)
-		done <- struct{}{}
+		done <- err
 	}()
 	time.Sleep(5 * time.Second)
 	termCh <- struct{}{}
-	<-done
+	err = <-done
 	if err != nil {
 		t.Errorf("err should be nil but: %s", err)
 	}
