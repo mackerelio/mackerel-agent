@@ -11,7 +11,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/golib/logging"
-	"github.com/mackerelio/mackerel-agent/util"
+	"github.com/mackerelio/mackerel-agent/cmdutil"
 	"github.com/pkg/errors"
 )
 
@@ -136,27 +136,24 @@ type Config struct {
 
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
-	CommandRaw            interface{} `toml:"command"`
-	User                  string
+	CommandConfig
 	NotificationInterval  *int32        `toml:"notification_interval"`
 	CheckInterval         *int32        `toml:"check_interval"`
 	ExecutionInterval     *int32        `toml:"execution_interval"`
 	MaxCheckAttempts      *int32        `toml:"max_check_attempts"`
 	CustomIdentifier      *string       `toml:"custom_identifier"`
 	PreventAlertAutoClose bool          `toml:"prevent_alert_auto_close"`
-	TimeoutSeconds        int64         `toml:"timeout_seconds"`
 	IncludePattern        *string       `toml:"include_pattern"`
 	ExcludePattern        *string       `toml:"exclude_pattern"`
 	Action                CommandConfig `toml:"action"`
-	Env                   Env           `toml:"env"`
 }
 
 // CommandConfig represents an executable command configuration.
 type CommandConfig struct {
 	Raw            interface{} `toml:"command"`
-	User           string
-	Env            Env   `toml:"env"`
-	TimeoutSeconds int64 `toml:"timeout_seconds"`
+	User           string      `toml:"user"`
+	Env            Env         `toml:"env"`
+	TimeoutSeconds int64       `toml:"timeout_seconds"`
 }
 
 // Env represents environments.
@@ -180,28 +177,30 @@ func (e Env) ConvertToStrings() ([]string, error) {
 
 // Command represents an executable command.
 type Command struct {
-	util.CommandOption
+	cmdutil.CommandOption
 	Cmd  string
 	Args []string
-	User string
-	Env  []string
 }
 
 // Run the Command.
 func (cmd *Command) Run() (stdout, stderr string, exitCode int, err error) {
 	if len(cmd.Args) > 0 {
-		return util.RunCommandArgs(cmd.Args, cmd.User, cmd.Env, cmd.CommandOption)
+		return cmdutil.RunCommandArgs(cmd.Args, cmd.CommandOption)
 	}
-	return util.RunCommand(cmd.Cmd, cmd.User, cmd.Env, cmd.CommandOption)
+	return cmdutil.RunCommand(cmd.Cmd, cmd.CommandOption)
 }
 
 // RunWithEnv runs the Command with Environment.
 func (cmd *Command) RunWithEnv(env []string) (stdout, stderr string, exitCode int, err error) {
-	env = append(cmd.Env, env...)
-	if len(cmd.Args) > 0 {
-		return util.RunCommandArgs(cmd.Args, cmd.User, env, cmd.CommandOption)
+	opt := cmdutil.CommandOption{
+		TimeoutDuration: cmd.TimeoutDuration,
+		User:            cmd.User,
+		Env:             append(cmd.Env, env...),
 	}
-	return util.RunCommand(cmd.Cmd, cmd.User, env, cmd.CommandOption)
+	if len(cmd.Args) > 0 {
+		return cmdutil.RunCommandArgs(cmd.Args, opt)
+	}
+	return cmdutil.RunCommand(cmd.Cmd, opt)
 }
 
 // CommandString returns the command string for log messages
@@ -222,20 +221,13 @@ type MetricPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
-	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
+	cmd, err := pconf.CommandConfig.parse()
 	if err != nil {
 		return nil, err
 	}
 	if cmd == nil {
-		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.Raw)
 	}
-
-	cmd.Env, err = pconf.Env.ConvertToStrings()
-	if err != nil {
-		return nil, err
-	}
-
-	cmd.TimeoutDuration = time.Duration(pconf.TimeoutSeconds * int64(time.Second))
 
 	var (
 		includePattern *regexp.Regexp
@@ -274,32 +266,17 @@ type CheckPlugin struct {
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
-	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
+	cmd, err := pconf.CommandConfig.parse()
 	if err != nil {
 		return nil, err
 	}
 	if cmd == nil {
-		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.Raw)
 	}
 
-	cmd.Env, err = pconf.Env.ConvertToStrings()
+	action, err := pconf.Action.parse()
 	if err != nil {
 		return nil, err
-	}
-
-	cmd.TimeoutDuration = time.Duration(pconf.TimeoutSeconds * int64(time.Second))
-
-	action, err := parseCommand(pconf.Action.Raw, pconf.Action.User)
-	if err != nil {
-		return nil, err
-	}
-
-	if action != nil {
-		action.Env, err = pconf.Action.Env.ConvertToStrings()
-		if err != nil {
-			return nil, err
-		}
-		action.TimeoutDuration = time.Duration(pconf.Action.TimeoutSeconds * int64(time.Second))
 	}
 
 	plugin := CheckPlugin{
@@ -325,20 +302,13 @@ type MetadataPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
-	cmd, err := parseCommand(pconf.CommandRaw, pconf.User)
+	cmd, err := pconf.CommandConfig.parse()
 	if err != nil {
 		return nil, err
 	}
 	if cmd == nil {
-		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.CommandRaw)
+		return nil, fmt.Errorf("failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T", pconf.Raw)
 	}
-
-	cmd.Env, err = pconf.Env.ConvertToStrings()
-	if err != nil {
-		return nil, err
-	}
-
-	cmd.TimeoutDuration = time.Duration(pconf.TimeoutSeconds * int64(time.Second))
 
 	return &MetadataPlugin{
 		Command:           *cmd,
@@ -346,41 +316,39 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 	}, nil
 }
 
-func parseCommand(commandRaw interface{}, user string) (command *Command, err error) {
+func (cc CommandConfig) parse() (cmd *Command, err error) {
 	const errFmt = "failed to parse plugin command. A configuration value of `command` should be string or string slice, but %T"
-	switch t := commandRaw.(type) {
+	switch t := cc.Raw.(type) {
 	case string:
-		return &Command{
-			Cmd:  t,
-			User: user,
-		}, nil
+		cmd = &Command{Cmd: t}
 	case []interface{}:
 		if len(t) > 0 {
 			args := []string{}
 			for _, vv := range t {
 				str, ok := vv.(string)
 				if !ok {
-					return nil, fmt.Errorf(errFmt, commandRaw)
+					return nil, fmt.Errorf(errFmt, cc.Raw)
 				}
-
 				args = append(args, str)
 			}
-			return &Command{
-				Args: args,
-				User: user,
-			}, nil
+			cmd = &Command{Args: args}
+		} else {
+			return nil, fmt.Errorf(errFmt, cc.Raw)
 		}
-		return nil, fmt.Errorf(errFmt, commandRaw)
 	case []string:
-		return &Command{
-			Args: t,
-			User: user,
-		}, nil
+		cmd = &Command{Args: t}
 	case nil:
 		return nil, nil
 	default:
-		return nil, fmt.Errorf(errFmt, commandRaw)
+		return nil, fmt.Errorf(errFmt, cc.Raw)
 	}
+	cmd.User = cc.User
+	cmd.Env, err = cc.Env.ConvertToStrings()
+	if err != nil {
+		return nil, err
+	}
+	cmd.TimeoutDuration = time.Duration(cc.TimeoutSeconds * int64(time.Second))
+	return cmd, nil
 }
 
 // PostMetricsInterval XXX

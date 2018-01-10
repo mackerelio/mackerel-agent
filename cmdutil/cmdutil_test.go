@@ -1,6 +1,4 @@
-// +build linux darwin freebsd netbsd windows
-
-package util
+package cmdutil
 
 import (
 	"fmt"
@@ -18,7 +16,7 @@ var testCmdOpt = CommandOption{
 }
 
 func TestRunCommand(t *testing.T) {
-	stdout, stderr, exitCode, err := RunCommand("echo 1", "", nil, testCmdOpt)
+	stdout, stderr, exitCode, err := RunCommand("echo 1", testCmdOpt)
 	if runtime.GOOS == "windows" {
 		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
 		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
@@ -61,7 +59,7 @@ func TestRunCommandWithTimeout(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		command, tmpdir = makeSleep(t)
 	}
-	stdout, stderr, _, err := RunCommand(command, "", nil, testCmdOpt)
+	stdout, stderr, _, err := RunCommand(command, testCmdOpt)
 	if stdout != "" {
 		t.Errorf("stdout shoud be empty")
 	}
@@ -82,7 +80,11 @@ func TestRunCommandWithEnv(t *testing.T) {
 		command = `echo %TEST_RUN_COMMAND_ENV%`
 	}
 
-	stdout, stderr, exitCode, err := RunCommand(command, "", []string{"TEST_RUN_COMMAND_ENV=mackerel-agent"}, testCmdOpt)
+	opt := CommandOption{
+		TimeoutDuration: testCmdOpt.TimeoutDuration,
+		Env:             []string{"TEST_RUN_COMMAND_ENV=mackerel-agent"},
+	}
+	stdout, stderr, exitCode, err := RunCommand(command, opt)
 	if runtime.GOOS == "windows" {
 		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
 		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
