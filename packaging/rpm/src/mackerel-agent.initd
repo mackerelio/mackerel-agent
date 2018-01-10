@@ -45,7 +45,7 @@ start() {
     ulimit -n 65536 1>/dev/null 2>&1 || true
     echo -n $"Starting $prog:"
     mkdir -m 777 -p $MACKEREL_PLUGIN_WORKDIR
-    MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
+    MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $BIN supervise ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then
         failure
