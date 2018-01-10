@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.49.0 (2018-01-10)
+
+* cut out `cmdutil` package from `util` and interface adjustment #470 (Songmu)
+* Ignore connection configurations in mackerel-agent.conf #463 (itchyny)
+* fix error check in TestStart of start_test.go #471 (Ken2mer)
+* [fix] `action` command in `checks` is able to have an individual timeout settings #469 (Songmu)
+* Add an option of timeout duration for executing command #460 (taku-k)
+* Adjust appveyor.yml #466 (Songmu)
+* introduce goxz #468 (Songmu)
+* using os.Executable() for getting executable path on windows environment #464 (Songmu)
+* include commands_gen.go in repo for go-gettability #467 (Songmu)
+* Ignore veth in network I/O metrics on Linux. (Docker creats a lot) #462 (hayajo)
+* Ignore device-mapper in disk I/O metrics on Linux. (Docker creats a lot) #461 (hayajo)
+* Ignore devicemapper #459 (hayajo)
+* Ignore empty hostid file #458 (astj)
+* add check-uptime.exe on msi #455 (Songmu)
+* fix the retry of check reports #453 (hayajo)
+
+
 ## 0.48.2 (2017-12-20)
 
 * Fix network interface spec collector on Windows #452 (itchyny)
