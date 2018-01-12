@@ -109,7 +109,7 @@ stop() {
         return 1
     fi
 
-    killproc -p $PIDFILE -QUIT
+    killproc -p $PIDFILE
     retval=$?
     echo
     [ $retval -eq 0 ] && rm -f $lockfile
