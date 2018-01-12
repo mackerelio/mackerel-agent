@@ -101,6 +101,11 @@ case "$1" in
         do_configtest || exit $?
         log_daemon_msg "Reloading $DESC" "$NAME"
         start-stop-daemon --stop --signal HUP --quiet --pidfile $PIDFILE --exec $DAEMON
+        retval=$?
+        case "$retval" in
+            0) log_end_msg 0 ;;
+            *) log_end_msg 1; exit $retval ;;
+        esac
         ;;
     restart)
         log_daemon_msg "Restarting $DESC" "$NAME"
@@ -135,5 +140,3 @@ case "$1" in
         exit 3
     ;;
 esac
-
-:
