@@ -191,17 +191,17 @@ func TestPrepareWithUpdate(t *testing.T) {
 
 func TestCollectHostSpecs(t *testing.T) {
 	conf := config.Config{}
-	hostname, meta, _ /*interfaces*/, _ /*customIdentifier*/, err := collectHostSpecs(&conf)
+	hostSpec, err := collectHostSpecs(&conf, &AgentMeta{})
 
 	if err != nil {
 		t.Errorf("collectHostSpecs should not fail: %s", err)
 	}
 
-	if hostname == "" {
+	if hostSpec.Name == "" {
 		t.Error("hostname should not be empty")
 	}
 
-	if _, ok := meta["cpu"]; !ok {
+	if _, ok := hostSpec.Meta["cpu"]; !ok {
 		t.Error("meta.cpu should exist")
 	}
 }
