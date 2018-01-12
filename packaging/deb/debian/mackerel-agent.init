@@ -40,7 +40,7 @@ do_start()
     # Set large number of file descriptors for the safety sake
     ulimit -n 65536 1>/dev/null 2>&1 || true
     mkdir -m 777 -p $MACKEREL_PLUGIN_WORKDIR
-    MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $DAEMON ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
+    MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $DAEMON supervise ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1
     return $?
@@ -99,22 +99,12 @@ case "$1" in
         ;;
     reload|force-reload)
         do_configtest || exit $?
-        log_daemon_msg "Restarting $DESC" "$NAME"
-        do_stop
+        log_daemon_msg "Reloading $DESC" "$NAME"
+        start-stop-daemon --stop --signal HUP --quiet --pidfile $PIDFILE --exec $DAEMON
         retval=$?
         case "$retval" in
-            0|1)
-                do_start
-                retval=$?
-                case "$retval" in
-                    0) log_end_msg 0 ;;
-                    *) log_end_msg 1; exit $retval ;; # Failed to start
-                esac
-                ;;
-            *)
-                # Failed to stop
-                log_end_msg 1; exit $retval
-            ;;
+            0) log_end_msg 0 ;;
+            *) log_end_msg 1; exit $retval ;;
         esac
         ;;
     restart)
@@ -150,5 +140,3 @@ case "$1" in
         exit 3
     ;;
 esac
-
-:

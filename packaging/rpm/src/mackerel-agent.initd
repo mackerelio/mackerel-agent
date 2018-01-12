@@ -45,7 +45,7 @@ start() {
     ulimit -n 65536 1>/dev/null 2>&1 || true
     echo -n $"Starting $prog:"
     mkdir -m 777 -p $MACKEREL_PLUGIN_WORKDIR
-    MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $BIN ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
+    MACKEREL_PLUGIN_WORKDIR=$MACKEREL_PLUGIN_WORKDIR $BIN supervise ${APIBASE:+--apibase=$APIBASE} ${APIKEY:+--apikey=$APIKEY} --pidfile=$PIDFILE --root=$ROOT $OTHER_OPTS >>$LOGFILE 2>&1 &
     sleep 3
     if ! kill -0 $(cat $PIDFILE 2>/dev/null) >/dev/null 2>&1; then
         failure
@@ -109,7 +109,7 @@ stop() {
         return 1
     fi
 
-    killproc -p $PIDFILE -QUIT
+    killproc -p $PIDFILE
     retval=$?
     echo
     [ $retval -eq 0 ] && rm -f $lockfile
@@ -134,6 +134,15 @@ retire() {
     echo
 }
 
+reload() {
+    configtest_q || return 1
+    echo -n $"Reloading $prog:"
+    killproc -p $PIDFILE $BIN -HUP
+    retval=$?
+    echo
+    return $retval
+}
+
 rh_status() {
     status -p $PIDFILE $prog
 }
@@ -155,8 +164,7 @@ case "$1" in
         exit $retval
         ;;
     reload)
-        configtest_q || exit 1
-        restart
+        $1
         ;;
     restart)
         $1
