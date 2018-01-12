@@ -146,6 +146,7 @@ type PluginConfig struct {
 	IncludePattern        *string       `toml:"include_pattern"`
 	ExcludePattern        *string       `toml:"exclude_pattern"`
 	Action                CommandConfig `toml:"action"`
+	Memo                  *string       `toml:"memo"`
 }
 
 // CommandConfig represents an executable command configuration.
@@ -263,6 +264,7 @@ type CheckPlugin struct {
 	MaxCheckAttempts      *int32
 	PreventAlertAutoClose bool
 	Action                *Command
+	Memo                  *string
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
@@ -286,6 +288,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		MaxCheckAttempts:      pconf.MaxCheckAttempts,
 		PreventAlertAutoClose: pconf.PreventAlertAutoClose,
 		Action:                action,
+		Memo:                  pconf.Memo,
 	}
 	if plugin.MaxCheckAttempts != nil && *plugin.MaxCheckAttempts > 1 && plugin.PreventAlertAutoClose {
 		*plugin.MaxCheckAttempts = 1
@@ -388,15 +391,6 @@ func (r *Regexpwrapper) UnmarshalText(text []byte) error {
 	var err error
 	r.Regexp, err = regexp.Compile(string(text))
 	return err
-}
-
-// CheckNames returns a list of name of the check plugins
-func (conf *Config) CheckNames() []string {
-	checks := []string{}
-	for name := range conf.CheckPlugins {
-		checks = append(checks, name)
-	}
-	return checks
 }
 
 // ListCustomIdentifiers returns a list of customIdentifiers.

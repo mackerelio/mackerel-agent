@@ -89,7 +89,7 @@ func TestRunOncePayload(t *testing.T) {
 	if hostSpec.Name == "" {
 		t.Errorf("hostname should be set")
 	}
-	if hostSpec.Checks[0] != "check1" {
+	if hostSpec.Checks[0].Name != "check1" {
 		t.Errorf("first check name should be check1")
 	}
 

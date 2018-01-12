@@ -289,7 +289,7 @@ func TestUpdateHost(t *testing.T) {
 		},
 		Interfaces:    interfaces,
 		RoleFullnames: []string{"My-Service:app-default"},
-		Checks:        []string{},
+		Checks:        []CheckConfig{},
 	}
 
 	err := api.UpdateHost("ABCD123", hostSpec)

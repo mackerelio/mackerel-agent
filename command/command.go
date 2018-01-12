@@ -558,12 +558,21 @@ func collectHostSpecs(conf *config.Config, ameta *AgentMeta) (mackerel.HostSpec,
 	meta["agent-revision"] = ameta.Revision
 	meta["agent-name"] = buildUA(ameta.Version, ameta.Revision)
 
+	checks := []mackerel.CheckConfig{}
+	for name, checkPlugin := range conf.CheckPlugins {
+		checks = append(checks,
+			mackerel.CheckConfig{
+				Name: name,
+				Memo: checkPlugin.Memo,
+			})
+	}
+
 	return mackerel.HostSpec{
 		Name:             hostname,
 		Meta:             meta,
 		Interfaces:       interfaces,
 		RoleFullnames:    conf.Roles,
-		Checks:           conf.CheckNames(),
+		Checks:           checks,
 		DisplayName:      conf.DisplayName,
 		CustomIdentifier: customIdentifier,
 	}, nil
