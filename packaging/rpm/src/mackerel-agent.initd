@@ -134,6 +134,15 @@ retire() {
     echo
 }
 
+reload() {
+    configtest_q || return 1
+    echo -n $"Reloading $prog:"
+    killproc -p $PIDFILE $BIN -HUP
+    retval=$?
+    echo
+    return $retval
+}
+
 rh_status() {
     status -p $PIDFILE $prog
 }
@@ -155,8 +164,7 @@ case "$1" in
         exit $retval
         ;;
     reload)
-        configtest_q || exit 1
-        restart
+        $1
         ;;
     restart)
         $1
