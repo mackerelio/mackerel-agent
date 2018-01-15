@@ -55,6 +55,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Jan 15 2018 <mackerel-developers@hatena.ne.jp> - 0.50.0
+- use supervisor mode in sysvinit script for crash recovery (by Songmu)
+- include mkr into windows msi (by Songmu)
+- pass returned value from command.RunOnce so that `mackerel-agent once… (by astj)
+
 * Wed Jan 10 2018 <mackerel-developers@hatena.ne.jp> - 0.49.0
 - cut out `cmdutil` package from `util` and interface adjustment (by Songmu)
 - Ignore connection configurations in mackerel-agent.conf (by itchyny)
