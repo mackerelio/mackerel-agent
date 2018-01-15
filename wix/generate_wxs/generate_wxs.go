@@ -243,7 +243,7 @@ func main() {
 	idlist := []string{}
 	installDir.Children = append(installDir.Children, component)
 	for _, name := range names {
-		if !strings.HasPrefix(name, "check-") && !strings.HasPrefix(name, "mackerel-plugin-") {
+		if !strings.HasPrefix(name, "check-") && !strings.HasPrefix(name, "mackerel-plugin-") && name != "mkr.exe" {
 			continue
 		}
 		id := toCamelCase(name)
