@@ -1,3 +1,14 @@
+mackerel-agent (0.50.0-1.systemd) stable; urgency=low
+
+  * use supervisor mode in sysvinit script for crash recovery (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/472>
+  * include mkr into windows msi (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/465>
+  * pass returned value from command.RunOnce so that `mackerel-agent once… (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/474>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 15 Jan 2018 10:52:28 +0900
+
 mackerel-agent (0.49.0-1.systemd) stable; urgency=low
 
   * cut out `cmdutil` package from `util` and interface adjustment (by Songmu)

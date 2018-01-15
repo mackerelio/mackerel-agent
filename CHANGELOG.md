@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.50.0 (2018-01-15)
+
+* use supervisor mode in sysvinit script for crash recovery #472 (Songmu)
+* include mkr into windows msi #465 (Songmu)
+* pass returned value from command.RunOnce so that `mackerel-agent once… #474 (astj)
+
+
 ## 0.49.0 (2018-01-10)
 
 * cut out `cmdutil` package from `util` and interface adjustment #470 (Songmu)
