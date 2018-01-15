@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.50.1 (2018-01-15)
+
+* Add mkr to dependencies to include it into windows msi #478 (shibayu36)
+
+
 ## 0.50.0 (2018-01-15)
 
 * use supervisor mode in sysvinit script for crash recovery #472 (Songmu)

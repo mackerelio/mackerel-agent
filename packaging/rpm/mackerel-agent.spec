@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Mon Jan 15 2018 <mackerel-developers@hatena.ne.jp> - 0.50.1
+- Add mkr to dependencies to include it into windows msi (by shibayu36)
+
 * Mon Jan 15 2018 <mackerel-developers@hatena.ne.jp> - 0.50.0
 - use supervisor mode in sysvinit script for crash recovery (by Songmu)
 - include mkr into windows msi (by Songmu)
