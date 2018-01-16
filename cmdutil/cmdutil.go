@@ -64,7 +64,7 @@ func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string,
 	}
 	exitStatus, stdout, stderr, err := tio.Run()
 
-	if err == nil && exitStatus.IsTimedOut() {
+	if err == nil && exitStatus.IsTimedOut() && (runtime.GOOS == "windows" || exitStatus.Signaled) {
 		err = fmt.Errorf("command timed out")
 	}
 	if err != nil {
