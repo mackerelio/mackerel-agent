@@ -85,6 +85,11 @@ rpm-v2: crossbuild-package
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
 	--define "_version ${VERSION}" --define "buildarch x86_64" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
+	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c7 \
+	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" --define "dist .amzn2" \
+	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 deb: deb-v1 deb-v2
 
