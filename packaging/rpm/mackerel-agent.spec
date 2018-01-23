@@ -62,6 +62,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Jan 23 2018 <mackerel-developers@hatena.ne.jp> - 0.51.0
+- Fix metric values of pagefile total and pagefile free on Windows (by itchyny)
+- update rpm-v2 task for building Amazon Linux 2 package (by hayajo)
+- Care plugins that handle timeout signal(SIGTERM) (by Songmu)
+
 * Mon Jan 15 2018 <mackerel-developers@hatena.ne.jp> - 0.50.1
 - Add mkr to dependencies to include it into windows msi (by shibayu36)
 

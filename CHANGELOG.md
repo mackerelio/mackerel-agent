@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.51.0 (2018-01-23)
+
+* Fix metric values of pagefile total and pagefile free on Windows #456 (itchyny)
+* update rpm-v2 task for building Amazon Linux 2 package #475 (hayajo)
+* Care plugins that handle timeout signal(SIGTERM) #476 (Songmu)
+
+
 ## 0.50.1 (2018-01-15)
 
 * Add mkr to dependencies to include it into windows msi #478 (shibayu36)
