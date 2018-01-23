@@ -1,3 +1,14 @@
+mackerel-agent (0.51.0-1) stable; urgency=low
+
+  * Fix metric values of pagefile total and pagefile free on Windows (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/456>
+  * update rpm-v2 task for building Amazon Linux 2 package (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/475>
+  * Care plugins that handle timeout signal(SIGTERM) (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/476>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 23 Jan 2018 11:18:21 +0900
+
 mackerel-agent (0.50.1-1) stable; urgency=low
 
   * Add mkr to dependencies to include it into windows msi (by shibayu36)
