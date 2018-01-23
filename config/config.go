@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/BurntSushi/toml"
 	"github.com/mackerelio/golib/logging"
@@ -146,6 +147,7 @@ type PluginConfig struct {
 	IncludePattern        *string       `toml:"include_pattern"`
 	ExcludePattern        *string       `toml:"exclude_pattern"`
 	Action                CommandConfig `toml:"action"`
+	Memo                  *string       `toml:"memo"`
 }
 
 // CommandConfig represents an executable command configuration.
@@ -263,6 +265,7 @@ type CheckPlugin struct {
 	MaxCheckAttempts      *int32
 	PreventAlertAutoClose bool
 	Action                *Command
+	Memo                  *string
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
@@ -279,6 +282,22 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		return nil, err
 	}
 
+	memo := pconf.Memo
+	if pconf.Memo != nil && utf8.RuneCountInString(*pconf.Memo) > 250 {
+		configLogger.Warningf("'plugin.checks.%s.memo' size exceeds 250 characters", name)
+		str := *pconf.Memo
+		c := 0
+		n := 0
+		for len(str) > 0 && c < 250 {
+			_, size := utf8.DecodeRuneInString(str)
+			n += size
+			c++
+			str = str[size:]
+		}
+		str = (*pconf.Memo)[:n]
+		memo = &str
+	}
+
 	plugin := CheckPlugin{
 		Command:               *cmd,
 		NotificationInterval:  pconf.NotificationInterval,
@@ -286,6 +305,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		MaxCheckAttempts:      pconf.MaxCheckAttempts,
 		PreventAlertAutoClose: pconf.PreventAlertAutoClose,
 		Action:                action,
+		Memo:                  memo,
 	}
 	if plugin.MaxCheckAttempts != nil && *plugin.MaxCheckAttempts > 1 && plugin.PreventAlertAutoClose {
 		*plugin.MaxCheckAttempts = 1
@@ -388,15 +408,6 @@ func (r *Regexpwrapper) UnmarshalText(text []byte) error {
 	var err error
 	r.Regexp, err = regexp.Compile(string(text))
 	return err
-}
-
-// CheckNames returns a list of name of the check plugins
-func (conf *Config) CheckNames() []string {
-	checks := []string{}
-	for name := range conf.CheckPlugins {
-		checks = append(checks, name)
-	}
-	return checks
 }
 
 // ListCustomIdentifiers returns a list of customIdentifiers.
