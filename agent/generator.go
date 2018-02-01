@@ -2,6 +2,7 @@ package agent
 
 import (
 	"sync"
+	"time"
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
@@ -39,7 +40,11 @@ func generateValues(generators []metrics.Generator) []*metrics.ValuesCustomIdent
 					wg.Done()
 				}()
 
+				startedAt := time.Now()
 				values, err := g.Generate()
+				if seconds := (time.Now().Sub(startedAt) / time.Second); seconds > 120 {
+					logger.Warningf("%T.Generate() take a long time (%d seconds)", g, seconds)
+				}
 				if err != nil {
 					logger.Errorf("Failed to generate value in %T (skip this metric): %s", g, err.Error())
 					return
