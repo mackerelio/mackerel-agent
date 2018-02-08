@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.52.0 (2018-02-08)
+
+* Refine metrics collector #442 (mechairoi)
+*  Add `memo` option to check plugin config #480 (mechairoi)
+
+
 ## 0.51.0 (2018-01-23)
 
 * Fix metric values of pagefile total and pagefile free on Windows #456 (itchyny)
