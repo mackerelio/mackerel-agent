@@ -55,6 +55,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Feb 08 2018 <mackerel-developers@hatena.ne.jp> - 0.52.0
+- Refine metrics collector (by mechairoi)
+-  Add `memo` option to check plugin config (by mechairoi)
+
 * Tue Jan 23 2018 <mackerel-developers@hatena.ne.jp> - 0.51.0
 - Fix metric values of pagefile total and pagefile free on Windows (by itchyny)
 - update rpm-v2 task for building Amazon Linux 2 package (by hayajo)
