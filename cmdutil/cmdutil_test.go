@@ -2,14 +2,24 @@ package cmdutil
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
+	"os/exec"
 	"runtime"
 	"strings"
 	"testing"
 	"time"
 )
+
+var stubcmd = "testdata/stubcmd"
+
+func init() {
+	if runtime.GOOS == "windows" {
+		stubcmd = `.\testdata\stubcmd.exe`
+	}
+	err := exec.Command("go", "build", "-o", stubcmd, "testdata/stubcmd.go").Run()
+	if err != nil {
+		panic(err)
+	}
+}
 
 var testCmdOpt = CommandOption{
 	TimeoutDuration: 1 * time.Second,
@@ -35,30 +45,9 @@ func TestRunCommand(t *testing.T) {
 	}
 }
 
-func makeSleep(t *testing.T) (string, string) {
-	tmpdir, err := ioutil.TempDir("", "mackerel-agent")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	f := filepath.Join(tmpdir, "sleep.go")
-	err = ioutil.WriteFile(f, []byte(`package main;import "time";func main(){time.Sleep(time.Second*2)}`), 0644)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if strings.Contains(f, " ") {
-		f = `"` + f + `"`
-	}
-	return fmt.Sprintf(`go run %s 2`, f), tmpdir
-}
-
 func TestRunCommandWithTimeout(t *testing.T) {
-	command := "sleep 2"
+	command := fmt.Sprintf("%s -sleep 2", stubcmd)
 
-	var tmpdir string
-	if runtime.GOOS == "windows" {
-		command, tmpdir = makeSleep(t)
-	}
 	stdout, stderr, _, err := RunCommand(command, testCmdOpt)
 	if stdout != "" {
 		t.Errorf("stdout shoud be empty")
@@ -68,9 +57,6 @@ func TestRunCommandWithTimeout(t *testing.T) {
 	}
 	if err == nil {
 		t.Error("err should have error but nil")
-	}
-	if tmpdir != "" {
-		os.RemoveAll(tmpdir)
 	}
 }
 

@@ -3,23 +3,14 @@
 package cmdutil
 
 import (
-	"os/exec"
 	"strings"
 	"testing"
 	"time"
 )
 
-const trapgo = "testdata/trapgo"
-
-func init() {
-	err := exec.Command("go", "build", "-o", trapgo, "testdata/trap.go").Run()
-	if err != nil {
-		panic(err)
-	}
-}
-
 func TestRunCommandArgs_signalHandled(t *testing.T) {
-	stdout, _, exitCode, err := RunCommandArgs([]string{trapgo}, CommandOption{
+	cmd := []string{stubcmd, "-trap=SIGTERM", "-trap-exit=23", "-sleep=10"}
+	stdout, _, exitCode, err := RunCommandArgs(cmd, CommandOption{
 		TimeoutDuration: 50 * time.Millisecond,
 	})
 	if err != nil {
