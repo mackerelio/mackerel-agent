@@ -42,7 +42,7 @@ func RunCommand(command string, opt CommandOption) (stdout, stderr string, exitC
 	return RunCommandArgs(cmdArgs, opt)
 }
 
-var timedOutErr = errors.New("command timed out")
+var errTimedOut = errors.New("command timed out")
 
 // RunCommandArgs run the command
 func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
@@ -68,7 +68,7 @@ func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string,
 
 	exitCode = -1
 	if err == nil && exitStatus.IsTimedOut() && (runtime.GOOS == "windows" || exitStatus.Signaled) {
-		err = timedOutErr
+		err = errTimedOut
 		exitCode = exitStatus.GetChildExitCode()
 	}
 	if err != nil {

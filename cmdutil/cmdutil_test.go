@@ -52,7 +52,7 @@ func TestRunCommand(t *testing.T) {
 				}
 				return 128 + int(syscall.SIGTERM)
 			}(),
-			Err: timedOutErr,
+			Err: errTimedOut,
 		},
 		{
 			Name: "withEnv",
