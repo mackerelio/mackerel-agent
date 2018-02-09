@@ -68,7 +68,15 @@ func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string,
 		err = fmt.Errorf("command timed out")
 	}
 	if err != nil {
-		logger.Errorf("RunCommand error command: %v, error: %s", cmdArgs, err.Error())
+		logger.Errorf("RunCommand error. command: %v, error: %s", cmdArgs, err.Error())
+		exitCode := -1
+		type exiter interface {
+			ExitCode() int
+		}
+		if terr, ok := err.(exiter); ok {
+			exitCode = terr.ExitCode()
+		}
+		return stdout, stderr, exitCode, err
 	}
-	return stdout, stderr, exitStatus.GetChildExitCode(), err
+	return stdout, stderr, exitStatus.GetChildExitCode(), nil
 }
