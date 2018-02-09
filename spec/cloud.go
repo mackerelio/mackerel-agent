@@ -45,7 +45,7 @@ func init() {
 	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
 }
 
-var timeout = 100 * time.Millisecond
+var timeout = 3 * time.Second
 
 // SuggestCloudGenerator returns suitable CloudGenerator
 func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
