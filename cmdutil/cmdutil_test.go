@@ -23,7 +23,7 @@ func init() {
 }
 
 var testCmdOpt = CommandOption{
-	TimeoutDuration: 1 * time.Second,
+	TimeoutDuration: 100 * time.Millisecond,
 }
 
 func TestRunCommand(t *testing.T) {
@@ -44,7 +44,7 @@ func TestRunCommand(t *testing.T) {
 		},
 		{
 			Name:          "Timeout",
-			Command:       fmt.Sprintf("%s -sleep 2", stubcmd),
+			Command:       fmt.Sprintf("%s -sleep 11", stubcmd),
 			CommandOption: testCmdOpt,
 			ExitCode: func() int {
 				if runtime.GOOS == "windows" {
