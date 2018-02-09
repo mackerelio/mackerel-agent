@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -26,65 +27,67 @@ var testCmdOpt = CommandOption{
 }
 
 func TestRunCommand(t *testing.T) {
-	stdout, stderr, exitCode, err := RunCommand("echo 1", testCmdOpt)
-	if runtime.GOOS == "windows" {
-		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
-		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
-	}
-	if stdout != "1\n" {
-		t.Errorf("stdout shoud be 1")
-	}
-	if stderr != "" {
-		t.Errorf("stderr shoud be empty")
-	}
-	if exitCode != 0 {
-		t.Errorf("exitCode should be zero")
-	}
-	if err != nil {
-		t.Error("err should be nil but:", err)
-	}
-}
+	testCases := []struct {
+		Name          string
+		Command       string
+		CommandOption CommandOption
 
-func TestRunCommandWithTimeout(t *testing.T) {
-	command := fmt.Sprintf("%s -sleep 2", stubcmd)
+		Stdout, Stderr string
+		ExitCode       int
+		Err            error
+	}{
+		{
+			Name:          "echo-1",
+			Command:       "echo 1",
+			CommandOption: testCmdOpt,
+			Stdout:        "1",
+		},
+		{
+			Name:          "Timeout",
+			Command:       fmt.Sprintf("%s -sleep 2", stubcmd),
+			CommandOption: testCmdOpt,
+			ExitCode: func() int {
+				if runtime.GOOS == "windows" {
+					return 1
+				}
+				return 128 + int(syscall.SIGTERM)
+			}(),
+			Err: timedOutErr,
+		},
+		{
+			Name: "withEnv",
+			Command: func() string {
+				command := `echo $TEST_RUN_COMMAND_ENV`
+				if runtime.GOOS == "windows" {
+					command = `echo %TEST_RUN_COMMAND_ENV%`
+				}
+				return command
+			}(),
+			CommandOption: CommandOption{
+				TimeoutDuration: testCmdOpt.TimeoutDuration,
+				Env:             []string{"TEST_RUN_COMMAND_ENV=mackerel-agent"},
+			},
+			Stdout: "mackerel-agent",
+		},
+	}
 
-	stdout, stderr, _, err := RunCommand(command, testCmdOpt)
-	if stdout != "" {
-		t.Errorf("stdout shoud be empty")
-	}
-	if stderr != "" {
-		t.Errorf("stderr shoud be empty")
-	}
-	if err == nil {
-		t.Error("err should have error but nil")
-	}
-}
-
-func TestRunCommandWithEnv(t *testing.T) {
-	command := `echo $TEST_RUN_COMMAND_ENV`
-	if runtime.GOOS == "windows" {
-		command = `echo %TEST_RUN_COMMAND_ENV%`
-	}
-
-	opt := CommandOption{
-		TimeoutDuration: testCmdOpt.TimeoutDuration,
-		Env:             []string{"TEST_RUN_COMMAND_ENV=mackerel-agent"},
-	}
-	stdout, stderr, exitCode, err := RunCommand(command, opt)
-	if runtime.GOOS == "windows" {
-		stdout = strings.Replace(stdout, "\r\n", "\n", -1)
-		stderr = strings.Replace(stderr, "\r\n", "\n", -1)
-	}
-	if stdout != "mackerel-agent\n" {
-		t.Errorf("stdout shoud be 1")
-	}
-	if stderr != "" {
-		t.Errorf("stderr shoud be empty")
-	}
-	if exitCode != 0 {
-		t.Errorf("exitCode should be zero")
-	}
-	if err != nil {
-		t.Error("err should be nil but:", err)
+	for _, tc := range testCases {
+		t.Run(tc.Name, func(t *testing.T) {
+			stdout, stderr, exitCode, err := RunCommand(tc.Command, tc.CommandOption)
+			stdout = strings.TrimSpace(stdout)
+			stderr = strings.TrimSpace(stderr)
+			if stdout != tc.Stdout {
+				t.Errorf("invalid stdout. out=%q, expect=%q", stdout, tc.Stdout)
+			}
+			if stderr != tc.Stderr {
+				t.Errorf("invalid stderr. out=%q, expect=%q", stderr, tc.Stderr)
+			}
+			if exitCode != tc.ExitCode {
+				t.Errorf("exitCode should be %d, but: %d", tc.ExitCode, exitCode)
+			}
+			if err != tc.Err {
+				t.Errorf("err should be %s but: %s", tc.Err, err)
+			}
+		})
 	}
 }
