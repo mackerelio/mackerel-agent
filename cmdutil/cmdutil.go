@@ -73,11 +73,8 @@ func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string,
 	}
 	if err != nil {
 		logger.Errorf("RunCommand error. command: %v, error: %s", cmdArgs, err.Error())
-		type exiter interface {
-			ExitCode() int
-		}
-		if terr, ok := err.(exiter); ok {
-			exitCode = terr.ExitCode()
+		if terr, ok := err.(*timeout.Error); ok {
+			exitCode = terr.ExitCode
 		}
 		return stdout, stderr, exitCode, err
 	}
