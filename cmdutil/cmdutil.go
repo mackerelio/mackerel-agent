@@ -1,7 +1,7 @@
 package cmdutil
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"os/exec"
 	"runtime"
@@ -42,6 +42,8 @@ func RunCommand(command string, opt CommandOption) (stdout, stderr string, exitC
 	return RunCommandArgs(cmdArgs, opt)
 }
 
+var errTimedOut = errors.New("command timed out")
+
 // RunCommandArgs run the command
 func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
@@ -64,11 +66,17 @@ func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string,
 	}
 	exitStatus, stdout, stderr, err := tio.Run()
 
+	exitCode = -1
 	if err == nil && exitStatus.IsTimedOut() && (runtime.GOOS == "windows" || exitStatus.Signaled) {
-		err = fmt.Errorf("command timed out")
+		err = errTimedOut
+		exitCode = exitStatus.GetChildExitCode()
 	}
 	if err != nil {
-		logger.Errorf("RunCommand error command: %v, error: %s", cmdArgs, err.Error())
+		logger.Errorf("RunCommand error. command: %v, error: %s", cmdArgs, err.Error())
+		if terr, ok := err.(*timeout.Error); ok {
+			exitCode = terr.ExitCode
+		}
+		return stdout, stderr, exitCode, err
 	}
-	return stdout, stderr, exitStatus.GetChildExitCode(), err
+	return stdout, stderr, exitStatus.GetChildExitCode(), nil
 }
