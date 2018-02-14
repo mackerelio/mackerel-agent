@@ -44,7 +44,7 @@ func TestRunCommand(t *testing.T) {
 		},
 		{
 			Name:          "Timeout",
-			Command:       fmt.Sprintf("%s -sleep 11", stubcmd),
+			Command:       fmt.Sprintf("%s -sleep 11s", stubcmd),
 			CommandOption: testCmdOpt,
 			ExitCode: func() int {
 				if runtime.GOOS == "windows" {

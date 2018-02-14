@@ -19,7 +19,7 @@ func TestRunCommandArgs(t *testing.T) {
 	}{
 		{
 			Name:          "signal trapped",
-			CommandArgs:   []string{stubcmd, "-trap=SIGTERM", "-trap-exit=23", "-sleep=10"},
+			CommandArgs:   []string{stubcmd, "-trap=SIGTERM", "-trap-exit=23", "-sleep=10s"},
 			CommandOption: testCmdOpt,
 			Stdout:        "signal received",
 			ExitCode:      23,
