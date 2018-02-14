@@ -21,7 +21,7 @@ func main() {
 		trap     = flag.String("trap", "", "signals")
 		exit     = flag.Int("exit", 0, "exit status")
 		trapExit = flag.Int("trap-exit", 0, "exit status when trapping signal")
-		sleep    = flag.Float64("sleep", 0, "sleep seconds")
+		sleep    = flag.Duration("sleep", 0, "sleep seconds")
 	)
 	flag.Parse()
 
@@ -47,7 +47,7 @@ func main() {
 		}()
 	}
 	if *sleep > 0 {
-		time.Sleep(time.Duration(float64(time.Second) * *sleep))
+		time.Sleep(*sleep)
 	}
 	os.Exit(*exit)
 }
