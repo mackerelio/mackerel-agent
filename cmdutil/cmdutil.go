@@ -1,6 +1,8 @@
 package cmdutil
 
 import (
+	"bytes"
+	"context"
 	"errors"
 	"os"
 	"os/exec"
@@ -38,14 +40,24 @@ type CommandOption struct {
 
 // RunCommand runs command (in two string) and returns stdout, stderr strings and its exit code.
 func RunCommand(command string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
+	return RunCommandContext(context.Background(), command, opt)
+}
+
+// RunCommandContext runs command with context
+func RunCommandContext(ctx context.Context, command string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
 	cmdArgs := append(cmdBase, command)
-	return RunCommandArgs(cmdArgs, opt)
+	return RunCommandArgsContext(ctx, cmdArgs, opt)
 }
 
 var errTimedOut = errors.New("command timed out")
 
 // RunCommandArgs run the command
 func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
+	return RunCommandArgsContext(context.Background(), cmdArgs, opt)
+}
+
+// RunCommandArgsContext runs command by args with context
+func RunCommandArgsContext(ctx context.Context, cmdArgs []string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
 	args := append([]string{}, cmdArgs...)
 	if opt.User != "" {
 		if runtime.GOOS == "windows" {
@@ -56,6 +68,10 @@ func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string,
 	}
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Env = append(os.Environ(), opt.Env...)
+	outbuf := &bytes.Buffer{}
+	errbuf := &bytes.Buffer{}
+	cmd.Stdout = outbuf
+	cmd.Stderr = errbuf
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  defaultTimeoutDuration,
@@ -64,8 +80,9 @@ func RunCommandArgs(cmdArgs []string, opt CommandOption) (stdout, stderr string,
 	if opt.TimeoutDuration != 0 {
 		tio.Duration = opt.TimeoutDuration
 	}
-	exitStatus, stdout, stderr, err := tio.Run()
-
+	exitStatus, err := tio.RunContext(ctx)
+	stdout = outbuf.String()
+	stderr = errbuf.String()
 	exitCode = -1
 	if err == nil && exitStatus.IsTimedOut() && (runtime.GOOS == "windows" || exitStatus.Signaled) {
 		err = errTimedOut
