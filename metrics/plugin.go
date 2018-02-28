@@ -181,13 +181,17 @@ func (g *pluginGenerator) loadPluginMeta() error {
 }
 
 func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDefsPayload {
-	if g.Meta == nil {
+	return makeCreateGraphDefsPayload(g.Meta)
+}
+
+func makeCreateGraphDefsPayload(meta *pluginMeta) []mackerel.CreateGraphDefsPayload {
+	if meta == nil {
 		return nil
 	}
 
 	payloads := []mackerel.CreateGraphDefsPayload{}
 
-	for key, graph := range g.Meta.Graphs {
+	for key, graph := range meta.Graphs {
 		payload := mackerel.CreateGraphDefsPayload{
 			Name:        pluginPrefix + key,
 			DisplayName: graph.Label,

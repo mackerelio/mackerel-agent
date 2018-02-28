@@ -2,6 +2,8 @@ package metrics
 
 import (
 	"runtime"
+
+	"github.com/mackerelio/mackerel-agent/mackerel"
 )
 
 // AgentGenerator is generator of metrics
@@ -23,4 +25,26 @@ func (g *AgentGenerator) Generate() (Values, error) {
 	}
 
 	return ret, nil
+}
+
+func (g *AgentGenerator) CustomIdentifier() *string {
+	return nil
+}
+
+func (g *AgentGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error) {
+	meta := &pluginMeta{
+		Graphs: map[string]customGraphDef{
+			"agent.memory": customGraphDef{
+				Label: "Agent Memory",
+				Unit:  "bytes",
+				Metrics: []customGraphMetricDef{
+					{Name: "alloc", Label: "Alloc"},
+					{Name: "sys", Label: "Sys"},
+					{Name: "heapAlloc", Label: "Heap Alloc"},
+					{Name: "heapSys", Label: "Heap Sys"},
+				},
+			},
+		},
+	}
+	return makeCreateGraphDefsPayload(meta), nil
 }
