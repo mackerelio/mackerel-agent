@@ -18,10 +18,11 @@ func (g *AgentGenerator) Generate() (Values, error) {
 	runtime.ReadMemStats(memStats)
 
 	ret := map[string]float64{
-		"custom.agent.memory.alloc":     float64(memStats.Alloc),
-		"custom.agent.memory.sys":       float64(memStats.Sys),
-		"custom.agent.memory.heapAlloc": float64(memStats.HeapAlloc),
-		"custom.agent.memory.heapSys":   float64(memStats.HeapSys),
+		"custom.agent.memory.alloc":          float64(memStats.Alloc),
+		"custom.agent.memory.sys":            float64(memStats.Sys),
+		"custom.agent.memory.heapAlloc":      float64(memStats.HeapAlloc),
+		"custom.agent.memory.heapSys":        float64(memStats.HeapSys),
+		"custom.agent.runtime.goroutine_num": float64(runtime.NumGoroutine()),
 	}
 
 	return ret, nil
@@ -42,6 +43,13 @@ func (g *AgentGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, 
 					{Name: "sys", Label: "Sys"},
 					{Name: "heapAlloc", Label: "Heap Alloc"},
 					{Name: "heapSys", Label: "Heap Sys"},
+				},
+			},
+			"agent.runtime": customGraphDef{
+				Label: "Agent Runtime",
+				Unit:  "integer",
+				Metrics: []customGraphMetricDef{
+					{Name: "goroutine_num", Label: "Goroutine Num"},
 				},
 			},
 		},
