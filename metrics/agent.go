@@ -28,10 +28,12 @@ func (g *AgentGenerator) Generate() (Values, error) {
 	return ret, nil
 }
 
+// CustomIdentifier for PluginGenerator interface
 func (g *AgentGenerator) CustomIdentifier() *string {
 	return nil
 }
 
+// PrepareGraphDefs for PluginGenerator interface
 func (g *AgentGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error) {
 	meta := &pluginMeta{
 		Graphs: map[string]customGraphDef{
