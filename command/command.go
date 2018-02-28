@@ -722,20 +722,17 @@ func createCheckers(conf *config.Config) []*checks.Checker {
 }
 
 func prepareGenerators(conf *config.Config) []metrics.Generator {
-	diagnostic := conf.Diagnostic
-	generators := metricsGenerators(conf)
-	if diagnostic {
-		generators = append(generators, &metrics.AgentGenerator{})
-	}
-	return generators
+	return metricsGenerators(conf)
 }
 
 func pluginGenerators(conf *config.Config) []metrics.PluginGenerator {
 	generators := []metrics.PluginGenerator{}
-
 	for _, pluginConfig := range conf.MetricPlugins {
 		generators = append(generators, metrics.NewPluginGenerator(pluginConfig))
 	}
 
+	if conf.Diagnostic {
+		generators = append(generators, &metrics.AgentGenerator{})
+	}
 	return generators
 }
