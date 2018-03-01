@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.52.1 (2018-03-01)
+
+* context support in cmdutil #485 (Songmu)
+* Improve error handling when executing commands #484 (Songmu)
+* extend timeout for retrieving cloud metadata #483 (hayajo)
+
+
 ## 0.52.0 (2018-02-08)
 
 * Refine metrics collector #442 (mechairoi)

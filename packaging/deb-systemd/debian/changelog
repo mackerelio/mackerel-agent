@@ -1,3 +1,14 @@
+mackerel-agent (0.52.1-1.systemd) stable; urgency=low
+
+  * context support in cmdutil (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/485>
+  * Improve error handling when executing commands (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/484>
+  * extend timeout for retrieving cloud metadata (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/483>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 01 Mar 2018 14:22:41 +0900
+
 mackerel-agent (0.52.0-1.systemd) stable; urgency=low
 
   * Refine metrics collector (by mechairoi)
