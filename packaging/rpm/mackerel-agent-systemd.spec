@@ -55,6 +55,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Mar 01 2018 <mackerel-developers@hatena.ne.jp> - 0.52.1
+- context support in cmdutil (by Songmu)
+- Improve error handling when executing commands (by Songmu)
+- extend timeout for retrieving cloud metadata (by hayajo)
+
 * Thu Feb 08 2018 <mackerel-developers@hatena.ne.jp> - 0.52.0
 - Refine metrics collector (by mechairoi)
 -  Add `memo` option to check plugin config (by mechairoi)
