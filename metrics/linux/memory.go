@@ -27,24 +27,24 @@ var memoryLogger = logging.GetLogger("metrics.memory")
 
 // Generate memory values
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
-	memory, err := memory.Get()
+	mem, err := memory.Get()
 	if err != nil {
 		memoryLogger.Errorf("failed to get memory statistics: %s", err)
 		return nil, err
 	}
 
 	ret := map[string]float64{
-		"memory.total":       float64(memory.Total),
-		"memory.used":        float64(memory.Total - memory.Free - memory.Buffers - memory.Cached),
-		"memory.available":   float64(memory.Available),
-		"memory.buffers":     float64(memory.Buffers),
-		"memory.cached":      float64(memory.Cached),
-		"memory.free":        float64(memory.Free),
-		"memory.active":      float64(memory.Active),
-		"memory.inactive":    float64(memory.Inactive),
-		"memory.swap_total":  float64(memory.SwapTotal),
-		"memory.swap_cached": float64(memory.SwapCached),
-		"memory.swap_free":   float64(memory.SwapFree),
+		"memory.total":       float64(mem.Total),
+		"memory.used":        float64(mem.Total - mem.Free - mem.Buffers - mem.Cached),
+		"memory.available":   float64(mem.Available),
+		"memory.buffers":     float64(mem.Buffers),
+		"memory.cached":      float64(mem.Cached),
+		"memory.free":        float64(mem.Free),
+		"memory.active":      float64(mem.Active),
+		"memory.inactive":    float64(mem.Inactive),
+		"memory.swap_total":  float64(mem.SwapTotal),
+		"memory.swap_cached": float64(mem.SwapCached),
+		"memory.swap_free":   float64(mem.SwapFree),
 	}
 
 	return metrics.Values(ret), nil
