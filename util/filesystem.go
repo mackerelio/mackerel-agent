@@ -100,6 +100,11 @@ func parseDfLines(out string) []*DfStat {
 		if strings.HasPrefix(dfstat.Name, "/dev/dm-") && strings.Contains(dfstat.Mounted, "devicemapper/mnt") {
 			continue
 		}
+
+		if runtime.GOOS == "darwin" && strings.HasPrefix(dfstat.Mounted, "/Volumes/") {
+			continue
+		}
+
 		filesystems = append(filesystems, dfstat)
 	}
 	return filesystems
