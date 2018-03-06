@@ -35,16 +35,20 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 
 	ret := map[string]float64{
 		"memory.total":       float64(mem.Total),
-		"memory.used":        float64(mem.Total - mem.Free - mem.Buffers - mem.Cached),
-		"memory.available":   float64(mem.Available),
-		"memory.buffers":     float64(mem.Buffers),
-		"memory.cached":      float64(mem.Cached),
-		"memory.free":        float64(mem.Free),
+		"memory.used":        float64(mem.Used),
 		"memory.active":      float64(mem.Active),
 		"memory.inactive":    float64(mem.Inactive),
 		"memory.swap_total":  float64(mem.SwapTotal),
 		"memory.swap_cached": float64(mem.SwapCached),
 		"memory.swap_free":   float64(mem.SwapFree),
+	}
+
+	if mem.MemAvailableEnabled {
+		ret["memory.available"] = float64(mem.Available)
+	} else {
+		ret["memory.buffers"] = float64(mem.Buffers)
+		ret["memory.cached"] = float64(mem.Cacned)
+		ret["memory.free"] = float64(mem.Free)
 	}
 
 	return metrics.Values(ret), nil
