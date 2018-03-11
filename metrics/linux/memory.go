@@ -44,7 +44,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	}
 
 	if mem.MemAvailableEnabled {
-		ret["memory.available"] = float64(mem.Available)
+		ret["memory.mem_available"] = float64(mem.Available)
 	} else {
 		ret["memory.buffers"] = float64(mem.Buffers)
 		ret["memory.cached"] = float64(mem.Cacned)
