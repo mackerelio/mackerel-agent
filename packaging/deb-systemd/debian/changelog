@@ -1,3 +1,16 @@
+mackerel-agent (0.53.0-1.systemd) stable; urgency=low
+
+  * Stop collecting memory.available for now (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/490>
+  * omit `/Volumes/` from collected `df` values on darwin (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/489>
+  * Enhance diagnostic mode (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/486>
+  * Fix EC2 check for KVM based EC2 instance (e.g. c5 instance) (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/488>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 15 Mar 2018 10:29:20 +0900
+
 mackerel-agent (0.52.1-1.systemd) stable; urgency=low
 
   * context support in cmdutil (by Songmu)

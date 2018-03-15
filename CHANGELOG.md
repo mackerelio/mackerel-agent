@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.53.0 (2018-03-15)
+
+* Stop collecting memory.available for now #490 (Songmu)
+* omit `/Volumes/` from collected `df` values on darwin #489 (Songmu)
+* Enhance diagnostic mode #486 (Songmu)
+* Fix EC2 check for KVM based EC2 instance (e.g. c5 instance) #488 (hayajo)
+
+
 ## 0.52.1 (2018-03-01)
 
 * context support in cmdutil #485 (Songmu)
