@@ -55,6 +55,12 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Mar 15 2018 <mackerel-developers@hatena.ne.jp> - 0.53.0
+- Stop collecting memory.available for now (by Songmu)
+- omit `/Volumes/` from collected `df` values on darwin (by Songmu)
+- Enhance diagnostic mode (by Songmu)
+- Fix EC2 check for KVM based EC2 instance (e.g. c5 instance) (by hayajo)
+
 * Thu Mar 01 2018 <mackerel-developers@hatena.ne.jp> - 0.52.1
 - context support in cmdutil (by Songmu)
 - Improve error handling when executing commands (by Songmu)
