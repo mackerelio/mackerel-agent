@@ -170,8 +170,7 @@ func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*Host, erro
 	}
 
 	if len(data.Hosts) == 0 {
-		logger.Infof("no host was found for the custom identifier: %s", customIdentifier)
-		return nil, err
+		return nil, fmt.Errorf("no host was found for the custom identifier: %s", customIdentifier)
 	}
 	return data.Hosts[0], err
 }
