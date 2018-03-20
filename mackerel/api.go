@@ -58,6 +58,21 @@ func apiError(code int, msg string) *Error {
 	}
 }
 
+// InfoError represents Error of log level INFO
+type InfoError struct {
+	Message string
+}
+
+func (e *InfoError) Error() string {
+	return e.Message
+}
+
+func infoError(msg string) *InfoError {
+	return &InfoError{
+		Message: msg,
+	}
+}
+
 // NewAPI creates a new instance of API.
 func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	u, err := url.Parse(rawurl)
@@ -170,7 +185,7 @@ func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*Host, erro
 	}
 
 	if len(data.Hosts) == 0 {
-		return nil, fmt.Errorf("no host was found for the custom identifier: %s", customIdentifier)
+		return nil, infoError(fmt.Sprintf("no host was found for the custom identifier: %s", customIdentifier))
 	}
 	return data.Hosts[0], err
 }

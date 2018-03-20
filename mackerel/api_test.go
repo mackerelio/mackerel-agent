@@ -425,6 +425,7 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 	var tests = []struct {
 		customIdentifier string
 		host             *Host
+		returnInfoError  bool
 	}{
 		{
 			customIdentifier: "foo-bar",
@@ -435,21 +436,30 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 				Status:           "working",
 				CustomIdentifier: "foo-bar",
 			},
+			returnInfoError: false,
 		},
 		{
 			customIdentifier: "unregistered-custom_identifier",
 			host:             nil,
+			returnInfoError:  true,
 		},
 		{
 			customIdentifier: "",
 			host:             nil,
+			returnInfoError:  true,
 		},
 	}
 
 	for _, tc := range tests {
 		host, err := api.FindHostByCustomIdentifier(tc.customIdentifier)
-		if err != nil {
-			t.Error("err shoud be nil but: ", err)
+		if tc.returnInfoError {
+			if _, ok := err.(*InfoError); !ok {
+				t.Error("err shoud be type of *InfoError but: ", reflect.TypeOf(err))
+			}
+		} else {
+			if err != nil {
+				t.Error("err shoud be nil but: ", err)
+			}
 		}
 		if reflect.DeepEqual(host, tc.host) != true {
 			t.Error("request sends json including memo but: ", host)
