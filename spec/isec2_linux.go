@@ -17,7 +17,7 @@ var uuidFiles = [2]string{
 // ref. https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
 func isEC2() bool {
 	looksLikeEC2 := false
-	for i, u := range uuidFiles {
+	for _, u := range uuidFiles {
 		data, err := ioutil.ReadFile(u)
 		if err != nil {
 			continue
