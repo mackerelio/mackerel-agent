@@ -1,3 +1,12 @@
+mackerel-agent (0.54.0-1) stable; urgency=low
+
+  * fix isEC2 (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/494>
+  * care `MemAvailable` in collecting metrics around memory on linux (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/491>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 20 Mar 2018 11:59:20 +0900
+
 mackerel-agent (0.53.0-1) stable; urgency=low
 
   * Stop collecting memory.available for now (by Songmu)
