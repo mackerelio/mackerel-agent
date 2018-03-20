@@ -55,6 +55,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Mar 20 2018 <mackerel-developers@hatena.ne.jp> - 0.54.0
+- fix isEC2 (by Songmu)
+- care `MemAvailable` in collecting metrics around memory on linux (by Songmu)
+
 * Thu Mar 15 2018 <mackerel-developers@hatena.ne.jp> - 0.53.0
 - Stop collecting memory.available for now (by Songmu)
 - omit `/Volumes/` from collected `df` values on darwin (by Songmu)

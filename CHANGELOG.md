@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.54.0 (2018-03-20)
+
+* fix isEC2 #494 (Songmu)
+* care `MemAvailable` in collecting metrics around memory on linux #491 (Songmu)
+
+
 ## 0.53.0 (2018-03-15)
 
 * Stop collecting memory.available for now #490 (Songmu)
