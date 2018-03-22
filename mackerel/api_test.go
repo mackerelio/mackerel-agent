@@ -396,16 +396,24 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 			t.Error("request method should be GET but :", req.Method)
 		}
 
-		respJSON, _ := json.Marshal(map[string][]map[string]interface{}{
-			"hosts": {{
-				"id":               "9rxGOHfVF8F",
-				"CustomIdentifier": "foo-bar",
-				"name":             "mydb001",
-				"status":           "working",
-				"memo":             "memo",
-				"roles":            map[string][]string{"My-Service": {"db-master", "db-slave"}},
-			}},
-		})
+		var hosts []map[string]interface{}
+
+		customIdentifier := req.URL.Query().Get("customIdentifier")
+
+		if customIdentifier == "foo-bar" {
+			hosts = []map[string]interface{}{
+				{
+					"id":               "9rxGOHfVF8F",
+					"CustomIdentifier": "foo-bar",
+					"name":             "mydb001",
+					"status":           "working",
+					"memo":             "memo",
+					"roles":            map[string][]string{"My-Service": {"db-master", "db-slave"}},
+				},
+			}
+		}
+
+		respJSON, _ := json.Marshal(map[string]interface{}{"hosts": hosts})
 
 		res.Header()["Content-Type"] = []string{"application/json"}
 		fmt.Fprint(res, string(respJSON))
@@ -413,20 +421,49 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 	defer ts.Close()
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
-	host, err := api.FindHostByCustomIdentifier("foo-bar")
 
-	if err != nil {
-		t.Error("err shoud be nil but: ", err)
+	var tests = []struct {
+		customIdentifier string
+		host             *Host
+		returnInfoError  bool
+	}{
+		{
+			customIdentifier: "foo-bar",
+			host: &Host{
+				ID:               "9rxGOHfVF8F",
+				Name:             "mydb001",
+				Type:             "",
+				Status:           "working",
+				CustomIdentifier: "foo-bar",
+			},
+			returnInfoError: false,
+		},
+		{
+			customIdentifier: "unregistered-custom_identifier",
+			host:             nil,
+			returnInfoError:  true,
+		},
+		{
+			customIdentifier: "",
+			host:             nil,
+			returnInfoError:  true,
+		},
 	}
 
-	if reflect.DeepEqual(host, &Host{
-		ID:               "9rxGOHfVF8F",
-		Name:             "mydb001",
-		Type:             "",
-		Status:           "working",
-		CustomIdentifier: "foo-bar",
-	}) != true {
-		t.Error("request sends json including memo but: ", host)
+	for _, tc := range tests {
+		host, err := api.FindHostByCustomIdentifier(tc.customIdentifier)
+		if tc.returnInfoError {
+			if _, ok := err.(*InfoError); !ok {
+				t.Error("err shoud be type of *InfoError but: ", reflect.TypeOf(err))
+			}
+		} else {
+			if err != nil {
+				t.Error("err shoud be nil but: ", err)
+			}
+		}
+		if reflect.DeepEqual(host, tc.host) != true {
+			t.Error("request sends json including memo but: ", host)
+		}
 	}
 }
 

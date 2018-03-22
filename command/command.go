@@ -40,7 +40,14 @@ func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mac
 
 	filterErrorForRetry := func(err error) error {
 		if err != nil {
-			logger.Warningf("%s", err.Error())
+			msg := err.Error()
+
+			switch err.(type) {
+			case *mackerel.InfoError:
+				logger.Infof("%s", msg)
+			default:
+				logger.Warningf("%s", msg)
+			}
 		}
 		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
 			// don't retry when client error (APIKey error etc.) occurred
