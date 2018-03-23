@@ -76,9 +76,5 @@ func isEC2UUID(uuid string) bool {
 	var data uint32
 	binary.Read(r, binary.LittleEndian, &data)
 
-	if conds(fmt.Sprintf("%x", data)) {
-		return true
-	}
-
-	return false
+	return conds(fmt.Sprintf("%x", data))
 }
