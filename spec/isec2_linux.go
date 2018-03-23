@@ -1,6 +1,10 @@
 package spec
 
 import (
+	"bytes"
+	"encoding/binary"
+	"encoding/hex"
+	"fmt"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -22,7 +26,7 @@ func isEC2() bool {
 		if err != nil {
 			continue
 		}
-		if strings.HasPrefix(string(data), "ec2") || strings.HasPrefix(string(data), "EC2") {
+		if isEC2UUID(string(data)) {
 			looksLikeEC2 = true
 			break
 		}
@@ -50,4 +54,27 @@ func isEC2() bool {
 	}
 
 	return false
+}
+
+func isEC2UUID(uuid string) bool {
+	conds := func(uuid string) bool {
+		if strings.HasPrefix(uuid, "ec2") || strings.HasPrefix(uuid, "EC2") {
+			return true
+		}
+		return false
+	}
+
+	if conds(uuid) {
+		return true
+	}
+
+	// Check as littele endian.
+	// see. https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+	fields := strings.Split(uuid, "-")
+	decoded, _ := hex.DecodeString(fields[0]) // fields[0]: UUID time_low(uint32)
+	r := bytes.NewReader(decoded)
+	var data uint32
+	binary.Read(r, binary.LittleEndian, &data)
+
+	return conds(fmt.Sprintf("%x", data))
 }
