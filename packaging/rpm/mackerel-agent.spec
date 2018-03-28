@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Mar 28 2018 <mackerel-developers@hatena.ne.jp> - 0.54.1
+- Support UUID in little-endian format on EC2 detection (by hayajo)
+- change the message level from WARNING to INFO when customIdentifier is not registered (by hayajo)
+
 * Tue Mar 20 2018 <mackerel-developers@hatena.ne.jp> - 0.54.0
 - fix isEC2 (by Songmu)
 - care `MemAvailable` in collecting metrics around memory on linux (by Songmu)
