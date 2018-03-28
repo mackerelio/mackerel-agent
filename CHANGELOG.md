@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.54.1 (2018-03-28)
+
+* Support UUID in little-endian format on EC2 detection #496 (hayajo)
+* change the message level from WARNING to INFO when customIdentifier is not registered #493 (hayajo)
+
+
 ## 0.54.0 (2018-03-20)
 
 * fix isEC2 #494 (Songmu)

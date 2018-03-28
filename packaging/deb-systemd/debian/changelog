@@ -1,3 +1,12 @@
+mackerel-agent (0.54.1-1.systemd) stable; urgency=low
+
+  * Support UUID in little-endian format on EC2 detection (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/496>
+  * change the message level from WARNING to INFO when customIdentifier is not registered (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/493>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 28 Mar 2018 15:35:56 +0900
+
 mackerel-agent (0.54.0-1.systemd) stable; urgency=low
 
   * fix isEC2 (by Songmu)
