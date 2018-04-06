@@ -19,7 +19,7 @@ You have to create an organization on [Mackerel](https://mackerel.io/) at first.
 After that, specify `apikey` value in `mackerel-agent.conf` with the following command.
 
 ```
-% mackerel-agent init -apiey {{YOUR_APIKEY}}
+% mackerel-agent init -apikey {{YOUR_APIKEY}}
 ```
 
 SYNOPSIS
