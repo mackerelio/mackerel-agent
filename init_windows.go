@@ -14,6 +14,10 @@ func init() {
 		if strings.Index(dir, ";") > -1 {
 			dir = `"` + dir + `"`
 		}
-		os.Setenv("PATH", dir+string(filepath.ListSeparator)+os.Getenv("PATH"))
+		if path := os.Getenv("PATH"); path != "" {
+			os.Setenv("PATH", dir+string(filepath.ListSeparator)+path)
+		} else {
+			os.Setenv("PATH", dir)
+		}
 	}
 }
