@@ -5,11 +5,19 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func init() {
 	if p, err := os.Executable(); err == nil {
-		os.Setenv("PATH", filepath.Dir(p)+
-			string(filepath.ListSeparator)+os.Getenv("PATH"))
+		dir := filepath.Dir(p)
+		if strings.ContainsRune(dir, ';') {
+			dir = `"` + dir + `"`
+		}
+		if path := os.Getenv("PATH"); path != "" {
+			os.Setenv("PATH", dir+string(filepath.ListSeparator)+path)
+		} else {
+			os.Setenv("PATH", dir)
+		}
 	}
 }
