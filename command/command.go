@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Songmu/retry"
+	"github.com/jpillora/backoff"
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/agent"
 	"github.com/mackerelio/mackerel-agent/checks"
@@ -22,8 +23,11 @@ import (
 var logger = logging.GetLogger("command")
 var metricsInterval = 60 * time.Second
 
-var retryNum uint = 20
-var retryInterval = 3 * time.Second
+// 30 sec, 1 min, 2 min, ... 15 min, 15 min, ...
+var retryInitialDelay = 30 * time.Second
+var retryMaxDelay = 15 * time.Minute
+var retryNum = 15
+var retryBackOffFactor float64 = 2
 
 // AgentMeta contains meta information about mackerel-agent
 type AgentMeta struct {
@@ -34,8 +38,26 @@ type AgentMeta struct {
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
 func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mackerel.Host, error) {
+	// retry with exponential backoff
 	doRetry := func(f func() error) {
-		retry.Retry(retryNum, retryInterval, f)
+		b := &backoff.Backoff{
+			Min:    retryInitialDelay,
+			Max:    retryMaxDelay,
+			Factor: retryBackOffFactor,
+			Jitter: false,
+		}
+		var delay time.Duration
+		for int(b.Attempt()) < retryNum {
+			if b.Attempt() > 0 {
+				logger.Warningf("will retry request after %.0f seconds...", delay.Seconds())
+				time.Sleep(delay)
+			}
+			if err := f(); err == nil {
+				// SUCCESS!!
+				break
+			}
+			delay = b.Duration()
+		}
 	}
 
 	filterErrorForRetry := func(err error) error {
