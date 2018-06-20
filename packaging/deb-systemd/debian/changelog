@@ -1,3 +1,12 @@
+mackerel-agent (0.55.0-1.systemd) stable; urgency=low
+
+  * improve PATH handling (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/501>
+  * Build with Go 1.10 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/500>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 20 Jun 2018 11:00:55 +0900
+
 mackerel-agent (0.54.1-1.systemd) stable; urgency=low
 
   * Support UUID in little-endian format on EC2 detection (by hayajo)
