@@ -49,6 +49,7 @@ func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mac
 		var delay time.Duration
 		for int(b.Attempt()) < retryNum {
 			if b.Attempt() > 0 {
+				logger.Warningf("will retry request after %.0f seconds...", delay.Seconds())
 				time.Sleep(delay)
 			}
 			if err := f(); err == nil {
