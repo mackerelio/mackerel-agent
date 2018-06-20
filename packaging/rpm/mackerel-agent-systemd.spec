@@ -55,6 +55,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Jun 20 2018 <mackerel-developers@hatena.ne.jp> - 0.55.0
+- improve PATH handling (by astj)
+- Build with Go 1.10 (by astj)
+
 * Wed Mar 28 2018 <mackerel-developers@hatena.ne.jp> - 0.54.1
 - Support UUID in little-endian format on EC2 detection (by hayajo)
 - change the message level from WARNING to INFO when customIdentifier is not registered (by hayajo)

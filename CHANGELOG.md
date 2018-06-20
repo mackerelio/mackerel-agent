@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.55.0 (2018-06-20)
+
+* improve PATH handling #501 (astj)
+* Build with Go 1.10 #500 (astj)
+
+
 ## 0.54.1 (2018-03-28)
 
 * Support UUID in little-endian format on EC2 detection #496 (hayajo)
