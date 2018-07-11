@@ -2,6 +2,9 @@ version: 2
 jobs:
   build:
     working_directory: /go/src/github.com/hatena/mackerel-agent
+    environment:
+      CIRCLE_ARTIFACTS: /tmp/circleci-artifacts
+      CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
     docker:
     - image: circleci/golang:1.10
     steps:
