@@ -13,8 +13,8 @@ jobs:
         keys:
           - v1-pkg-cache
     - run:
-      name: Get CI dependency
-      command: go get github.com/jstemmer/go-junit-report
+        name: Get CI dependency
+        command: go get github.com/jstemmer/go-junit-report
     - run: make lint
     - run: make cover
     - run: test `gofmt -l . | wc -l` = 0
