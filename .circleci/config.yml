@@ -10,8 +10,8 @@ jobs:
     - checkout
     - run: mkdir -p $TEST_RESULTS
     - restore_cache:
-      keys:
-        - v1-pkg-cache
+        keys:
+          - v1-pkg-cache
     - run:
       name: Get CI dependency
       command: go get github.com/jstemmer/go-junit-report
