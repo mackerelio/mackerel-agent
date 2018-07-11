@@ -1,4 +1,5 @@
 .*
+!.circleci
 !.gitignore
 !.goxc.json
 !.travis.yml
