@@ -1,0 +1,30 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/hatena/mackerel-agent
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    docker:
+    - image: circleci/golang:1.10
+    steps:
+    - checkout
+    - run: mkdir -p $TEST_RESULTS
+    - restore_cache:
+        keys:
+          - v1-pkg-cache
+    - run:
+        name: Get CI dependency
+        command: go get github.com/jstemmer/go-junit-report
+    - run: sudo apt-get update && sudo apt-get install ruby
+    - run: make lint
+    - run: make cover
+    - run: test `gofmt -l . | wc -l` = 0
+    - save_cache:
+        key: v1-pkg-cache
+        paths:
+          - "/go/pkg"
+    - store_artifacts:
+        path: /tmp/test-results
+        destination: raw-test-output
+    - store_test_results:
+        path: /tmp/test-results
