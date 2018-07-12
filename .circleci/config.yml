@@ -6,6 +6,7 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     docker:
     - image: circleci/golang:1.10
+    - image: circleci/ruby:2.4.4
     steps:
     - checkout
     - run: mkdir -p $TEST_RESULTS
