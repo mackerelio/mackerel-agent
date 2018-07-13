@@ -54,8 +54,8 @@ func installService(name, desc string) error {
 		s.Close()
 		return fmt.Errorf("service %s already exists", name)
 	}
-	config := mgr.Config {
-		DisplayName: desc,
+	config := mgr.Config{
+		DisplayName:  desc,
 		Dependencies: []string{"RPCSS"},
 	}
 	s, err = m.CreateService(name, exepath, config, "is", "auto-started")
