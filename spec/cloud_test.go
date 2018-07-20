@@ -70,7 +70,7 @@ func TestCloudGenerate(t *testing.T) {
 }
 
 func TestGCEGenerate(t *testing.T) {
-	// curl "http://metadata.google.internal/computeMetadata/v1/?recursive=true" -H "Metadata-Flavor: Google"
+	// curl "http://metadata.google.internal./computeMetadata/v1/?recursive=true" -H "Metadata-Flavor: Google"
 	sampleJSON := []byte(`{
 	  "instance": {
 		"attributes": {},
