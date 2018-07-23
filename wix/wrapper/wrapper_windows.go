@@ -267,7 +267,7 @@ L:
 					if req.Cmd == svc.Shutdown && autoRetire() {
 						if err := h.retire(); err != nil {
 							h.elog.Error(stopEid, err.Error())
-							s <- svc.Status{State: svc.Running, Accepts: svc.AcceptShutdown | svc.AcceptShutdown}
+							s <- svc.Status{State: svc.Running, Accepts: svc.AcceptShutdown}
 						}
 					}
 				}
