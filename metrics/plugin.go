@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -123,10 +122,8 @@ var pluginMetaHeadlineReg = regexp.MustCompile(`^#\s*mackerel-agent-plugin\b(.*)
 // 	}
 func (g *pluginGenerator) loadPluginMeta() error {
 	// Set environment variable to make the plugin command generate its configuration
-	os.Setenv(pluginConfigurationEnvName, "1")
-	defer os.Setenv(pluginConfigurationEnvName, "")
-
-	stdout, stderr, exitCode, err := g.Config.Command.Run()
+	pluginMetaEnv := pluginConfigurationEnvName + "=1"
+	stdout, stderr, exitCode, err := g.Config.Command.RunWithEnv([]string{pluginMetaEnv})
 	if err != nil {
 		return fmt.Errorf("running %s failed: %s, exit=%d stderr=%q", g.Config.Command.CommandString(), err, exitCode, stderr)
 	}
@@ -218,8 +215,8 @@ func makeCreateGraphDefsPayload(meta *pluginMeta) []mackerel.CreateGraphDefsPayl
 }
 
 func (g *pluginGenerator) collectValues() (Values, error) {
-	os.Setenv(pluginConfigurationEnvName, "")
-	stdout, stderr, _, err := g.Config.Command.Run()
+	pluginMetaEnv := pluginConfigurationEnvName + "="
+	stdout, stderr, _, err := g.Config.Command.RunWithEnv([]string{pluginMetaEnv})
 
 	if stderr != "" {
 		pluginLogger.Infof("command %s outputted to STDERR: %q", g.Config.Command.CommandString(), stderr)
