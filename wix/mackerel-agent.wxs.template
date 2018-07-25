@@ -13,7 +13,9 @@
           <Directory Id="INSTALLDIR" Name="mackerel-agent">
             <Component Id="ServiceWrapperExe">
               <File Id="MackerelAgentServiceExe" Name="wrapper.exe" DiskId="1" Source="..\build\wrapper.exe" KeyPath="yes"></File>
-              <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="mackerel-agent" Description="Send metrics to https://mackerel.io" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Start="auto" ErrorControl="normal" Vital="yes" Interactive="no"></ServiceInstall>
+              <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="mackerel-agent" Description="Send metrics to https://mackerel.io" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Start="auto" ErrorControl="normal" Vital="yes" Interactive="no">
+                <ServiceDependency Id="RPCSS"/>
+              </ServiceInstall>
               <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="mackerel-agent" Wait="yes"></ServiceControl>
             </Component>
             <Component Id="AgentExe">
