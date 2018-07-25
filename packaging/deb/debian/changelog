@@ -1,3 +1,20 @@
+mackerel-agent (0.56.0-1) stable; urgency=low
+
+  * Fix starting order of Windows Service (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/506>
+  * Auto retire with shutdown on Windows (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/505>
+  * Use RunWithEnv instead of os.Setenv to avoid environment variable races (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/507>
+  * Improve debug messages for check monitoring actions (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/510>
+  * add mssql-plugin in windows msi (by daiksy)
+    <https://github.com/mackerelio/mackerel-agent/pull/509>
+  * Replace GCE metadata endpoint with absolute FQDN (by i2tsuki)
+    <https://github.com/mackerelio/mackerel-agent/pull/508>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 25 Jul 2018 12:44:33 +0900
+
 mackerel-agent (0.55.0-1) stable; urgency=low
 
   * improve PATH handling (by astj)
