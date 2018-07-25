@@ -78,6 +78,13 @@ type handler struct {
 // normal log:  2017/01/24 14:14:27 INFO <main> Starting mackerel-agent version:0.36.0
 var logRe = regexp.MustCompile(`^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} (?:\S+\.go:\d+: )?([A-Z]+) `)
 
+func (h *handler) retire() error {
+	dir := execdir()
+	cmd := exec.Command(filepath.Join(dir, "mackerel-agent.exe"), "retire", "--force")
+	cmd.Dir = dir
+	return cmd.Run()
+}
+
 func (h *handler) start() error {
 	procAllocConsole.Call()
 	dir := execdir()
@@ -214,6 +221,11 @@ func (h *handler) stop() error {
 	return nil
 }
 
+func autoRetire() bool {
+	env := os.Getenv("MACKEREL_AUTO_RETIREMENT")
+	return env != "" && env != "0"
+}
+
 // implement https://godoc.org/golang.org/x/sys/windows/svc#Handler
 func (h *handler) Execute(args []string, r <-chan svc.ChangeRequest, s chan<- svc.Status) (svcSpecificEC bool, exitCode uint32) {
 	s <- svc.Status{State: svc.StartPending}
@@ -251,6 +263,13 @@ L:
 				if err := h.stop(); err != nil {
 					h.elog.Error(stopEid, err.Error())
 					s <- svc.Status{State: svc.Running, Accepts: svc.AcceptStop | svc.AcceptShutdown}
+				} else {
+					if req.Cmd == svc.Shutdown && autoRetire() {
+						if err := h.retire(); err != nil {
+							h.elog.Error(stopEid, err.Error())
+							s <- svc.Status{State: svc.Running, Accepts: svc.AcceptShutdown}
+						}
+					}
 				}
 			}
 		case <-exit:
