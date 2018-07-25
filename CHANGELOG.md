@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.56.0 (2018-07-25)
+
+* Fix starting order of Windows Service #506 (mattn)
+* Auto retire with shutdown on Windows #505 (mattn)
+* Use RunWithEnv instead of os.Setenv to avoid environment variable races #507 (itchyny)
+* Improve debug messages for check monitoring actions #510 (itchyny)
+* add mssql-plugin in windows msi #509 (daiksy)
+* Replace GCE metadata endpoint with absolute FQDN #508 (i2tsuki)
+
+
 ## 0.55.0 (2018-06-20)
 
 * improve PATH handling #501 (astj)

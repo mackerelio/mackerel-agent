@@ -62,6 +62,14 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jul 25 2018 <mackerel-developers@hatena.ne.jp> - 0.56.0
+- Fix starting order of Windows Service (by mattn)
+- Auto retire with shutdown on Windows (by mattn)
+- Use RunWithEnv instead of os.Setenv to avoid environment variable races (by itchyny)
+- Improve debug messages for check monitoring actions (by itchyny)
+- add mssql-plugin in windows msi (by daiksy)
+- Replace GCE metadata endpoint with absolute FQDN (by i2tsuki)
+
 * Wed Jun 20 2018 <mackerel-developers@hatena.ne.jp> - 0.55.0
 - improve PATH handling (by astj)
 - Build with Go 1.10 (by astj)
