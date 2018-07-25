@@ -3,7 +3,6 @@
 package windows
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -58,8 +57,6 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 const queryWmiTimeout = 30 * time.Second
 
 func (g *DiskGenerator) queryWmiWithTimeout() ([]win32PerfFormattedDataPerfDiskPhysicalDisk, error) {
-	ctx, cancel := context.WithTimeout(context.TODO(), queryWmiTimeout)
-	defer cancel()
 	errCh := make(chan error)
 	recordsCh := make(chan []win32PerfFormattedDataPerfDiskPhysicalDisk)
 	go func() {
@@ -71,7 +68,7 @@ func (g *DiskGenerator) queryWmiWithTimeout() ([]win32PerfFormattedDataPerfDiskP
 		recordsCh <- records
 	}()
 	select {
-	case <-ctx.Done():
+	case <-time.After(queryWmiTimeout):
 		return nil, errors.New("Timeouted while retrieving disk metrics")
 	case err := <-errCh:
 		return nil, err
