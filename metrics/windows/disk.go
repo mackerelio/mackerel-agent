@@ -66,6 +66,7 @@ func (g *DiskGenerator) queryWmiWithTimeout() ([]win32PerfFormattedDataPerfDiskP
 		var records []win32PerfFormattedDataPerfDiskPhysicalDisk
 		if err := wmi.Query("SELECT * FROM Win32_PerfFormattedData_PerfDisk_LogicalDisk ", &records); err != nil {
 			errCh <- err
+			return
 		}
 		recordsCh <- records
 	}()
