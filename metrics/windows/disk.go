@@ -3,6 +3,7 @@
 package windows
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -33,8 +34,7 @@ type win32PerfFormattedDataPerfDiskPhysicalDisk struct {
 func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	time.Sleep(g.Interval)
 
-	var records []win32PerfFormattedDataPerfDiskPhysicalDisk
-	err := wmi.Query("SELECT * FROM Win32_PerfFormattedData_PerfDisk_LogicalDisk ", &records)
+	records, err := g.queryWmiWithTimeout()
 	if err != nil {
 		return nil, err
 	}
@@ -52,4 +52,27 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	}
 	diskLogger.Debugf("%q", results)
 	return results, nil
+}
+
+const queryWmiTimeout = 30 * time.Second
+
+func (g *DiskGenerator) queryWmiWithTimeout() ([]win32PerfFormattedDataPerfDiskPhysicalDisk, error) {
+	errCh := make(chan error)
+	recordsCh := make(chan []win32PerfFormattedDataPerfDiskPhysicalDisk)
+	go func() {
+		var records []win32PerfFormattedDataPerfDiskPhysicalDisk
+		if err := wmi.Query("SELECT * FROM Win32_PerfFormattedData_PerfDisk_LogicalDisk ", &records); err != nil {
+			errCh <- err
+			return
+		}
+		recordsCh <- records
+	}()
+	select {
+	case <-time.After(queryWmiTimeout):
+		return nil, errors.New("Timeouted while retrieving disk metrics")
+	case err := <-errCh:
+		return nil, err
+	case records := <-recordsCh:
+		return records, nil
+	}
 }
