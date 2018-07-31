@@ -60,7 +60,7 @@ func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
 func TestPluginLoadPluginMeta(t *testing.T) {
 	g := &pluginGenerator{
 		Config: &config.MetricPlugin{
-			Command: config.Command{Cmd: "ruby ../example/metrics-plugins/dice-with-meta.rb"},
+			Command: config.Command{Cmd: "go run ../_example/metrics-plugins/dice-with-meta.go"},
 		},
 	}
 

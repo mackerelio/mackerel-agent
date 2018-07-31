@@ -11,7 +11,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/mackerel"
 )
 
-var diceCommand = "../example/metrics-plugins/dice-with-meta.rb"
+var diceCommand = "go run ../_example/metrics-plugins/dice-with-meta.go"
 
 func TestRunOnce(t *testing.T) {
 	if testing.Short() {
