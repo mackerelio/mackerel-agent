@@ -19,7 +19,7 @@ func containsKeyRegexp(values Values, reg string) bool {
 
 func TestPluginGenerate(t *testing.T) {
 	conf := &config.MetricPlugin{
-		Command: config.Command{Cmd: "ruby ../example/metrics-plugins/dice.rb"},
+		Command: config.Command{Cmd: "go run ../_example/metrics-plugins/dice.go"},
 	}
 	g := &pluginGenerator{Config: conf}
 	values, err := g.Generate()
@@ -34,7 +34,7 @@ func TestPluginGenerate(t *testing.T) {
 
 func TestPluginCollectValues(t *testing.T) {
 	g := &pluginGenerator{Config: &config.MetricPlugin{
-		Command: config.Command{Cmd: "ruby ../example/metrics-plugins/dice.rb"},
+		Command: config.Command{Cmd: "go run ../_example/metrics-plugins/dice.go"},
 	},
 	}
 	values, err := g.collectValues()
@@ -48,7 +48,7 @@ func TestPluginCollectValues(t *testing.T) {
 
 func TestPluginCollectValuesWithIncludePattern(t *testing.T) {
 	g := &pluginGenerator{Config: &config.MetricPlugin{
-		Command:        config.Command{Cmd: "ruby ../example/metrics-plugins/dice-with-meta.rb"},
+		Command:        config.Command{Cmd: "go run ../_example/metrics-plugins/dice-with-meta.go"},
 		IncludePattern: regexp.MustCompile(`^dice\.d6`),
 	},
 	}
@@ -66,7 +66,7 @@ func TestPluginCollectValuesWithIncludePattern(t *testing.T) {
 
 func TestPluginCollectValuesWithExcludePattern(t *testing.T) {
 	g := &pluginGenerator{Config: &config.MetricPlugin{
-		Command:        config.Command{Cmd: "ruby ../example/metrics-plugins/dice-with-meta.rb"},
+		Command:        config.Command{Cmd: "go run ../_example/metrics-plugins/dice-with-meta.go"},
 		ExcludePattern: regexp.MustCompile(`^dice\.d20`),
 	},
 	}
@@ -84,7 +84,7 @@ func TestPluginCollectValuesWithExcludePattern(t *testing.T) {
 
 func TestPluginCollectValuesWithBothPattern(t *testing.T) {
 	g := &pluginGenerator{Config: &config.MetricPlugin{
-		Command:        config.Command{Cmd: "ruby ../example/metrics-plugins/dice-with-meta.rb"},
+		Command:        config.Command{Cmd: "go run ../_example/metrics-plugins/dice-with-meta.go"},
 		IncludePattern: regexp.MustCompile(`^dice\.d20`),
 		ExcludePattern: regexp.MustCompile(`^dice\.d20`),
 	},
