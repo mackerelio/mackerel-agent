@@ -600,13 +600,6 @@ func collectHostSpecs(conf *config.Config, ameta *AgentMeta) (mackerel.HostSpec,
 	}, nil
 }
 
-func fillUpSpecMeta(meta map[string]interface{}, ver, rev string) map[string]interface{} {
-	meta["agent-version"] = ver
-	meta["agent-revision"] = rev
-	meta["agent-name"] = buildUA(ver, rev)
-	return meta
-}
-
 // UpdateHostSpecs updates the host information that is already registered on Mackerel.
 func (app *App) UpdateHostSpecs() {
 	logger.Debugf("Updating host specs...")
