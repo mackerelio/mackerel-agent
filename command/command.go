@@ -25,7 +25,10 @@ var metricsInterval = 60 * time.Second
 var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
-var reportCheckBufferSize = 6 * 60
+var (
+	reportCheckRetryDelaySeconds = 30
+	reportCheckBufferSize        = 6 * 60
+)
 
 // AgentMeta contains meta information about mackerel-agent
 type AgentMeta struct {
@@ -532,10 +535,10 @@ func reportCheckMonitors(app *App, reports []*checks.Report) {
 			break
 		}
 
-		logger.Debugf("ReportCheckMonitors: Sleep %d seconds before reporting", app.Config.Connection.ReportCheckRetryDelaySeconds)
+		logger.Debugf("ReportCheckMonitors: Sleep %d seconds before reporting", reportCheckRetryDelaySeconds)
 
 		// retry until report succeeds
-		time.Sleep(time.Duration(app.Config.Connection.ReportCheckRetryDelaySeconds) * time.Second)
+		time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * time.Second)
 	}
 }
 

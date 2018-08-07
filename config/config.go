@@ -47,7 +47,6 @@ var defaultConnectionConfig = ConnectionConfig{
 	PostMetricsBufferSize:          6 * 60, // Keep metric values of 6 hours span in the queue
 	ReportCheckDelaySeconds:        1,      // Wait a second before reporting the next check
 	ReportCheckDelaySecondsMax:     30,     // Wait 30 seconds before reporting the next check when many reports in queue
-	ReportCheckRetryDelaySeconds:   30,     // Wait 30 seconds before retrying report the next check
 }
 
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
@@ -381,7 +380,6 @@ type ConnectionConfig struct {
 	PostMetricsBufferSize          int // max numbers of requests stored in buffer queue.
 	ReportCheckDelaySeconds        int // delay for request reports
 	ReportCheckDelaySecondsMax     int // max delay for request reports
-	ReportCheckRetryDelaySeconds   int // delay for retrying a request that caused errors
 }
 
 // HostStatus configure host status on agent start/stop
