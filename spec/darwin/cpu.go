@@ -10,15 +10,11 @@ import (
 	"strings"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
-// CPUGenerator Collects CPU specs
+// CPUGenerator collects CPU specs
 type CPUGenerator struct {
-}
-
-// Key XXX
-func (g *CPUGenerator) Key() string {
-	return "cpu"
 }
 
 var cpuLogger = logging.GetLogger("spec.cpu")
@@ -101,7 +97,7 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 		cpuLogger.Errorf("Failed: %s", err)
 		return nil, err
 	}
-	results := make([]cpuSpec, *cpuCount)
+	results := make(mackerel.CPU, *cpuCount)
 	for i := 0; i < *cpuCount; i++ {
 		results[i] = cpuInfo
 	}

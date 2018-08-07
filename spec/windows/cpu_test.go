@@ -6,14 +6,6 @@ import (
 	"testing"
 )
 
-func TestCPUKey(t *testing.T) {
-	g := &CPUGenerator{}
-
-	if g.Key() != "cpu" {
-		t.Error("key should be cpu")
-	}
-}
-
 func TestCPUGenerate(t *testing.T) {
 	g := &CPUGenerator{}
 	value, err := g.Generate()

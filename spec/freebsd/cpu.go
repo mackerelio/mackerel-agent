@@ -6,15 +6,11 @@ import (
 	"os/exec"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
-// CPUGenerator Collects CPU specs
+// CPUGenerator collects CPU specs
 type CPUGenerator struct {
-}
-
-// Key XXX
-func (g *CPUGenerator) Key() string {
-	return "cpu"
 }
 
 var cpuLogger = logging.GetLogger("spec.cpu")
@@ -44,7 +40,7 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 		return nil, err
 	}
 
-	return []cpuSpec{
+	return mackerel.CPU{
 		{"model_name": string(brandBytes)},
 	}, nil
 }

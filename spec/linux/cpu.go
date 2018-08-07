@@ -9,15 +9,11 @@ import (
 	"strings"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
-// CPUGenerator Collects CPU specs
+// CPUGenerator collects CPU specs
 type CPUGenerator struct {
-}
-
-// Key return "cpu"
-func (g *CPUGenerator) Key() string {
-	return "cpu"
 }
 
 var cpuLogger = logging.GetLogger("spec.cpu")
@@ -25,7 +21,7 @@ var cpuLogger = logging.GetLogger("spec.cpu")
 func (g *CPUGenerator) generate(file io.Reader) (interface{}, error) {
 	scanner := bufio.NewScanner(file)
 
-	var results []map[string]interface{}
+	var results mackerel.CPU
 	var cur map[string]interface{}
 	var modelName string
 
