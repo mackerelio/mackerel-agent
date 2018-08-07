@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 var memItems = map[string]string{
@@ -46,11 +47,6 @@ var memItems = map[string]string{
 type MemoryGenerator struct {
 }
 
-// Key XXX
-func (g *MemoryGenerator) Key() string {
-	return "memory"
-}
-
 var memoryLogger = logging.GetLogger("spec.memory")
 
 // Generate XXX
@@ -64,10 +60,10 @@ func (g *MemoryGenerator) Generate() (interface{}, error) {
 	return generateMemorySpec(file)
 }
 
-func generateMemorySpec(out io.Reader) (map[string]string, error) {
+func generateMemorySpec(out io.Reader) (mackerel.Memory, error) {
 	scanner := bufio.NewScanner(out)
 
-	result := make(map[string]string)
+	result := make(mackerel.Memory)
 	for scanner.Scan() {
 		fields := strings.Fields(scanner.Text())
 		if len(fields) < 2 {

@@ -8,14 +8,6 @@ import (
 	"testing"
 )
 
-func TestMemoryKey(t *testing.T) {
-	g := &MemoryGenerator{}
-
-	if g.Key() != "memory" {
-		t.Error("key should be memory")
-	}
-}
-
 func TestMemoryGenerator(t *testing.T) {
 	g := &MemoryGenerator{}
 	value, err := g.Generate()
