@@ -4,14 +4,6 @@ package spec
 
 import "testing"
 
-func TestFilesystemGenerator(t *testing.T) {
-	g := &FilesystemGenerator{}
-
-	if g.Key() != "filesystem" {
-		t.Error("key should be 'filesystem'")
-	}
-}
-
 func TestFilesystemGenerate(t *testing.T) {
 	g := &FilesystemGenerator{}
 
