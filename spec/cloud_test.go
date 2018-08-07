@@ -12,14 +12,6 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 )
 
-func TestCloudKey(t *testing.T) {
-	g := &CloudGenerator{}
-
-	if g.Key() != "cloud" {
-		t.Error("key should be cloud")
-	}
-}
-
 func TestCloudGenerate(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(res, "i-4f90d537")
