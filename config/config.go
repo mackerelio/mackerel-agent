@@ -41,8 +41,7 @@ func getAgentName() string {
 var DefaultConfig *Config
 
 var defaultConnectionConfig = ConnectionConfig{
-	PostMetricsDequeueDelaySeconds: 30,     // Check the metric values queue for every half minute
-	PostMetricsRetryDelaySeconds:   60,     // Wait a minute before retrying metric value posts
+	PostMetricsDequeueDelaySeconds: 30, // Check the metric values queue for every half minute
 }
 
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
@@ -371,7 +370,6 @@ var PostMetricsInterval = 1 * time.Minute
 // ConnectionConfig XXX
 type ConnectionConfig struct {
 	PostMetricsDequeueDelaySeconds int // delay for dequeuing from buffer queue
-	PostMetricsRetryDelaySeconds   int // delay for retrying a request that caused errors
 }
 
 // HostStatus configure host status on agent start/stop
