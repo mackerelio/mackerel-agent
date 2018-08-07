@@ -26,17 +26,15 @@ var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
 var (
-	postMetricsDequeueDelaySeconds = 30
-	postMetricsRetryDelaySeconds   = 60
-	postMetricsRetryMax            = 60
-	postMetricsBufferSize          = 6 * 60
-)
+	postMetricsDequeueDelaySeconds = 30     // Check the metric values queue for every 30 seconds
+	postMetricsRetryDelaySeconds   = 60     // Wait for one minute before retrying metric value posts
+	postMetricsRetryMax            = 60     // Retry up to 60 times (30s * 60 = 30min)
+	postMetricsBufferSize          = 6 * 60 // Keep metric values of 6 hours in the queue
 
-var (
-	reportCheckDelaySeconds      = 1
-	reportCheckDelaySecondsMax   = 30
-	reportCheckRetryDelaySeconds = 30
-	reportCheckBufferSize        = 6 * 60
+	reportCheckDelaySeconds      = 1      // Wait for a second before reporting the next check
+	reportCheckDelaySecondsMax   = 30     // Wait 30 seconds before reporting the next check when many reports in queue
+	reportCheckRetryDelaySeconds = 30     // Wait 30 seconds before retrying report the next check
+	reportCheckBufferSize        = 6 * 60 // Keep check reports of 6 hours in the queue
 )
 
 // AgentMeta contains meta information about mackerel-agent
