@@ -40,8 +40,6 @@ func getAgentName() string {
 // DefaultConfig stores standard settings for each environment
 var DefaultConfig *Config
 
-var defaultConnectionConfig = ConnectionConfig{}
-
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
 type CloudPlatform int
 
@@ -104,8 +102,7 @@ type Config struct {
 	Roles         []string
 	Verbose       bool
 	Silent        bool
-	Diagnostic    bool `toml:"diagnostic"`
-	Connection    ConnectionConfig
+	Diagnostic    bool          `toml:"diagnostic"`
 	DisplayName   string        `toml:"display_name"`
 	HostStatus    HostStatus    `toml:"host_status"`
 	Filesystems   Filesystems   `toml:"filesystems"`
@@ -365,10 +362,6 @@ func (cc CommandConfig) parse() (cmd *Command, err error) {
 // PostMetricsInterval XXX
 var PostMetricsInterval = 1 * time.Minute
 
-// ConnectionConfig XXX
-type ConnectionConfig struct {
-}
-
 // HostStatus configure host status on agent start/stop
 type HostStatus struct {
 	OnStart string `toml:"on_start"`
@@ -436,7 +429,6 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Diagnostic == false {
 		config.Diagnostic = DefaultConfig.Diagnostic
 	}
-	config.Connection = DefaultConfig.Connection
 
 	return config, err
 }
