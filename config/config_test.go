@@ -93,10 +93,6 @@ func TestLoadConfig(t *testing.T) {
 	if config.Filesystems.UseMountpoint != false {
 		t.Error("should be false (default value should be used)")
 	}
-
-	if config.Connection.PostMetricsDequeueDelaySeconds != 30 {
-		t.Errorf("should be 30 but got: %d", config.Connection.PostMetricsDequeueDelaySeconds)
-	}
 }
 
 var sampleConfigWithHostStatus = `

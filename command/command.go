@@ -26,9 +26,10 @@ var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
 var (
-	postMetricsRetryDelaySeconds = 60
-	postMetricsRetryMax          = 60
-	postMetricsBufferSize        = 6 * 60
+	postMetricsDequeueDelaySeconds = 30
+	postMetricsRetryDelaySeconds   = 60
+	postMetricsRetryMax            = 60
+	postMetricsBufferSize          = 6 * 60
 )
 
 var (
@@ -277,7 +278,7 @@ func loop(app *App, termCh chan struct{}) error {
 			case loopStateFirst: // request immediately to create graph defs of host
 				// nop
 			case loopStateQueued:
-				delaySeconds = app.Config.Connection.PostMetricsDequeueDelaySeconds
+				delaySeconds = postMetricsDequeueDelaySeconds
 			case loopStateHadError:
 				// TODO: better interval calculation. exponential backoff or so.
 				delaySeconds = postMetricsRetryDelaySeconds

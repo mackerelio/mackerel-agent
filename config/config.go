@@ -40,9 +40,7 @@ func getAgentName() string {
 // DefaultConfig stores standard settings for each environment
 var DefaultConfig *Config
 
-var defaultConnectionConfig = ConnectionConfig{
-	PostMetricsDequeueDelaySeconds: 30, // Check the metric values queue for every half minute
-}
+var defaultConnectionConfig = ConnectionConfig{}
 
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
 type CloudPlatform int
@@ -369,7 +367,6 @@ var PostMetricsInterval = 1 * time.Minute
 
 // ConnectionConfig XXX
 type ConnectionConfig struct {
-	PostMetricsDequeueDelaySeconds int // delay for dequeuing from buffer queue
 }
 
 // HostStatus configure host status on agent start/stop
