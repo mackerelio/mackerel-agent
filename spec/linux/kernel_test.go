@@ -6,14 +6,6 @@ import (
 	"testing"
 )
 
-func TestKernelKey(t *testing.T) {
-	g := &KernelGenerator{}
-
-	if g.Key() != "kernel" {
-		t.Error("key should be kernel")
-	}
-}
-
 func TestKernelGenerate(t *testing.T) {
 	g := &KernelGenerator{}
 	value, err := g.Generate()

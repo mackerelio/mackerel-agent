@@ -6,6 +6,8 @@ import (
 	"unsafe"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
+
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
@@ -13,16 +15,11 @@ import (
 type KernelGenerator struct {
 }
 
-// Key XXX
-func (g *KernelGenerator) Key() string {
-	return "kernel"
-}
-
 var kernelLogger = logging.GetLogger("spec.kernel")
 
 // Generate XXX
 func (g *KernelGenerator) Generate() (interface{}, error) {
-	results := make(map[string]string)
+	results := make(mackerel.Kernel)
 
 	name, _, err := windows.RegGetString(
 		windows.HKEY_LOCAL_MACHINE,

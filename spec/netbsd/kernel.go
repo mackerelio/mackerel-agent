@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 // KernelGenerator Generates specs about the kernel.
@@ -17,11 +18,6 @@ import (
 // - machine: the machine hardware name ("i686")
 // - os:      the operating system name ("GNU/Linux")
 type KernelGenerator struct {
-}
-
-// Key XXX
-func (g *KernelGenerator) Key() string {
-	return "kernel"
 }
 
 var kernelLogger = logging.GetLogger("spec.kernel")
@@ -35,7 +31,7 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		"os":      {"-s"},
 	}
 
-	results := make(map[string]string, len(unameArgs)+1)
+	results := make(mackerel.Kernel, len(unameArgs)+1)
 
 	for field, args := range unameArgs {
 		out, err := exec.Command("/usr/bin/uname", args...).Output()
