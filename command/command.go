@@ -26,6 +26,7 @@ var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
 var (
+	postMetricsRetryMax   = 60
 	postMetricsBufferSize = 6 * 60
 )
 
@@ -328,7 +329,7 @@ func loop(app *App, termCh chan struct{}) error {
 						v.retryCnt++
 						// It is difficult to distinguish the error is server error or data error.
 						// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
-						if v.retryCnt > app.Config.Connection.PostMetricsRetryMax {
+						if v.retryCnt > postMetricsRetryMax {
 							json, err := json.Marshal(v.values)
 							if err != nil {
 								logger.Errorf("Something wrong with post values. marshaling failed.")

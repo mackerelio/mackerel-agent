@@ -43,7 +43,6 @@ var DefaultConfig *Config
 var defaultConnectionConfig = ConnectionConfig{
 	PostMetricsDequeueDelaySeconds: 30,     // Check the metric values queue for every half minute
 	PostMetricsRetryDelaySeconds:   60,     // Wait a minute before retrying metric value posts
-	PostMetricsRetryMax:            60,     // Retry up to 60 times (30s * 60 = 30min)
 }
 
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
@@ -373,7 +372,6 @@ var PostMetricsInterval = 1 * time.Minute
 type ConnectionConfig struct {
 	PostMetricsDequeueDelaySeconds int // delay for dequeuing from buffer queue
 	PostMetricsRetryDelaySeconds   int // delay for retrying a request that caused errors
-	PostMetricsRetryMax            int // max numbers of retries for a request that causes errors
 }
 
 // HostStatus configure host status on agent start/stop
