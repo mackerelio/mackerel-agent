@@ -7,14 +7,6 @@ import (
 	"testing"
 )
 
-func TestBlockDeviceGenerator(t *testing.T) {
-	g := &BlockDeviceGenerator{}
-
-	if g.Key() != "block_device" {
-		t.Error("key should be block_device")
-	}
-}
-
 func hasValidBlockDeviceValueForKey(t *testing.T, deviceInfo map[string]interface{}, key string) {
 	if value, ok := deviceInfo[key]; !ok {
 		t.Errorf("value of %s should be retrieved but none", key)

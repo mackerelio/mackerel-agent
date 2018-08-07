@@ -7,6 +7,8 @@ import (
 	"unsafe"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
+
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
@@ -14,16 +16,11 @@ import (
 type BlockDeviceGenerator struct {
 }
 
-// Key XXX
-func (g *BlockDeviceGenerator) Key() string {
-	return "block_device"
-}
-
 var blockDeviceLogger = logging.GetLogger("spec.block_device")
 
 // Generate XXX
 func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
-	results := make(map[string]map[string]interface{})
+	results := make(mackerel.BlockDevice)
 
 	drivebuf := make([]byte, 256)
 	r, _, err := windows.GetLogicalDriveStrings.Call(

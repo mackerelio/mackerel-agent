@@ -9,15 +9,11 @@ import (
 	"strings"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 // BlockDeviceGenerator XXX
 type BlockDeviceGenerator struct {
-}
-
-// Key XXX
-func (g *BlockDeviceGenerator) Key() string {
-	return "block_device"
 }
 
 var blockDeviceLogger = logging.GetLogger("spec.block_device")
@@ -35,7 +31,7 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 		return nil, err
 	}
 
-	results := make(map[string]map[string]interface{})
+	results := make(mackerel.BlockDevice)
 
 	for _, fileInfo := range fileInfos {
 		deviceName := fileInfo.Name()
