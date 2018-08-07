@@ -26,6 +26,7 @@ var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
 var (
+	reportCheckDelaySecondsMax   = 30
 	reportCheckRetryDelaySeconds = 30
 	reportCheckBufferSize        = 6 * 60
 )
@@ -504,7 +505,7 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 		reportCheckDelay := app.Config.Connection.ReportCheckDelaySeconds
 		// Extend the delay when there are lots of reports
 		if len(reports) > len(app.Agent.Checkers) {
-			reportCheckDelay = app.Config.Connection.ReportCheckDelaySecondsMax
+			reportCheckDelay = reportCheckDelaySecondsMax
 			logger.Debugf("RunChekcerLoop: Extend the delay to %d seconds. There are %d reports.", reportCheckDelay, len(reports))
 		}
 
