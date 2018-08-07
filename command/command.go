@@ -576,9 +576,9 @@ func collectHostSpecs(conf *config.Config, ameta *AgentMeta) (mackerel.HostSpec,
 		return mackerel.HostSpec{}, fmt.Errorf("failed to collect interfaces: %s", err.Error())
 	}
 
-	meta["agent-version"] = ameta.Version
-	meta["agent-revision"] = ameta.Revision
-	meta["agent-name"] = buildUA(ameta.Version, ameta.Revision)
+	meta.AgentVersion = ameta.Version
+	meta.AgentRevision = ameta.Revision
+	meta.AgentName = buildUA(ameta.Version, ameta.Revision)
 
 	checks := []mackerel.CheckConfig{}
 	for name, checkPlugin := range conf.CheckPlugins {
