@@ -117,10 +117,6 @@ func TestLoadConfig(t *testing.T) {
 	if config.Connection.ReportCheckRetryDelaySeconds != 30 {
 		t.Errorf("should be 30 but got: %d", config.Connection.ReportCheckRetryDelaySeconds)
 	}
-
-	if config.Connection.ReportCheckBufferSize != 360 {
-		t.Errorf("should be 360 but got: %d", config.Connection.ReportCheckBufferSize)
-	}
 }
 
 var sampleConfigWithHostStatus = `

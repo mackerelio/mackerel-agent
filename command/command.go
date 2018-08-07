@@ -25,6 +25,8 @@ var metricsInterval = 60 * time.Second
 var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
+var reportCheckBufferSize = 6 * 60
+
 // AgentMeta contains meta information about mackerel-agent
 type AgentMeta struct {
 	Version  string
@@ -458,8 +460,8 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 // the reports to Mackerel API.
 func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
 	// Do not block checking.
-	checkReportCh := make(chan *checks.Report, app.Config.Connection.ReportCheckBufferSize*len(app.Agent.Checkers))
-	reportImmediateCh := make(chan struct{}, app.Config.Connection.ReportCheckBufferSize*len(app.Agent.Checkers))
+	checkReportCh := make(chan *checks.Report, reportCheckBufferSize*len(app.Agent.Checkers))
+	reportImmediateCh := make(chan struct{}, reportCheckBufferSize*len(app.Agent.Checkers))
 
 	for _, checker := range app.Agent.Checkers {
 		go runChecker(checker, checkReportCh, reportImmediateCh, quit)

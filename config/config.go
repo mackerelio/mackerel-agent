@@ -48,7 +48,6 @@ var defaultConnectionConfig = ConnectionConfig{
 	ReportCheckDelaySeconds:        1,      // Wait a second before reporting the next check
 	ReportCheckDelaySecondsMax:     30,     // Wait 30 seconds before reporting the next check when many reports in queue
 	ReportCheckRetryDelaySeconds:   30,     // Wait 30 seconds before retrying report the next check
-	ReportCheckBufferSize:          6 * 60, // Keep check reports of 6 hours span in the queue
 }
 
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
@@ -383,7 +382,6 @@ type ConnectionConfig struct {
 	ReportCheckDelaySeconds        int // delay for request reports
 	ReportCheckDelaySecondsMax     int // max delay for request reports
 	ReportCheckRetryDelaySeconds   int // delay for retrying a request that caused errors
-	ReportCheckBufferSize          int // max numbers of requests stored in buffer queue.
 }
 
 // HostStatus configure host status on agent start/stop
