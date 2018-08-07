@@ -105,10 +105,6 @@ func TestLoadConfig(t *testing.T) {
 	if config.Connection.PostMetricsRetryMax != 60 {
 		t.Errorf("should be 60 but got: %d", config.Connection.PostMetricsRetryMax)
 	}
-
-	if config.Connection.ReportCheckDelaySeconds != 1 {
-		t.Errorf("should be 1 but got: %d", config.Connection.ReportCheckDelaySeconds)
-	}
 }
 
 var sampleConfigWithHostStatus = `

@@ -45,7 +45,6 @@ var defaultConnectionConfig = ConnectionConfig{
 	PostMetricsRetryDelaySeconds:   60,     // Wait a minute before retrying metric value posts
 	PostMetricsRetryMax:            60,     // Retry up to 60 times (30s * 60 = 30min)
 	PostMetricsBufferSize:          6 * 60, // Keep metric values of 6 hours span in the queue
-	ReportCheckDelaySeconds:        1,      // Wait a second before reporting the next check
 }
 
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
@@ -377,7 +376,6 @@ type ConnectionConfig struct {
 	PostMetricsRetryDelaySeconds   int // delay for retrying a request that caused errors
 	PostMetricsRetryMax            int // max numbers of retries for a request that causes errors
 	PostMetricsBufferSize          int // max numbers of requests stored in buffer queue.
-	ReportCheckDelaySeconds        int // delay for request reports
 }
 
 // HostStatus configure host status on agent start/stop
