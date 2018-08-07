@@ -26,6 +26,10 @@ var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
 var (
+	postMetricsBufferSize = 6 * 60
+)
+
+var (
 	reportCheckDelaySeconds      = 1
 	reportCheckDelaySecondsMax   = 30
 	reportCheckRetryDelaySeconds = 30
@@ -198,7 +202,7 @@ func loop(app *App, termCh chan struct{}) error {
 	// Periodically update host specs.
 	go updateHostSpecsLoop(app, quit)
 
-	postQueue := make(chan *postValue, app.Config.Connection.PostMetricsBufferSize)
+	postQueue := make(chan *postValue, postMetricsBufferSize)
 	go enqueueLoop(app, postQueue, quit)
 
 	postDelaySeconds := delayByHost(app.Host)
