@@ -5,6 +5,8 @@ package windows
 import (
 	"regexp"
 	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 func hasValidBlockDeviceValueForKey(t *testing.T, deviceInfo map[string]interface{}, key string) {
@@ -23,9 +25,9 @@ func TestBlockDeviceGenerate(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	blockDevice, typeOk := value.(map[string]map[string]interface{})
+	blockDevice, typeOk := value.(mackerel.BlockDevice)
 	if !typeOk {
-		t.Errorf("value should be slice of map. %+v", value)
+		t.Errorf("value should be mackerel.BlockDevice. %+v", value)
 	}
 
 	sda, ok := blockDevice["sda"]

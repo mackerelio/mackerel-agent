@@ -3,41 +3,41 @@ package spec
 import (
 	"fmt"
 	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
 )
 
-type testStructOK struct{}
+type testCPUGenerator struct{}
 
-func (tok *testStructOK) Key() string {
-	return "ok"
+func (g *testCPUGenerator) Generate() (interface{}, error) {
+	return mackerel.CPU{{"cores": "2"}}, nil
 }
 
-func (tok *testStructOK) Generate() (interface{}, error) {
-	return 15, nil
+type testKernelGenerator struct{}
+
+func (g *testKernelGenerator) Generate() (interface{}, error) {
+	return mackerel.Kernel{"name": "Linux"}, nil
 }
 
-type testStructErr struct{}
+type testErrorGenerator struct{}
 
-func (tok *testStructErr) Key() string {
-	return "error"
-}
-
-func (tok *testStructErr) Generate() (interface{}, error) {
+func (g *testErrorGenerator) Generate() (interface{}, error) {
 	return nil, fmt.Errorf("error")
 }
 
 func TestCollect(t *testing.T) {
 	generators := []Generator{
-		&testStructOK{},
-		&testStructErr{},
+		&testCPUGenerator{},
+		&testKernelGenerator{},
+		&testErrorGenerator{},
 	}
 	specs := Collect(generators)
 
-	if specs["ok"] != 15 {
-		t.Error("metric value of ok should be 15")
+	if len(specs.CPU) != 1 {
+		t.Error("cpu spec should be collected")
 	}
 
-	_, ok := specs["error"]
-	if ok {
-		t.Error("when error, metric should not be collected")
+	if len(specs.Kernel) != 1 {
+		t.Error("kernel spec should be collected")
 	}
 }

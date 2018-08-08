@@ -2,7 +2,11 @@
 
 package spec
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
+)
 
 func TestFilesystemGenerate(t *testing.T) {
 	g := &FilesystemGenerator{}
@@ -12,8 +16,8 @@ func TestFilesystemGenerate(t *testing.T) {
 		t.Skipf("Generate() failed: %s", err)
 	}
 
-	_, resultTypeOk := result.(map[string]map[string]interface{})
+	_, resultTypeOk := result.(mackerel.FileSystem)
 	if !resultTypeOk {
-		t.Errorf("Return type of Generate() shuold be map[string]map[string]interface{}")
+		t.Errorf("Return type of Generate() shuold be mackerel.FileSystem")
 	}
 }

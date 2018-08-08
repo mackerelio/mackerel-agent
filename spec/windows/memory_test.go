@@ -4,6 +4,8 @@ package windows
 
 import (
 	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 func TestMemoryGenerator(t *testing.T) {
@@ -13,9 +15,9 @@ func TestMemoryGenerator(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	memory, typeOk := value.(map[string]interface{})
+	memory, typeOk := value.(mackerel.Memory)
 	if !typeOk {
-		t.Errorf("value should be map. %+v", value)
+		t.Errorf("value should be mackerel.Memory. %+v", value)
 	}
 
 	if _, ok := memory["total"]; !ok {

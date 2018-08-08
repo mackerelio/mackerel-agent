@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 func TestMemoryGenerator(t *testing.T) {
@@ -15,9 +17,9 @@ func TestMemoryGenerator(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	memory, typeOk := value.(map[string]string)
+	memory, typeOk := value.(mackerel.Memory)
 	if !typeOk {
-		t.Errorf("value should be map. %+v", value)
+		t.Errorf("value should be mackerel.Memory. %+v", value)
 	}
 
 	memItemKeys := []string{
@@ -104,7 +106,7 @@ DirectMap1G:    12582912 kB
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	expected := map[string]string{
+	expected := mackerel.Memory{
 		"total":            "15434208kB",
 		"free":             "3009856kB",
 		"buffers":          "443104kB",
