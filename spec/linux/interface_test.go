@@ -7,14 +7,6 @@ import (
 	"testing"
 )
 
-func TestInterfaceKey(t *testing.T) {
-	g := &InterfaceGenerator{}
-
-	if g.Key() != "interface" {
-		t.Error("key should be interface")
-	}
-}
-
 func TestInterfaceGenerate(t *testing.T) {
 	g := &InterfaceGenerator{}
 	value, err := g.Generate()

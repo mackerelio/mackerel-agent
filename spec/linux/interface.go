@@ -15,11 +15,6 @@ import (
 type InterfaceGenerator struct {
 }
 
-// Key XXX
-func (g *InterfaceGenerator) Key() string {
-	return "interface"
-}
-
 var interfaceLogger = logging.GetLogger("spec.interface")
 
 // Generate XXX
