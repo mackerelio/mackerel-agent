@@ -200,8 +200,20 @@ func TestCollectHostSpecs(t *testing.T) {
 		t.Error("hostname should not be empty")
 	}
 
-	if _, ok := hostSpec.Meta["cpu"]; !ok {
+	if len(hostSpec.Meta.CPU) == 0 {
 		t.Error("meta.cpu should exist")
+	}
+
+	if len(hostSpec.Meta.Memory) == 0 {
+		t.Error("meta.memory should exist")
+	}
+
+	if len(hostSpec.Meta.Filesystem) == 0 {
+		t.Error("meta.filesystem should exist")
+	}
+
+	if len(hostSpec.Meta.Kernel) == 0 {
+		t.Error("meta.kernel should exist")
 	}
 }
 
