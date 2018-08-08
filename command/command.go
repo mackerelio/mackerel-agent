@@ -25,6 +25,18 @@ var metricsInterval = 60 * time.Second
 var retryNum uint = 20
 var retryInterval = 3 * time.Second
 
+var (
+	postMetricsDequeueDelaySeconds = 30     // Check the metric values queue for every 30 seconds
+	postMetricsRetryDelaySeconds   = 60     // Wait for one minute before retrying metric value posts
+	postMetricsRetryMax            = 60     // Retry up to 60 times (30s * 60 = 30min)
+	postMetricsBufferSize          = 6 * 60 // Keep metric values of 6 hours in the queue
+
+	reportCheckDelaySeconds      = 1      // Wait for a second before reporting the next check
+	reportCheckDelaySecondsMax   = 30     // Wait 30 seconds before reporting the next check when many reports in queue
+	reportCheckRetryDelaySeconds = 30     // Wait 30 seconds before retrying report the next check
+	reportCheckBufferSize        = 6 * 60 // Keep check reports of 6 hours in the queue
+)
+
 // AgentMeta contains meta information about mackerel-agent
 type AgentMeta struct {
 	Version  string
@@ -191,7 +203,7 @@ func loop(app *App, termCh chan struct{}) error {
 	// Periodically update host specs.
 	go updateHostSpecsLoop(app, quit)
 
-	postQueue := make(chan *postValue, app.Config.Connection.PostMetricsBufferSize)
+	postQueue := make(chan *postValue, postMetricsBufferSize)
 	go enqueueLoop(app, postQueue, quit)
 
 	postDelaySeconds := delayByHost(app.Host)
@@ -264,10 +276,10 @@ func loop(app *App, termCh chan struct{}) error {
 			case loopStateFirst: // request immediately to create graph defs of host
 				// nop
 			case loopStateQueued:
-				delaySeconds = app.Config.Connection.PostMetricsDequeueDelaySeconds
+				delaySeconds = postMetricsDequeueDelaySeconds
 			case loopStateHadError:
 				// TODO: better interval calculation. exponential backoff or so.
-				delaySeconds = app.Config.Connection.PostMetricsRetryDelaySeconds
+				delaySeconds = postMetricsRetryDelaySeconds
 			case loopStateTerminating:
 				// dequeue and post every one second when terminating.
 				delaySeconds = 1
@@ -317,7 +329,7 @@ func loop(app *App, termCh chan struct{}) error {
 						v.retryCnt++
 						// It is difficult to distinguish the error is server error or data error.
 						// So, if retryCnt exceeded the configured limit, postValue is considered invalid and abandoned.
-						if v.retryCnt > app.Config.Connection.PostMetricsRetryMax {
+						if v.retryCnt > postMetricsRetryMax {
 							json, err := json.Marshal(v.values)
 							if err != nil {
 								logger.Errorf("Something wrong with post values. marshaling failed.")
@@ -458,8 +470,8 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 // the reports to Mackerel API.
 func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
 	// Do not block checking.
-	checkReportCh := make(chan *checks.Report, app.Config.Connection.ReportCheckBufferSize*len(app.Agent.Checkers))
-	reportImmediateCh := make(chan struct{}, app.Config.Connection.ReportCheckBufferSize*len(app.Agent.Checkers))
+	checkReportCh := make(chan *checks.Report, reportCheckBufferSize*len(app.Agent.Checkers))
+	reportImmediateCh := make(chan struct{}, reportCheckBufferSize*len(app.Agent.Checkers))
 
 	for _, checker := range app.Agent.Checkers {
 		go runChecker(checker, checkReportCh, reportImmediateCh, quit)
@@ -496,10 +508,10 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 		const checkReportMaxSize = 10
 
 		// Do not report many times in a short time.
-		reportCheckDelay := app.Config.Connection.ReportCheckDelaySeconds
+		reportCheckDelay := reportCheckDelaySeconds
 		// Extend the delay when there are lots of reports
 		if len(reports) > len(app.Agent.Checkers) {
-			reportCheckDelay = app.Config.Connection.ReportCheckDelaySecondsMax
+			reportCheckDelay = reportCheckDelaySecondsMax
 			logger.Debugf("RunChekcerLoop: Extend the delay to %d seconds. There are %d reports.", reportCheckDelay, len(reports))
 		}
 
@@ -530,10 +542,10 @@ func reportCheckMonitors(app *App, reports []*checks.Report) {
 			break
 		}
 
-		logger.Debugf("ReportCheckMonitors: Sleep %d seconds before reporting", app.Config.Connection.ReportCheckRetryDelaySeconds)
+		logger.Debugf("ReportCheckMonitors: Sleep %d seconds before reporting", reportCheckRetryDelaySeconds)
 
 		// retry until report succeeds
-		time.Sleep(time.Duration(app.Config.Connection.ReportCheckRetryDelaySeconds) * time.Second)
+		time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * time.Second)
 	}
 }
 

@@ -79,9 +79,8 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 	}
 
 	conf := config.Config{
-		Apibase:    ts.URL,
-		Root:       root,
-		Connection: config.DefaultConfig.Connection,
+		Apibase: ts.URL,
+		Root:    root,
 	}
 
 	return conf, mockHandlers, ts
@@ -239,10 +238,10 @@ func TestLoop(t *testing.T) {
 		config.PostMetricsInterval = 10 * time.Second
 		ratio := config.PostMetricsInterval.Seconds() / originalPostMetricsInterval.Seconds()
 
-		conf.Connection.PostMetricsDequeueDelaySeconds =
-			int(float64(config.DefaultConfig.Connection.PostMetricsRetryDelaySeconds) * ratio)
-		conf.Connection.PostMetricsRetryDelaySeconds =
-			int(float64(config.DefaultConfig.Connection.PostMetricsRetryDelaySeconds) * ratio)
+		postMetricsDequeueDelaySeconds =
+			int(float64(postMetricsDequeueDelaySeconds) * ratio)
+		postMetricsRetryDelaySeconds =
+			int(float64(postMetricsRetryDelaySeconds) * ratio)
 
 		defer func() {
 			config.PostMetricsInterval = originalPostMetricsInterval
@@ -370,7 +369,7 @@ func TestReportCheckMonitors(t *testing.T) {
 		defer ts.Close()
 
 		if testing.Short() {
-			conf.Connection.ReportCheckRetryDelaySeconds = 1
+			reportCheckRetryDelaySeconds = 1
 		}
 
 		postCount := 0
@@ -406,7 +405,7 @@ func TestReportCheckMonitors(t *testing.T) {
 			reportCheckMonitors(app, []*checks.Report{})
 		}()
 
-		time.Sleep(time.Duration(conf.Connection.ReportCheckRetryDelaySeconds) * 3 * time.Second)
+		time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * 3 * time.Second)
 
 		mu.Lock()
 		defer mu.Unlock()

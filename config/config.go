@@ -40,17 +40,6 @@ func getAgentName() string {
 // DefaultConfig stores standard settings for each environment
 var DefaultConfig *Config
 
-var defaultConnectionConfig = ConnectionConfig{
-	PostMetricsDequeueDelaySeconds: 30,     // Check the metric values queue for every half minute
-	PostMetricsRetryDelaySeconds:   60,     // Wait a minute before retrying metric value posts
-	PostMetricsRetryMax:            60,     // Retry up to 60 times (30s * 60 = 30min)
-	PostMetricsBufferSize:          6 * 60, // Keep metric values of 6 hours span in the queue
-	ReportCheckDelaySeconds:        1,      // Wait a second before reporting the next check
-	ReportCheckDelaySecondsMax:     30,     // Wait 30 seconds before reporting the next check when many reports in queue
-	ReportCheckRetryDelaySeconds:   30,     // Wait 30 seconds before retrying report the next check
-	ReportCheckBufferSize:          6 * 60, // Keep check reports of 6 hours span in the queue
-}
-
 // CloudPlatform is an enum to represent which cloud platform the host is running on.
 type CloudPlatform int
 
@@ -113,8 +102,7 @@ type Config struct {
 	Roles         []string
 	Verbose       bool
 	Silent        bool
-	Diagnostic    bool `toml:"diagnostic"`
-	Connection    ConnectionConfig
+	Diagnostic    bool          `toml:"diagnostic"`
 	DisplayName   string        `toml:"display_name"`
 	HostStatus    HostStatus    `toml:"host_status"`
 	Filesystems   Filesystems   `toml:"filesystems"`
@@ -374,18 +362,6 @@ func (cc CommandConfig) parse() (cmd *Command, err error) {
 // PostMetricsInterval XXX
 var PostMetricsInterval = 1 * time.Minute
 
-// ConnectionConfig XXX
-type ConnectionConfig struct {
-	PostMetricsDequeueDelaySeconds int // delay for dequeuing from buffer queue
-	PostMetricsRetryDelaySeconds   int // delay for retrying a request that caused errors
-	PostMetricsRetryMax            int // max numbers of retries for a request that causes errors
-	PostMetricsBufferSize          int // max numbers of requests stored in buffer queue.
-	ReportCheckDelaySeconds        int // delay for request reports
-	ReportCheckDelaySecondsMax     int // max delay for request reports
-	ReportCheckRetryDelaySeconds   int // delay for retrying a request that caused errors
-	ReportCheckBufferSize          int // max numbers of requests stored in buffer queue.
-}
-
 // HostStatus configure host status on agent start/stop
 type HostStatus struct {
 	OnStart string `toml:"on_start"`
@@ -453,7 +429,6 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Diagnostic == false {
 		config.Diagnostic = DefaultConfig.Diagnostic
 	}
-	config.Connection = DefaultConfig.Connection
 
 	return config, err
 }

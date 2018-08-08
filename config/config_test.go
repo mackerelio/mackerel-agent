@@ -93,34 +93,6 @@ func TestLoadConfig(t *testing.T) {
 	if config.Filesystems.UseMountpoint != false {
 		t.Error("should be false (default value should be used)")
 	}
-
-	if config.Connection.PostMetricsDequeueDelaySeconds != 30 {
-		t.Errorf("should be 30 but got: %d", config.Connection.PostMetricsDequeueDelaySeconds)
-	}
-
-	if config.Connection.PostMetricsRetryDelaySeconds != 60 {
-		t.Errorf("should be 60 but got: %d", config.Connection.PostMetricsRetryDelaySeconds)
-	}
-
-	if config.Connection.PostMetricsRetryMax != 60 {
-		t.Errorf("should be 60 but got: %d", config.Connection.PostMetricsRetryMax)
-	}
-
-	if config.Connection.ReportCheckDelaySeconds != 1 {
-		t.Errorf("should be 1 but got: %d", config.Connection.ReportCheckDelaySeconds)
-	}
-
-	if config.Connection.ReportCheckDelaySecondsMax != 30 {
-		t.Errorf("should be 30 but got: %d", config.Connection.ReportCheckDelaySecondsMax)
-	}
-
-	if config.Connection.ReportCheckRetryDelaySeconds != 30 {
-		t.Errorf("should be 30 but got: %d", config.Connection.ReportCheckRetryDelaySeconds)
-	}
-
-	if config.Connection.ReportCheckBufferSize != 360 {
-		t.Errorf("should be 360 but got: %d", config.Connection.ReportCheckBufferSize)
-	}
 }
 
 var sampleConfigWithHostStatus = `

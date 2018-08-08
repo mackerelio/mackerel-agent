@@ -14,10 +14,9 @@ func init() {
 	execDir := filepath.Dir(path)
 	agentName := getAgentName()
 	DefaultConfig = &Config{
-		Apibase:    getApibase(),
-		Root:       execDir,
-		Pidfile:    filepath.Join(execDir, agentName+".pid"),
-		Conffile:   filepath.Join(execDir, agentName+".conf"),
-		Connection: defaultConnectionConfig,
+		Apibase:  getApibase(),
+		Root:     execDir,
+		Pidfile:  filepath.Join(execDir, agentName+".pid"),
+		Conffile: filepath.Join(execDir, agentName+".conf"),
 	}
 }
