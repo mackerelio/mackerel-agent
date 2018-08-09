@@ -2,7 +2,11 @@
 
 package freebsd
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
+)
 
 func TestKernelGenerator_Generate(t *testing.T) {
 	g := &KernelGenerator{}
@@ -12,9 +16,9 @@ func TestKernelGenerator_Generate(t *testing.T) {
 		t.Errorf("Generate() must not fail: %s", err)
 	}
 
-	kernel, ok := result.(map[string]string)
+	kernel, ok := result.(mackerel.Kernel)
 	if !ok {
-		t.Fatalf("the result must be of type map[string]string: %t", result)
+		t.Fatalf("the result must be of type mackerel.Kernel: %t", result)
 	}
 
 	_, osExists := kernel["os"]

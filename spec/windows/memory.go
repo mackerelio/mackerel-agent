@@ -7,6 +7,8 @@ import (
 	"unsafe"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
+
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
@@ -14,16 +16,11 @@ import (
 type MemoryGenerator struct {
 }
 
-// Key XXX
-func (g *MemoryGenerator) Key() string {
-	return "memory"
-}
-
 var memoryLogger = logging.GetLogger("spec.memory")
 
 // Generate XXX
 func (g *MemoryGenerator) Generate() (interface{}, error) {
-	result := make(map[string]interface{})
+	result := make(mackerel.Memory)
 
 	var memoryStatusEx windows.MEMORY_STATUS_EX
 	memoryStatusEx.Length = uint32(unsafe.Sizeof(memoryStatusEx))

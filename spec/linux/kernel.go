@@ -7,16 +7,12 @@ import (
 	"strings"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 	"github.com/shirou/gopsutil/host"
 )
 
 // KernelGenerator XXX
 type KernelGenerator struct {
-}
-
-// Key XXX
-func (g *KernelGenerator) Key() string {
-	return "kernel"
 }
 
 var kernelLogger = logging.GetLogger("spec.kernel")
@@ -31,7 +27,7 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		"os":      {"uname", "-o"},
 	}
 
-	results := make(map[string]string)
+	results := make(mackerel.Kernel)
 	for key, command := range commands {
 		out, err := exec.Command(command[0], command[1]).Output()
 		if err != nil {

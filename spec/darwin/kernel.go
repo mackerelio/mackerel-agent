@@ -7,15 +7,11 @@ import (
 	"strings"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 // KernelGenerator Generates specs about the kernel.
 type KernelGenerator struct {
-}
-
-// Key XXX
-func (g *KernelGenerator) Key() string {
-	return "kernel"
 }
 
 var kernelLogger = logging.GetLogger("spec.kernel")
@@ -35,7 +31,7 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 	}
 
 	// +1 is for `name`
-	results := make(map[string]string, len(commands)+1)
+	results := make(mackerel.Kernel, len(commands)+1)
 
 	for field, commandAndArgs := range commands {
 		out, err := exec.Command(commandAndArgs[0], commandAndArgs[1:]...).Output()

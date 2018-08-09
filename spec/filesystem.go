@@ -5,25 +5,22 @@ package spec
 import (
 	"fmt"
 
+	"github.com/mackerelio/mackerel-client-go"
+
 	"github.com/mackerelio/mackerel-agent/util"
 )
 
-// FilesystemGenerator generator for filesystems implements spec.Generator interface
+// FilesystemGenerator generates filesystem spec.
 type FilesystemGenerator struct {
 }
 
-// Key key name of the generator for satisfying spec.Generator interface
-func (g *FilesystemGenerator) Key() string {
-	return "filesystem"
-}
-
-// Generate specs of filesystems
+// Generate specs of filesystems.
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
 	filesystems, err := util.CollectDfValues()
 	if err != nil {
 		return nil, err
 	}
-	ret := make(map[string]map[string]interface{})
+	ret := make(mackerel.FileSystem)
 	for _, v := range filesystems {
 		ret[v.Name] = map[string]interface{}{
 			"kb_size":      v.Blocks,

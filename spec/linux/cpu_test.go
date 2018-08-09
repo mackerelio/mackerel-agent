@@ -5,15 +5,9 @@ package linux
 import (
 	"bytes"
 	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
 )
-
-func TestCPUKey(t *testing.T) {
-	g := &CPUGenerator{}
-
-	if g.Key() != "cpu" {
-		t.Error("key should be cpu")
-	}
-}
 
 func TestCPUGenerate(t *testing.T) {
 	g := &CPUGenerator{}
@@ -22,9 +16,9 @@ func TestCPUGenerate(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	cpu, typeOk := value.([]map[string]interface{})
+	cpu, typeOk := value.(mackerel.CPU)
 	if !typeOk {
-		t.Errorf("value should be slice of map. %+v", value)
+		t.Errorf("value should be mackerel.CPU. %+v", value)
 	}
 
 	if len(cpu) == 0 {
@@ -128,9 +122,9 @@ power management:`
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	cpus, typeOk := value.([]map[string]interface{})
+	cpus, typeOk := value.(mackerel.CPU)
 	if !typeOk {
-		t.Errorf("value should be slice of map. %+v", value)
+		t.Errorf("value should be mackerel.CPU. %+v", value)
 	}
 
 	if len(cpus) != 2 {
@@ -206,9 +200,9 @@ Revision        : 1a01040`
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	cpus, typeOk := value.([]map[string]interface{})
+	cpus, typeOk := value.(mackerel.CPU)
 	if !typeOk {
-		t.Errorf("value should be slice of map. %+v", value)
+		t.Errorf("value should be mackerel.CPU. %+v", value)
 	}
 
 	if len(cpus) != 4 {
@@ -257,9 +251,9 @@ Serial          : 0000000000000000`
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	cpus, typeOk := value.([]map[string]interface{})
+	cpus, typeOk := value.(mackerel.CPU)
 	if !typeOk {
-		t.Errorf("value should be slice of map. %+v", value)
+		t.Errorf("value should be mackerel.CPU. %+v", value)
 	}
 
 	if len(cpus) != 4 {
@@ -297,9 +291,9 @@ Serial          : 0000000000000000`
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	cpus, typeOk := value.([]map[string]interface{})
+	cpus, typeOk := value.(mackerel.CPU)
 	if !typeOk {
-		t.Errorf("value should be slice of map. %+v", value)
+		t.Errorf("value should be mackerel.CPU. %+v", value)
 	}
 
 	if len(cpus) != 1 {

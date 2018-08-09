@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
+
 	"github.com/mackerelio/mackerel-agent/config"
 )
 
@@ -28,11 +30,6 @@ type CloudGenerator struct {
 type CloudMetaGenerator interface {
 	Generate() (interface{}, error)
 	SuggestCustomIdentifier() (string, error)
-}
-
-// Key is a root key for the generator.
-func (g *CloudGenerator) Key() string {
-	return "cloud"
 }
 
 var cloudLogger = logging.GetLogger("spec.cloud")
@@ -172,11 +169,7 @@ func (g *EC2Generator) Generate() (interface{}, error) {
 		}
 	}
 
-	results := make(map[string]interface{})
-	results["provider"] = "ec2"
-	results["metadata"] = metadata
-
-	return results, nil
+	return &mackerel.Cloud{Provider: "ec2", MetaData: metadata}, nil
 }
 
 // SuggestCustomIdentifier suggests the identifier of the EC2 instance
@@ -257,12 +250,8 @@ func (g gceMeta) toGeneratorMeta() map[string]string {
 	return meta
 }
 
-func (g gceMeta) toGeneratorResults() interface{} {
-	results := make(map[string]interface{})
-	results["provider"] = "gce"
-	results["metadata"] = g.toGeneratorMeta()
-
-	return results
+func (g gceMeta) toGeneratorResults() *mackerel.Cloud {
+	return &mackerel.Cloud{Provider: "gce", MetaData: g.toGeneratorMeta()}
 }
 
 // SuggestCustomIdentifier for GCE is not implemented yet
@@ -296,11 +285,7 @@ func (g *AzureVMGenerator) Generate() (interface{}, error) {
 	metadata = retrieveAzureVMMetadata(metadata, g.baseURL.String(), "/compute/", metadataComputeKeys)
 	metadata = retrieveAzureVMMetadata(metadata, g.baseURL.String(), "/network/interface/0/ipv4/ipAddress/0/", ipAddressKeys)
 
-	results := make(map[string]interface{})
-	results["provider"] = "AzureVM"
-	results["metadata"] = metadata
-
-	return results, nil
+	return &mackerel.Cloud{Provider: "AzureVM", MetaData: metadata}, nil
 }
 
 func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlSuffix string, keys map[string]string) map[string]string {

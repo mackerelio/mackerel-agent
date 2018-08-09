@@ -5,6 +5,8 @@ package netbsd
 import (
 	"regexp"
 	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 func TestMemoryGenerator_Generate(t *testing.T) {
@@ -15,7 +17,7 @@ func TestMemoryGenerator_Generate(t *testing.T) {
 		t.Errorf("Generate() must not fail: %s", err)
 	}
 
-	memorySpecs := result.(map[string]string)
+	memorySpecs := result.(mackerel.Memory)
 	totalMemory, ok := memorySpecs["total"]
 	if !ok {
 		t.Error("'total' key must exist")

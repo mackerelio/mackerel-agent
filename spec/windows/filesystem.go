@@ -4,24 +4,21 @@ package windows
 
 import (
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
+
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
-// FilesystemGenerator XXX
+// FilesystemGenerator generates filesystem spec.
 type FilesystemGenerator struct {
-}
-
-// Key XX
-func (g *FilesystemGenerator) Key() string {
-	return "filesystem"
 }
 
 var filesystemLogger = logging.GetLogger("spec.filesystem")
 
-// Generate XXX
+// Generate specs of filesystems.
 func (g *FilesystemGenerator) Generate() (interface{}, error) {
 
-	ret := make(map[string]map[string]interface{})
+	ret := make(mackerel.FileSystem)
 
 	fileSystems, err := windows.CollectFilesystemValues()
 	for drive, f := range fileSystems {

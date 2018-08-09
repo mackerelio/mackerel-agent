@@ -9,16 +9,10 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/mackerelio/mackerel-client-go"
+
 	"github.com/mackerelio/mackerel-agent/config"
 )
-
-func TestCloudKey(t *testing.T) {
-	g := &CloudGenerator{}
-
-	if g.Key() != "cloud" {
-		t.Error("key should be cloud")
-	}
-}
 
 func TestCloudGenerate(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
@@ -40,19 +34,14 @@ func TestCloudGenerate(t *testing.T) {
 		t.Errorf("should not raise error: %s", err)
 	}
 
-	cloud, typeOk := value.(map[string]interface{})
+	cloud, typeOk := value.(*mackerel.Cloud)
 	if !typeOk {
-		t.Errorf("value should be map. %+v", value)
+		t.Errorf("value should be *mackerel.Cloud. %+v", value)
 	}
 
-	value, ok := cloud["metadata"]
-	if !ok {
-		t.Error("results should have metadata.")
-	}
-
-	metadata, typeOk := value.(map[string]string)
+	metadata, typeOk := cloud.MetaData.(map[string]string)
 	if !typeOk {
-		t.Errorf("v should be map. %+v", value)
+		t.Errorf("MetaData should be map. %+v", cloud.MetaData)
 	}
 
 	if len(metadata["instance-id"]) == 0 {

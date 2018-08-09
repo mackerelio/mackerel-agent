@@ -7,23 +7,20 @@ import (
 	"unsafe"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
+
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
-// CPUGenerator XXX
+// CPUGenerator collects CPU specs
 type CPUGenerator struct {
-}
-
-// Key XXX
-func (g *CPUGenerator) Key() string {
-	return "cpu"
 }
 
 var cpuLogger = logging.GetLogger("spec.cpu")
 
-// Generate XXX
+// Generate collects CPU specs.
 func (g *CPUGenerator) Generate() (interface{}, error) {
-	var results []map[string]interface{}
+	var results mackerel.CPU
 
 	var systemInfo windows.SYSTEM_INFO
 	windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))

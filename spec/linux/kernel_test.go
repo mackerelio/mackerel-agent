@@ -4,15 +4,9 @@ package linux
 
 import (
 	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
 )
-
-func TestKernelKey(t *testing.T) {
-	g := &KernelGenerator{}
-
-	if g.Key() != "kernel" {
-		t.Error("key should be kernel")
-	}
-}
 
 func TestKernelGenerate(t *testing.T) {
 	g := &KernelGenerator{}
@@ -21,9 +15,9 @@ func TestKernelGenerate(t *testing.T) {
 		t.Errorf("should not raise error: %s", err)
 	}
 
-	kernel, typeOk := value.(map[string]string)
+	kernel, typeOk := value.(mackerel.Kernel)
 	if !typeOk {
-		t.Errorf("value should be map. %+v", value)
+		t.Errorf("value should be mackerel.Kernel. %+v", value)
 	}
 
 	if len(kernel["name"]) == 0 {

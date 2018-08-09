@@ -2,7 +2,11 @@
 
 package darwin
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/mackerelio/mackerel-client-go"
+)
 
 func TestCPUGenerator_Generate(t *testing.T) {
 	g := &CPUGenerator{}
@@ -12,9 +16,9 @@ func TestCPUGenerator_Generate(t *testing.T) {
 		t.Errorf("Generate() must not fail: %s", err)
 	}
 
-	cpus, ok := result.([]cpuSpec)
+	cpus, ok := result.(mackerel.CPU)
 	if !ok {
-		t.Fatalf("the result must be of type []cpuSpec: %T", result)
+		t.Fatalf("the result must be of type mackerel.CPU: %T", result)
 	}
 
 	if len(cpus) == 0 {

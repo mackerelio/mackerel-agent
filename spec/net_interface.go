@@ -74,6 +74,5 @@ func (ifs NetInterfaces) AppendIPv6Address(name, addr string) {
 
 // InterfaceGenerator retrieve network informations
 type InterfaceGenerator interface {
-	Key() string
 	Generate() ([]NetInterface, error)
 }

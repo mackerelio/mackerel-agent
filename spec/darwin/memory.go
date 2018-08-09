@@ -9,15 +9,11 @@ import (
 	"strings"
 
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 // MemoryGenerator collects the host's memory specs.
 type MemoryGenerator struct {
-}
-
-// Key XXX
-func (g *MemoryGenerator) Key() string {
-	return "memory"
 }
 
 var memoryLogger = logging.GetLogger("spec.memory")
@@ -28,7 +24,7 @@ const bytesInKibibytes = 1024
 // The returned spec must have below:
 // - total (in "###kB" format, Kibibytes)
 func (g *MemoryGenerator) Generate() (interface{}, error) {
-	spec := map[string]string{}
+	spec := make(mackerel.Memory)
 
 	cmd := exec.Command("sysctl", "-n", "hw.memsize")
 	outputBytes, err := cmd.Output()

@@ -8,6 +8,8 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 func TestNewAPI(t *testing.T) {
@@ -90,7 +92,7 @@ func TestCreateHost(t *testing.T) {
 			Name          string              `json:"name"`
 			Type          string              `json:"type"`
 			Status        string              `json:"status"`
-			Meta          map[string]string   `json:"meta"`
+			Meta          mkr.HostMeta        `json:"meta"`
 			Interfaces    []map[string]string `json:"interfaces"`
 			RoleFullnames []string            `json:"roleFullnames"`
 		}
@@ -100,8 +102,8 @@ func TestCreateHost(t *testing.T) {
 			t.Fatal("request content should be decoded as json", content)
 		}
 
-		if data.Meta["memo"] != "hello" {
-			t.Error("request sends json including memo but: ", data)
+		if data.Meta.AgentName != "mackerel-agent" {
+			t.Error("request sends json including agent-name but: ", data)
 		}
 
 		if len(data.Interfaces) == 0 {
@@ -140,8 +142,8 @@ func TestCreateHost(t *testing.T) {
 	})
 	hostSpec := HostSpec{
 		Name: "dummy",
-		Meta: map[string]interface{}{
-			"memo": "hello",
+		Meta: mkr.HostMeta{
+			AgentName: "mackerel-agent",
 		},
 		Interfaces:       interfaces,
 		RoleFullnames:    []string{"My-Service:app-default"},
@@ -180,7 +182,7 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 			Name          string              `json:"name"`
 			Type          string              `json:"type"`
 			Status        string              `json:"status"`
-			Meta          map[string]string   `json:"meta"`
+			Meta          mkr.HostMeta        `json:"meta"`
 			Interfaces    []map[string]string `json:"interfaces"`
 			RoleFullnames []string            `json:"roleFullnames"`
 		}
@@ -234,7 +236,7 @@ func TestUpdateHost(t *testing.T) {
 			Name          string              `json:"name"`
 			Type          string              `json:"type"`
 			Status        string              `json:"status"`
-			Meta          map[string]string   `json:"meta"`
+			Meta          mkr.HostMeta        `json:"meta"`
 			Interfaces    []map[string]string `json:"interfaces"`
 			RoleFullnames []string            `json:"roleFullnames"`
 			Checks        []string            `json:"checks"`
@@ -245,8 +247,8 @@ func TestUpdateHost(t *testing.T) {
 			t.Fatal("request content should be decoded as json", content)
 		}
 
-		if data.Meta["memo"] != "hello" {
-			t.Error("request sends json including memo but: ", data)
+		if data.Meta.AgentName != "mackerel-agent" {
+			t.Error("request sends json including agent-name but: ", data)
 		}
 
 		if len(data.Interfaces) == 0 {
@@ -284,8 +286,8 @@ func TestUpdateHost(t *testing.T) {
 
 	hostSpec := HostSpec{
 		Name: "dummy",
-		Meta: map[string]interface{}{
-			"memo": "hello",
+		Meta: mkr.HostMeta{
+			AgentName: "mackerel-agent",
 		},
 		Interfaces:    interfaces,
 		RoleFullnames: []string{"My-Service:app-default"},
