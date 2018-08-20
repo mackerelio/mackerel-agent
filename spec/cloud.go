@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/mackerelio/golib/logging"
@@ -58,17 +59,39 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 		return &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
 	}
 
-	if isEC2() {
-		return &CloudGenerator{&EC2Generator{ec2BaseURL}}
-	}
-	if isGCE() {
-		return &CloudGenerator{&GCEGenerator{gceMetaURL}}
-	}
-	if isAzure() {
-		return &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+	var wg sync.WaitGroup
+	gCh := make(chan *CloudGenerator)
+
+	wg.Add(3)
+	go func() {
+		if isEC2() {
+			gCh <- &CloudGenerator{&EC2Generator{ec2BaseURL}}
+		}
+		wg.Done()
+	}()
+	go func() {
+		if isGCE() {
+			gCh <- &CloudGenerator{&GCEGenerator{gceMetaURL}}
+		}
+		wg.Done()
+	}()
+	go func() {
+		if isAzure() {
+			gCh <- &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+		}
+		wg.Done()
+	}()
+	go func() {
+		wg.Wait()
+		close(gCh)
+	}()
+
+	var cg *CloudGenerator
+	for cg = range gCh {
+		break
 	}
 
-	return nil
+	return cg
 }
 
 func httpCli() *http.Client {
