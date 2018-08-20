@@ -58,6 +58,70 @@ func TestCloudGenerate(t *testing.T) {
 	}
 }
 
+func TestEC2SuggestCustomIdentifier(t *testing.T) {
+	i := 0
+	threshold := 100
+	handler := func(res http.ResponseWriter, req *http.Request) {
+		if i < threshold {
+			http.Error(res, "not found", 404)
+		} else {
+			fmt.Fprint(res, "i-4f90d537")
+		}
+		i++
+	}
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		handler(res, req)
+	}))
+	defer ts.Close()
+
+	u, err := url.Parse(ts.URL)
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+	g := &CloudGenerator{&EC2Generator{u}}
+
+	// 404, 404, 404 => give up
+	{
+		_, err := g.SuggestCustomIdentifier()
+		if err == nil {
+			t.Errorf("should raise error: %s", err)
+		}
+	}
+	i = 0
+	threshold = 0
+	// 200 => ok
+	{
+		customIdentifier, err := g.SuggestCustomIdentifier()
+		if err != nil {
+			t.Errorf("should not raise error: %s", err)
+		}
+		if customIdentifier != "i-4f90d537.ec2.amazonaws.com" {
+			t.Error("customIdentifier mismatch")
+		}
+	}
+	i = 0
+	threshold = 1
+	// 404, 200 => ok
+	{
+		customIdentifier, err := g.SuggestCustomIdentifier()
+		if err != nil {
+			t.Errorf("should not raise error: %s", err)
+		}
+		if customIdentifier != "i-4f90d537.ec2.amazonaws.com" {
+			t.Error("customIdentifier mismatch")
+		}
+	}
+	i = 0
+	threshold = 3
+	// 404, 404, 404(give up), 200, ...
+	{
+		_, err := g.SuggestCustomIdentifier()
+		if err == nil {
+			t.Errorf("should raise error: %s", err)
+		}
+	}
+}
+
 func TestGCEGenerate(t *testing.T) {
 	// curl "http://metadata.google.internal./computeMetadata/v1/?recursive=true" -H "Metadata-Flavor: Google"
 	sampleJSON := []byte(`{
