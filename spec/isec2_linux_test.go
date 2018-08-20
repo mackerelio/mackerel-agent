@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"context"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -129,7 +130,7 @@ func TestIsEC2(t *testing.T) {
 			}
 			defer setUUIDFiles(uuidFiles)()
 
-			if isEC2() != tc.expect {
+			if isEC2(context.Background()) != tc.expect {
 				t.Errorf("isEC2() should be %t: %#v\n", tc.expect, tc)
 			}
 		}()

@@ -2,6 +2,7 @@ package spec
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
@@ -19,7 +20,7 @@ var uuidFiles = [2]string{
 
 // If the OS is Linux, check /sys/hypervisor/uuid and /sys/devices/virtual/dmi/id/product_uuid files first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
 // ref. https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
-func isEC2() bool {
+func isEC2(ctx context.Context) bool {
 	looksLikeEC2 := false
 	for _, u := range uuidFiles {
 		data, err := ioutil.ReadFile(u)
@@ -39,7 +40,11 @@ func isEC2() bool {
 	cl := httpCli()
 	err := retry.Retry(3, 2*time.Second, func() error {
 		// '/ami-id` is probably an AWS specific URL
-		resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
+		req, err := http.NewRequest("GET", ec2BaseURL.String()+"/ami-id", nil)
+		if err != nil {
+			return nil // something wrong. give up
+		}
+		resp, err := cl.Do(req.WithContext(ctx))
 		if err != nil {
 			return err
 		}

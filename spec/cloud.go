@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -62,21 +63,24 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 	var wg sync.WaitGroup
 	gCh := make(chan *CloudGenerator)
 
+	// cancelable context
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	wg.Add(3)
 	go func() {
-		if isEC2() {
+		if isEC2(ctx) {
 			gCh <- &CloudGenerator{&EC2Generator{ec2BaseURL}}
 		}
 		wg.Done()
 	}()
 	go func() {
-		if isGCE() {
+		if isGCE(ctx) {
 			gCh <- &CloudGenerator{&GCEGenerator{gceMetaURL}}
 		}
 		wg.Done()
 	}()
 	go func() {
-		if isAzure() {
+		if isAzure(ctx) {
 			gCh <- &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
 		}
 		wg.Done()
@@ -104,13 +108,13 @@ func httpCli() *http.Client {
 	}
 }
 
-func isGCE() bool {
-	_, err := requestGCEMeta()
+func isGCE(ctx context.Context) bool {
+	_, err := requestGCEMeta(ctx)
 	return err == nil
 }
 
 // Note: May want to check without using the API.
-func isAzure() bool {
+func isAzure(ctx context.Context) bool {
 	cl := httpCli()
 	// '/vmId` is probably Azure VM specific URL
 	req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
@@ -119,7 +123,7 @@ func isAzure() bool {
 	}
 	req.Header.Set("Metadata", "true")
 
-	resp, err := cl.Do(req)
+	resp, err := cl.Do(req.WithContext(ctx))
 	if err != nil {
 		return false
 	}
@@ -127,7 +131,7 @@ func isAzure() bool {
 	return resp.StatusCode == 200
 }
 
-func requestGCEMeta() ([]byte, error) {
+func requestGCEMeta(ctx context.Context) ([]byte, error) {
 	cl := httpCli()
 	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
 	if err != nil {
@@ -135,7 +139,7 @@ func requestGCEMeta() ([]byte, error) {
 	}
 	req.Header.Set("Metadata-Flavor", "Google")
 
-	resp, err := cl.Do(req)
+	resp, err := cl.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
@@ -246,7 +250,7 @@ type GCEGenerator struct {
 
 // Generate collects metadata from cloud platform.
 func (g *GCEGenerator) Generate() (interface{}, error) {
-	bytes, err := requestGCEMeta()
+	bytes, err := requestGCEMeta(context.Background())
 	if err != nil {
 		return nil, err
 	}
