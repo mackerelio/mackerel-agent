@@ -36,6 +36,11 @@ func isEC2(ctx context.Context) bool {
 		return false
 	}
 
+	// give up if ctx already closed
+	if ctx.Err() != nil {
+		return false
+	}
+
 	res := false
 	cl := httpCli()
 	err := retry.Retry(3, 2*time.Second, func() error {
