@@ -11,10 +11,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Songmu/retry"
 	"github.com/mackerelio/golib/logging"
-	"github.com/mackerelio/mackerel-client-go"
 
 	"github.com/mackerelio/mackerel-agent/config"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 // This Generator collects metadata about cloud instances.
@@ -109,26 +110,34 @@ func httpCli() *http.Client {
 }
 
 func isGCE(ctx context.Context) bool {
-	_, err := requestGCEMeta(ctx)
+	err := retry.Retry(2, 2*time.Second, func() error {
+		_, err := requestGCEMeta(ctx)
+		return err
+	})
 	return err == nil
 }
 
 // Note: May want to check without using the API.
 func isAzure(ctx context.Context) bool {
-	cl := httpCli()
-	// '/vmId` is probably Azure VM specific URL
-	req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
-	if err != nil {
-		return false
-	}
-	req.Header.Set("Metadata", "true")
+	isAzure := false
+	err := retry.Retry(2, 2*time.Second, func() error {
+		cl := httpCli()
+		// '/vmId` is probably Azure VM specific URL
+		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Metadata", "true")
 
-	resp, err := cl.Do(req.WithContext(ctx))
-	if err != nil {
-		return false
-	}
-	defer resp.Body.Close()
-	return resp.StatusCode == 200
+		resp, err := cl.Do(req.WithContext(ctx))
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		isAzure = resp.StatusCode == 200
+		return nil
+	})
+	return err == nil && isAzure
 }
 
 func requestGCEMeta(ctx context.Context) ([]byte, error) {
