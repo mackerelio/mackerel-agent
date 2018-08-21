@@ -13,9 +13,9 @@ import (
 
 	"github.com/Songmu/retry"
 	"github.com/mackerelio/golib/logging"
+	"github.com/mackerelio/mackerel-client-go"
 
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-client-go"
 )
 
 // This Generator collects metadata about cloud instances.
