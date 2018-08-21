@@ -18,14 +18,6 @@ func setEc2BaseURL(url *url.URL) func() {
 	}
 }
 
-func setUUIDFiles(files [2]string) func() {
-	oldUUIDFiles := uuidFiles
-	uuidFiles = files
-	return func() {
-		uuidFiles = oldUUIDFiles // restore value
-	}
-}
-
 func TestIsEC2UUID(t *testing.T) {
 	tests := []struct {
 		uuid   string
@@ -108,15 +100,15 @@ func TestIsEC2(t *testing.T) {
 			u, _ := url.Parse(ts.URL)
 			defer setEc2BaseURL(u)()
 
-			var uuidFiles [2]string
-			for i, exist := range tc.existsUUIDFiles {
+			uuidFiles := make([]string, 0, 2)
+			for _, exist := range tc.existsUUIDFiles {
 				tf, err := ioutil.TempFile("", "")
 				if err != nil {
 					t.Errorf("should not raise error: %s", err)
 				}
 
 				tn := tf.Name()
-				uuidFiles[i] = tn
+				uuidFiles = append(uuidFiles, tn)
 
 				if exist {
 					defer os.Remove(tn)
@@ -128,9 +120,8 @@ func TestIsEC2(t *testing.T) {
 				tf.Write([]byte("ec2e1916-9099-7caf-fd21-012345abcdef")) // valid EC2 UUID
 				tf.Close()
 			}
-			defer setUUIDFiles(uuidFiles)()
 
-			if isEC2(context.Background()) != tc.expect {
+			if isEC2WithSpecifiedUUIDFiles(context.Background(), uuidFiles) != tc.expect {
 				t.Errorf("isEC2() should be %t: %#v\n", tc.expect, tc)
 			}
 		}()
