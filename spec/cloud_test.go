@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/mackerelio/mackerel-client-go"
 
@@ -302,6 +303,40 @@ func TestSuggestCloudGenerator(t *testing.T) {
 		}
 		if gen.baseURL != azureVMBaseURL {
 			t.Errorf("something went wrong")
+		}
+	}()
+
+	func() { // multiple generators are available, but suggest the first responded one (in this case EC2)
+		// ec2. ok immediately
+		tsEc2 := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+			fmt.Fprint(res, "ok")
+		}))
+		defer tsEc2.Close()
+		uEc2, _ := url.Parse(tsEc2.URL)
+		ec2BaseURL = uEc2
+		// azure / gce. ok after 1 second
+		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+			time.Sleep(2 * time.Second)
+			fmt.Fprint(res, "ok")
+		}))
+		defer ts.Close()
+		u, _ := url.Parse(ts.URL)
+		azureVMBaseURL = u
+		gceMetaURL = u
+		defer func() {
+			ec2BaseURL = unreachableURL
+			gceMetaURL = unreachableURL
+			azureVMBaseURL = unreachableURL
+		}()
+
+		cGen = SuggestCloudGenerator(&conf)
+		if cGen == nil {
+			t.Errorf("cGen should not be nil.")
+		}
+
+		_, ok := cGen.CloudMetaGenerator.(*EC2Generator)
+		if !ok {
+			t.Errorf("cGen should be *EC2Generator")
 		}
 	}()
 }
