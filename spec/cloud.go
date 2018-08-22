@@ -62,11 +62,11 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 	}
 
 	var wg sync.WaitGroup
-	gCh := make(chan *CloudGenerator)
+	gCh := make(chan *CloudGenerator, 3)
 
 	// cancelable context
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+
 	wg.Add(3)
 	go func() {
 		if isEC2(ctx) {
@@ -86,15 +86,13 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 		}
 		wg.Done()
 	}()
-	go func() {
-		wg.Wait()
-		close(gCh)
-	}()
 
 	var cg *CloudGenerator
-	for cg = range gCh {
-		break
-	}
+	go func() {
+		cg = <-gCh
+		cancel()
+	}()
+	wg.Wait()
 
 	return cg
 }
