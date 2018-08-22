@@ -48,7 +48,7 @@ func isEC2WithSpecifiedUUIDFiles(ctx context.Context, uuidFiles []string) bool {
 
 	res := false
 	cl := httpCli()
-	err := retry.Retry(3, 2*time.Second, func() error {
+	err := retry.WithContext(ctx, 3, 2*time.Second, func() error {
 		// '/ami-id` is probably an AWS specific URL
 		req, err := http.NewRequest("GET", ec2BaseURL.String()+"/ami-id", nil)
 		if err != nil {

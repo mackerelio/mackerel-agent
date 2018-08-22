@@ -13,7 +13,7 @@ import (
 // For instances other than Linux, retry only 1 times to shorten whole process
 func isEC2(ctx context.Context) bool {
 	isEC2 := false
-	err := retry.Retry(2, 2*time.Second, func() error {
+	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
 		cl := httpCli()
 		// '/ami-id` is probably an AWS specific URL
 		req, err := http.NewRequest("GET", ec2BaseURL.String()+"/ami-id", nil)

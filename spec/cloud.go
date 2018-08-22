@@ -110,7 +110,7 @@ func httpCli() *http.Client {
 }
 
 func isGCE(ctx context.Context) bool {
-	err := retry.Retry(2, 2*time.Second, func() error {
+	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
 		_, err := requestGCEMeta(ctx)
 		return err
 	})
@@ -120,7 +120,7 @@ func isGCE(ctx context.Context) bool {
 // Note: May want to check without using the API.
 func isAzure(ctx context.Context) bool {
 	isAzure := false
-	err := retry.Retry(2, 2*time.Second, func() error {
+	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
 		cl := httpCli()
 		// '/vmId` is probably Azure VM specific URL
 		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
