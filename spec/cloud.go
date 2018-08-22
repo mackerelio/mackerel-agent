@@ -71,30 +71,31 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 	go func() {
 		if isEC2(ctx) {
 			gCh <- &CloudGenerator{&EC2Generator{ec2BaseURL}}
+			cancel()
 		}
 		wg.Done()
 	}()
 	go func() {
 		if isGCE(ctx) {
 			gCh <- &CloudGenerator{&GCEGenerator{gceMetaURL}}
+			cancel()
 		}
 		wg.Done()
 	}()
 	go func() {
 		if isAzure(ctx) {
 			gCh <- &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+			cancel()
 		}
 		wg.Done()
 	}()
 
-	var cg *CloudGenerator
 	go func() {
-		cg = <-gCh
-		cancel()
+		wg.Wait()
+		close(gCh)
 	}()
-	wg.Wait()
 
-	return cg
+	return <-gCh
 }
 
 func httpCli() *http.Client {
