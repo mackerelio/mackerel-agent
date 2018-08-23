@@ -92,6 +92,7 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 
 	go func() {
 		wg.Wait()
+		// close so that `<-gCh` will receive nul
 		close(gCh)
 	}()
 
