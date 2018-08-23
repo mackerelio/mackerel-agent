@@ -42,8 +42,10 @@ func isEC2WithSpecifiedUUIDFiles(ctx context.Context, uuidFiles []string) bool {
 	}
 
 	// give up if ctx already closed
-	if ctx.Err() != nil {
+	select {
+	case <-ctx.Done():
 		return false
+	default:
 	}
 
 	res := false
