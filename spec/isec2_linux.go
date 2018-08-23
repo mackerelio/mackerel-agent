@@ -2,24 +2,30 @@ package spec
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/Songmu/retry"
 )
 
-var uuidFiles = [2]string{
-	"/sys/hypervisor/uuid",
-	"/sys/devices/virtual/dmi/id/product_uuid",
-}
-
 // If the OS is Linux, check /sys/hypervisor/uuid and /sys/devices/virtual/dmi/id/product_uuid files first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
 // ref. https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
-func isEC2() bool {
+func isEC2(ctx context.Context) bool {
+	var uuidFiles = []string{
+		"/sys/hypervisor/uuid",
+		"/sys/devices/virtual/dmi/id/product_uuid",
+	}
+
+	return isEC2WithSpecifiedUUIDFiles(ctx, uuidFiles)
+}
+
+func isEC2WithSpecifiedUUIDFiles(ctx context.Context, uuidFiles []string) bool {
 	looksLikeEC2 := false
 	for _, u := range uuidFiles {
 		data, err := ioutil.ReadFile(u)
@@ -35,11 +41,22 @@ func isEC2() bool {
 		return false
 	}
 
+	// give up if ctx already closed
+	select {
+	case <-ctx.Done():
+		return false
+	default:
+	}
+
 	res := false
 	cl := httpCli()
-	err := retry.Retry(3, 2*time.Second, func() error {
+	err := retry.WithContext(ctx, 3, 2*time.Second, func() error {
 		// '/ami-id` is probably an AWS specific URL
-		resp, err := cl.Get(ec2BaseURL.String() + "/ami-id")
+		req, err := http.NewRequest("GET", ec2BaseURL.String()+"/ami-id", nil)
+		if err != nil {
+			return nil // something wrong. give up
+		}
+		resp, err := cl.Do(req.WithContext(ctx))
 		if err != nil {
 			return err
 		}
