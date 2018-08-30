@@ -55,6 +55,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Aug 30 2018 <mackerel-developers@hatena.ne.jp> - 0.56.1
+- Do HTTP retry on determining cloud platform and suggesting customIdentifier (by astj)
+- [windows] Add timeout to WMI query for disk metrics (by astj)
+
 * Wed Jul 25 2018 <mackerel-developers@hatena.ne.jp> - 0.56.0
 - Fix starting order of Windows Service (by mattn)
 - Auto retire with shutdown on Windows (by mattn)

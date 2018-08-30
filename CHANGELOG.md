@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.56.1 (2018-08-30)
+
+* Do HTTP retry on determining cloud platform and suggesting customIdentifier #516 (astj)
+* [windows] Add timeout to WMI query for disk metrics #511 (astj)
+
+
 ## 0.56.0 (2018-07-25)
 
 * Fix starting order of Windows Service #506 (mattn)
