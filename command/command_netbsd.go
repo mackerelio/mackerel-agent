@@ -23,7 +23,7 @@ func interfaceGenerator() spec.InterfaceGenerator {
 
 func metricsGenerators(conf *config.Config) []metrics.Generator {
 	generators := []metrics.Generator{
-		&metrics.Loadavg5Generator{},
+		&metrics.LoadavgGenerator{},
 		&metricsNetbsd.CPUUsageGenerator{},
 		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp, UseMountpoint: conf.Filesystems.UseMountpoint},
 		&metricsNetbsd.MemoryGenerator{},
