@@ -1,3 +1,12 @@
+mackerel-agent (0.56.1-1.systemd) stable; urgency=low
+
+  * Do HTTP retry on determining cloud platform and suggesting customIdentifier (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/516>
+  * [windows] Add timeout to WMI query for disk metrics (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/511>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 30 Aug 2018 10:45:51 +0900
+
 mackerel-agent (0.56.0-1.systemd) stable; urgency=low
 
   * Fix starting order of Windows Service (by mattn)
