@@ -23,5 +23,9 @@ func (g *Loadavg5Generator) Generate() (Values, error) {
 		loadavg5Logger.Errorf("%s", err)
 		return nil, err
 	}
-	return Values{"loadavg5": loadavgs.Loadavg5}, nil
+	return Values{
+		"loadavg1":  loadavgs.Loadavg1,
+		"loadavg5":  loadavgs.Loadavg5,
+		"loadavg15": loadavgs.Loadavg15,
+	}, nil
 }
