@@ -7,20 +7,22 @@ import (
 	"github.com/mackerelio/golib/logging"
 )
 
-// loadavg5
+// loadavg
+//   - loadavg1: load average per 1 minutes
 //   - loadavg5: load average per 5 minutes
+//   - loadavg15: load average per 15 minutes
 
-// Loadavg5Generator generates load average values
-type Loadavg5Generator struct {
+// LoadavgGenerator generates load average values
+type LoadavgGenerator struct {
 }
 
-var loadavg5Logger = logging.GetLogger("metrics.loadavg5")
+var loadavgLogger = logging.GetLogger("metrics.loadavg")
 
 // Generate load averages
-func (g *Loadavg5Generator) Generate() (Values, error) {
+func (g *LoadavgGenerator) Generate() (Values, error) {
 	loadavgs, err := loadavg.Get()
 	if err != nil {
-		loadavg5Logger.Errorf("%s", err)
+		loadavgLogger.Errorf("%s", err)
 		return nil, err
 	}
 	return Values{

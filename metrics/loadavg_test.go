@@ -6,20 +6,20 @@ import (
 	"testing"
 )
 
-func TestLoadAvg5Generate(t *testing.T) {
-	g := &Loadavg5Generator{}
+func TestLoadAvgGenerate(t *testing.T) {
+	g := &LoadavgGenerator{}
 	values, err := g.Generate()
 
 	if err != nil {
 		t.Errorf("error should be nil but got: %s", err)
 	}
 
-	metricName := []string{"loadavg5"}
+	metricName := []string{"loadavg1", "loadavg5", "loadavg15"}
 	for _, n := range metricName {
 		if _, ok := values[n]; !ok {
-			t.Errorf("loadavg5 metrics should have '%s': %v", n, values)
+			t.Errorf("loadavg metrics should have '%s': %v", n, values)
 		}
 	}
 
-	t.Logf("loadavg5 metrics: %+v", values)
+	t.Logf("loadavg metrics: %+v", values)
 }
