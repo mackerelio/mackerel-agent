@@ -43,12 +43,20 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 
 func parseIostatOutput(output string) (metrics.Values, error) {
 	lines := strings.Split(output, "\n")
-	if len(lines) != 5 {
-		return nil, fmt.Errorf("iostat result malformed: [%q]", output)
+
+	var fields []string
+	for i := len(lines) - 1; i >= 0; i-- {
+		if lines[i] == "" {
+			continue
+		}
+		xs := strings.Fields(lines[i])
+		if len(xs) >= len(iostatFieldToMetricName) {
+			fields = xs
+			break
+		}
 	}
 
-	fields := strings.Fields(lines[3])
-	if len(fields) < len(iostatFieldToMetricName) {
+	if len(fields) == 0 {
 		return nil, fmt.Errorf("iostat result malformed: [%q]", output)
 	}
 
