@@ -44,6 +44,20 @@ func TestCPUUsageGenerator_parseIostatOutput(t *testing.T) {
 				"cpu.idle.percentage":   72.0,
 			},
 		},
+		{
+			output: `      cpu    load average
+ us sy id   1m   5m   15m
+ 19  9 72  2.50 3.04 3.20
+      cpu    load average
+ us sy id   1m   5m   15m
+ 16 12 72  2.50 3.04 3.20
+`,
+			values: metric.Values{
+				"cpu.user.percentage":   16.0,
+				"cpu.system.percentage": 12.0,
+				"cpu.idle.percentage":   72.0,
+			},
+		},
 	}
 	for _, testCase := range testCases {
 		got, err := parseIostatOutput(testCase.output)
