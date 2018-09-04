@@ -5,6 +5,7 @@ case "$1" in
 configure)
   if [ ! -e /etc/mackerel-agent/mackerel-agent.conf ]; then
     cp /etc/mackerel-agent/mackerel-agent.conf.example /etc/mackerel-agent/mackerel-agent.conf
+    chmod 600 /etc/mackerel-agent/mackerel-agent.conf
   fi
 ;;
 abort-upgrade|abort-remove|abort-deconfigure)
