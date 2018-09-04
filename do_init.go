@@ -39,7 +39,7 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 		}
 		contents = append(contents, cBytes...)
 	}
-	return ioutil.WriteFile(*conffile, contents, 0644)
+	return ioutil.WriteFile(*conffile, contents, 0600)
 }
 
 type apikeyAlreadySetError string
