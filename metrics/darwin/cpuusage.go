@@ -38,15 +38,26 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	iostat := string(iostatBytes)
-	lines := strings.Split(iostat, "\n")
-	if len(lines) != 5 {
-		return nil, fmt.Errorf("iostat result malformed: [%q]", iostat)
+	return parseIostatOutput(string(iostatBytes))
+}
+
+func parseIostatOutput(output string) (metrics.Values, error) {
+	lines := strings.Split(output, "\n")
+
+	var fields []string
+	for i := len(lines) - 1; i >= 0; i-- {
+		if lines[i] == "" {
+			continue
+		}
+		xs := strings.Fields(lines[i])
+		if len(xs) >= len(iostatFieldToMetricName) {
+			fields = xs
+			break
+		}
 	}
 
-	fields := strings.Fields(lines[3])
-	if len(fields) < len(iostatFieldToMetricName) {
-		return nil, fmt.Errorf("iostat result malformed: [%q]", iostat)
+	if len(fields) == 0 {
+		return nil, fmt.Errorf("iostat result malformed: [%q]", output)
 	}
 
 	cpuUsage := make(map[string]float64, len(iostatFieldToMetricName))
