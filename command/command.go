@@ -650,10 +650,10 @@ func Prepare(conf *config.Config, ameta *AgentMeta) (*App, error) {
 	}
 
 	return &App{
-		Agent:  NewAgent(conf),
-		Config: conf,
-		Host:   host,
-		API:    api,
+		Agent:                 NewAgent(conf),
+		Config:                conf,
+		Host:                  host,
+		API:                   api,
 		CustomIdentifierHosts: prepareCustomIdentiferHosts(conf, api),
 		AgentMeta:             ameta,
 	}, nil
