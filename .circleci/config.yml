@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /go/src/github.com/hatena/mackerel-agent
     docker:
-    - image: circleci/golang:1.10
+    - image: circleci/golang:1.11
     steps:
     - checkout
     - restore_cache:
