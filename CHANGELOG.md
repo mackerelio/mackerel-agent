@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.57.0 (2018-09-13)
+
+* Build with Go 1.11 #522 (astj)
+* [darwin] Fix iostat output parsing in CPU usage generator #520 (itchyny)
+* [darwin] fix filesystem metrics for APFS vm partition volume #517 (itchyny)
+* add loadavg1 and loadavg15 #519 (itchyny)
+
+
 ## 0.56.1 (2018-08-30)
 
 * Do HTTP retry on determining cloud platform and suggesting customIdentifier #516 (astj)
