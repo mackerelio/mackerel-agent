@@ -55,6 +55,13 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Sep 14 2018 <mackerel-developers@hatena.ne.jp> - 0.57.0
+- update Code Signing Certificate. (by hayajo)
+- Build with Go 1.11 (by astj)
+- [darwin] Fix iostat output parsing in CPU usage generator (by itchyny)
+- [darwin] fix filesystem metrics for APFS vm partition volume (by itchyny)
+- add loadavg1 and loadavg15 (by itchyny)
+
 * Thu Aug 30 2018 <mackerel-developers@hatena.ne.jp> - 0.56.1
 - Do HTTP retry on determining cloud platform and suggesting customIdentifier (by astj)
 - [windows] Add timeout to WMI query for disk metrics (by astj)
