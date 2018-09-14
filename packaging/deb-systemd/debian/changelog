@@ -1,3 +1,18 @@
+mackerel-agent (0.57.0-1.systemd) stable; urgency=low
+
+  * update Code Signing Certificate. (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/524>
+  * Build with Go 1.11 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/522>
+  * [darwin] Fix iostat output parsing in CPU usage generator (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/520>
+  * [darwin] fix filesystem metrics for APFS vm partition volume (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/517>
+  * add loadavg1 and loadavg15 (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/519>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Fri, 14 Sep 2018 10:53:39 +0900
+
 mackerel-agent (0.56.1-1.systemd) stable; urgency=low
 
   * Do HTTP retry on determining cloud platform and suggesting customIdentifier (by astj)
