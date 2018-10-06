@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Songmu/timeout"
@@ -43,7 +44,10 @@ var dfHeaderPattern = regexp.MustCompile(
 
 var logger = logging.GetLogger("util.filesystem")
 
-var dfOpt []string
+var (
+	dfOpt []string
+	dfMu  sync.RWMutex
+)
 
 func init() {
 	switch runtime.GOOS {
@@ -58,23 +62,46 @@ func init() {
 	}
 }
 
+func getDfOpt() []string {
+	dfMu.RLock()
+	defer dfMu.RUnlock()
+	return dfOpt
+}
+
+func setDfOpt(opt []string) {
+	dfMu.Lock()
+	defer dfMu.Unlock()
+	dfOpt = opt
+}
+
 // CollectDfValues collects disk free statistics from df command
 func CollectDfValues() ([]*DfStat, error) {
-	cmd := exec.Command("df", dfOpt...)
-	tio := &timeout.Timeout{
-		Cmd:       cmd,
-		Duration:  15 * time.Second,
-		KillAfter: 5 * time.Second,
+	for {
+		cmd := exec.Command("df", getDfOpt()...)
+		tio := &timeout.Timeout{
+			Cmd:       cmd,
+			Duration:  15 * time.Second,
+			KillAfter: 5 * time.Second,
+		}
+		exitSt, stdout, stderr, err := tio.Run()
+		if err != nil {
+			logger.Warningf("failed to invoke 'df %s' command: %q", strings.Join(getDfOpt(), " "), err)
+			return nil, nil
+		}
+		// Some `df` command such as busybox does not have `-P` option.
+		// For that case retry `df` using the `-k` option.
+		if exitSt.Code != 0 && strings.Contains(stderr, "df: invalid option -- P") {
+			setDfOpt([]string{"-k"})
+			continue
+		}
+		// Ignores exit status in case that df returns exit status 1
+		// when the agent does not have permission to access file system info.
+		if exitSt.Code != 0 {
+			logger.Warningf("'df %s' command exited with a non-zero status: %d: %q", strings.Join(getDfOpt(), " "), exitSt.Code, stderr)
+			return nil, nil
+		}
+		return parseDfLines(stdout), nil
 	}
-	// Ignores exit status in case that df returns exit status 1
-	// when the agent does not have permission to access file system info.
-	_, stdout, _, err := tio.Run()
-
-	if err != nil {
-		logger.Warningf("'df %s' command exited with a non-zero status: '%s'", strings.Join(dfOpt, " "), err)
-		return nil, nil
-	}
-	return parseDfLines(stdout), nil
 }
 
 func parseDfLines(out string) []*DfStat {
