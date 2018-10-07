@@ -12,7 +12,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/Songmu/timeout"
@@ -44,10 +43,7 @@ var dfHeaderPattern = regexp.MustCompile(
 
 var logger = logging.GetLogger("util.filesystem")
 
-var (
-	dfOpt []string
-	dfMu  sync.RWMutex
-)
+var dfOpt []string
 
 func init() {
 	switch runtime.GOOS {
@@ -60,48 +56,39 @@ func init() {
 	default:
 		dfOpt = []string{"-P"}
 	}
-}
 
-func getDfOpt() []string {
-	dfMu.RLock()
-	defer dfMu.RUnlock()
-	return dfOpt
-}
-
-func setDfOpt(opt []string) {
-	dfMu.Lock()
-	defer dfMu.Unlock()
-	dfOpt = opt
+	// Some `df` command such as busybox does not have `-P` option.
+	tio := &timeout.Timeout{
+		Cmd:       exec.Command("df", dfOpt...),
+		Duration:  3 * time.Second,
+		KillAfter: 1 * time.Second,
+	}
+	exitSt, _, stderr, err := tio.Run()
+	if err == nil && exitSt.Code != 0 && strings.Contains(stderr, "df: invalid option -- P") {
+		dfOpt[0] = "-k"
+	}
 }
 
 // CollectDfValues collects disk free statistics from df command
 func CollectDfValues() ([]*DfStat, error) {
-	for {
-		cmd := exec.Command("df", getDfOpt()...)
-		tio := &timeout.Timeout{
-			Cmd:       cmd,
-			Duration:  15 * time.Second,
-			KillAfter: 5 * time.Second,
-		}
-		exitSt, stdout, stderr, err := tio.Run()
-		if err != nil {
-			logger.Warningf("failed to invoke 'df %s' command: %q", strings.Join(getDfOpt(), " "), err)
-			return nil, nil
-		}
-		// Some `df` command such as busybox does not have `-P` option.
-		// For that case retry `df` using the `-k` option.
-		if exitSt.Code != 0 && strings.Contains(stderr, "df: invalid option -- P") {
-			setDfOpt([]string{"-k"})
-			continue
-		}
-		// Ignores exit status in case that df returns exit status 1
-		// when the agent does not have permission to access file system info.
-		if exitSt.Code != 0 {
-			logger.Warningf("'df %s' command exited with a non-zero status: %d: %q", strings.Join(getDfOpt(), " "), exitSt.Code, stderr)
-			return nil, nil
-		}
-		return parseDfLines(stdout), nil
+	cmd := exec.Command("df", dfOpt...)
+	tio := &timeout.Timeout{
+		Cmd:       cmd,
+		Duration:  15 * time.Second,
+		KillAfter: 5 * time.Second,
 	}
+	exitSt, stdout, stderr, err := tio.Run()
+	if err != nil {
+		logger.Warningf("failed to invoke 'df %s' command: %q", strings.Join(dfOpt, " "), err)
+		return nil, nil
+	}
+	// Ignores exit status in case that df returns exit status 1
+	// when the agent does not have permission to access file system info.
+	if exitSt.Code != 0 {
+		logger.Warningf("'df %s' command exited with a non-zero status: %d: %q", strings.Join(dfOpt, " "), exitSt.Code, stderr)
+		return nil, nil
+	}
+	return parseDfLines(stdout), nil
 }
 
 func parseDfLines(out string) []*DfStat {
