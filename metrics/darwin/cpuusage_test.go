@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/hatena/mackerel-container-agent/metric"
+	"github.com/mackerelio/mackerel-agent/metrics"
 )
 
 func TestCPUUsageGenerator_Generate(t *testing.T) {
@@ -30,7 +30,7 @@ func TestCPUUsageGenerator_Generate(t *testing.T) {
 func TestCPUUsageGenerator_parseIostatOutput(t *testing.T) {
 	testCases := []struct {
 		output string
-		values metric.Values
+		values metrics.Values
 	}{
 		{
 			output: `      cpu    load average
@@ -38,7 +38,7 @@ func TestCPUUsageGenerator_parseIostatOutput(t *testing.T) {
  19  9 72  2.50 3.04 3.20
  16 12 72  2.50 3.04 3.20
 `,
-			values: metric.Values{
+			values: metrics.Values{
 				"cpu.user.percentage":   16.0,
 				"cpu.system.percentage": 12.0,
 				"cpu.idle.percentage":   72.0,
@@ -52,7 +52,7 @@ func TestCPUUsageGenerator_parseIostatOutput(t *testing.T) {
  us sy id   1m   5m   15m
  16 12 72  2.50 3.04 3.20
 `,
-			values: metric.Values{
+			values: metrics.Values{
 				"cpu.user.percentage":   16.0,
 				"cpu.system.percentage": 12.0,
 				"cpu.idle.percentage":   72.0,
