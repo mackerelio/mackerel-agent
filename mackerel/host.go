@@ -13,8 +13,8 @@ type Host struct {
 
 // CheckConfig is check plugin name and memo
 type CheckConfig struct {
-	Name string  `json:"name"`
-	Memo *string `json:"memo"`
+	Name string `json:"name"`
+	Memo string `json:"memo,omitempty"`
 }
 
 // HostSpec is host specifications sent Mackerel server per hour
