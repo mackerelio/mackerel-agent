@@ -135,7 +135,7 @@ type PluginConfig struct {
 	IncludePattern        *string       `toml:"include_pattern"`
 	ExcludePattern        *string       `toml:"exclude_pattern"`
 	Action                CommandConfig `toml:"action"`
-	Memo                  *string       `toml:"memo"`
+	Memo                  string        `toml:"memo"`
 }
 
 // CommandConfig represents an executable command configuration.
@@ -253,7 +253,7 @@ type CheckPlugin struct {
 	MaxCheckAttempts      *int32
 	PreventAlertAutoClose bool
 	Action                *Command
-	Memo                  *string
+	Memo                  string
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
@@ -270,10 +270,9 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		return nil, err
 	}
 
-	memo := pconf.Memo
-	if pconf.Memo != nil && utf8.RuneCountInString(*pconf.Memo) > 250 {
+	if utf8.RuneCountInString(pconf.Memo) > 250 {
 		configLogger.Warningf("'plugin.checks.%s.memo' size exceeds 250 characters", name)
-		str := *pconf.Memo
+		str := pconf.Memo
 		c := 0
 		n := 0
 		for len(str) > 0 && c < 250 {
@@ -282,8 +281,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 			c++
 			str = str[size:]
 		}
-		str = (*pconf.Memo)[:n]
-		memo = &str
+		pconf.Memo = pconf.Memo[:n]
 	}
 
 	plugin := CheckPlugin{
@@ -293,7 +291,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 		MaxCheckAttempts:      pconf.MaxCheckAttempts,
 		PreventAlertAutoClose: pconf.PreventAlertAutoClose,
 		Action:                action,
-		Memo:                  memo,
+		Memo:                  pconf.Memo,
 	}
 	if plugin.MaxCheckAttempts != nil && *plugin.MaxCheckAttempts > 1 && plugin.PreventAlertAutoClose {
 		*plugin.MaxCheckAttempts = 1
