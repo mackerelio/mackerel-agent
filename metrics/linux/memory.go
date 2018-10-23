@@ -15,7 +15,8 @@ MemoryGenerator collect memory usage
 
 metric = "total", "free", "buffers", "cached", "active", "inactive", "swap_cached", "swap_total", "swap_free"
 
-Metrics "used" is calculated here like (total - free - buffers - cached) for ease.
+Metrics "used" is calculated here like (total - free - buffers - cached) or (total - available) or for ease.
+(total - available) is chosen when `MemAvailableEnabled` is enabled.
 This calculation may be going to be done in server side in the future.
 
 graph: stacks `memory.{metric}`
