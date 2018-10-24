@@ -54,7 +54,7 @@ func init() {
 	case "netbsd":
 		dfOpt = []string{"-Pkl"}
 	default:
-		dfOpt = []string{"-P"}
+		dfOpt = []string{"-Pl"}
 	}
 }
 
