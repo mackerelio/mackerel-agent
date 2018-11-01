@@ -43,24 +43,9 @@ var dfHeaderPattern = regexp.MustCompile(
 
 var logger = logging.GetLogger("util.filesystem")
 
-var dfOpt []string
-
-func init() {
-	switch runtime.GOOS {
-	case "darwin":
-		dfOpt = []string{"-Pkl"}
-	case "freebsd":
-		dfOpt = []string{"-Pkt", "noprocfs,devfs,fdescfs,nfs,nullfs,cd9660"}
-	case "netbsd":
-		dfOpt = []string{"-Pkl"}
-	default:
-		dfOpt = []string{"-P"}
-	}
-}
-
 // CollectDfValues collects disk free statistics from df command
 func CollectDfValues() ([]*DfStat, error) {
-	cmd := exec.Command("df", dfOpt...)
+	cmd := exec.Command("df", "-Pkl")
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  15 * time.Second,
@@ -71,7 +56,7 @@ func CollectDfValues() ([]*DfStat, error) {
 	_, stdout, _, err := tio.Run()
 
 	if err != nil {
-		logger.Warningf("'df %s' command exited with a non-zero status: '%s'", strings.Join(dfOpt, " "), err)
+		logger.Warningf("'df -Pkl' command exited with a non-zero status: '%s'", err)
 		return nil, nil
 	}
 	return parseDfLines(stdout), nil
