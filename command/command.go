@@ -17,6 +17,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	"github.com/mackerelio/mackerel-agent/spec"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 var logger = logging.GetLogger("command")
@@ -580,10 +581,10 @@ func collectHostSpecs(conf *config.Config, ameta *AgentMeta) (mackerel.HostSpec,
 	meta.AgentRevision = ameta.Revision
 	meta.AgentName = buildUA(ameta.Version, ameta.Revision)
 
-	checks := []mackerel.CheckConfig{}
+	checks := make([]mkr.CheckConfig, 0, len(conf.CheckPlugins))
 	for name, checkPlugin := range conf.CheckPlugins {
 		checks = append(checks,
-			mackerel.CheckConfig{
+			mkr.CheckConfig{
 				Name: name,
 				Memo: checkPlugin.Memo,
 			})

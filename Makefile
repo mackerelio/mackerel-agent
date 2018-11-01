@@ -25,11 +25,11 @@ run: build
 
 deps:
 	go get -d -v -t ./...
-	go get github.com/golang/lint/golint
-	go get github.com/pierrre/gotestcover
-	go get github.com/Songmu/goxz/cmd/goxz
-	go get github.com/mattn/goveralls
-	go get github.com/motemen/go-cli/gen
+	go get golang.org/x/lint/golint   \
+	  github.com/pierrre/gotestcover  \
+	  github.com/Songmu/goxz/cmd/goxz \
+	  github.com/mattn/goveralls      \
+	  github.com/motemen/go-cli/gen
 
 lint: deps
 	go tool vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .

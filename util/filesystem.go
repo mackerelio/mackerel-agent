@@ -43,35 +43,24 @@ var dfHeaderPattern = regexp.MustCompile(
 
 var logger = logging.GetLogger("util.filesystem")
 
-var dfOpt []string
+var dfOpt = "-Pkl"
 
 func init() {
-	switch runtime.GOOS {
-	case "darwin":
-		dfOpt = []string{"-Pkl"}
-	case "freebsd":
-		dfOpt = []string{"-Pkt", "noprocfs,devfs,fdescfs,nfs,nullfs,cd9660"}
-	case "netbsd":
-		dfOpt = []string{"-Pkl"}
-	default:
-		dfOpt = []string{"-P"}
-	}
-
 	// Some `df` command such as busybox does not have `-P` option.
 	tio := &timeout.Timeout{
-		Cmd:       exec.Command("df", dfOpt...),
+		Cmd:       exec.Command("df", dfOpt),
 		Duration:  3 * time.Second,
 		KillAfter: 1 * time.Second,
 	}
 	exitSt, _, stderr, err := tio.Run()
 	if err == nil && exitSt.Code != 0 && strings.Contains(stderr, "df: invalid option -- P") {
-		dfOpt[0] = "-k"
+		dfOpt = "-k"
 	}
 }
 
 // CollectDfValues collects disk free statistics from df command
 func CollectDfValues() ([]*DfStat, error) {
-	cmd := exec.Command("df", dfOpt...)
+	cmd := exec.Command("df", dfOpt)
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  15 * time.Second,
@@ -79,13 +68,13 @@ func CollectDfValues() ([]*DfStat, error) {
 	}
 	exitSt, stdout, stderr, err := tio.Run()
 	if err != nil {
-		logger.Warningf("failed to invoke 'df %s' command: %q", strings.Join(dfOpt, " "), err)
+		logger.Warningf("failed to invoke 'df %s' command: %q", dfOpt, err)
 		return nil, nil
 	}
 	// Ignores exit status in case that df returns exit status 1
 	// when the agent does not have permission to access file system info.
 	if exitSt.Code != 0 {
-		logger.Warningf("'df %s' command exited with a non-zero status: %d: %q", strings.Join(dfOpt, " "), exitSt.Code, stderr)
+		logger.Warningf("'df %s' command exited with a non-zero status: %d: %q", dfOpt, exitSt.Code, stderr)
 		return nil, nil
 	}
 	return parseDfLines(stdout), nil
