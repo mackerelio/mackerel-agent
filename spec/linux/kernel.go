@@ -39,7 +39,7 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 	if err == nil {
 		results["os"] = strings.TrimSpace(string(out))
 	} else {
-		// In some environments like busybox there is no `uname -o` option,
+		// In some environments like old busybox there is no `uname -o` option,
 		// in such case substitute the output of the `uname -s`.
 		results["os"] = results["name"]
 	}
