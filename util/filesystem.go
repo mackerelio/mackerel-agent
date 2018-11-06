@@ -46,14 +46,14 @@ var logger = logging.GetLogger("util.filesystem")
 var dfOpt = "-Pkl"
 
 func init() {
-	// Some `df` command such as busybox does not have `-P` option.
+	// Some `df` command such as busybox does not have `-P` or `-l` option.
 	tio := &timeout.Timeout{
 		Cmd:       exec.Command("df", dfOpt),
 		Duration:  3 * time.Second,
 		KillAfter: 1 * time.Second,
 	}
 	exitSt, _, stderr, err := tio.Run()
-	if err == nil && exitSt.Code != 0 && strings.Contains(stderr, "df: invalid option -- P") {
+	if err == nil && exitSt.Code != 0 && strings.Contains(stderr, "df: invalid option -- ") {
 		dfOpt = "-k"
 	}
 }
