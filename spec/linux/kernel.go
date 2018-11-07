@@ -24,7 +24,6 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		"release": {"uname", "-r"},
 		"version": {"uname", "-v"},
 		"machine": {"uname", "-m"},
-		"os":      {"uname", "-o"},
 	}
 
 	results := make(mackerel.Kernel)
@@ -34,9 +33,15 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 			kernelLogger.Errorf("Failed to run %s %s (skip this spec): %s", command[0], command[1], err)
 			return nil, err
 		}
-		str := strings.TrimSpace(string(out))
-
-		results[key] = str
+		results[key] = strings.TrimSpace(string(out))
+	}
+	out, err := exec.Command("uname", "-o").Output()
+	if err == nil {
+		results["os"] = strings.TrimSpace(string(out))
+	} else {
+		// In some environments like old busybox there is no `uname -o` option,
+		// in such case substitute the output of the `uname -s`.
+		results["os"] = results["name"]
 	}
 
 	platform, _, version, err := host.PlatformInformation()

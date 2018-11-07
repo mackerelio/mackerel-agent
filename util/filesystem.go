@@ -43,20 +43,38 @@ var dfHeaderPattern = regexp.MustCompile(
 
 var logger = logging.GetLogger("util.filesystem")
 
+var dfOpt = "-Pkl"
+
+func init() {
+	// Some `df` command such as busybox does not have `-P` or `-l` option.
+	tio := &timeout.Timeout{
+		Cmd:       exec.Command("df", dfOpt),
+		Duration:  3 * time.Second,
+		KillAfter: 1 * time.Second,
+	}
+	exitSt, _, stderr, err := tio.Run()
+	if err == nil && exitSt.Code != 0 && strings.Contains(stderr, "df: invalid option -- ") {
+		dfOpt = "-k"
+	}
+}
+
 // CollectDfValues collects disk free statistics from df command
 func CollectDfValues() ([]*DfStat, error) {
-	cmd := exec.Command("df", "-Pkl")
+	cmd := exec.Command("df", dfOpt)
 	tio := &timeout.Timeout{
 		Cmd:       cmd,
 		Duration:  15 * time.Second,
 		KillAfter: 5 * time.Second,
 	}
+	exitSt, stdout, stderr, err := tio.Run()
+	if err != nil {
+		logger.Warningf("failed to invoke 'df %s' command: %q", dfOpt, err)
+		return nil, nil
+	}
 	// Ignores exit status in case that df returns exit status 1
 	// when the agent does not have permission to access file system info.
-	_, stdout, _, err := tio.Run()
-
-	if err != nil {
-		logger.Warningf("'df -Pkl' command exited with a non-zero status: '%s'", err)
+	if exitSt.Code != 0 {
+		logger.Warningf("'df %s' command exited with a non-zero status: %d: %q", dfOpt, exitSt.Code, stderr)
 		return nil, nil
 	}
 	return parseDfLines(stdout), nil
