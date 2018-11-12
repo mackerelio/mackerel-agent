@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.58.0 (2018-11-12)
+
+* To work in BusyBox #526 (Songmu)
+* [incompatible] CollectDfValues only from local file systems on linux #532 (Songmu)
+
+
 ## 0.57.0 (2018-09-14)
 
 * update Code Signing Certificate. #524 (hayajo)

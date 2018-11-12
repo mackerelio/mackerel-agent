@@ -55,6 +55,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Nov 12 2018 <mackerel-developers@hatena.ne.jp> - 0.58.0
+- To work in BusyBox (by Songmu)
+- [incompatible] CollectDfValues only from local file systems on linux (by Songmu)
+
 * Fri Sep 14 2018 <mackerel-developers@hatena.ne.jp> - 0.57.0
 - update Code Signing Certificate. (by hayajo)
 - Build with Go 1.11 (by astj)

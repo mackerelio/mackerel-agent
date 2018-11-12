@@ -1,3 +1,12 @@
+mackerel-agent (0.58.0-1) stable; urgency=low
+
+  * To work in BusyBox (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/526>
+  * [incompatible] CollectDfValues only from local file systems on linux (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/532>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 12 Nov 2018 11:26:48 +0900
+
 mackerel-agent (0.57.0-1) stable; urgency=low
 
   * update Code Signing Certificate. (by hayajo)
