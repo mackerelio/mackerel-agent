@@ -115,7 +115,7 @@ func parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, erro
 		device := cols[2]
 		values := cols[3:]
 
-		if len(values) != len(diskMetricsNames) {
+		if len(values) < len(diskMetricsNames) {
 			diskLogger.Warningf("Failed to parse disk metrics: %s", device)
 			break
 		}
