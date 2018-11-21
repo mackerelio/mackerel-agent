@@ -15,8 +15,9 @@ MemoryGenerator collect memory usage
 
 metric = "total", "free", "buffers", "cached", "active", "inactive", "swap_cached", "swap_total", "swap_free"
 
-Metrics "used" is calculated here like (total - free - buffers - cached) for ease.
-This calculation may be going to be done in server side in the future.
+Metrics "used" is calculated by
+  (total - available) when MemAvailable is available in /proc/meminfo and
+  (total - free - buffers - cached) otherwise
 
 graph: stacks `memory.{metric}`
 */
