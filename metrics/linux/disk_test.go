@@ -119,3 +119,43 @@ func TestParseDiskStats(t *testing.T) {
 		t.Errorf("result is not expected one: %+v", resultWithMapping)
 	}
 }
+
+func TestParseDiskStats_MoreFields(t *testing.T) {
+	// There are 18 columns since Linux 4.18+.
+	out := []byte(`202       1 xvda1 750193 3037 28116978 368712 16600606 7233846 424712632 23987908 0 2355636 24345740 0 0 0 0
+  7       0 loop0 15 0 0 0 0 0 0 0 0 0 0 0 0 0 0`)
+
+	var emptyMapping map[string]string
+	result, err := parseDiskStats(out, emptyMapping)
+	if err != nil {
+		t.Errorf("error should be nil but: %s", err)
+	}
+
+	expect := metrics.Values{
+		"disk.xvda1.reads":          750193,
+		"disk.xvda1.readsMerged":    3037,
+		"disk.xvda1.sectorsRead":    28116978,
+		"disk.xvda1.readTime":       368712,
+		"disk.xvda1.writes":         16600606,
+		"disk.xvda1.writesMerged":   7233846,
+		"disk.xvda1.sectorsWritten": 424712632,
+		"disk.xvda1.writeTime":      23987908,
+		"disk.xvda1.ioInProgress":   0,
+		"disk.xvda1.ioTime":         2355636,
+		"disk.xvda1.ioTimeWeighted": 24345740,
+		"disk.loop0.reads":          15,
+		"disk.loop0.readsMerged":    0,
+		"disk.loop0.sectorsRead":    0,
+		"disk.loop0.readTime":       0,
+		"disk.loop0.writes":         0,
+		"disk.loop0.writesMerged":   0,
+		"disk.loop0.sectorsWritten": 0,
+		"disk.loop0.writeTime":      0,
+		"disk.loop0.ioInProgress":   0,
+		"disk.loop0.ioTime":         0,
+		"disk.loop0.ioTimeWeighted": 0,
+	}
+	if !reflect.DeepEqual(result, expect) {
+		t.Errorf("result is not expected one: %+v", result)
+	}
+}
