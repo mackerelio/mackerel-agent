@@ -62,6 +62,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Mon Nov 26 2018 <mackerel-developers@hatena.ne.jp> - 0.58.1
+- Fix disk metrics for Linux kernel 4.19 (by itchyny)
+
 * Mon Nov 12 2018 <mackerel-developers@hatena.ne.jp> - 0.58.0
 - To work in BusyBox (by Songmu)
 - [incompatible] CollectDfValues only from local file systems on linux (by Songmu)
