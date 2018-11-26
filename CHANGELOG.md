@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.58.1 (2018-11-26)
+
+* Fix disk metrics for Linux kernel 4.19 #535 (itchyny)
+
+
 ## 0.58.0 (2018-11-12)
 
 * To work in BusyBox #526 (Songmu)
