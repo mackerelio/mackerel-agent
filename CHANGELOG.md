@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.58.2 (2018-11-27)
+
+* [windows] Bump mkr to latest  #537 (astj)
+
+
 ## 0.58.1 (2018-11-26)
 
 * Fix disk metrics for Linux kernel 4.19 #535 (itchyny)

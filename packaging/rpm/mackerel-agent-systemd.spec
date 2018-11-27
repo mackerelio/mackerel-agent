@@ -55,6 +55,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Nov 27 2018 <mackerel-developers@hatena.ne.jp> - 0.58.2
+- [windows] Bump mkr to latest  (by astj)
+
 * Mon Nov 26 2018 <mackerel-developers@hatena.ne.jp> - 0.58.1
 - Fix disk metrics for Linux kernel 4.19 (by itchyny)
 
