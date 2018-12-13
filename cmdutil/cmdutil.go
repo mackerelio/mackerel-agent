@@ -27,7 +27,7 @@ var cmdBase = []string{"sh", "-c"}
 
 func init() {
 	if runtime.GOOS == "windows" {
-		cmdBase = []string{"cmd", "/c"}
+		cmdBase = []string{"cmd", "/U", "/c"}
 	}
 }
 
@@ -81,8 +81,8 @@ func RunCommandArgsContext(ctx context.Context, cmdArgs []string, opt CommandOpt
 		tio.Duration = opt.TimeoutDuration
 	}
 	exitStatus, err := tio.RunContext(ctx)
-	stdout = outbuf.String()
-	stderr = errbuf.String()
+	stdout = decodeBytes(outbuf)
+	stderr = decodeBytes(errbuf)
 	exitCode = -1
 	if err == nil && exitStatus.IsTimedOut() && (runtime.GOOS == "windows" || exitStatus.Signaled) {
 		err = errTimedOut
