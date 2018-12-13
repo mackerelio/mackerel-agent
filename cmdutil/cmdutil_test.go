@@ -23,7 +23,7 @@ func init() {
 }
 
 var testCmdOpt = CommandOption{
-	TimeoutDuration: 100 * time.Millisecond,
+	TimeoutDuration: 300 * time.Millisecond,
 }
 
 func TestRunCommand(t *testing.T) {
@@ -86,7 +86,7 @@ func TestRunCommand(t *testing.T) {
 				t.Errorf("exitCode should be %d, but: %d", tc.ExitCode, exitCode)
 			}
 			if err != tc.Err {
-				t.Errorf("err should be %s but: %s", tc.Err, err)
+				t.Errorf("err should be %v but: %v", tc.Err, err)
 			}
 		})
 	}
