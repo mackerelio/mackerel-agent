@@ -96,7 +96,7 @@ func isEC2UUID(uuid string) bool {
 		return true
 	}
 
-	// Check as littele endian.
+	// Check as little endian.
 	// see. https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/identify_ec2_instances.html
 	fields := strings.Split(uuid, "-")
 	decoded, _ := hex.DecodeString(fields[0]) // fields[0]: UUID time_low(uint32)
