@@ -14,13 +14,13 @@ import (
 	"github.com/StackExchange/wmi"
 )
 
-// Win32_ComputerSystemProduct is struct for WMI
+// Win32_ComputerSystemProduct is struct for WMI. SKUNumber is nil-able.
 type Win32_ComputerSystemProduct struct {
 	Caption           string
 	Description       string
 	IdentifyingNumber string
 	Name              string
-	SKUNumber         string
+	SKUNumber         *string
 	UUID              string
 	Vendor            string
 	Version           string
