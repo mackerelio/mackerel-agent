@@ -26,7 +26,7 @@ type Win32_ComputerSystemProduct struct {
 	Version           string
 }
 
-// If the OS is Windows, check UUID in WMIC class Win32_ComputerSystemProduct first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
+// If the OS is Windows, check UUID in WMI class Win32_ComputerSystemProduct first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
 // ref. https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
 func isEC2(ctx context.Context) bool {
 	var records []Win32_ComputerSystemProduct
@@ -37,10 +37,10 @@ func isEC2(ctx context.Context) bool {
 	if len(records) == 0 {
 		return false
 	}
-	return isEC2WithSpecifiedWmicRecords(ctx, records)
+	return isEC2WithSpecifiedWmiRecords(ctx, records)
 }
 
-func isEC2WithSpecifiedWmicRecords(ctx context.Context, records []Win32_ComputerSystemProduct) bool {
+func isEC2WithSpecifiedWmiRecords(ctx context.Context, records []Win32_ComputerSystemProduct) bool {
 	looksLikeEC2 := false
 	for _, r := range records {
 		if isEC2UUID(r.UUID) {

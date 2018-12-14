@@ -98,16 +98,16 @@ func TestIsEC2(t *testing.T) {
 			u, _ := url.Parse(ts.URL)
 			defer setEc2BaseURL(u)()
 
-			wmicRecords := make([]Win32_ComputerSystemProduct, 2)
+			wmiRecords := make([]Win32_ComputerSystemProduct, 2)
 			for i, exist := range tc.existsWmicRecords {
 				if exist {
-					wmicRecords[i].UUID = "ec2e1916-9099-7caf-fd21-012345abcdef" // valid EC2 UUID
+					wmiRecords[i].UUID = "ec2e1916-9099-7caf-fd21-012345abcdef" // valid EC2 UUID
 				} else {
-					wmicRecords[i].UUID = "ec1e1916-9099-7caf-fd21-012345abcdef" // valid EC2 UUID
+					wmiRecords[i].UUID = "ec1e1916-9099-7caf-fd21-012345abcdef" // valid EC2 UUID
 				}
 			}
 
-			if isEC2WithSpecifiedWmicRecords(context.Background(), wmicRecords) != tc.expect {
+			if isEC2WithSpecifiedWmiRecords(context.Background(), wmiRecords) != tc.expect {
 				t.Errorf("isEC2() should be %t: %#v\n", tc.expect, tc)
 			}
 		}()
