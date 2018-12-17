@@ -103,7 +103,7 @@ func TestIsEC2(t *testing.T) {
 				if exist {
 					wmiRecords[i].UUID = "ec2e1916-9099-7caf-fd21-012345abcdef" // valid EC2 UUID
 				} else {
-					wmiRecords[i].UUID = "ec1e1916-9099-7caf-fd21-012345abcdef" // valid EC2 UUID
+					wmiRecords[i].UUID = "ec1e1916-9099-7caf-fd21-012345abcdef" // invalid EC2 UUID
 				}
 			}
 
