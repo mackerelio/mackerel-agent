@@ -98,7 +98,7 @@ func TestIsEC2(t *testing.T) {
 			u, _ := url.Parse(ts.URL)
 			defer setEc2BaseURL(u)()
 
-			wmiRecords := make([]Win32_ComputerSystemProduct, 2)
+			wmiRecords := make([]Win32ComputerSystemProduct, 2)
 			for i, exist := range tc.existsWmicRecords {
 				if exist {
 					wmiRecords[i].UUID = "ec2e1916-9099-7caf-fd21-012345abcdef" // valid EC2 UUID

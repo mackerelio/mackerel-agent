@@ -14,8 +14,8 @@ import (
 	"github.com/StackExchange/wmi"
 )
 
-// Win32_ComputerSystemProduct is struct for WMI. SKUNumber is nil-able.
-type Win32_ComputerSystemProduct struct {
+// Win32ComputerSystemProduct is struct for WMI. SKUNumber is nil-able.
+type Win32ComputerSystemProduct struct {
 	Caption           string
 	Description       string
 	IdentifyingNumber string
@@ -29,7 +29,7 @@ type Win32_ComputerSystemProduct struct {
 // If the OS is Windows, check UUID in WMI class Win32_ComputerSystemProduct first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
 // ref. https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
 func isEC2(ctx context.Context) bool {
-	var records []Win32_ComputerSystemProduct
+	var records []Win32ComputerSystemProduct
 	err := wmi.Query("SELECT * FROM Win32_ComputerSystemProduct", &records)
 	if err != nil {
 		return false
@@ -40,7 +40,7 @@ func isEC2(ctx context.Context) bool {
 	return isEC2WithSpecifiedWmiRecords(ctx, records)
 }
 
-func isEC2WithSpecifiedWmiRecords(ctx context.Context, records []Win32_ComputerSystemProduct) bool {
+func isEC2WithSpecifiedWmiRecords(ctx context.Context, records []Win32ComputerSystemProduct) bool {
 	looksLikeEC2 := false
 	for _, r := range records {
 		if isEC2UUID(r.UUID) {
