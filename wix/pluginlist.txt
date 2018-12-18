@@ -4,6 +4,7 @@ github.com/mackerelio/go-check-plugins/check-ntservice
 github.com/mackerelio/go-check-plugins/check-windows-eventlog
 github.com/mackerelio/go-check-plugins/check-tcp
 github.com/mackerelio/go-check-plugins/check-uptime
+github.com/mackerelio/go-check-plugins/check-disk
 github.com/mackerelio/mackerel-agent-plugins/mackerel-plugin-windows-server-sessions
 github.com/mackerelio/mackerel-agent-plugins/mackerel-plugin-mssql
 github.com/mackerelio/mkr
