@@ -28,7 +28,7 @@ type Win32ComputerSystemProduct struct {
 }
 
 // If the OS is Windows, check UUID in WMI class Win32_ComputerSystemProduct first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
-// ref. https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
+// ref. https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
 func isEC2(ctx context.Context) bool {
 	var records []Win32ComputerSystemProduct
 	err := wmi.Query("SELECT UUID FROM Win32_ComputerSystemProduct", &records)
@@ -98,7 +98,7 @@ func isEC2UUID(uuid string) bool {
 	}
 
 	// Check as little endian.
-	// see. https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+	// see. https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
 	fields := strings.Split(uuid, "-")
 	decoded, _ := hex.DecodeString(fields[0]) // fields[0]: UUID time_low(uint32)
 	r := bytes.NewReader(decoded)
