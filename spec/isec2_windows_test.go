@@ -32,7 +32,7 @@ func TestIsEC2UUID(t *testing.T) {
 
 	for _, tc := range tests {
 		if isEC2UUID(tc.uuid) != tc.expect {
-			t.Errorf("isEC2() should be %t: %q\n", tc.expect, tc.uuid)
+			t.Errorf("isEC2() should be %v: %q", tc.expect, tc.uuid)
 		}
 	}
 }
@@ -108,7 +108,7 @@ func TestIsEC2(t *testing.T) {
 			}
 
 			if isEC2WithSpecifiedWmiRecords(context.Background(), wmiRecords) != tc.expect {
-				t.Errorf("isEC2() should be %t: %#v\n", tc.expect, tc)
+				t.Errorf("isEC2() should be %v: %#v", tc.expect, tc)
 			}
 		}()
 	}
