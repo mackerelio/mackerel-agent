@@ -6,33 +6,45 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/Songmu/retry"
+	"github.com/StackExchange/wmi"
 )
 
-// If the OS is Linux, check /sys/hypervisor/uuid and /sys/devices/virtual/dmi/id/product_uuid files first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
-// ref. https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
-func isEC2(ctx context.Context) bool {
-	var uuidFiles = []string{
-		"/sys/hypervisor/uuid",
-		"/sys/devices/virtual/dmi/id/product_uuid",
-	}
-
-	return isEC2WithSpecifiedUUIDFiles(ctx, uuidFiles)
+// Win32ComputerSystemProduct is struct for WMI. SKUNumber is nil-able.
+// The fields except UUID are ommited to not be checked.
+type Win32ComputerSystemProduct struct {
+	// Caption           string
+	// Description       string
+	// IdentifyingNumber string
+	// Name              string
+	// SKUNumber         *string
+	UUID string
+	// Vendor            string
+	// Version           string
 }
 
-func isEC2WithSpecifiedUUIDFiles(ctx context.Context, uuidFiles []string) bool {
+// If the OS is Windows, check UUID in WMI class Win32_ComputerSystemProduct first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
+// ref. https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
+func isEC2(ctx context.Context) bool {
+	var records []Win32ComputerSystemProduct
+	err := wmi.Query("SELECT UUID FROM Win32_ComputerSystemProduct", &records)
+	if err != nil {
+		return false
+	}
+	if len(records) == 0 {
+		return false
+	}
+	return isEC2WithSpecifiedWmiRecords(ctx, records)
+}
+
+func isEC2WithSpecifiedWmiRecords(ctx context.Context, records []Win32ComputerSystemProduct) bool {
 	looksLikeEC2 := false
-	for _, u := range uuidFiles {
-		data, err := ioutil.ReadFile(u)
-		if err != nil {
-			continue
-		}
-		if isEC2UUID(string(data)) {
+	for _, r := range records {
+		if isEC2UUID(r.UUID) {
 			looksLikeEC2 = true
 			break
 		}
