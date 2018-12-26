@@ -131,7 +131,7 @@ func TestMetadataGeneratorSaveIsChanged(t *testing.T) {
 
 		got := g.IsChanged(metadata)
 		if got != test.ischanged {
-			t.Errorf("IsChanged() should return %t but got %t for %v, %v", test.ischanged, got, prevmetadata, metadata)
+			t.Errorf("IsChanged() should return %v but got %v for %v, %v", test.ischanged, got, prevmetadata, metadata)
 		}
 
 		if err := g.Clear(); err != nil {
