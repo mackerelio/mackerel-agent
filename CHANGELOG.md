@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.59.0 (2019-01-10)
+
+* Fix decoding error message of executables on Windows #539 (mattn)
+* Fix detecting EC2 instance on Windows #540 (mattn)
+* add check-disk plugin for Windows #541 (susisu)
+
+
 ## 0.58.2 (2018-11-27)
 
 * [windows] Bump mkr to latest  #537 (astj)
