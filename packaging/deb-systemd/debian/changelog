@@ -1,3 +1,14 @@
+mackerel-agent (0.59.0-1.systemd) stable; urgency=low
+
+  * Fix decoding error message of executables on Windows (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/539>
+  * Fix detecting EC2 instance on Windows (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/540>
+  * add check-disk plugin for Windows (by susisu)
+    <https://github.com/mackerelio/mackerel-agent/pull/541>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 10 Jan 2019 15:12:49 +0900
+
 mackerel-agent (0.58.2-1.systemd) stable; urgency=low
 
   * [windows] Bump mkr to latest  (by astj)

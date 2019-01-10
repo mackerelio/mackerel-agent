@@ -62,6 +62,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Jan 10 2019 <mackerel-developers@hatena.ne.jp> - 0.59.0
+- Fix decoding error message of executables on Windows (by mattn)
+- Fix detecting EC2 instance on Windows (by mattn)
+- add check-disk plugin for Windows (by susisu)
+
 * Tue Nov 27 2018 <mackerel-developers@hatena.ne.jp> - 0.58.2
 - [windows] Bump mkr to latest  (by astj)
 
