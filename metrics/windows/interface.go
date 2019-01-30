@@ -97,6 +97,8 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 				name = strings.Replace(name, "(", "[", -1)
 				name = strings.Replace(name, ")", "]", -1)
 				name = strings.Replace(name, "#", "_", -1)
+				name = strings.Replace(name, "/", "_", -1)
+				name = strings.Replace(name, `\`, "_", -1)
 				var counter *windows.CounterInfo
 
 				counter, err = windows.CreateCounter(
