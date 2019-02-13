@@ -1,3 +1,10 @@
+mackerel-agent (0.59.1-1.systemd) stable; urgency=low
+
+  * fix counter naming problem on Windows (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/544>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 13 Feb 2019 07:54:05 +0000
+
 mackerel-agent (0.59.0-1.systemd) stable; urgency=low
 
   * Fix decoding error message of executables on Windows (by mattn)
