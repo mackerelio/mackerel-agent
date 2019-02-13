@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.59.1 (2019-02-13)
+
+* fix counter naming problem on Windows #544 (lufia)
+
+
 ## 0.59.0 (2019-01-10)
 
 * Fix decoding error message of executables on Windows #539 (mattn)

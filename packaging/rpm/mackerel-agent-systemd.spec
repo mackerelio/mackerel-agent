@@ -55,6 +55,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Feb 13 2019 <mackerel-developers@hatena.ne.jp> - 0.59.1
+- fix counter naming problem on Windows (by lufia)
+
 * Thu Jan 10 2019 <mackerel-developers@hatena.ne.jp> - 0.59.0
 - Fix decoding error message of executables on Windows (by mattn)
 - Fix detecting EC2 instance on Windows (by mattn)
