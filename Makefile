@@ -1,11 +1,11 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
 MACKEREL_API_BASE ?= "https://api.mackerelio.com"
-VERSION = 0.59.1
-CURRENT_REVISION = $(shell git rev-parse --short HEAD)
-ARGS = "-conf=mackerel-agent.conf"
-BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
+VERSION := 0.59.1
+CURRENT_REVISION := $(shell git rev-parse --short HEAD)
+ARGS := "-conf=mackerel-agent.conf"
+BUILD_OS_TARGETS := "linux darwin freebsd windows netbsd"
 
-BUILD_LDFLAGS = "\
+BUILD_LDFLAGS := "\
 	  -X main.version=$(VERSION) \
 	  -X main.gitcommit=$(CURRENT_REVISION) \
 	  -X github.com/mackerelio/mackerel-agent/config.agentName=$(MACKEREL_AGENT_NAME) \
