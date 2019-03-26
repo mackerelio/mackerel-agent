@@ -25,6 +25,7 @@ run: build
 
 deps:
 	go get -d -v -t ./...
+	GO111MODULE=off \
 	go get golang.org/x/lint/golint   \
 	  github.com/pierrre/gotestcover  \
 	  github.com/Songmu/goxz/cmd/goxz \
@@ -32,7 +33,7 @@ deps:
 	  github.com/motemen/go-cli/gen
 
 lint: deps
-	go tool vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
+	go vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
 	_tools/go-linter $(BUILD_OS_TARGETS)
 
 convention:
