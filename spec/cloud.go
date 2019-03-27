@@ -165,25 +165,66 @@ type EC2Generator struct {
 	baseURL *url.URL
 }
 
+// EC2Instance struct for EC2 instance identity document
+// See: https://docs.aws.amazon.com/ja_jp/AWSEC2/latest/UserGuide/instance-identity-documents.html
+type EC2Instance struct {
+	DevpayProductCodes      string `json:"devpayProductCodes"`
+	MarketplaceProductCodes string `json:"marketplaceProductCodes"`
+	Version                 string `json:"version"`
+	PendingTime             string `json:"pendingTime"`
+	ImageID                 string `json:"imageId"`
+	InstanceType            string `json:"instanceType"`
+	BillingProducts         string `json:"billingProducts"`
+	InstanceID              string `json:"instanceId"`
+	AccountID               string `json:"accountId"`
+	AvailabilityZone        string `json:"availabilityZone"`
+	KernelID                string `json:"kernelId"`
+	RamdiskID               string `json:"ramdiskId"`
+	Architecture            string `json:"architecture"`
+	PrivateIP               string `json:"privateIp"`
+	Region                  string `json:"region"`
+}
+
 // Generate collects metadata from cloud platform.
 func (g *EC2Generator) Generate() (interface{}, error) {
 	cl := httpCli()
 
+	metadata := make(map[string]string)
+
+	url := "latest/dynamic/instance-identity/document"
+	resp, err := cl.Get(g.baseURL.String() + "/" + url)
+	if err != nil {
+		cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", url)
+		return nil, nil
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == 200 {
+		byte, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
+			return nil, nil
+		}
+		cloudLogger.Debugf("results %s:%s", url, string(byte))
+
+		var data EC2Instance
+		json.Unmarshal(byte, &data)
+		metadata["instance-id"] = data.InstanceID
+		metadata["instance-type"] = data.InstanceType
+		metadata["availability-zone"] = data.AvailabilityZone
+		metadata["ami-id"] = data.ImageID
+		metadata["local-ipv4"] = data.PrivateIP
+	} else {
+		cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", url, resp.StatusCode)
+	}
+
 	metadataURLs := []string{
-		"latest/meta-data/instance-id",
-		"latest/meta-data/instance-type",
-		"latest/meta-data/placement/availability-zone",
 		"latest/meta-data/security-groups",
-		"latest/meta-data/ami-id",
 		"latest/meta-data/hostname",
 		"latest/meta-data/local-hostname",
 		"latest/meta-data/public-hostname",
-		"latest/meta-data/local-ipv4",
 		"latest/meta-data/public-ipv4",
 		"latest/meta-data/reservation-id",
 	}
-
-	metadata := make(map[string]string)
 
 	for _, url := range metadataURLs {
 		key := strings.TrimPrefix(url, "latest/meta-data/")
