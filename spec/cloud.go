@@ -20,7 +20,7 @@ import (
 
 // This Generator collects metadata about cloud instances.
 // Currently EC2 and GCE are supported.
-// EC2: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html
+// EC2: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html
 // GCE: https://developers.google.com/compute/docs/metadata
 // AzureVM: https://docs.microsoft.com/azure/virtual-machines/virtual-machines-instancemetadataservice-overview
 
