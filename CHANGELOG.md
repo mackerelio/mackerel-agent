@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.59.2 (2019-03-27)
+
+* trim trailing newlines from command string on windows #548 (Songmu)
+* Improve Makefile #547 (itchyny)
+
+
 ## 0.59.1 (2019-02-13)
 
 * fix counter naming problem on Windows #544 (lufia)

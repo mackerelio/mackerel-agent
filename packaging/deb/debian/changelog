@@ -1,3 +1,12 @@
+mackerel-agent (0.59.2-1) stable; urgency=low
+
+  * trim trailing newlines from command string on windows (by Songmu)
+    <https://github.com/mackerelio/mackerel-agent/pull/548>
+  * Improve Makefile (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/547>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 27 Mar 2019 06:44:24 +0000
+
 mackerel-agent (0.59.1-1) stable; urgency=low
 
   * fix counter naming problem on Windows (by lufia)
