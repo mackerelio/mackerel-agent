@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/Songmu/timeout"
@@ -45,6 +46,13 @@ func RunCommand(command string, opt CommandOption) (stdout, stderr string, exitC
 
 // RunCommandContext runs command with context
 func RunCommandContext(ctx context.Context, command string, opt CommandOption) (stdout, stderr string, exitCode int, err error) {
+	// If the command string contains newlines, the command prompt (cmd.exe)
+	// does not work properly but depending on the writing way of the
+	// mackerel-agent.conf, the newlines may be contained at the end of
+	// the command string, so we trim it.
+	if runtime.GOOS == "windows" {
+		command = strings.TrimRight(command, "\r\n")
+	}
 	cmdArgs := append(cmdBase, command)
 	return RunCommandArgsContext(ctx, cmdArgs, opt)
 }
