@@ -40,7 +40,7 @@ var cloudLogger = logging.GetLogger("spec.cloud")
 var ec2BaseURL, gceMetaURL, azureVMBaseURL *url.URL
 
 func init() {
-	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
+	ec2BaseURL, _ = url.Parse("http://169.254.169.254")
 	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
 	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
 }
@@ -169,26 +169,27 @@ type EC2Generator struct {
 func (g *EC2Generator) Generate() (interface{}, error) {
 	cl := httpCli()
 
-	metadataKeys := []string{
-		"instance-id",
-		"instance-type",
-		"placement/availability-zone",
-		"security-groups",
-		"ami-id",
-		"hostname",
-		"local-hostname",
-		"public-hostname",
-		"local-ipv4",
-		"public-ipv4",
-		"reservation-id",
+	metadataURLs := []string{
+		"latest/meta-data/instance-id",
+		"latest/meta-data/instance-type",
+		"latest/meta-data/placement/availability-zone",
+		"latest/meta-data/security-groups",
+		"latest/meta-data/ami-id",
+		"latest/meta-data/hostname",
+		"latest/meta-data/local-hostname",
+		"latest/meta-data/public-hostname",
+		"latest/meta-data/local-ipv4",
+		"latest/meta-data/public-ipv4",
+		"latest/meta-data/reservation-id",
 	}
 
 	metadata := make(map[string]string)
 
-	for _, key := range metadataKeys {
-		resp, err := cl.Get(g.baseURL.String() + "/" + key)
+	for _, url := range metadataURLs {
+		key := strings.TrimPrefix(url, "latest/meta-data/")
+		resp, err := cl.Get(g.baseURL.String() + "/" + url)
 		if err != nil {
-			cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", key)
+			cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", url)
 			return nil, nil
 		}
 		defer resp.Body.Close()
