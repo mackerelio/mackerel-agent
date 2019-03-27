@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Mar 27 2019 <mackerel-developers@hatena.ne.jp> - 0.59.2
+- trim trailing newlines from command string on windows (by Songmu)
+- Improve Makefile (by itchyny)
+
 * Wed Feb 13 2019 <mackerel-developers@hatena.ne.jp> - 0.59.1
 - fix counter naming problem on Windows (by lufia)
 
