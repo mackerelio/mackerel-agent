@@ -9,6 +9,7 @@ import (
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/spec"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 // InterfaceGenerator XXX
@@ -18,8 +19,8 @@ type InterfaceGenerator struct {
 var interfaceLogger = logging.GetLogger("spec.interface")
 
 // Generate XXX
-func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
-	var interfaces spec.NetInterfaces
+func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
+	var interfaces spec.Interfaces
 	_, err := exec.LookPath("ip")
 	// has ip command
 	if err == nil {
@@ -33,7 +34,7 @@ func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
 			return nil, err
 		}
 	}
-	var results []spec.NetInterface
+	var results []mkr.Interface
 	for _, iface := range interfaces {
 		if iface.Encap == "" || iface.Encap == "Loopback" {
 			continue
@@ -57,8 +58,8 @@ var (
 	ipCmdIPv6Reg = regexp.MustCompile(`inet6 ([a-f0-9\:]+)\/(\d+) scope (\w+)`)
 )
 
-func (g *InterfaceGenerator) generateByIPCommand() (spec.NetInterfaces, error) {
-	interfaces := make(spec.NetInterfaces)
+func (g *InterfaceGenerator) generateByIPCommand() (spec.Interfaces, error) {
+	interfaces := make(spec.Interfaces)
 	name := ""
 	{
 		// ip addr
@@ -158,8 +159,8 @@ var (
 	ifconfigV6AddrReg = regexp.MustCompile(`inet6 addr: ([a-f0-9\:]+)\/(\d+) Scope:(\w+)`)
 )
 
-func (g *InterfaceGenerator) generateByIfconfigCommand() (spec.NetInterfaces, error) {
-	interfaces := make(spec.NetInterfaces)
+func (g *InterfaceGenerator) generateByIfconfigCommand() (spec.Interfaces, error) {
+	interfaces := make(spec.Interfaces)
 	name := ""
 
 	{

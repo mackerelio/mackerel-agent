@@ -2,14 +2,17 @@
 
 package netbsd
 
-import "github.com/mackerelio/mackerel-agent/spec"
+import (
+	"github.com/mackerelio/mackerel-agent/spec"
+	mkr "github.com/mackerelio/mackerel-client-go"
+)
 
 // InterfaceGenerator XXX
 type InterfaceGenerator struct {
 }
 
 // Generate XXX
-func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
+func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
 	// TODO
-	return []spec.NetInterface{}, nil
+	return []mkr.Interface{}, nil
 }

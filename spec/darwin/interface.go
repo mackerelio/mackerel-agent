@@ -11,6 +11,7 @@ import (
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/spec"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 // InterfaceGenerator XXX
@@ -20,14 +21,14 @@ type InterfaceGenerator struct {
 var interfaceLogger = logging.GetLogger("spec.interface")
 
 // Generate XXX
-func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
-	var interfaces spec.NetInterfaces
+func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
+	var interfaces spec.Interfaces
 
 	interfaces, err := g.generateByIfconfigCommand()
 	if err != nil {
 		return nil, err
 	}
-	var results []spec.NetInterface
+	var results []mkr.Interface
 	for _, iface := range interfaces {
 		if iface.Encap == "Loopback" {
 			continue
@@ -51,8 +52,8 @@ var (
 	ipv6Reg = regexp.MustCompile(`^\s*inet6\s+([0-9a-f:]+)\s+prefixlen\s+(\d+)`)
 )
 
-func (g *InterfaceGenerator) generateByIfconfigCommand() (spec.NetInterfaces, error) {
-	interfaces := make(spec.NetInterfaces)
+func (g *InterfaceGenerator) generateByIfconfigCommand() (spec.Interfaces, error) {
+	interfaces := make(spec.Interfaces)
 
 	{
 		// ifconfig -a
