@@ -36,7 +36,7 @@ func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
 	}
 	var results []mkr.Interface
 	for _, iface := range interfaces {
-		if iface.Encap == "" || iface.Encap == "Loopback" {
+		if spec.IsLoopback(iface) {
 			continue
 		}
 		if len(iface.IPv4Addresses) == 0 && len(iface.IPv6Addresses) == 0 {
@@ -73,7 +73,6 @@ func (g *InterfaceGenerator) generateByIPCommand() (spec.Interfaces, error) {
 				name = matches[2]
 			}
 			if matches := ipCmdEncapReg.FindStringSubmatch(line); matches != nil {
-				interfaces.SetEncap(name, translateEncap(matches[1]))
 				interfaces.SetMacAddress(name, matches[2])
 			}
 			if matches := ipCmdIPv4Reg.FindStringSubmatch(line); matches != nil {
@@ -84,33 +83,10 @@ func (g *InterfaceGenerator) generateByIPCommand() (spec.Interfaces, error) {
 			}
 		}
 	}
-
-	for _, family := range []string{"inet", "inet6"} {
-		// ip -f inet route show
-		out, err := exec.Command("ip", "-f", family, "route", "show").Output()
-		if err != nil {
-			interfaceLogger.Errorf("Failed to run ip command (skip this spec): %s", err)
-			return interfaces, err
-		}
-		for _, line := range strings.Split(string(out), "\n") {
-			name, addr, v6addr, defaultGateway := parseIProuteLine(line)
-			if name == "" {
-				continue
-			}
-			if addr != "" {
-				interfaces.SetAddress(name, addr)
-			}
-			if v6addr != "" {
-				interfaces.SetV6Address(name, v6addr)
-			}
-			if defaultGateway != "" {
-				interfaces.SetDefaultGateway(name, defaultGateway)
-			}
-		}
-	}
 	return interfaces, nil
 }
 
+/*
 var (
 	// ex.) 10.0.3.0/24 dev eth0  proto kernel  scope link  src 10.0.4.7
 	// ex.) fe80::/64 dev eth0  proto kernel  metric 256
@@ -145,6 +121,7 @@ func parseIProuteLine(line string) (name, addr, v6addr, defaultGateway string) {
 	}
 	return
 }
+*/
 
 var (
 	// ex.) eth0      Link encap:Ethernet  HWaddr 12:34:56:78:9a:bc
@@ -163,65 +140,24 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (spec.Interfaces, error
 	interfaces := make(spec.Interfaces)
 	name := ""
 
-	{
-		// ifconfig -a
-		out, err := exec.Command("ifconfig", "-a").Output()
-		if err != nil {
-			interfaceLogger.Errorf("Failed to run ifconfig command (skip this spec): %s", err)
-			return nil, err
-		}
-		for _, line := range strings.Split(string(out), "\n") {
-			if matches := ifconfigNameReg.FindStringSubmatch(line); matches != nil {
-				name = matches[1]
-			}
-			if matches := ifconfigEncapReg.FindStringSubmatch(line); matches != nil {
-				encap := matches[1]
-				if encap == "" {
-					encap = matches[2]
-				}
-				interfaces.SetEncap(name, translateEncap(encap))
-			}
-			if matches := ifconfigMacAddrReg.FindStringSubmatch(line); matches != nil {
-				interfaces.SetMacAddress(name, matches[1])
-			}
-			if matches := ifconfigV4AddrReg.FindStringSubmatch(line); matches != nil {
-				interfaces.AppendIPv4Address(name, matches[1])
-			}
-			if matches := ifconfigV6AddrReg.FindStringSubmatch(line); matches != nil {
-				interfaces.AppendIPv6Address(name, matches[1])
-			}
-		}
+	// ifconfig -a
+	out, err := exec.Command("ifconfig", "-a").Output()
+	if err != nil {
+		interfaceLogger.Errorf("Failed to run ifconfig command (skip this spec): %s", err)
+		return nil, err
 	}
-
-	{
-		// route -n
-		out, err := exec.Command("route", "-n").Output()
-		if err != nil {
-			interfaceLogger.Errorf("Failed to run route command (skip this spec): %s", err)
-			return interfaces, err
+	for _, line := range strings.Split(string(out), "\n") {
+		if matches := ifconfigNameReg.FindStringSubmatch(line); matches != nil {
+			name = matches[1]
 		}
-		for _, line := range strings.Split(string(out), "\n") {
-			name, defaultGateway := parseRouteLine(line)
-			if name == "" {
-				continue
-			}
-			interfaces.SetDefaultGateway(name, defaultGateway)
+		if matches := ifconfigMacAddrReg.FindStringSubmatch(line); matches != nil {
+			interfaces.SetMacAddress(name, matches[1])
 		}
-	}
-
-	{
-		// arp -an
-		out, err := exec.Command("arp", "-an").Output()
-		if err != nil {
-			interfaceLogger.Errorf("Failed to run arp command (skip this spec): %s", err)
-			return interfaces, err
+		if matches := ifconfigV4AddrReg.FindStringSubmatch(line); matches != nil {
+			interfaces.AppendIPv4Address(name, matches[1])
 		}
-		for _, line := range strings.Split(string(out), "\n") {
-			name, addr := parseArpLine(line)
-			if name == "" {
-				continue
-			}
-			interfaces.SetAddress(name, addr)
+		if matches := ifconfigV6AddrReg.FindStringSubmatch(line); matches != nil {
+			interfaces.AppendIPv6Address(name, matches[1])
 		}
 	}
 	return interfaces, nil

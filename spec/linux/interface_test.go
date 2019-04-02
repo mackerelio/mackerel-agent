@@ -35,12 +35,6 @@ func TestInterfaceGenerate(t *testing.T) {
 	if iface.MacAddress == "" {
 		t.Error("interface should have macAddress")
 	}
-	if iface.Address == "" {
-		t.Error("interface should have address")
-	}
-	if iface.DefaultGateway == "" {
-		t.Error("interface should have defaultGateway")
-	}
 }
 
 func TestGenerateByIpCommand(t *testing.T) {
@@ -74,9 +68,6 @@ func TestGenerateByIpCommand(t *testing.T) {
 	if iface.MacAddress == "" {
 		t.Error("interface should have macAddress")
 	}
-	if iface.DefaultGateway == "" {
-		t.Error("interface should have defaultGateway")
-	}
 }
 
 func TestGenerateByIfconfigCommand(t *testing.T) {
@@ -100,8 +91,5 @@ func TestGenerateByIfconfigCommand(t *testing.T) {
 	}
 	if iface.MacAddress == "" {
 		t.Log("Skip: interface should have macAddress")
-	}
-	if iface.DefaultGateway == "" {
-		t.Log("Skip: interface should have defaultGateway")
 	}
 }

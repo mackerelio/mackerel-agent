@@ -6,7 +6,6 @@ import (
 	"net"
 
 	"github.com/mackerelio/golib/logging"
-	"github.com/mackerelio/mackerel-agent/spec"
 	"github.com/mackerelio/mackerel-agent/util/windows"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )

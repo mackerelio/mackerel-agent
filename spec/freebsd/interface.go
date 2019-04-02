@@ -3,7 +3,6 @@
 package freebsd
 
 import (
-	"github.com/mackerelio/mackerel-agent/spec"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
