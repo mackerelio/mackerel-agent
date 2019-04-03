@@ -9,10 +9,6 @@ import (
 func TestIsLoopback(t *testing.T) {
 	t.Run("should be loopback", func(t *testing.T) {
 		tests := []mkr.Interface{
-			// single IPAddress
-			{
-				IPAddress: "127.0.0.1",
-			},
 			// single IPv4Address
 			{
 				IPv4Addresses: []string{"127.0.0.1"},
@@ -35,11 +31,6 @@ func TestIsLoopback(t *testing.T) {
 					"::0:1",
 				},
 			},
-			// IPAddress and IPv4Address
-			{
-				IPAddress:     "127.0.0.1",
-				IPv4Addresses: []string{"127.0.0.1"},
-			},
 			// IPv4Address and IPv6Address
 			{
 				IPv4Addresses: []string{"127.0.0.1"},
@@ -55,9 +46,13 @@ func TestIsLoopback(t *testing.T) {
 
 	t.Run("should not be loopback", func(t *testing.T) {
 		tests := []mkr.Interface{
+			// empty
+			{
+				IPv4Addresses: nil,
+			},
 			// single IPAddress
 			{
-				IPAddress: "227.0.0.1",
+				IPAddress: "127.0.0.1",
 			},
 			// single IPv4Address
 			{
@@ -83,8 +78,8 @@ func TestIsLoopback(t *testing.T) {
 			},
 			// IPAddress and IPv4Address
 			{
-				IPAddress:     "227.0.0.1",
-				IPv4Addresses: []string{"127.0.0.1"},
+				IPv4Addresses: []string{"128.0.0.1"},
+				IPv6Addresses: []string{"::1"},
 			},
 			// IPv4Address and IPv6Address
 			{

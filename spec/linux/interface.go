@@ -86,43 +86,6 @@ func (g *InterfaceGenerator) generateByIPCommand() (spec.Interfaces, error) {
 	return interfaces, nil
 }
 
-/*
-var (
-	// ex.) 10.0.3.0/24 dev eth0  proto kernel  scope link  src 10.0.4.7
-	// ex.) fe80::/64 dev eth0  proto kernel  metric 256
-	ipRouteLineReg   = regexp.MustCompile(`^([^\s]+)\s(.*)$`)
-	ipRouteDeviceReg = regexp.MustCompile(`\bdev\s+([^\s]+)\b`)
-	// ex.) 10.0.3.0/24
-	ipRouteIPv4Reg = regexp.MustCompile(`(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(\/(\d{1,2}))?`)
-	// ex.) fe80::/64
-	ipRouteIPv6Reg = regexp.MustCompile(`([a-f0-9\:]+)\/(\d+)`)
-	// ex.) default via 10.0.3.1 dev eth0
-	ipRouteDefaultGatewayReg = regexp.MustCompile(`\bvia\s+([^\s]+)\b`)
-)
-
-func parseIProuteLine(line string) (name, addr, v6addr, defaultGateway string) {
-	matches := ipRouteLineReg.FindStringSubmatch(line)
-	if matches == nil && len(matches) < 3 {
-		return
-	}
-	if matches := ipRouteDeviceReg.FindStringSubmatch(matches[2]); matches != nil {
-		name = matches[1]
-	} else {
-		return
-	}
-	if matches := ipRouteIPv4Reg.FindStringSubmatch(matches[1]); matches != nil {
-		addr = matches[1]
-	}
-	if matches := ipRouteIPv6Reg.FindStringSubmatch(matches[1]); matches != nil {
-		v6addr = matches[1]
-	}
-	if matches := ipRouteDefaultGatewayReg.FindStringSubmatch(matches[2]); matches != nil {
-		defaultGateway = matches[1]
-	}
-	return
-}
-*/
-
 var (
 	// ex.) eth0      Link encap:Ethernet  HWaddr 12:34:56:78:9a:bc
 	ifconfigNameReg = regexp.MustCompile(`^([0-9a-zA-Z@\.\:\-_]+)\s+`)
@@ -161,47 +124,4 @@ func (g *InterfaceGenerator) generateByIfconfigCommand() (spec.Interfaces, error
 		}
 	}
 	return interfaces, nil
-}
-
-// Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-// 0.0.0.0         10.0.3.1        0.0.0.0         UG    0      0        0 eth0
-func parseRouteLine(line string) (name, defaultGateway string) {
-	if !strings.HasPrefix(line, "0.0.0.0") {
-		return
-	}
-	routeResults := strings.Fields(line)
-	if len(routeResults) < 8 {
-		return
-	}
-	return routeResults[7], routeResults[1]
-}
-
-// ex.) ? (10.0.3.2) at 01:23:45:67:89:ab [ether] on eth0
-var arpRegexp = regexp.MustCompile(`^\S+ \((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\) at ([a-fA-F0-9\:]+) \[(\w+)\] on ([0-9a-zA-Z\.\:\-]+)`)
-
-func parseArpLine(line string) (name, addr string) {
-	if matches := arpRegexp.FindStringSubmatch(line); matches != nil {
-		return matches[4], matches[1]
-	}
-	return
-}
-
-func translateEncap(encap string) string {
-	switch encap {
-	case "Local Loopback", "loopback":
-		return "Loopback"
-	case "Point-to-Point Protocol":
-		return "PPP"
-	case "Serial Line IP":
-		return "SLIP"
-	case "VJ Serial Line IP":
-		return "VJSLIP"
-	case "IPIP Tunnel":
-		return "IPIP"
-	case "IPv6-in-IPv4":
-		return "6to4"
-	case "ether":
-		return "Ethernet"
-	}
-	return encap
 }

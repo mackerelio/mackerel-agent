@@ -9,17 +9,17 @@ import (
 // IsLoopback returns true if iface contains only loopback addresses.
 // Is it possible that a interface contains mixed IPs both loopback address and else?
 func IsLoopback(iface mkr.Interface) bool {
+	// IPAddress field is defined by client library, but not used in agent.
 	n4 := len(iface.IPv4Addresses)
 	n6 := len(iface.IPv6Addresses)
-	addrs := make([]string, n4+n6+1)
-	addrs[0] = iface.IPAddress
-	copy(addrs[1:], iface.IPv4Addresses)
-	copy(addrs[1+n4:], iface.IPv6Addresses)
+	if n4+n6 == 0 {
+		return false
+	}
+	addrs := make([]string, n4+n6)
+	copy(addrs[:], iface.IPv4Addresses)
+	copy(addrs[n4:], iface.IPv6Addresses)
 
 	for _, addr := range addrs {
-		if addr == "" {
-			continue
-		}
 		ip := net.ParseIP(addr)
 		if ip == nil {
 			continue
