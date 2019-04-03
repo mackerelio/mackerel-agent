@@ -191,29 +191,29 @@ func TestPrepareWithUpdate(t *testing.T) {
 
 func TestCollectHostSpecs(t *testing.T) {
 	conf := config.Config{}
-	hostSpec, err := collectHostSpecs(&conf, &AgentMeta{})
+	hostParam, err := collectHostParam(&conf, &AgentMeta{})
 
 	if err != nil {
-		t.Errorf("collectHostSpecs should not fail: %s", err)
+		t.Errorf("collectHostParam should not fail: %s", err)
 	}
 
-	if hostSpec.Name == "" {
+	if hostParam.Name == "" {
 		t.Error("hostname should not be empty")
 	}
 
-	if len(hostSpec.Meta.CPU) == 0 {
+	if len(hostParam.Meta.CPU) == 0 {
 		t.Error("meta.cpu should exist")
 	}
 
-	if len(hostSpec.Meta.Memory) == 0 {
+	if len(hostParam.Meta.Memory) == 0 {
 		t.Error("meta.memory should exist")
 	}
 
-	if len(hostSpec.Meta.Filesystem) == 0 {
+	if len(hostParam.Meta.Filesystem) == 0 {
 		t.Error("meta.filesystem should exist")
 	}
 
-	if len(hostSpec.Meta.Kernel) == 0 {
+	if len(hostParam.Meta.Kernel) == 0 {
 		t.Error("meta.kernel should exist")
 	}
 }
