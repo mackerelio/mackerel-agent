@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 func respJSON(w http.ResponseWriter, data map[string]interface{}) {
@@ -28,7 +29,7 @@ func TestStart(t *testing.T) {
 		switch r.Method {
 		case "GET":
 			respJSON(w, map[string]interface{}{
-				"host": mackerel.Host{
+				"host": mkr.Host{
 					ID:     hostID,
 					Name:   "host.example.com",
 					Status: "standby",
