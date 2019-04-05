@@ -76,6 +76,13 @@ crossbuild-package-mips:
 	GOOS=linux GOARCH=mips make build
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-mips/
 
+.PHONY: crossbuild-package-arm64
+crossbuild-package-arm64:
+	mkdir -p ./build-linux-arm64
+	GOOS=linux GOARCH=arm64 make build
+	mv build/$(MACKEREL_AGENT_NAME) build-linux-arm64/
+
+
 .PHONY: crossbuild-package-kcps
 crossbuild-package-kcps:
 	make crossbuild-package MACKEREL_AGENT_NAME=mackerel-agent-kcps MACKEREL_API_BASE=http://198.18.0.16
@@ -114,7 +121,7 @@ rpm-v2: crossbuild-package
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 .PHONY: deb
-deb: deb-v1 deb-v2 deb-mips
+deb: deb-v1 deb-v2 deb-mips deb-arm64
 
 .PHONY: deb-v1
 deb-v1: crossbuild-package
@@ -130,6 +137,11 @@ deb-v2: crossbuild-package
 deb-mips: crossbuild-package-mips
 	BUILD_DIRECTORY=build-linux-mips BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us -amips
+
+.PHONY: deb-arm64
+deb-arm64: crossbuild-package-arm64
+	BUILD_DIRECTORY=build-linux-arm64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
+	cd packaging/deb-build && debuild --no-tgz-check -uc -us -aarm64
 
 .PHONY: rpm-kcps
 rpm-kcps: rpm-kcps-v1 rpm-kcps-v2
