@@ -1,11 +1,11 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
 MACKEREL_API_BASE ?= "https://api.mackerelio.com"
-VERSION = 0.59.1
-CURRENT_REVISION = $(shell git rev-parse --short HEAD)
-ARGS = "-conf=mackerel-agent.conf"
-BUILD_OS_TARGETS = "linux darwin freebsd windows netbsd"
+VERSION := 0.59.2
+CURRENT_REVISION := $(shell git rev-parse --short HEAD)
+ARGS := "-conf=mackerel-agent.conf"
+BUILD_OS_TARGETS := "linux darwin freebsd windows netbsd"
 
-BUILD_LDFLAGS = "\
+BUILD_LDFLAGS := "\
 	  -X main.version=$(VERSION) \
 	  -X main.gitcommit=$(CURRENT_REVISION) \
 	  -X github.com/mackerelio/mackerel-agent/config.agentName=$(MACKEREL_AGENT_NAME) \
@@ -79,8 +79,10 @@ crossbuild-package-kcps:
 crossbuild-package-stage:
 	make crossbuild-package MACKEREL_AGENT_NAME=mackerel-agent-stage MACKEREL_API_BASE=http://0.0.0.0
 
-.PHONY: rpm rpm-v1
+.PHONY: rpm
 rpm: rpm-v1 rpm-v2
+
+.PHONY: rpm-v1
 rpm-v1: crossbuild-package
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
@@ -119,8 +121,10 @@ deb-v2: crossbuild-package
 	BUILD_DIRECTORY=build-linux-amd64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
-.PHONY: rpm-kcps rpm-kcps-v1
+.PHONY: rpm-kcps
 rpm-kcps: rpm-kcps-v1 rpm-kcps-v2
+
+.PHONY: rpm-kcps-v1
 rpm-kcps-v1: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \
@@ -154,8 +158,10 @@ deb-kcps-v2: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_SYSTEMD=1 BUILD_DIRECTORY=build-linux-amd64 _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us
 
-.PHONY: rpm-stage rpm-stage-v1
+.PHONY: rpm-stage
 rpm-stage: rpm-stage-v1 rpm-stage-v2
+
+.PHONY: rpm-stage-v1
 rpm-stage-v1: crossbuild-package-stage
 	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild astj/mackerel-rpm-builder:c5 \

@@ -377,11 +377,15 @@ func TestFindHost(t *testing.T) {
 		t.Error("err shoud be nil but: ", err)
 	}
 
-	if reflect.DeepEqual(host, &Host{
-		ID:               "9rxGOHfVF8F",
-		Name:             "mydb001",
-		Type:             "",
-		Status:           "working",
+	if reflect.DeepEqual(host, &mkr.Host{
+		ID:     "9rxGOHfVF8F",
+		Name:   "mydb001",
+		Type:   "",
+		Status: "working",
+		Memo:   "memo",
+		Roles: mkr.Roles{
+			"My-Service": []string{"db-master", "db-slave"},
+		},
 		CustomIdentifier: "",
 	}) != true {
 		t.Error("request sends json including memo but: ", host)
@@ -426,17 +430,21 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 
 	var tests = []struct {
 		customIdentifier string
-		host             *Host
+		host             *mkr.Host
 		returnInfoError  bool
 	}{
 		{
 			customIdentifier: "foo-bar",
-			host: &Host{
+			host: &mkr.Host{
 				ID:               "9rxGOHfVF8F",
 				Name:             "mydb001",
 				Type:             "",
 				Status:           "working",
 				CustomIdentifier: "foo-bar",
+				Memo:             "memo",
+				Roles: mkr.Roles{
+					"My-Service": []string{"db-master", "db-slave"},
+				},
 			},
 			returnInfoError: false,
 		},

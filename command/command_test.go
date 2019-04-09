@@ -17,17 +17,18 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 func TestDelayByHost(t *testing.T) {
-	delay1 := time.Duration(delayByHost(&mackerel.Host{
+	delay1 := time.Duration(delayByHost(&mkr.Host{
 		ID:     "246PUVUngPo",
 		Name:   "hogehoge2.host.h",
 		Type:   "unknown",
 		Status: "working",
 	})) * time.Second
 
-	delay2 := time.Duration(delayByHost(&mackerel.Host{
+	delay2 := time.Duration(delayByHost(&mkr.Host{
 		ID:     "21GZjCE5Etb",
 		Name:   "hogehoge2.host.h",
 		Type:   "unknown",
@@ -98,7 +99,7 @@ func TestPrepareWithCreate(t *testing.T) {
 
 	mockHandlers["GET /api/v0/hosts/xxx1234567890"] = func(req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
-			"host": mackerel.Host{
+			"host": mkr.Host{
 				ID:     "xxx1234567890",
 				Name:   "host.example.com",
 				Type:   "unknown",
@@ -162,7 +163,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 
 	mockHandlers["GET /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
-			"host": mackerel.Host{
+			"host": mkr.Host{
 				ID:     "xxx12345678901",
 				Name:   "host.example.com",
 				Type:   "unknown",
@@ -323,7 +324,7 @@ func TestLoop(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	host := &mackerel.Host{ID: "xyzabc12345"}
+	host := &mkr.Host{ID: "xyzabc12345"}
 
 	termCh := make(chan struct{})
 	exitCh := make(chan error)
@@ -403,7 +404,7 @@ func TestReportCheckMonitors(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		host := &mackerel.Host{ID: "xyzabc12345"}
+		host := &mkr.Host{ID: "xyzabc12345"}
 
 		app := &App{
 			Agent:     &agent.Agent{},
