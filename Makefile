@@ -143,6 +143,10 @@ deb-arm64: crossbuild-package-arm64
 	BUILD_DIRECTORY=build-linux-arm64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -uc -us -aarm64
 
+.PHONY: deb-on-docker
+deb-on-docker:
+	docker run --rm -v "$(PWD)":/workspace:rw -w=/workspace/ tnishinaga/mackerel-deb-builder make deb
+
 .PHONY: rpm-kcps
 rpm-kcps: rpm-kcps-v1 rpm-kcps-v2
 
