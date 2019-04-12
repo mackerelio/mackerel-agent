@@ -3,15 +3,12 @@ services:
 language: go
 dist: xenial
 go:
-- 1.11.x
 - 1.12.x
 env:
   global:
   - PATH=/home/travis/gopath/bin:$PATH DEBIAN_FRONTEND=noninteractive
   - secure: "VG3xbEjFSuB80QBFchHZqQDB4VF74RTXaNSBPl/bavGr9My2RSqtfXqfEGUHFwo5zPM7LA0bIEC7jsobf6M6vtfVgJKOOXEfF/pfD83n++eHZe0yLN6Wysp1Bn14KH+ont550gDityORqEvX3pK4k9hSb8dXpjGnCtrAwqAS+eg="
-  matrix:
   - GO111MODULE=on
-  - GO111MODULE=off
 addons:
   apt:
     packages:
