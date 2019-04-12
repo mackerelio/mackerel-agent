@@ -18,7 +18,7 @@ func TestInterfaceGenerator(t *testing.T) {
 
 	metrics := []string{"rxBytes", "txBytes"}
 
-	name := "eth0"
+	name := lookupDefaultName(values, "eth0")
 	if runtime.GOOS != "linux" {
 		name = "en0"
 	}
@@ -49,4 +49,27 @@ func TestInterfaceGenerator(t *testing.T) {
 	}
 
 	t.Logf("interface metrics: %+v", values)
+}
+
+// lookupDefaultName returns network interface name that seems to be default NIC.
+//
+// There is type-differed version at spec/linux/interface_test.go.
+func lookupDefaultName(values Values, fallback string) string {
+	if runtime.GOOS != "linux" {
+		return fallback
+	}
+	trim := func(s string) string {
+		return strings.Split(s, ".")[1]
+	}
+	for key := range values {
+		switch {
+		case strings.HasPrefix(key, "interface.eth"):
+			return trim(key)
+		case strings.HasPrefix(key, "interface.en"):
+			return trim(key)
+		case strings.HasPrefix(key, "interface.wl"):
+			return trim(key)
+		}
+	}
+	return fallback
 }

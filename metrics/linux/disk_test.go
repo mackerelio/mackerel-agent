@@ -34,8 +34,8 @@ func TestDiskGenerator(t *testing.T) {
 	}
 
 	for _, key := range metrics {
-		if value, ok := values["disk.loop0."+key+".delta"]; ok {
-			t.Errorf("Value for disk.loop0.%s should not be collected but got %v. The value won't change.", key, value)
+		if value, ok := values["disk.loop1."+key+".delta"]; ok {
+			t.Errorf("Value for disk.loop1.%s should not be collected but got %v. The value won't change.", key, value)
 		}
 	}
 }
