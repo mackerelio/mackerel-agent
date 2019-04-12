@@ -4,7 +4,10 @@ package linux
 
 import (
 	"os"
+	"strings"
 	"testing"
+
+	"github.com/mackerelio/mackerel-agent/spec"
 )
 
 func TestInterfaceGenerate(t *testing.T) {
@@ -35,12 +38,6 @@ func TestInterfaceGenerate(t *testing.T) {
 	if iface.MacAddress == "" {
 		t.Error("interface should have macAddress")
 	}
-	if iface.Address == "" {
-		t.Error("interface should have address")
-	}
-	if iface.DefaultGateway == "" {
-		t.Error("interface should have defaultGateway")
-	}
 }
 
 func TestGenerateByIpCommand(t *testing.T) {
@@ -58,7 +55,7 @@ func TestGenerateByIpCommand(t *testing.T) {
 		t.Skip("Skip in CircleCI for now")
 	}
 
-	name := "eth0"
+	name := lookupDefaultName(interfaces, "eth0")
 	if _, ok := interfaces[name]; !ok {
 		t.Error("should have interfaces")
 		return
@@ -74,9 +71,6 @@ func TestGenerateByIpCommand(t *testing.T) {
 	if iface.MacAddress == "" {
 		t.Error("interface should have macAddress")
 	}
-	if iface.DefaultGateway == "" {
-		t.Error("interface should have defaultGateway")
-	}
 }
 
 func TestGenerateByIfconfigCommand(t *testing.T) {
@@ -86,7 +80,7 @@ func TestGenerateByIfconfigCommand(t *testing.T) {
 		t.Log("Skip: should not raise error")
 	}
 
-	name := "eth0"
+	name := lookupDefaultName(interfaces, "eth0")
 	if _, ok := interfaces[name]; !ok {
 		t.Log("Skip: should have interfaces")
 	}
@@ -101,7 +95,25 @@ func TestGenerateByIfconfigCommand(t *testing.T) {
 	if iface.MacAddress == "" {
 		t.Log("Skip: interface should have macAddress")
 	}
-	if iface.DefaultGateway == "" {
-		t.Log("Skip: interface should have defaultGateway")
+}
+
+// lookupDefaultName returns network interface name that seems to be default NIC.
+// There are some naming rules on recent linux environment.
+// 1. traditional names (eth0, eth1)
+// 2. predictable names for ethernet (ens0, enp1s0)
+// 3. predictable names for wireless (wls0, wls1)
+//
+// There is type-differed version at metric/interface_test.go.
+func lookupDefaultName(ifaces spec.Interfaces, fallback string) string {
+	for key := range ifaces {
+		switch {
+		case strings.HasPrefix(key, "eth"):
+			return key
+		case strings.HasPrefix(key, "en"):
+			return key
+		case strings.HasPrefix(key, "wl"):
+			return key
+		}
 	}
+	return fallback
 }

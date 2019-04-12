@@ -6,8 +6,8 @@ import (
 	"net"
 
 	"github.com/mackerelio/golib/logging"
-	"github.com/mackerelio/mackerel-agent/spec"
 	"github.com/mackerelio/mackerel-agent/util/windows"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 // InterfaceGenerator XXX
@@ -17,8 +17,8 @@ type InterfaceGenerator struct {
 var interfaceLogger = logging.GetLogger("spec.interface")
 
 // Generate XXX
-func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
-	var results []spec.NetInterface
+func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
+	var results []mkr.Interface
 
 	ifs, err := net.Interfaces()
 	if err != nil {
@@ -70,7 +70,7 @@ func (g *InterfaceGenerator) Generate() ([]spec.NetInterface, error) {
 		}
 
 		if len(ipv4Addresses) > 0 || len(ipv6Addresses) > 0 {
-			results = append(results, spec.NetInterface{
+			results = append(results, mkr.Interface{
 				Name:          name,
 				IPv4Addresses: ipv4Addresses,
 				IPv6Addresses: ipv6Addresses,
