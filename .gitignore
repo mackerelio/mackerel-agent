@@ -5,6 +5,7 @@
 !.travis.yml
 /build
 /build-linux-*/
+/snapshot
 /id
 /pid
 /wix/mackerel-agent.wxs
