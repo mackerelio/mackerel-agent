@@ -9,7 +9,7 @@ mackerel-agent for FreeBSD
     - `tar -xzvf mackerel-agent_freebsd_*.tar.gz`
 3. Copy `mackerel-agent` to `/usr/local/bin/`.
     - `(sudo) cp mackerel-agent /usr/local/bin/`
-4. Edit `mackerel-agent.conf`, after copy to `/usr/local/etc/`.
+4. Edit `mackerel-agent.conf`, then copy it to `/usr/local/etc/`.
     - `${EDITOR} mackerel-agent.conf`
     - `(sudo) cp mackerel-agent.conf /usr/local/etc/`
 5. Copy `mackerel_agent` (this directory file; rc script) to `/usr/local/etc/rc.d/`.
