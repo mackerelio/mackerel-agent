@@ -1,3 +1,14 @@
+mackerel-agent (0.59.3-1) stable; urgency=low
+
+  * Add rc script for FreeBSD (by owatan)
+    <https://github.com/mackerelio/mackerel-agent/pull/559>
+  * migrate to use mkr.Interface instead of mackerel.NetInterface (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/553>
+  * migrate to use mkr.Host instead of mackerel.Host (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/552>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 08 May 2019 07:35:51 +0000
+
 mackerel-agent (0.59.2-1) stable; urgency=low
 
   * trim trailing newlines from command string on windows (by Songmu)

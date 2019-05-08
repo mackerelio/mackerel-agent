@@ -55,6 +55,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed May 08 2019 <mackerel-developers@hatena.ne.jp> - 0.59.3
+- Add rc script for FreeBSD (by owatan)
+- migrate to use mkr.Interface instead of mackerel.NetInterface (by lufia)
+- migrate to use mkr.Host instead of mackerel.Host (by lufia)
+
 * Wed Mar 27 2019 <mackerel-developers@hatena.ne.jp> - 0.59.2
 - trim trailing newlines from command string on windows (by Songmu)
 - Improve Makefile (by itchyny)
