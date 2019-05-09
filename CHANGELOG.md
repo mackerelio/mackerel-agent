@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.59.3 (2019-05-08)
+
+* Add rc script for FreeBSD #559 (owatan)
+* migrate to use mkr.Interface instead of mackerel.NetInterface #553 (lufia)
+* migrate to use mkr.Host instead of mackerel.Host #552 (lufia)
+
+
 ## 0.59.2 (2019-03-27)
 
 * trim trailing newlines from command string on windows #548 (Songmu)
