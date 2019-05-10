@@ -43,13 +43,11 @@ deploy:
   provider: GitHub
   auth_token:
     secure: nT6f+l3sILrBAyVGLE1il+wkv5BvrnEnVkiPGDZQegePa81MUC4AIDTNQ/gX8AWW
-  artifact: mackerel-agent-msi, mackerel-agent-k-msi
+  artifact: mackerel-agent-msi
   appveyor_repo_tag: true
   force_update: true
   on:
     appveyor_repo_tag: true
 artifacts:
-  - path: build\mackerel-agent$(MSI_SUFFIX).msi
+  - path: 'build\mackerel-agent*.msi'
     name: mackerel-agent-msi
-  - path: build\mackerel-agent-k$(MSI_SUFFIX).msi
-    name: mackerel-agent-k-msi

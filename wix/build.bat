@@ -47,7 +47,7 @@ if exist mackerel-agent.wxs del /F mackerel-agent.wxs
 ..\build\generate_wxs.exe -templateFile mackerel-agent.wxs.template -outputFile mackerel-agent.wxs -buildDir ..\build\ -productVersion "%VERSION%"
 
 "%WIX%bin\candle.exe" -ext WixUIExtension -ext WixUtilExtension mackerel-agent.wxs
-"%WIX%bin\light.exe" -ext WixUIExtension -ext WixUtilExtension -out "..\build\mackerel-agent%MSI_SUFFIX.msi" mackerel-agent.wixobj
+"%WIX%bin\light.exe" -ext WixUIExtension -ext WixUtilExtension -out "..\build\mackerel-agent%MSI_SUFFIX%.msi" mackerel-agent.wixobj
 copy ..\build\mackerel-agent-kcps.exe ..\build\mackerel-agent.exe
 "%WIX%bin\light.exe" -ext WixUIExtension -ext WixUtilExtension -out "..\build\mackerel-agent-k%MSI_SUFFIX%.msi" mackerel-agent.wixobj
 
