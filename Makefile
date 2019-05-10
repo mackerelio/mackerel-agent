@@ -30,6 +30,7 @@ run: build
 .PHONY: deps
 deps:
 	go get -d -v -t ./...
+	GO111MODULE=off \
 	go get golang.org/x/lint/golint   \
 	  github.com/pierrre/gotestcover  \
 	  github.com/Songmu/goxz/cmd/goxz \
@@ -38,7 +39,7 @@ deps:
 
 .PHONY: lint
 lint: deps
-	go tool vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
+	go vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
 	_tools/go-linter $(BUILD_OS_TARGETS)
 
 .PHONY: convention
