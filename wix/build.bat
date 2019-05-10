@@ -55,7 +55,7 @@ REM code signing if build on tags
 if defined APPVEYOR_REPO_TAG_NAME (
   certutil -f -decode c:\mackerel-secure\cert.p12.base64 c:\mackerel-secure\cert.p12
 
-  FOR /F "usebackq" %%w IN (`type c:\mackerel-secure\certpass`) DO "%SIGNTOOL%" sign /fd sha256 /t "http://timestamp.verisign.com/scripts/timestamp.dll" /f "c:\mackerel-secure\cert.p12" /p "%%w" /v "..\build\mackerel-agent.msi"
+  FOR /F "usebackq" %%w IN (`type c:\mackerel-secure\certpass`) DO "%SIGNTOOL%" sign /fd sha256 /t "http://timestamp.verisign.com/scripts/timestamp.dll" /f "c:\mackerel-secure\cert.p12" /p "%%w" /v "..\build\mackerel-agent%MSI_SUFFIX%.msi"
 
-  FOR /F "usebackq" %%w IN (`type c:\mackerel-secure\certpass`) DO "%SIGNTOOL%" sign /fd sha256 /t "http://timestamp.verisign.com/scripts/timestamp.dll" /f "c:\mackerel-secure\cert.p12" /p "%%w" /v "..\build\mackerel-agent-k.msi"
+  FOR /F "usebackq" %%w IN (`type c:\mackerel-secure\certpass`) DO "%SIGNTOOL%" sign /fd sha256 /t "http://timestamp.verisign.com/scripts/timestamp.dll" /f "c:\mackerel-secure\cert.p12" /p "%%w" /v "..\build\mackerel-agent-k%MSI_SUFFIX%.msi"
 )
