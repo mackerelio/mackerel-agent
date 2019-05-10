@@ -49,7 +49,7 @@ deploy:
   on:
     appveyor_repo_tag: true
 artifacts:
-  - path: build\mackerel-agent\$(MSI_SUFFIX).msi
+  - path: build\mackerel-agent$(MSI_SUFFIX).msi
     name: mackerel-agent-msi
-  - path: build\mackerel-agent-k\$(MSI_SUFFIX).msi
+  - path: build\mackerel-agent-k$(MSI_SUFFIX).msi
     name: mackerel-agent-k-msi
