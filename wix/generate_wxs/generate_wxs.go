@@ -116,19 +116,36 @@ func toCamelCase(name string) string {
 	return out
 }
 
-func findProduct(node *Node) *Node {
-	var ok bool
-	for _, n := range node.Children {
-		node, ok = n.(*Node)
-		if !ok || node.Name.Local != "Product" {
-			continue
+func updateElementAttr(node *Node, name, attr, oldValue, newValue string) bool {
+	nodes := findElementAll(node, name)
+	var updated bool
+	for _, p := range nodes {
+		for i := range p.Attr {
+			if p.Attr[i].Name.Local == attr && p.Attr[i].Value == oldValue {
+				p.Attr[i].Value = newValue
+				updated = true
+			}
 		}
-		return node
 	}
-	return nil
+	return updated
 }
 
-func findInstallDir(node *Node) *Node {
+func findElementAll(node *Node, name string) []*Node {
+	var nodes []*Node
+	for _, n := range node.Children {
+		p, ok := n.(*Node)
+		if !ok {
+			continue
+		}
+		if p.Name.Local == name {
+			nodes = append(nodes, p)
+		}
+		nodes = append(nodes, findElementAll(p, name)...)
+	}
+	return nodes
+}
+
+func findInstallDir(node *Node, id string) *Node {
 	var ok bool
 	for _, n := range node.Children {
 		node, ok = n.(*Node)
@@ -142,7 +159,7 @@ func findInstallDir(node *Node) *Node {
 			}
 			for _, n := range node.Children {
 				node, ok = n.(*Node)
-				if !ok || node.Name.Local != "Directory" || !hasAttr(node, "Id", "ProgramFilesFolder") {
+				if !ok || node.Name.Local != "Directory" || !hasAttr(node, "Id", id) {
 					continue
 				}
 				for _, n := range node.Children {
@@ -196,12 +213,63 @@ func parseTemplate(n string) (*Node, error) {
 	return v, nil
 }
 
+// Platform represents architecture configuration.
+type Platform string
+
+// ProgramFiles returns ID for Program Files folder.
+func (a *Platform) ProgramFiles() string {
+	switch *a {
+	case "x64":
+		return "ProgramFiles64Folder"
+	case "x86":
+		return "ProgramFilesFolder"
+	default:
+		log.Fatalln("unknown platform:", *a)
+		return ""
+	}
+}
+
+// Win64 returns yes if target platform is 64bit machine. otherwise no.
+func (a *Platform) Win64() string {
+	switch *a {
+	case "x64":
+		return "yes"
+	case "x86":
+		return "no"
+	default:
+		log.Fatalln("unknown platform:", *a)
+		return ""
+	}
+}
+
+// String implements flag.Value interface.
+func (a *Platform) String() string {
+	return string(*a)
+}
+
+// Set implements flag.Value interface.
+func (a *Platform) Set(s string) error {
+	switch s {
+	case "x86", "x64":
+		*a = Platform(s)
+		return nil
+	default:
+		return fmt.Errorf("unknown platform: %s", s)
+	}
+}
+
 var (
 	buildDir       = flag.String("buildDir", "", "build directory")
 	productVersion = flag.String("productVersion", "", "product version")
 	templateFile   = flag.String("templateFile", "", "path to template file")
 	outputFile     = flag.String("outputFile", "", "path to output file")
+
+	platform = Platform("x86")
 )
+
+func init() {
+	flag.Var(&platform, "platform", "target platform")
+}
 
 func main() {
 	flag.Parse()
@@ -220,19 +288,25 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// update __VERSION__ to specified *productVersion
-	product := findProduct(v)
-	if product == nil {
-		log.Fatal("__VERSION__ not found")
+	ok := updateElementAttr(v, "Product", "Version", "___VERSION___", *productVersion)
+	if !ok {
+		log.Fatal("___VERSION___ not found")
 	}
-	for i := range product.Attr {
-		if product.Attr[i].Name.Local == "Version" {
-			product.Attr[i].Value = *productVersion
-		}
+	ok = updateElementAttr(v, "Package", "Platform", "___PLATFORM___", platform.String())
+	if !ok {
+		log.Fatal("___PLATFORM___ not found")
+	}
+	ok = updateElementAttr(v, "Directory", "Id", "___PROGRAMFILES___", platform.ProgramFiles())
+	if !ok {
+		log.Fatal("___PROGRAMFILES___ not found")
+	}
+	ok = updateElementAttr(v, "Component", "Win64", "___WIN64___", platform.Win64())
+	if !ok {
+		log.Fatal("___WIN64___ not found")
 	}
 
 	// generate Component/File(s) from listing plugins on *buildDir.
-	installDir := findInstallDir(v)
+	installDir := findInstallDir(v, platform.ProgramFiles())
 	if installDir == nil {
 		log.Fatal("INSTALLDIR not found")
 	}
