@@ -14,7 +14,7 @@ type monitoringChecksPayload struct {
 type checkReport struct {
 	Source               monitorTargetHost `json:"source"`
 	Name                 string            `json:"name"`
-	Status               checks.Status     `json:"status"`
+	Status               mkr.CheckStatus   `json:"status"`
 	Message              string            `json:"message"`
 	OccurredAt           int64             `json:"occurredAt"`
 	NotificationInterval uint              `json:"notificationInterval,omitempty"`
