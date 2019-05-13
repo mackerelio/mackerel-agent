@@ -17,8 +17,8 @@ type checkReport struct {
 	Status               checks.Status     `json:"status"`
 	Message              string            `json:"message"`
 	OccurredAt           int64             `json:"occurredAt"`
-	NotificationInterval *int32            `json:"notificationInterval,omitempty"`
-	MaxCheckAttempts     *int32            `json:"maxCheckAttempts,omitempty"`
+	NotificationInterval uint              `json:"notificationInterval,omitempty"`
+	MaxCheckAttempts     uint              `json:"maxCheckAttempts,omitempty"`
 }
 
 type monitorTargetHost struct {
@@ -48,14 +48,21 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 		payload.Reports[i] = &checkReport{
 			Source:               monitorTargetHost{HostID: hostID},
 			Name:                 report.Name,
-			Status:               report.Status,
+			Status:               mkr.CheckStatus(report.Status),
 			Message:              msg,
-			OccurredAt:           Time(report.OccurredAt),
-			NotificationInterval: report.NotificationInterval,
-			MaxCheckAttempts:     report.MaxCheckAttempts,
+			OccurredAt:           report.OccurredAt.Unix(),
+			NotificationInterval: int32ptrToUint(report.NotificationInterval),
+			MaxCheckAttempts:     int32ptrToUint(report.MaxCheckAttempts),
 		}
 	}
 	resp, err := api.postJSON("/api/v0/monitoring/checks/report", payload)
 	defer closeResp(resp)
 	return err
+}
+
+func int32ptrToUint(p *int32) uint {
+	if p == nil || *p < 0 {
+		return 0
+	}
+	return uint(*p)
 }
