@@ -5,24 +5,10 @@ import (
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
-type monitoringChecksPayload struct {
-	Reports []*checkReport `json:"reports"`
-}
-
-type checkReport struct {
-	Source               mkr.CheckSource `json:"source"`
-	Name                 string          `json:"name"`
-	Status               mkr.CheckStatus `json:"status"`
-	Message              string          `json:"message"`
-	OccurredAt           int64           `json:"occurredAt"`
-	NotificationInterval uint            `json:"notificationInterval,omitempty"`
-	MaxCheckAttempts     uint            `json:"maxCheckAttempts,omitempty"`
-}
-
 // ReportCheckMonitors sends reports of *checks.Checker() to Mackrel API server.
 func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) error {
-	payload := &monitoringChecksPayload{
-		Reports: make([]*checkReport, len(reports)),
+	payload := &mkr.CheckReports{
+		Reports: make([]*mkr.CheckReport, len(reports)),
 	}
 	const messageLengthLimit = 1024
 	for i, report := range reports {
@@ -31,7 +17,7 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 		if len(runes) > messageLengthLimit {
 			msg = string(runes[0:messageLengthLimit])
 		}
-		payload.Reports[i] = &checkReport{
+		payload.Reports[i] = &mkr.CheckReport{
 			Source:               mkr.NewCheckSourceHost(hostID),
 			Name:                 report.Name,
 			Status:               mkr.CheckStatus(report.Status),
