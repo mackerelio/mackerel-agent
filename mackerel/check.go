@@ -1,8 +1,6 @@
 package mackerel
 
 import (
-	"encoding/json"
-
 	"github.com/mackerelio/mackerel-agent/checks"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
@@ -12,25 +10,13 @@ type monitoringChecksPayload struct {
 }
 
 type checkReport struct {
-	Source               monitorTargetHost `json:"source"`
-	Name                 string            `json:"name"`
-	Status               mkr.CheckStatus   `json:"status"`
-	Message              string            `json:"message"`
-	OccurredAt           int64             `json:"occurredAt"`
-	NotificationInterval uint              `json:"notificationInterval,omitempty"`
-	MaxCheckAttempts     uint              `json:"maxCheckAttempts,omitempty"`
-}
-
-type monitorTargetHost struct {
-	HostID string
-}
-
-// MarshalJSON implements json.Marshaler.
-func (h monitorTargetHost) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]string{
-		"type":   "host",
-		"hostId": h.HostID,
-	})
+	Source               mkr.CheckSource `json:"source"`
+	Name                 string          `json:"name"`
+	Status               mkr.CheckStatus `json:"status"`
+	Message              string          `json:"message"`
+	OccurredAt           int64           `json:"occurredAt"`
+	NotificationInterval uint            `json:"notificationInterval,omitempty"`
+	MaxCheckAttempts     uint            `json:"maxCheckAttempts,omitempty"`
 }
 
 // ReportCheckMonitors sends reports of *checks.Checker() to Mackrel API server.
@@ -46,7 +32,7 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 			msg = string(runes[0:messageLengthLimit])
 		}
 		payload.Reports[i] = &checkReport{
-			Source:               monitorTargetHost{HostID: hostID},
+			Source:               mkr.NewCheckSourceHost(hostID),
 			Name:                 report.Name,
 			Status:               mkr.CheckStatus(report.Status),
 			Message:              msg,
