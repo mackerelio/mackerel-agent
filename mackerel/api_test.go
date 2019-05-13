@@ -133,14 +133,13 @@ func TestCreateHost(t *testing.T) {
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
-	var interfaces []map[string]interface{}
-	interfaces = append(interfaces, map[string]interface{}{
-		"name":       "eth0",
-		"ipAddress":  "10.0.4.7",
-		"macAddress": "01:23:45:67:89:ab",
-		"encap":      "Ethernet",
+	var interfaces []mkr.Interface
+	interfaces = append(interfaces, mkr.Interface{
+		Name:       "eth0",
+		IPAddress:  "10.0.4.7",
+		MacAddress: "01:23:45:67:89:ab",
 	})
-	hostSpec := HostSpec{
+	hostParam := mkr.CreateHostParam{
 		Name: "dummy",
 		Meta: mkr.HostMeta{
 			AgentName: "mackerel-agent",
@@ -150,7 +149,7 @@ func TestCreateHost(t *testing.T) {
 		DisplayName:      "my-display-name",
 		CustomIdentifier: "",
 	}
-	hostID, err := api.CreateHost(hostSpec)
+	hostID, err := api.CreateHost(hostParam)
 
 	if err != nil {
 		t.Error("should not raise error: ", err)
@@ -204,10 +203,10 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	// with nil args
-	hostSpec := HostSpec{
+	hostParam := mkr.CreateHostParam{
 		Name: "nilsome",
 	}
-	hostID, err := api.CreateHost(hostSpec)
+	hostID, err := api.CreateHost(hostParam)
 	if err != nil {
 		t.Error("should not return error but got: ", err)
 	}
@@ -239,7 +238,7 @@ func TestUpdateHost(t *testing.T) {
 			Meta          mkr.HostMeta        `json:"meta"`
 			Interfaces    []map[string]string `json:"interfaces"`
 			RoleFullnames []string            `json:"roleFullnames"`
-			Checks        []string            `json:"checks"`
+			Checks        []map[string]string `json:"checks"`
 		}
 
 		err := json.Unmarshal(body, &data)
@@ -276,25 +275,26 @@ func TestUpdateHost(t *testing.T) {
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
-	var interfaces []map[string]interface{}
-	interfaces = append(interfaces, map[string]interface{}{
-		"name":       "eth0",
-		"ipAddress":  "10.0.4.7",
-		"macAddress": "01:23:45:67:89:ab",
-		"encap":      "Ethernet",
+	var interfaces []mkr.Interface
+	interfaces = append(interfaces, mkr.Interface{
+		Name:       "eth0",
+		IPAddress:  "10.0.4.7",
+		MacAddress: "01:23:45:67:89:ab",
 	})
 
-	hostSpec := HostSpec{
+	hostParam := mkr.UpdateHostParam{
 		Name: "dummy",
 		Meta: mkr.HostMeta{
 			AgentName: "mackerel-agent",
 		},
 		Interfaces:    interfaces,
 		RoleFullnames: []string{"My-Service:app-default"},
-		Checks:        []mkr.CheckConfig{},
+		Checks: []mkr.CheckConfig{
+			mkr.CheckConfig{Name: "check", Memo: "memo"},
+		},
 	}
 
-	err := api.UpdateHost("ABCD123", hostSpec)
+	err := api.UpdateHost("ABCD123", hostParam)
 
 	if err != nil {
 		t.Error("should not raise error: ", err)

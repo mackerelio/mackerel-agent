@@ -192,8 +192,8 @@ func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*mkr.Host, 
 }
 
 // CreateHost register the host to mackerel
-func (api *API) CreateHost(hostSpec HostSpec) (string, error) {
-	resp, err := api.postJSON("/api/v0/hosts", hostSpec)
+func (api *API) CreateHost(hostParam mkr.CreateHostParam) (string, error) {
+	resp, err := api.postJSON("/api/v0/hosts", hostParam)
 	defer closeResp(resp)
 	if err != nil {
 		return "", err
@@ -215,8 +215,8 @@ func (api *API) CreateHost(hostSpec HostSpec) (string, error) {
 }
 
 // UpdateHost updates the host information on Mackerel.
-func (api *API) UpdateHost(hostID string, hostSpec HostSpec) error {
-	resp, err := api.putJSON("/api/v0/hosts/"+hostID, hostSpec)
+func (api *API) UpdateHost(hostID string, hostParam mkr.UpdateHostParam) error {
+	resp, err := api.putJSON("/api/v0/hosts/"+hostID, hostParam)
 	defer closeResp(resp)
 	if err != nil {
 		return err
