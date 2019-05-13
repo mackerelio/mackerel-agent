@@ -7,14 +7,8 @@ IF NOT DEFINED WIX (
 
 CD %~dp0\..
 
-go get -d -v -t ./...
-
 CALL build.bat
 CALL build-k.bat
-
-go get -d github.com/mackerelio/go-check-plugins/...
-go get -d github.com/mackerelio/mackerel-agent-plugins/...
-go get -d github.com/mackerelio/mkr/...
 
 FOR /F %%w in (.\wix\pluginlist.txt) DO (
   go build -o build\%%~nw.exe %%w
@@ -22,12 +16,7 @@ FOR /F %%w in (.\wix\pluginlist.txt) DO (
 
 CD %~dp0
 
-go get github.com/mackerelio/mackerel-agent/wix/wrapper
-go get github.com/mackerelio/mackerel-agent/wix/replace
-go get github.com/mackerelio/mackerel-agent/wix/generate_wxs
-
 go build -o ..\build\wrapper.exe wrapper\wrapper_windows.go wrapper\install.go
-
 go build -o ..\build\replace.exe replace\replace_windows.go
 go build -o ..\build\generate_wxs.exe generate_wxs\generate_wxs.go
 
