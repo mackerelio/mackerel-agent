@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/mackerelio/mackerel-agent/checks"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 type monitoringChecksPayload struct {
@@ -15,7 +16,7 @@ type checkReport struct {
 	Name                 string            `json:"name"`
 	Status               checks.Status     `json:"status"`
 	Message              string            `json:"message"`
-	OccurredAt           Time              `json:"occurredAt"`
+	OccurredAt           int64             `json:"occurredAt"`
 	NotificationInterval *int32            `json:"notificationInterval,omitempty"`
 	MaxCheckAttempts     *int32            `json:"maxCheckAttempts,omitempty"`
 }

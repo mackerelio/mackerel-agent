@@ -331,12 +331,3 @@ func (api *API) postJSON(path string, payload interface{}) (*http.Response, erro
 func (api *API) putJSON(path string, payload interface{}) (*http.Response, error) {
 	return api.requestJSON("PUT", path, payload)
 }
-
-// Time is a type for sending time information to Mackerel API server.
-// It is encoded as an epoch seconds integer in JSON.
-type Time time.Time
-
-// MarshalJSON implements json.Marshaler.
-func (t Time) MarshalJSON() ([]byte, error) {
-	return json.Marshal(time.Time(t).Unix())
-}
