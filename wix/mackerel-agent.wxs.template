@@ -4,7 +4,7 @@
 
   <Product Name='mackerel-agent' Id='*' UpgradeCode='1EF11651-A09E-47A3-BFE3-5877E22F7D26' Language='1033' Codepage='1252' Version='___VERSION___' Manufacturer='Hatena'>
 
-    <Package Id="*" Platform="___PLATFORM___" Keywords="Installer" Description="Mackerel Agent Installer" Comments="Mackerel Agent sends metrics to https://mackerel.io" Manufacturer="Hatena" InstallerVersion="100" Languages="1033" Compressed="yes" SummaryCodepage="1252"></Package>
+    <Package Id="*" Platform="___PLATFORM___" Keywords="Installer" Description="Mackerel Agent Installer" Comments="Mackerel Agent sends metrics to https://mackerel.io" Manufacturer="Hatena" InstallerVersion="200" Languages="1033" Compressed="yes" SummaryCodepage="1252"></Package>
     <WixVariable Id="WixUILicenseRtf" Value="..\LICENSE.rtf"></WixVariable>
     <Media Id="1" Cabinet="MackerelAgent.cab" EmbedCab="yes" CompressionLevel="high"></Media>
     <Directory Id="TARGETDIR" Name="SourceDir">
