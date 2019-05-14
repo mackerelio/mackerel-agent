@@ -6,6 +6,7 @@ import (
 
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 func containsKeyRegexp(values Values, reg string) bool {
@@ -156,10 +157,10 @@ func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 		t.Errorf("Bad payload created: %+v", payloadOne)
 	}
 
-	var metricOneFoo1 *mackerel.CreateGraphDefsPayloadMetric
+	var metricOneFoo1 *mkr.GraphDefsMetric
 	for _, metric := range payloadOne.Metrics {
 		if metric.Name == "custom.one.foo1" {
-			metricOneFoo1 = &metric
+			metricOneFoo1 = metric
 			break
 		}
 	}

@@ -550,10 +550,10 @@ func TestCreateGraphDefs(t *testing.T) {
 		body, _ := ioutil.ReadAll(req.Body)
 
 		var datas []struct {
-			Name        string                         `json:"name"`
-			DisplayName string                         `json:"displayName"`
-			Unit        string                         `json:"unit"`
-			Metrics     []CreateGraphDefsPayloadMetric `json:"metrics"`
+			Name        string                 `json:"name"`
+			DisplayName string                 `json:"displayName"`
+			Unit        string                 `json:"unit"`
+			Metrics     []*mkr.GraphDefsMetric `json:"metrics"`
 		}
 
 		err := json.Unmarshal(body, &datas)
@@ -570,7 +570,7 @@ func TestCreateGraphDefs(t *testing.T) {
 		}
 		if !reflect.DeepEqual(
 			data.Metrics[0],
-			CreateGraphDefsPayloadMetric{
+			&mkr.GraphDefsMetric{
 				Name:        "saba1",
 				DisplayName: "aji1",
 				IsStacked:   false,
@@ -592,7 +592,7 @@ func TestCreateGraphDefs(t *testing.T) {
 			Name:        "mackerel",
 			DisplayName: "HorseMackerel",
 			Unit:        "percentage",
-			Metrics: []CreateGraphDefsPayloadMetric{
+			Metrics: []*mkr.GraphDefsMetric{
 				{
 					Name:        "saba1",
 					DisplayName: "aji1",

@@ -11,6 +11,7 @@ import (
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 // pluginGenerator collects user-defined metrics.
@@ -200,7 +201,7 @@ func makeCreateGraphDefsPayload(meta *pluginMeta) []mackerel.CreateGraphDefsPayl
 		}
 
 		for _, metric := range graph.Metrics {
-			metricPayload := mackerel.CreateGraphDefsPayloadMetric{
+			metricPayload := &mkr.GraphDefsMetric{
 				Name:        pluginPrefix + key + "." + metric.Name,
 				DisplayName: metric.Label,
 				IsStacked:   metric.Stacked,

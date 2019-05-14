@@ -253,17 +253,10 @@ func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error
 
 // CreateGraphDefsPayload payload for post graph defs
 type CreateGraphDefsPayload struct {
-	Name        string                         `json:"name"`
-	DisplayName string                         `json:"displayName"`
-	Unit        string                         `json:"unit"`
-	Metrics     []CreateGraphDefsPayloadMetric `json:"metrics"`
-}
-
-// CreateGraphDefsPayloadMetric repreesnt graph defs of each metric
-type CreateGraphDefsPayloadMetric struct {
-	Name        string `json:"name"`
-	DisplayName string `json:"displayName"`
-	IsStacked   bool   `json:"isStacked"`
+	Name        string                 `json:"name"`
+	DisplayName string                 `json:"displayName"`
+	Unit        string                 `json:"unit"`
+	Metrics     []*mkr.GraphDefsMetric `json:"metrics"`
 }
 
 // CreateGraphDefs register graph defs
