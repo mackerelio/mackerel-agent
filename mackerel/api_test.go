@@ -587,7 +587,7 @@ func TestCreateGraphDefs(t *testing.T) {
 	defer ts.Close()
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
-	err := api.CreateGraphDefs([]CreateGraphDefsPayload{
+	err := api.CreateGraphDefs([]*mkr.GraphDefsParam{
 		{
 			Name:        "mackerel",
 			DisplayName: "HorseMackerel",

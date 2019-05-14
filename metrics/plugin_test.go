@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/mackerel"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
@@ -99,7 +98,7 @@ func TestPluginCollectValuesWithBothPattern(t *testing.T) {
 	}
 }
 
-func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
+func TestPluginMakeGraphDefsParam(t *testing.T) {
 	// this plugin emits "one.foo1", "one.foo2" and "two.bar1" metrics
 	g := &pluginGenerator{
 		Meta: &pluginMeta{
@@ -133,16 +132,16 @@ func TestPluginMakeCreateGraphDefsPayload(t *testing.T) {
 		},
 	}
 
-	payloads := g.makeCreateGraphDefsPayload()
+	payloads := g.makeGraphDefsParam()
 
 	if len(payloads) != 2 {
 		t.Errorf("Bad payload created: %+v", payloads)
 	}
 
-	var payloadOne *mackerel.CreateGraphDefsPayload
+	var payloadOne *mkr.GraphDefsParam
 	for _, payload := range payloads {
 		if payload.Name == "custom.one" {
-			payloadOne = &payload
+			payloadOne = payload
 			break
 		}
 	}

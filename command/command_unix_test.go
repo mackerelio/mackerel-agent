@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/mackerel"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
@@ -67,7 +66,7 @@ func TestRunOncePayload(t *testing.T) {
 		t.Errorf("RunOnce() should be nomal exit: %s", err)
 	}
 
-	if !reflect.DeepEqual(graphdefs[0], mackerel.CreateGraphDefsPayload{
+	if !reflect.DeepEqual(graphdefs[0], &mkr.GraphDefsParam{
 		Name:        "custom.dice",
 		DisplayName: "My Dice",
 		Unit:        "integer",
