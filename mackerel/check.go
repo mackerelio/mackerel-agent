@@ -5,6 +5,12 @@ import (
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
+const (
+	// NotificationIntervalFallback is the minimum minutes of Mackerel API's
+	// notification_interval.
+	NotificationIntervalFallback = 10
+)
+
 // ReportCheckMonitors sends reports of *checks.Checker() to Mackrel API server.
 func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) error {
 	payload := &mkr.CheckReports{
@@ -23,8 +29,8 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 			Status:               mkr.CheckStatus(report.Status),
 			Message:              msg,
 			OccurredAt:           report.OccurredAt.Unix(),
-			NotificationInterval: int32ptrToUint(report.NotificationInterval),
-			MaxCheckAttempts:     int32ptrToUint(report.MaxCheckAttempts),
+			NotificationInterval: normalize(report.NotificationInterval, NotificationIntervalFallback),
+			MaxCheckAttempts:     normalize(report.MaxCheckAttempts, 0),
 		}
 	}
 	resp, err := api.postJSON("/api/v0/monitoring/checks/report", payload)
@@ -32,9 +38,21 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 	return err
 }
 
-func int32ptrToUint(p *int32) uint {
-	if p == nil || *p < 0 {
-		return 0
+// normalize returns rounded valid number for Mackerel's Cehck API.
+//
+// In Mackerel, notification_interval regards nil as none,
+// but regards zero as default (10 minutes).
+func normalize(p *int32, min int32) uint {
+	// TODO(lufia): we will be able to remove this when we can ignore v0.59 or earlier.
+	if min < 0 {
+		panic("min must be >=0")
 	}
-	return uint(*p)
+	switch {
+	case p == nil:
+		return 0
+	case *p < min:
+		return uint(min)
+	default:
+		return uint(*p)
+	}
 }
