@@ -179,11 +179,11 @@ type App struct {
 }
 
 type postValue struct {
-	values   []*mackerel.CreatingMetricsValue
+	values   []*mkr.HostMetricValue
 	retryCnt int
 }
 
-func newPostValue(values []*mackerel.CreatingMetricsValue) *postValue {
+func newPostValue(values []*mkr.HostMetricValue) *postValue {
 	return &postValue{values, 0}
 }
 
@@ -315,11 +315,11 @@ func loop(app *App, termCh chan struct{}) error {
 				lState = loopStateTerminating
 			}
 
-			postValues := [](*mackerel.CreatingMetricsValue){}
+			var postValues []*mkr.HostMetricValue
 			for _, v := range origPostValues {
 				postValues = append(postValues, v.values...)
 			}
-			err := app.API.PostMetricsValues(postValues)
+			err := app.API.PostMetricValues(postValues)
 			if err != nil {
 				logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
 				if lState != loopStateTerminating {
@@ -372,8 +372,8 @@ func enqueueLoop(app *App, postQueue chan *postValue, quit chan struct{}) {
 		case <-quit:
 			return
 		case result := <-metricsResult:
-			created := float64(result.Created.Unix())
-			creatingValues := [](*mackerel.CreatingMetricsValue){}
+			created := result.Created.Unix()
+			var creatingValues []*mkr.HostMetricValue
 			for _, values := range result.Values {
 				hostID := app.Host.ID
 				if values.CustomIdentifier != nil {
@@ -391,11 +391,13 @@ func enqueueLoop(app *App, postQueue chan *postValue, quit chan struct{}) {
 
 					creatingValues = append(
 						creatingValues,
-						&mackerel.CreatingMetricsValue{
+						&mkr.HostMetricValue{
 							HostID: hostID,
-							Name:   name,
-							Time:   created,
-							Value:  value,
+							MetricValue: &mkr.MetricValue{
+								Name:  name,
+								Time:  created,
+								Value: value,
+							},
 						},
 					)
 				}
