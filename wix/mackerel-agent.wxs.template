@@ -4,27 +4,27 @@
 
   <Product Name='mackerel-agent' Id='*' UpgradeCode='1EF11651-A09E-47A3-BFE3-5877E22F7D26' Language='1033' Codepage='1252' Version='___VERSION___' Manufacturer='Hatena'>
 
-    <Package Id="*" Keywords="Installer" Description="Mackerel Agent Installer" Comments="Mackerel Agent sends metrics to https://mackerel.io" Manufacturer="Hatena" InstallerVersion="100" Languages="1033" Compressed="yes" SummaryCodepage="1252"></Package>
+    <Package Id="*" Platform="___PLATFORM___" Keywords="Installer" Description="Mackerel Agent Installer" Comments="Mackerel Agent sends metrics to https://mackerel.io" Manufacturer="Hatena" InstallerVersion="200" Languages="1033" Compressed="yes" SummaryCodepage="1252"></Package>
     <WixVariable Id="WixUILicenseRtf" Value="..\LICENSE.rtf"></WixVariable>
     <Media Id="1" Cabinet="MackerelAgent.cab" EmbedCab="yes" CompressionLevel="high"></Media>
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder" Name="PFiles">
+      <Directory Id="___PROGRAMFILES___" Name="PFiles">
         <Directory Id="Mackerel" Name="Mackerel">
           <Directory Id="INSTALLDIR" Name="mackerel-agent">
-            <Component Id="ServiceWrapperExe">
+            <Component Id="ServiceWrapperExe" Win64="___WIN64___">
               <File Id="MackerelAgentServiceExe" Name="wrapper.exe" DiskId="1" Source="..\build\wrapper.exe" KeyPath="yes"></File>
               <ServiceInstall Id="ServiceInstaller" Type="ownProcess" Name="mackerel-agent" Description="Send metrics to https://mackerel.io" Account="[SERVICEACCOUNT]" Password="[SERVICEPASSWORD]" Start="auto" ErrorControl="normal" Vital="yes" Interactive="no">
                 <ServiceDependency Id="RPCSS"/>
               </ServiceInstall>
               <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="mackerel-agent" Wait="yes"></ServiceControl>
             </Component>
-            <Component Id="AgentExe">
+            <Component Id="AgentExe" Win64="___WIN64___">
               <File Id="MackerelAgentExe" Name="mackerel-agent.exe" DiskId="1" Source="..\build\mackerel-agent.exe" KeyPath="yes"></File>
             </Component>
-            <Component Id="SampleConfig">
+            <Component Id="SampleConfig" Win64="___WIN64___">
               <File Id="MackerelAgentSampleConfig" Name="mackerel-agent.sample.conf" DiskId="1" Source="mackerel-agent.sample.conf" KeyPath="yes"></File>
             </Component>
-            <Component Id="AgentEventLog">
+            <Component Id="AgentEventLog" Win64="___WIN64___">
               <util:EventSource
                   Name="mackerel-agent"
                   Log="Application"

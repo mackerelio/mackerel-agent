@@ -29,7 +29,6 @@ run: build
 
 .PHONY: deps
 deps:
-	go get -d -v -t ./...
 	GO111MODULE=off \
 	go get golang.org/x/lint/golint   \
 	  github.com/pierrre/gotestcover  \
