@@ -76,3 +76,102 @@ func TestReportCheckMonitors(t *testing.T) {
 		t.Error("err shoud be nil but: ", err)
 	}
 }
+
+// TestReportCheckMonitorsCompat tests to be equality of before and after migration to mackerel-client.
+func TestReportCheckMonitorsCompat(t *testing.T) {
+	// We can't use mkr.CheckReports because mkr.CheckReports.Reports.Source is interface.
+	type Report struct {
+		NotificationInterval uint `json:"notificationInterval,omitempty"`
+		MaxCheckAttempts     uint `json:"maxCheckAttempts,omitempty"`
+	}
+	type Reports struct {
+		Reports []*Report `json:"reports"`
+	}
+
+	received := make(chan *Report, 1)
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		d := json.NewDecoder(r.Body)
+		var a Reports
+		if err := d.Decode(&a); err != nil {
+			t.Fatalf("can't decode: %v", err)
+		}
+		if n := len(a.Reports); n != 1 {
+			t.Fatalf("len(Reports) = %d; want 1", n)
+		}
+		received <- a.Reports[0]
+		fmt.Fprintf(w, "OK")
+	}))
+	defer ts.Close()
+
+	n32 := func(n int32) *int32 { return &n }
+	tests := []struct {
+		name       string
+		value      *int32
+		interval   uint
+		maxAttemts uint
+	}{
+		{
+			name:       "case 0",
+			value:      n32(0),
+			interval:   NotificationIntervalFallback,
+			maxAttemts: 0,
+		},
+		{
+			name:       "case 1",
+			value:      n32(1),
+			interval:   NotificationIntervalFallback,
+			maxAttemts: 1,
+		},
+		{
+			name:       "case 9",
+			value:      n32(9),
+			interval:   NotificationIntervalFallback,
+			maxAttemts: 9,
+		},
+		{
+			name:       "case 10",
+			value:      n32(10),
+			interval:   NotificationIntervalFallback,
+			maxAttemts: 10,
+		},
+		{
+			name:       "case 11",
+			value:      n32(11),
+			interval:   11,
+			maxAttemts: 11,
+		},
+		{
+			name:       "case -1",
+			value:      n32(-1),
+			interval:   NotificationIntervalFallback,
+			maxAttemts: 0,
+		},
+		{
+			name:       "case nil",
+			value:      nil,
+			interval:   0,
+			maxAttemts: 0,
+		},
+	}
+	api, _ := NewAPI(ts.URL, "dummy-key", false)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			api.ReportCheckMonitors("xxx", []*checks.Report{
+				{
+					NotificationInterval: tt.value,
+					MaxCheckAttempts:     tt.value,
+				},
+			})
+			r := <-received
+			if r == nil {
+				return
+			}
+			if n := r.NotificationInterval; n != tt.interval {
+				t.Errorf("NotificationInterval = %d; want %d", n, tt.interval)
+			}
+			if n := r.MaxCheckAttempts; n != tt.maxAttemts {
+				t.Errorf("MaxCheckAttempts = %d; want %d", n, tt.maxAttemts)
+			}
+		})
+	}
+}
