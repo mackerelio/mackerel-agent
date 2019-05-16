@@ -3,7 +3,7 @@ package metrics
 import (
 	"runtime"
 
-	"github.com/mackerelio/mackerel-agent/mackerel"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 // AgentGenerator is generator of metrics
@@ -34,7 +34,7 @@ func (g *AgentGenerator) CustomIdentifier() *string {
 }
 
 // PrepareGraphDefs for PluginGenerator interface
-func (g *AgentGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error) {
+func (g *AgentGenerator) PrepareGraphDefs() ([]*mkr.GraphDefsParam, error) {
 	meta := &pluginMeta{
 		Graphs: map[string]customGraphDef{
 			"agent.memory": customGraphDef{
@@ -56,5 +56,5 @@ func (g *AgentGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, 
 			},
 		},
 	}
-	return makeCreateGraphDefsPayload(meta), nil
+	return makeGraphDefsParam(meta), nil
 }

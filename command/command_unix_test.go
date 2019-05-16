@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/mackerel"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 var diceCommand = "go run ../_example/metrics-plugins/dice-with-meta.go"
@@ -66,11 +66,11 @@ func TestRunOncePayload(t *testing.T) {
 		t.Errorf("RunOnce() should be nomal exit: %s", err)
 	}
 
-	if !reflect.DeepEqual(graphdefs[0], mackerel.CreateGraphDefsPayload{
+	if !reflect.DeepEqual(graphdefs[0], &mkr.GraphDefsParam{
 		Name:        "custom.dice",
 		DisplayName: "My Dice",
 		Unit:        "integer",
-		Metrics: []mackerel.CreateGraphDefsPayloadMetric{
+		Metrics: []*mkr.GraphDefsMetric{
 			{
 				Name:        "custom.dice.d6",
 				DisplayName: "Die (d6)",

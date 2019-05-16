@@ -1,6 +1,6 @@
 package metrics
 
-import "github.com/mackerelio/mackerel-agent/mackerel"
+import mkr "github.com/mackerelio/mackerel-client-go"
 
 // Values represents metric values
 type Values map[string]float64
@@ -39,6 +39,6 @@ type Generator interface {
 // PluginGenerator generates metrics of plugin
 type PluginGenerator interface {
 	Generator
-	PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error)
+	PrepareGraphDefs() ([]*mkr.GraphDefsParam, error)
 	CustomIdentifier() *string
 }

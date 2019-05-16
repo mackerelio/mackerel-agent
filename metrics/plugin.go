@@ -10,7 +10,7 @@ import (
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/mackerel"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 // pluginGenerator collects user-defined metrics.
@@ -56,13 +56,13 @@ func (g *pluginGenerator) Generate() (Values, error) {
 	return results, nil
 }
 
-func (g *pluginGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error) {
+func (g *pluginGenerator) PrepareGraphDefs() ([]*mkr.GraphDefsParam, error) {
 	err := g.loadPluginMeta()
 	if err != nil {
 		return nil, err
 	}
 
-	payload := g.makeCreateGraphDefsPayload()
+	payload := g.makeGraphDefsParam()
 	return payload, nil
 }
 
@@ -178,19 +178,18 @@ func (g *pluginGenerator) loadPluginMeta() error {
 	return nil
 }
 
-func (g *pluginGenerator) makeCreateGraphDefsPayload() []mackerel.CreateGraphDefsPayload {
-	return makeCreateGraphDefsPayload(g.Meta)
+func (g *pluginGenerator) makeGraphDefsParam() []*mkr.GraphDefsParam {
+	return makeGraphDefsParam(g.Meta)
 }
 
-func makeCreateGraphDefsPayload(meta *pluginMeta) []mackerel.CreateGraphDefsPayload {
+func makeGraphDefsParam(meta *pluginMeta) []*mkr.GraphDefsParam {
 	if meta == nil {
 		return nil
 	}
 
-	payloads := []mackerel.CreateGraphDefsPayload{}
-
+	var payloads []*mkr.GraphDefsParam
 	for key, graph := range meta.Graphs {
-		payload := mackerel.CreateGraphDefsPayload{
+		payload := &mkr.GraphDefsParam{
 			Name:        pluginPrefix + key,
 			DisplayName: graph.Label,
 			Unit:        graph.Unit,
@@ -200,7 +199,7 @@ func makeCreateGraphDefsPayload(meta *pluginMeta) []mackerel.CreateGraphDefsPayl
 		}
 
 		for _, metric := range graph.Metrics {
-			metricPayload := mackerel.CreateGraphDefsPayloadMetric{
+			metricPayload := &mkr.GraphDefsMetric{
 				Name:        pluginPrefix + key + "." + metric.Name,
 				DisplayName: metric.Label,
 				IsStacked:   metric.Stacked,

@@ -679,7 +679,7 @@ func RunOnce(conf *config.Config, ameta *AgentMeta) error {
 	return nil
 }
 
-func runOncePayload(conf *config.Config, ameta *AgentMeta) ([]mackerel.CreateGraphDefsPayload, *mkr.CreateHostParam, *agent.MetricsResult, error) {
+func runOncePayload(conf *config.Config, ameta *AgentMeta) ([]*mkr.GraphDefsParam, *mkr.CreateHostParam, *agent.MetricsResult, error) {
 	hostParam, err := collectHostParam(conf, ameta)
 	if err != nil {
 		logger.Errorf("While collecting host specs: %s", err)

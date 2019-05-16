@@ -8,6 +8,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metadata"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 // Agent is the root of metrics collectors
@@ -91,8 +92,8 @@ func (agent *Agent) Watch(quit chan struct{}) chan *MetricsResult {
 }
 
 // CollectGraphDefsOfPlugins collects GraphDefs of Plugins
-func (agent *Agent) CollectGraphDefsOfPlugins() []mackerel.CreateGraphDefsPayload {
-	payloads := []mackerel.CreateGraphDefsPayload{}
+func (agent *Agent) CollectGraphDefsOfPlugins() []*mkr.GraphDefsParam {
+	payloads := []*mkr.GraphDefsParam{}
 
 	for _, g := range agent.PluginGenerators {
 		p, err := g.PrepareGraphDefs()

@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
-	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 type fakeGenerator struct {
@@ -28,7 +28,7 @@ func (f *fakePluginGenerator) Generate() (metrics.Values, error) {
 	return f.FakeGenerate()
 }
 
-func (f *fakePluginGenerator) PrepareGraphDefs() ([]mackerel.CreateGraphDefsPayload, error) {
+func (f *fakePluginGenerator) PrepareGraphDefs() ([]*mkr.GraphDefsParam, error) {
 	return nil, nil
 }
 

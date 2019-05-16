@@ -251,23 +251,8 @@ func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error
 	return nil
 }
 
-// CreateGraphDefsPayload payload for post graph defs
-type CreateGraphDefsPayload struct {
-	Name        string                         `json:"name"`
-	DisplayName string                         `json:"displayName"`
-	Unit        string                         `json:"unit"`
-	Metrics     []CreateGraphDefsPayloadMetric `json:"metrics"`
-}
-
-// CreateGraphDefsPayloadMetric repreesnt graph defs of each metric
-type CreateGraphDefsPayloadMetric struct {
-	Name        string `json:"name"`
-	DisplayName string `json:"displayName"`
-	IsStacked   bool   `json:"isStacked"`
-}
-
 // CreateGraphDefs register graph defs
-func (api *API) CreateGraphDefs(payloads []CreateGraphDefsPayload) error {
+func (api *API) CreateGraphDefs(payloads []*mkr.GraphDefsParam) error {
 	resp, err := api.postJSON("/api/v0/graph-defs/create", payloads)
 	defer closeResp(resp)
 	if err != nil {
