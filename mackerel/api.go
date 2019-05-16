@@ -15,14 +15,6 @@ import (
 
 var logger = logging.GetLogger("api")
 
-// CreatingMetricsValue parameters of metric values
-type CreatingMetricsValue struct {
-	HostID string      `json:"hostId"`
-	Name   string      `json:"name"`
-	Time   float64     `json:"time"`
-	Value  interface{} `json:"value"`
-}
-
 // API is the main interface of Mackerel API.
 type API struct {
 	BaseURL        *url.URL
@@ -237,8 +229,8 @@ func (api *API) UpdateHostStatus(hostID string, status string) error {
 	return nil
 }
 
-// PostMetricsValues post metrics
-func (api *API) PostMetricsValues(metricsValues [](*CreatingMetricsValue)) error {
+// PostMetricValues post metrics
+func (api *API) PostMetricValues(metricsValues [](*mkr.HostMetricValue)) error {
 	resp, err := api.postJSON("/api/v0/tsdb", metricsValues)
 	defer closeResp(resp)
 	if err != nil {

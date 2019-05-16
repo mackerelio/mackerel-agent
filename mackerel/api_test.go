@@ -524,12 +524,14 @@ func TestPostHostMetricValues(t *testing.T) {
 	defer ts.Close()
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
-	err := api.PostMetricsValues([]*CreatingMetricsValue{
+	err := api.PostMetricValues([]*mkr.HostMetricValue{
 		{
 			HostID: "9rxGOHfVF8F",
-			Name:   "custom.metric.mysql.connections",
-			Time:   123456789,
-			Value:  100,
+			MetricValue: &mkr.MetricValue{
+				Name:  "custom.metric.mysql.connections",
+				Time:  123456789,
+				Value: 100,
+			},
 		},
 	})
 

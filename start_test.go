@@ -12,7 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mackerelio/mackerel-agent/mackerel"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
@@ -46,7 +45,7 @@ func TestStart(t *testing.T) {
 	mux.HandleFunc("/api/v0/tsdb", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
-			payload := []mackerel.CreatingMetricsValue{}
+			var payload []*mkr.HostMetricValue
 			err := json.NewDecoder(r.Body).Decode(&payload)
 			if err != nil {
 				t.Errorf("decode failed: %s", err)

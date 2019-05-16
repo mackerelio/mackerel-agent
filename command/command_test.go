@@ -230,7 +230,7 @@ func (g *counterGenerator) Generate() (metrics.Values, error) {
 	return map[string]float64{"dummy.a": float64(g.counter)}, nil
 }
 
-type byTime []mackerel.CreatingMetricsValue
+type byTime []mkr.HostMetricValue
 
 func (b byTime) Len() int           { return len(b) }
 func (b byTime) Swap(i, j int)      { b[i], b[j] = b[j], b[i] }
@@ -277,11 +277,11 @@ func TestLoop(t *testing.T) {
 		totalPosts    = 7
 	)
 	failureCount := 0
-	receivedDataPoints := []mackerel.CreatingMetricsValue{}
+	receivedDataPoints := []mkr.HostMetricValue{}
 	done := make(chan struct{})
 
 	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
-		payload := []mackerel.CreatingMetricsValue{}
+		payload := []mkr.HostMetricValue{}
 		json.NewDecoder(req.Body).Decode(&payload)
 
 		for _, p := range payload {
