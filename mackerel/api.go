@@ -22,6 +22,8 @@ type API struct {
 	Verbose        bool
 	UA             string
 	DefaultHeaders http.Header
+
+	c *mkr.Client
 }
 
 // Error represents API error
@@ -72,7 +74,11 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &API{BaseURL: u, APIKey: apiKey, Verbose: verbose}, nil
+	c, err := mkr.NewClientWithOptions(apiKey, rawurl, verbose)
+	if err != nil {
+		return nil, err
+	}
+	return &API{BaseURL: u, APIKey: apiKey, Verbose: verbose, c: c}, nil
 }
 
 func (api *API) urlFor(path string, query string) *url.URL {
