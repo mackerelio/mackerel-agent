@@ -613,7 +613,7 @@ func (app *App) UpdateHostSpecs() {
 		return
 	}
 
-	err = app.API.UpdateHost(app.Host.ID, mkr.UpdateHostParam(*hostParam))
+	err = app.API.UpdateHost(app.Host.ID, (*mkr.UpdateHostParam)(hostParam))
 
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)

@@ -204,14 +204,9 @@ func (api *API) CreateHost(hostParam *mkr.CreateHostParam) (string, error) {
 }
 
 // UpdateHost updates the host information on Mackerel.
-func (api *API) UpdateHost(hostID string, hostParam mkr.UpdateHostParam) error {
-	resp, err := api.putJSON("/api/v0/hosts/"+hostID, hostParam)
-	defer closeResp(resp)
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (api *API) UpdateHost(hostID string, hostParam *mkr.UpdateHostParam) error {
+	_, err := api.c.UpdateHost(hostID, hostParam)
+	return err
 }
 
 // UpdateHostStatus updates the status of the host

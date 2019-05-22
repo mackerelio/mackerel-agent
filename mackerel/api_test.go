@@ -282,7 +282,7 @@ func TestUpdateHost(t *testing.T) {
 		MacAddress: "01:23:45:67:89:ab",
 	})
 
-	hostParam := mkr.UpdateHostParam{
+	hostParam := &mkr.UpdateHostParam{
 		Name: "dummy",
 		Meta: mkr.HostMeta{
 			AgentName: "mackerel-agent",
