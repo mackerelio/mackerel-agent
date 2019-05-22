@@ -553,10 +553,10 @@ func reportCheckMonitors(app *App, reports []*checks.Report) {
 }
 
 // collectHostParam collects host specs (correspond to "name", "meta", "interfaces" and "customIdentifier" fields in API v0)
-func collectHostParam(conf *config.Config, ameta *AgentMeta) (mkr.CreateHostParam, error) {
+func collectHostParam(conf *config.Config, ameta *AgentMeta) (*mkr.CreateHostParam, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
-		return mkr.CreateHostParam{}, fmt.Errorf("failed to obtain hostname: %s", err.Error())
+		return nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
 	}
 
 	specGens := specGenerators()
@@ -576,7 +576,7 @@ func collectHostParam(conf *config.Config, ameta *AgentMeta) (mkr.CreateHostPara
 
 	interfaces, err := interfaceGenerator().Generate()
 	if err != nil {
-		return mkr.CreateHostParam{}, fmt.Errorf("failed to collect interfaces: %s", err.Error())
+		return nil, fmt.Errorf("failed to collect interfaces: %s", err.Error())
 	}
 
 	meta.AgentVersion = ameta.Version
@@ -592,7 +592,7 @@ func collectHostParam(conf *config.Config, ameta *AgentMeta) (mkr.CreateHostPara
 			})
 	}
 
-	return mkr.CreateHostParam{
+	return &mkr.CreateHostParam{
 		Name:             hostname,
 		Meta:             meta,
 		Interfaces:       interfaces,
@@ -613,7 +613,7 @@ func (app *App) UpdateHostSpecs() {
 		return
 	}
 
-	err = app.API.UpdateHost(app.Host.ID, mkr.UpdateHostParam(hostParam))
+	err = app.API.UpdateHost(app.Host.ID, mkr.UpdateHostParam(*hostParam))
 
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
@@ -696,7 +696,7 @@ func runOncePayload(conf *config.Config, ameta *AgentMeta) ([]*mkr.GraphDefsPara
 	ag := NewAgent(conf)
 	graphdefs := ag.CollectGraphDefsOfPlugins()
 	metrics := ag.CollectMetrics(time.Now())
-	return graphdefs, &hostParam, metrics, nil
+	return graphdefs, hostParam, metrics, nil
 }
 
 // NewAgent creates a new instance of agent.Agent from its configuration conf.

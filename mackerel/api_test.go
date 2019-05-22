@@ -139,7 +139,7 @@ func TestCreateHost(t *testing.T) {
 		IPAddress:  "10.0.4.7",
 		MacAddress: "01:23:45:67:89:ab",
 	})
-	hostParam := mkr.CreateHostParam{
+	hostParam := &mkr.CreateHostParam{
 		Name: "dummy",
 		Meta: mkr.HostMeta{
 			AgentName: "mackerel-agent",
@@ -203,7 +203,7 @@ func TestCreateHostWithNilArgs(t *testing.T) {
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
 
 	// with nil args
-	hostParam := mkr.CreateHostParam{
+	hostParam := &mkr.CreateHostParam{
 		Name: "nilsome",
 	}
 	hostID, err := api.CreateHost(hostParam)
