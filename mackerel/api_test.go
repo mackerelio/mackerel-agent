@@ -649,3 +649,33 @@ func TestApiError(t *testing.T) {
 		t.Error("something went wrong")
 	}
 }
+
+func TestClientError(t *testing.T) {
+	tests := []struct {
+		Err  error
+		Want bool
+	}{
+		{
+			Err:  &mkr.APIError{StatusCode: 400, Message: "400"},
+			Want: true,
+		},
+		{
+			Err:  &mkr.APIError{StatusCode: 499, Message: "499"},
+			Want: true,
+		},
+		{
+			Err:  &mkr.APIError{StatusCode: 500, Message: "500"},
+			Want: false,
+		},
+		{
+			Err:  fmt.Errorf("err"),
+			Want: false,
+		},
+	}
+	for _, tt := range tests {
+		v := IsClientError(tt.Err)
+		if v != tt.Want {
+			t.Errorf("IsClientError(%v) = %v; want %v", tt.Err, v, tt.Want)
+		}
+	}
+}

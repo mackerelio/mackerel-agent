@@ -41,6 +41,15 @@ func (aperr *Error) IsClientError() bool {
 	return 400 <= aperr.StatusCode && aperr.StatusCode < 500
 }
 
+// IsClientError returns true if err is HTTP 4xx.
+func IsClientError(err error) bool {
+	e, ok := err.(*mkr.APIError)
+	if !ok {
+		return false
+	}
+	return 400 <= e.StatusCode && e.StatusCode < 500
+}
+
 // IsServerError 5xx
 func (aperr *Error) IsServerError() bool {
 	return 500 <= aperr.StatusCode && aperr.StatusCode < 600

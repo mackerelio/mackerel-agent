@@ -541,7 +541,7 @@ func reportCheckMonitors(app *App, reports []*checks.Report) {
 
 		logger.Errorf("ReportCheckMonitors: %s", err)
 
-		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
+		if mackerel.IsClientError(err) {
 			break
 		}
 

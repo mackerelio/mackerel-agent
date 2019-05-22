@@ -33,9 +33,7 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 			MaxCheckAttempts:     normalize(report.MaxCheckAttempts, 0),
 		}
 	}
-	resp, err := api.postJSON("/api/v0/monitoring/checks/report", payload)
-	defer closeResp(resp)
-	return err
+	return api.c.PostCheckReports(payload)
 }
 
 // normalize returns rounded valid number for Mackerel's Cehck API.
