@@ -1,7 +1,6 @@
 package mackerel
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -244,35 +243,4 @@ func (api *API) get(path string, query string) (*http.Response, error) {
 		return nil, err
 	}
 	return api.do(req)
-}
-
-func (api *API) requestJSON(method, path string, payload interface{}) (*http.Response, error) {
-	var body bytes.Buffer
-
-	err := json.NewEncoder(&body).Encode(payload)
-	if err != nil {
-		return nil, err
-	}
-	logger.Debugf("%s %s %s", method, path, body.String())
-
-	req, err := http.NewRequest(method, api.urlFor(path, "").String(), &body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := api.do(req)
-	if err != nil {
-		return resp, err
-	}
-
-	logger.Debugf("%s %s status=%q", method, path, resp.Status)
-	if resp.StatusCode >= 400 {
-		return resp, apiError(resp.StatusCode, "api request failed")
-	}
-	return resp, nil
-}
-
-func (api *API) postJSON(path string, payload interface{}) (*http.Response, error) {
-	return api.requestJSON("POST", path, payload)
 }
