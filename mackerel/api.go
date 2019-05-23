@@ -225,16 +225,7 @@ func (api *API) UpdateHostStatus(hostID string, status string) error {
 
 // PostMetricValues post metrics
 func (api *API) PostMetricValues(metricsValues [](*mkr.HostMetricValue)) error {
-	resp, err := api.postJSON("/api/v0/tsdb", metricsValues)
-	defer closeResp(resp)
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != 200 {
-		return apiError(resp.StatusCode, "api request failed")
-	}
-
-	return nil
+	return api.c.PostHostMetricValues(metricsValues)
 }
 
 // CreateGraphDefs register graph defs
