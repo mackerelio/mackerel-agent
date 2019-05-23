@@ -235,15 +235,7 @@ func (api *API) CreateGraphDefs(payloads []*mkr.GraphDefsParam) error {
 
 // RetireHost retires the host
 func (api *API) RetireHost(hostID string) error {
-	resp, err := api.postJSON(fmt.Sprintf("/api/v0/hosts/%s/retire", hostID), []byte("{}"))
-	defer closeResp(resp)
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != 200 {
-		return apiError(resp.StatusCode, "api request failed")
-	}
-	return nil
+	return api.c.RetireHost(hostID)
 }
 
 func (api *API) get(path string, query string) (*http.Response, error) {
