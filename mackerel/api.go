@@ -305,7 +305,3 @@ func (api *API) requestJSON(method, path string, payload interface{}) (*http.Res
 func (api *API) postJSON(path string, payload interface{}) (*http.Response, error) {
 	return api.requestJSON("POST", path, payload)
 }
-
-func (api *API) putJSON(path string, payload interface{}) (*http.Response, error) {
-	return api.requestJSON("PUT", path, payload)
-}
