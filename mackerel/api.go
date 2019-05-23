@@ -230,12 +230,7 @@ func (api *API) PostMetricValues(metricsValues [](*mkr.HostMetricValue)) error {
 
 // CreateGraphDefs register graph defs
 func (api *API) CreateGraphDefs(payloads []*mkr.GraphDefsParam) error {
-	resp, err := api.postJSON("/api/v0/graph-defs/create", payloads)
-	defer closeResp(resp)
-	if err != nil {
-		return err
-	}
-	return nil
+	return api.c.CreateGraphDefs(payloads)
 }
 
 // RetireHost retires the host
