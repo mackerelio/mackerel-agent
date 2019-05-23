@@ -1,7 +1,6 @@
 package mackerel
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httputil"
@@ -162,33 +161,18 @@ func (api *API) FindHost(id string) (*mkr.Host, error) {
 
 // FindHostByCustomIdentifier find the host by the custom identifier
 func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*mkr.Host, error) {
-	v := url.Values{}
-	v.Set("customIdentifier", customIdentifier)
-	for _, status := range []string{"working", "standby", "maintenance", "poweroff"} {
-		v.Add("status", status)
+	param := mkr.FindHostsParam{
+		CustomIdentifier: customIdentifier,
+		Statuses:         []string{"working", "standby", "maintenance", "poweroff"},
 	}
-	resp, err := api.get("/api/v0/hosts", v.Encode())
-	defer closeResp(resp)
+	hosts, err := api.c.FindHosts(&param)
 	if err != nil {
 		return nil, err
 	}
-
-	if resp.StatusCode != 200 {
-		return nil, apiError(resp.StatusCode, "status code is not 200")
-	}
-
-	var data struct {
-		Hosts []*mkr.Host `json:"hosts"`
-	}
-	err = json.NewDecoder(resp.Body).Decode(&data)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(data.Hosts) == 0 {
+	if len(hosts) == 0 {
 		return nil, infoError(fmt.Sprintf("no host was found for the custom identifier: %s", customIdentifier))
 	}
-	return data.Hosts[0], err
+	return hosts[0], nil
 }
 
 // CreateHost register the host to mackerel
