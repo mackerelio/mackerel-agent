@@ -268,8 +268,8 @@ func TestUpdateHost(t *testing.T) {
 
 		if data.Checks == nil {
 			t.Errorf("Wrong data for checks: %v", data.Checks)
-
 		}
+		fmt.Fprintf(res, `{"id": "ABCD123"}`)
 	}))
 	defer ts.Close()
 
@@ -676,6 +676,36 @@ func TestClientError(t *testing.T) {
 		v := IsClientError(tt.Err)
 		if v != tt.Want {
 			t.Errorf("IsClientError(%v) = %v; want %v", tt.Err, v, tt.Want)
+		}
+	}
+}
+
+func TestServerError(t *testing.T) {
+	tests := []struct {
+		Err  error
+		Want bool
+	}{
+		{
+			Err:  &mkr.APIError{StatusCode: 500, Message: "500"},
+			Want: true,
+		},
+		{
+			Err:  &mkr.APIError{StatusCode: 599, Message: "599"},
+			Want: true,
+		},
+		{
+			Err:  &mkr.APIError{StatusCode: 400, Message: "400"},
+			Want: false,
+		},
+		{
+			Err:  fmt.Errorf("err"),
+			Want: false,
+		},
+	}
+	for _, tt := range tests {
+		v := IsServerError(tt.Err)
+		if v != tt.Want {
+			t.Errorf("IsServerError(%v) = %v; want %v", tt.Err, v, tt.Want)
 		}
 	}
 }

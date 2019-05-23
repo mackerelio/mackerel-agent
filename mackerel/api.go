@@ -55,6 +55,15 @@ func (aperr *Error) IsServerError() bool {
 	return 500 <= aperr.StatusCode && aperr.StatusCode < 600
 }
 
+// IsServerError returns true if err is HTTP 5xx.
+func IsServerError(err error) bool {
+	e, ok := err.(*mkr.APIError)
+	if !ok {
+		return false
+	}
+	return 500 <= e.StatusCode && e.StatusCode < 600
+}
+
 func apiError(code int, msg string) *Error {
 	return &Error{
 		StatusCode: code,
