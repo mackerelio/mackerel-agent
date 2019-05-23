@@ -17,7 +17,6 @@ type API struct {
 	BaseURL        *url.URL
 	APIKey         string
 	Verbose        bool
-	UA             string
 	DefaultHeaders http.Header
 
 	c *mkr.Client
@@ -93,9 +92,10 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
+	c.AdditionalHeaders = make(http.Header)
 	// TODO(lufia): should we set a timeout explicitly?
 	//c.HTTPClient.Timeout = apiRequestTimeout
-	return &API{BaseURL: u, APIKey: apiKey, Verbose: verbose, c: c}, nil
+	return &API{BaseURL: u, APIKey: apiKey, Verbose: verbose, c: c, DefaultHeaders: c.AdditionalHeaders}, nil
 }
 
 func (api *API) urlFor(path string, query string) *url.URL {
@@ -105,9 +105,14 @@ func (api *API) urlFor(path string, query string) *url.URL {
 	return newURL
 }
 
+// SetUA is a temporary function to migrate to mackerel-client-go.
+func (api *API) SetUA(s string) {
+	api.c.UserAgent = s
+}
+
 func (api *API) getUA() string {
-	if api.UA != "" {
-		return api.UA
+	if api.c.UserAgent != "" {
+		return api.c.UserAgent
 	}
 	return "mackerel-agent/0.0.0"
 }
