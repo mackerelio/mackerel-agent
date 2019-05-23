@@ -3,7 +3,6 @@ package mackerel
 import (
 	"fmt"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"time"
 
@@ -115,39 +114,6 @@ func (api *API) getUA() string {
 
 var apiRequestTimeout = 30 * time.Second
 
-func (api *API) do(req *http.Request) (resp *http.Response, err error) {
-	if api.DefaultHeaders != nil {
-		for k, vs := range api.DefaultHeaders {
-			for _, v := range vs {
-				req.Header.Add(k, v)
-			}
-		}
-	}
-	req.Header.Add("X-Api-Key", api.APIKey)
-	req.Header.Set("User-Agent", api.getUA())
-
-	if api.Verbose {
-		dump, err := httputil.DumpRequest(req, true)
-		if err == nil {
-			logger.Tracef("%s", dump)
-		}
-	}
-
-	client := &http.Client{} // same as http.DefaultClient
-	client.Timeout = apiRequestTimeout
-	resp, err = client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	if api.Verbose {
-		dump, err := httputil.DumpResponse(resp, true)
-		if err == nil {
-			logger.Tracef("%s", dump)
-		}
-	}
-	return resp, nil
-}
-
 func closeResp(resp *http.Response) {
 	if resp != nil {
 		resp.Body.Close()
@@ -204,12 +170,4 @@ func (api *API) CreateGraphDefs(payloads []*mkr.GraphDefsParam) error {
 // RetireHost retires the host
 func (api *API) RetireHost(hostID string) error {
 	return api.c.RetireHost(hostID)
-}
-
-func (api *API) get(path string, query string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", api.urlFor(path, query).String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	return api.do(req)
 }

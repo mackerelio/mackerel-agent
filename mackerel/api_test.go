@@ -52,27 +52,6 @@ func TestUrlFor(t *testing.T) {
 	}
 }
 
-func TestDo(t *testing.T) {
-	handler := func(res http.ResponseWriter, req *http.Request) {
-		if req.Header.Get("X-Api-Key") != "dummy-key" {
-			t.Error("X-Api-Key header should contains passed key")
-		}
-	}
-	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		handler(res, req)
-	}))
-	defer ts.Close()
-
-	api, _ := NewAPI(
-		ts.URL,
-		"dummy-key",
-		false,
-	)
-
-	req, _ := http.NewRequest("GET", api.urlFor("/", "").String(), nil)
-	api.do(req)
-}
-
 func TestCreateHost(t *testing.T) {
 	called := false
 	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
