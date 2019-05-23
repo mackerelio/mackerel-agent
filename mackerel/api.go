@@ -6,11 +6,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/mackerelio/golib/logging"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
-
-var logger = logging.GetLogger("api")
 
 // API is the main interface of Mackerel API.
 type API struct {
@@ -22,21 +19,6 @@ type API struct {
 	c *mkr.Client
 }
 
-// Error represents API error
-type Error struct {
-	StatusCode int
-	Message    string
-}
-
-func (aperr *Error) Error() string {
-	return fmt.Sprintf("API error. status: %d, msg: %s", aperr.StatusCode, aperr.Message)
-}
-
-// IsClientError 4xx
-func (aperr *Error) IsClientError() bool {
-	return 400 <= aperr.StatusCode && aperr.StatusCode < 500
-}
-
 // IsClientError returns true if err is HTTP 4xx.
 func IsClientError(err error) bool {
 	e, ok := err.(*mkr.APIError)
@@ -46,11 +28,6 @@ func IsClientError(err error) bool {
 	return 400 <= e.StatusCode && e.StatusCode < 500
 }
 
-// IsServerError 5xx
-func (aperr *Error) IsServerError() bool {
-	return 500 <= aperr.StatusCode && aperr.StatusCode < 600
-}
-
 // IsServerError returns true if err is HTTP 5xx.
 func IsServerError(err error) bool {
 	e, ok := err.(*mkr.APIError)
@@ -58,13 +35,6 @@ func IsServerError(err error) bool {
 		return false
 	}
 	return 500 <= e.StatusCode && e.StatusCode < 600
-}
-
-func apiError(code int, msg string) *Error {
-	return &Error{
-		StatusCode: code,
-		Message:    msg,
-	}
 }
 
 // InfoError represents Error of log level INFO
@@ -98,32 +68,12 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	return &API{BaseURL: u, APIKey: apiKey, Verbose: verbose, c: c, DefaultHeaders: c.AdditionalHeaders}, nil
 }
 
-func (api *API) urlFor(path string, query string) *url.URL {
-	newURL, _ := url.Parse(api.BaseURL.String())
-	newURL.Path = path
-	newURL.RawQuery = query
-	return newURL
-}
-
 // SetUA is a temporary function to migrate to mackerel-client-go.
 func (api *API) SetUA(s string) {
 	api.c.UserAgent = s
 }
 
-func (api *API) getUA() string {
-	if api.c.UserAgent != "" {
-		return api.c.UserAgent
-	}
-	return "mackerel-agent/0.0.0"
-}
-
 var apiRequestTimeout = 30 * time.Second
-
-func closeResp(resp *http.Response) {
-	if resp != nil {
-		resp.Body.Close()
-	}
-}
 
 // FindHost find the host
 func (api *API) FindHost(id string) (*mkr.Host, error) {

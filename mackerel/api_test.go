@@ -36,22 +36,6 @@ func TestNewAPI(t *testing.T) {
 	}
 }
 
-func TestUrlFor(t *testing.T) {
-	api, _ := NewAPI(
-		"http://example.com",
-		"dummy-key",
-		true,
-	)
-
-	if api.urlFor("/", "").String() != "http://example.com/" {
-		t.Error("should return http://example.com/")
-	}
-
-	if api.urlFor("/path/to/api", "").String() != "http://example.com/path/to/api" {
-		t.Error("should return http://example.com/path/to/api")
-	}
-}
-
 func TestCreateHost(t *testing.T) {
 	called := false
 	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
@@ -614,18 +598,6 @@ func TestRetireHost(t *testing.T) {
 
 	if err != nil {
 		t.Error("err shoud be nil but: ", err)
-	}
-}
-
-func TestApiError(t *testing.T) {
-	aperr := apiError(400, "bad request")
-
-	if !aperr.IsClientError() {
-		t.Error("something went wrong")
-	}
-
-	if aperr.IsServerError() {
-		t.Error("something went wrong")
 	}
 }
 
