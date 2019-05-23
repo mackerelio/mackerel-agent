@@ -220,14 +220,7 @@ func (api *API) UpdateHost(hostID string, hostParam *mkr.UpdateHostParam) error 
 
 // UpdateHostStatus updates the status of the host
 func (api *API) UpdateHostStatus(hostID string, status string) error {
-	resp, err := api.postJSON(fmt.Sprintf("/api/v0/hosts/%s/status", hostID), map[string]string{
-		"status": status,
-	})
-	defer closeResp(resp)
-	if err != nil {
-		return err
-	}
-	return nil
+	return api.c.UpdateHostStatus(hostID, status)
 }
 
 // PostMetricValues post metrics
