@@ -95,6 +95,8 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
+	// TODO(lufia): should we set a timeout explicitly?
+	//c.HTTPClient.Timeout = apiRequestTimeout
 	return &API{BaseURL: u, APIKey: apiKey, Verbose: verbose, c: c}, nil
 }
 
@@ -155,24 +157,7 @@ func closeResp(resp *http.Response) {
 
 // FindHost find the host
 func (api *API) FindHost(id string) (*mkr.Host, error) {
-	resp, err := api.get(fmt.Sprintf("/api/v0/hosts/%s", id), "")
-	defer closeResp(resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode != 200 {
-		return nil, apiError(resp.StatusCode, "status code is not 200")
-	}
-
-	var data struct {
-		Host *mkr.Host `json:"host"`
-	}
-	err = json.NewDecoder(resp.Body).Decode(&data)
-	if err != nil {
-		return nil, err
-	}
-	return data.Host, err
+	return api.c.FindHost(id)
 }
 
 // FindHostByCustomIdentifier find the host by the custom identifier
