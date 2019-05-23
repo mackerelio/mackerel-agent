@@ -61,7 +61,7 @@ func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mkr
 				logger.Warningf("%s", msg)
 			}
 		}
-		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
+		if mackerel.IsClientError(err) {
 			// don't retry when client error (APIKey error etc.) occurred
 			return nil
 		}
