@@ -3,7 +3,6 @@ package mackerel
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
 	mkr "github.com/mackerelio/mackerel-client-go"
@@ -11,12 +10,7 @@ import (
 
 // API is the main interface of Mackerel API.
 type API struct {
-	BaseURL        *url.URL
-	APIKey         string
-	Verbose        bool
-	DefaultHeaders http.Header
-
-	c *mkr.Client
+	*mkr.Client
 }
 
 // IsClientError returns true if err is HTTP 4xx.
@@ -54,10 +48,6 @@ func infoError(msg string) *InfoError {
 
 // NewAPI creates a new instance of API.
 func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
-	u, err := url.Parse(rawurl)
-	if err != nil {
-		return nil, err
-	}
 	c, err := mkr.NewClientWithOptions(apiKey, rawurl, verbose)
 	if err != nil {
 		return nil, err
@@ -65,19 +55,14 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	c.AdditionalHeaders = make(http.Header)
 	// TODO(lufia): should we set a timeout explicitly?
 	//c.HTTPClient.Timeout = apiRequestTimeout
-	return &API{BaseURL: u, APIKey: apiKey, Verbose: verbose, c: c, DefaultHeaders: c.AdditionalHeaders}, nil
-}
-
-// SetUA is a temporary function to migrate to mackerel-client-go.
-func (api *API) SetUA(s string) {
-	api.c.UserAgent = s
+	return &API{Client: c}, nil
 }
 
 var apiRequestTimeout = 30 * time.Second
 
 // FindHost find the host
 func (api *API) FindHost(id string) (*mkr.Host, error) {
-	return api.c.FindHost(id)
+	return api.Client.FindHost(id)
 }
 
 // FindHostByCustomIdentifier find the host by the custom identifier
@@ -86,7 +71,7 @@ func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*mkr.Host, 
 		CustomIdentifier: customIdentifier,
 		Statuses:         []string{"working", "standby", "maintenance", "poweroff"},
 	}
-	hosts, err := api.c.FindHosts(&param)
+	hosts, err := api.Client.FindHosts(&param)
 	if err != nil {
 		return nil, err
 	}
@@ -98,31 +83,31 @@ func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*mkr.Host, 
 
 // CreateHost register the host to mackerel
 func (api *API) CreateHost(hostParam *mkr.CreateHostParam) (string, error) {
-	return api.c.CreateHost(hostParam)
+	return api.Client.CreateHost(hostParam)
 }
 
 // UpdateHost updates the host information on Mackerel.
 func (api *API) UpdateHost(hostID string, hostParam *mkr.UpdateHostParam) error {
-	_, err := api.c.UpdateHost(hostID, hostParam)
+	_, err := api.Client.UpdateHost(hostID, hostParam)
 	return err
 }
 
 // UpdateHostStatus updates the status of the host
 func (api *API) UpdateHostStatus(hostID string, status string) error {
-	return api.c.UpdateHostStatus(hostID, status)
+	return api.Client.UpdateHostStatus(hostID, status)
 }
 
 // PostMetricValues post metrics
 func (api *API) PostMetricValues(metricsValues [](*mkr.HostMetricValue)) error {
-	return api.c.PostHostMetricValues(metricsValues)
+	return api.Client.PostHostMetricValues(metricsValues)
 }
 
 // CreateGraphDefs register graph defs
 func (api *API) CreateGraphDefs(payloads []*mkr.GraphDefsParam) error {
-	return api.c.CreateGraphDefs(payloads)
+	return api.Client.CreateGraphDefs(payloads)
 }
 
 // RetireHost retires the host
 func (api *API) RetireHost(hostID string) error {
-	return api.c.RetireHost(hostID)
+	return api.Client.RetireHost(hostID)
 }
