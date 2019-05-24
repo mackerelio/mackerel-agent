@@ -257,8 +257,7 @@ func TestUpdateHost(t *testing.T) {
 		},
 	}
 
-	err := api.UpdateHost("ABCD123", hostParam)
-
+	_, err := api.UpdateHost("ABCD123", hostParam)
 	if err != nil {
 		t.Error("should not raise error: ", err)
 	}
@@ -487,7 +486,7 @@ func TestPostHostMetricValues(t *testing.T) {
 	defer ts.Close()
 
 	api, _ := NewAPI(ts.URL, "dummy-key", false)
-	err := api.PostMetricValues([]*mkr.HostMetricValue{
+	err := api.PostHostMetricValues([]*mkr.HostMetricValue{
 		{
 			HostID: "9rxGOHfVF8F",
 			MetricValue: &mkr.MetricValue{

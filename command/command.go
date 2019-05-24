@@ -318,7 +318,7 @@ func loop(app *App, termCh chan struct{}) error {
 			for _, v := range origPostValues {
 				postValues = append(postValues, v.values...)
 			}
-			err := app.API.PostMetricValues(postValues)
+			err := app.API.PostHostMetricValues(postValues)
 			if err != nil {
 				logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
 				if lState != loopStateTerminating {
@@ -612,8 +612,7 @@ func (app *App) UpdateHostSpecs() {
 		return
 	}
 
-	err = app.API.UpdateHost(app.Host.ID, (*mkr.UpdateHostParam)(hostParam))
-
+	_, err = app.API.UpdateHost(app.Host.ID, (*mkr.UpdateHostParam)(hostParam))
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
 	} else {

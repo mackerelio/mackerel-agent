@@ -68,7 +68,7 @@ func runMetadataLoop(app *App, termMetadataCh <-chan struct{}, quit <-chan struc
 		}
 
 		for _, result := range results {
-			err := app.API.PutMetadata(app.Host.ID, result.namespace, result.metadata)
+			err := app.API.PutHostMetaData(app.Host.ID, result.namespace, result.metadata)
 			// retry on 5XX errors
 			if mackerel.IsServerError(err) {
 				e := err.(*mkr.APIError)

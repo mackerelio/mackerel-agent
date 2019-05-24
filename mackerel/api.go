@@ -60,11 +60,6 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 
 var apiRequestTimeout = 30 * time.Second
 
-// FindHost find the host
-func (api *API) FindHost(id string) (*mkr.Host, error) {
-	return api.Client.FindHost(id)
-}
-
 // FindHostByCustomIdentifier find the host by the custom identifier
 func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*mkr.Host, error) {
 	param := mkr.FindHostsParam{
@@ -79,35 +74,4 @@ func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*mkr.Host, 
 		return nil, infoError(fmt.Sprintf("no host was found for the custom identifier: %s", customIdentifier))
 	}
 	return hosts[0], nil
-}
-
-// CreateHost register the host to mackerel
-func (api *API) CreateHost(hostParam *mkr.CreateHostParam) (string, error) {
-	return api.Client.CreateHost(hostParam)
-}
-
-// UpdateHost updates the host information on Mackerel.
-func (api *API) UpdateHost(hostID string, hostParam *mkr.UpdateHostParam) error {
-	_, err := api.Client.UpdateHost(hostID, hostParam)
-	return err
-}
-
-// UpdateHostStatus updates the status of the host
-func (api *API) UpdateHostStatus(hostID string, status string) error {
-	return api.Client.UpdateHostStatus(hostID, status)
-}
-
-// PostMetricValues post metrics
-func (api *API) PostMetricValues(metricsValues [](*mkr.HostMetricValue)) error {
-	return api.Client.PostHostMetricValues(metricsValues)
-}
-
-// CreateGraphDefs register graph defs
-func (api *API) CreateGraphDefs(payloads []*mkr.GraphDefsParam) error {
-	return api.Client.CreateGraphDefs(payloads)
-}
-
-// RetireHost retires the host
-func (api *API) RetireHost(hostID string) error {
-	return api.Client.RetireHost(hostID)
 }
