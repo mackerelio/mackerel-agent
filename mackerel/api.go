@@ -2,8 +2,6 @@ package mackerel
 
 import (
 	"fmt"
-	"net/http"
-	"time"
 
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
@@ -52,13 +50,8 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
-	c.AdditionalHeaders = make(http.Header)
-	// TODO(lufia): should we set a timeout explicitly?
-	//c.HTTPClient.Timeout = apiRequestTimeout
 	return &API{Client: c}, nil
 }
-
-var apiRequestTimeout = 30 * time.Second
 
 // FindHostByCustomIdentifier find the host by the custom identifier
 func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*mkr.Host, error) {

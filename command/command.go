@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"net/http"
 	"os"
 	"time"
 
@@ -631,7 +632,7 @@ func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool) (*mackere
 		return nil, err
 	}
 	api.UserAgent = buildUA(ver, rev)
-	// We must not set api.DefaultHeaders; it is pointing to same value of api.c.AdditionalHeaders.
+	api.AdditionalHeaders = make(http.Header)
 	api.AdditionalHeaders.Add("X-Agent-Version", ver)
 	api.AdditionalHeaders.Add("X-Revision", rev)
 	return api, nil
