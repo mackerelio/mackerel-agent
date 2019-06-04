@@ -3,8 +3,11 @@ package mackerel
 import (
 	"fmt"
 
+	"github.com/mackerelio/golib/logging"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
+
+var logger = logging.GetLogger("api")
 
 // API is the main interface of Mackerel API.
 type API struct {
@@ -50,6 +53,7 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
+	c.PrioritizedLogger = logger
 	return &API{Client: c}, nil
 }
 
