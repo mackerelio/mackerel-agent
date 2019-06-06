@@ -518,23 +518,45 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 			logger.Debugf("RunChekcerLoop: Extend the delay to %d seconds. There are %d reports.", reportCheckDelay, len(reports))
 		}
 
-		partialReports := make([]*checks.Report, 0, checkReportMaxSize)
-		for i, report := range reports {
-			logger.Debugf("reports[%d]: %#v", i, report)
+		// "" means no CustomIdentifier, which means the host running this agent itself.
+		reportsByCustomIdentifier := map[string][]*checks.Report{}
+		for _, report := range reports {
+			customIdentifier := ""
+			if report.CustomIdentfier != nil {
+				customIdentifier = *report.CustomIdentfier
+			}
+			partialReports, exists := reportsByCustomIdentifier[customIdentifier]
+			if !exists {
+				partialReports = make([]*checks.Report, 0, checkReportMaxSize)
+			}
 			partialReports = append(partialReports, report)
 			if len(partialReports) >= checkReportMaxSize {
-				reportCheckMonitors(app, partialReports)
-				partialReports = make([]*checks.Report, 0, checkReportMaxSize)
+				host := app.Host
+				if customIdentifier != "" {
+					if h, ok := app.CustomIdentifierHosts[customIdentifier]; ok {
+						host = h
+					}
+				}
+				reportCheckMonitors(app, host, partialReports)
+				delete(reportsByCustomIdentifier, customIdentifier)
 				time.Sleep(time.Duration(reportCheckDelay) * time.Second)
 			}
 		}
-		reportCheckMonitors(app, partialReports)
+		for customIdentifier, partialReports := range reportsByCustomIdentifier {
+			host := app.Host
+			if customIdentifier != "" {
+				if h, ok := app.CustomIdentifierHosts[customIdentifier]; ok {
+					host = h
+				}
+			}
+			reportCheckMonitors(app, host, partialReports)
+		}
 	}
 }
 
-func reportCheckMonitors(app *App, reports []*checks.Report) {
+func reportCheckMonitors(app *App, host *mkr.Host, reports []*checks.Report) {
 	for {
-		err := app.API.ReportCheckMonitors(app.Host.ID, reports)
+		err := app.API.ReportCheckMonitors(host.ID, reports)
 		if err == nil {
 			break
 		}
