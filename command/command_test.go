@@ -415,7 +415,7 @@ func TestReportCheckMonitors(t *testing.T) {
 		}
 
 		go func() {
-			reportCheckMonitors(app, []*checks.Report{})
+			reportCheckMonitors(app, app.Host, []*checks.Report{})
 		}()
 
 		time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * 3 * time.Second)
