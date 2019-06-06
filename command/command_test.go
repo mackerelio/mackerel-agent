@@ -189,7 +189,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 	}
 }
 
-func TestCollectHostSpecs(t *testing.T) {
+func TestCollectHostParam(t *testing.T) {
 	conf := config.Config{}
 	hostParam, err := collectHostParam(&conf, &AgentMeta{})
 
