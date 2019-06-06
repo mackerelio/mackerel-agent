@@ -248,6 +248,7 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 // The User option is ignored on Windows
 type CheckPlugin struct {
 	Command               Command
+	CustomIdentifier      *string
 	NotificationInterval  *int32
 	CheckInterval         *int32
 	MaxCheckAttempts      *int32
@@ -286,6 +287,7 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 
 	plugin := CheckPlugin{
 		Command:               *cmd,
+		CustomIdentifier:      pconf.CustomIdentifier,
 		NotificationInterval:  pconf.NotificationInterval,
 		CheckInterval:         pconf.CheckInterval,
 		MaxCheckAttempts:      pconf.MaxCheckAttempts,
