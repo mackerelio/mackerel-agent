@@ -531,27 +531,25 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 			}
 			partialReports = append(partialReports, report)
 			if len(partialReports) >= checkReportMaxSize {
-				host := app.Host
-				if customIdentifier != "" {
-					if h, ok := app.CustomIdentifierHosts[customIdentifier]; ok {
-						host = h
-					}
-				}
-				reportCheckMonitors(app, host, partialReports)
+				reportCheckMonitorsForCustomIdentifier(app, customIdentifier, partialReports)
 				delete(reportsByCustomIdentifier, customIdentifier)
 				time.Sleep(time.Duration(reportCheckDelay) * time.Second)
 			}
 		}
 		for customIdentifier, partialReports := range reportsByCustomIdentifier {
-			host := app.Host
-			if customIdentifier != "" {
-				if h, ok := app.CustomIdentifierHosts[customIdentifier]; ok {
-					host = h
-				}
-			}
-			reportCheckMonitors(app, host, partialReports)
+			reportCheckMonitorsForCustomIdentifier(app, customIdentifier, partialReports)
 		}
 	}
+}
+
+func reportCheckMonitorsForCustomIdentifier(app *App, customIdentifier string, reports []*checks.Report) {
+	host := app.Host
+	if customIdentifier != "" {
+		if h, ok := app.CustomIdentifierHosts[customIdentifier]; ok {
+			host = h
+		}
+	}
+	reportCheckMonitors(app, host, reports)
 }
 
 func reportCheckMonitors(app *App, host *mkr.Host, reports []*checks.Report) {
