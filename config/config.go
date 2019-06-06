@@ -394,6 +394,11 @@ func (conf *Config) ListCustomIdentifiers() []string {
 			customIdentifiers = append(customIdentifiers, *pconf.CustomIdentifier)
 		}
 	}
+	for _, cconf := range conf.CheckPlugins {
+		if cconf.CustomIdentifier != nil && index(customIdentifiers, *cconf.CustomIdentifier) == -1 {
+			customIdentifiers = append(customIdentifiers, *cconf.CustomIdentifier)
+		}
+	}
 	return customIdentifiers
 }
 
