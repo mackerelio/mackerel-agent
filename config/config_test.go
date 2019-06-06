@@ -51,6 +51,10 @@ action = { command = "cardiac_massage", user = "doctor", env = { "NAME_1" = "VAL
 [plugin.checks.heartbeat3]
 command = "heartbeat.sh"
 
+[plugin.checks.heartbeat4]
+command = "heartbeat.sh"
+custom_identifier = "app2.example.com"
+
 [plugin.metadata.hostinfo]
 command = "hostinfo.sh"
 user = "zzz"
@@ -398,11 +402,15 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Error("plugin timeout_seconds should be 60s")
 	}
 	customIdentifiers := config.ListCustomIdentifiers()
-	if len(customIdentifiers) != 1 {
-		t.Errorf("config should have 1 custom_identifier")
+	if len(customIdentifiers) != 2 {
+		t.Errorf("config should have 2 custom_identifier")
 	}
-	if customIdentifiers[0] != "app1.example.com" {
-		t.Errorf("first custom_identifier should be 'app1.example.com'")
+	// In fact they should be [app1, app2], but we don't mind their order here
+	if customIdentifiers[0] != "app1.example.com" && customIdentifiers[1] != "app1.example.com"{
+		t.Errorf("custom_identifier should include 'app1.example.com'")
+	}
+	if customIdentifiers[0] != "app2.example.com" && customIdentifiers[1] != "app2.example.com"{
+		t.Errorf("custom_identifier should include 'app2.example.com'")
 	}
 	if pluginConf.IncludePattern != nil {
 		t.Errorf("plugin include_pattern should be nil but got %v", pluginConf.IncludePattern)
@@ -488,6 +496,14 @@ func TestLoadConfigFile(t *testing.T) {
 	checks3 := config.CheckPlugins["heartbeat3"]
 	if checks3.Action != nil {
 		t.Error("config should not have action of check plugin")
+	}
+	if checks3.CustomIdentifier != nil {
+		t.Error("config should not have customIdentifier")
+	}
+
+	checks4 := config.CheckPlugins["heartbeat4"]
+	if checks4.CustomIdentifier == nil || *checks4.CustomIdentifier != "app2.example.com" {
+		t.Error("config should have customIdentifier 'app2.example.com'")
 	}
 
 	if config.MetadataPlugins == nil {
