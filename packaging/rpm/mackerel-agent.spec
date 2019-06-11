@@ -62,6 +62,14 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Jun 11 2019 <mackerel-developers@hatena.ne.jp> - 0.60.0
+- migrate CreatingMetricsValue to mackerel.HostMetricValue (by lufia)
+- migrate to use mkr.GraphDefsParam instead of CreateGraphDefsPayload (by lufia)
+- migrate to use mkr.CheckReports instead of monitoringChecksPayload (by lufia)
+- update appveyor.yml to build 64bit binaries (by lufia)
+- migrate to use mkr.XxxHostParam instead of mackerel.HostSpec (by lufia)
+- support Go Modules (by lufia)
+
 * Wed May 08 2019 <mackerel-developers@hatena.ne.jp> - 0.59.3
 - Add rc script for FreeBSD (by owatan)
 - migrate to use mkr.Interface instead of mackerel.NetInterface (by lufia)
