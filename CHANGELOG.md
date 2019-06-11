@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.60.0 (2019-06-11)
+
+* migrate CreatingMetricsValue to mackerel.HostMetricValue #565 (lufia)
+* migrate to use mkr.GraphDefsParam instead of CreateGraphDefsPayload #564 (lufia)
+* migrate to use mkr.CheckReports instead of monitoringChecksPayload #563 (lufia)
+* update appveyor.yml to build 64bit binaries #561 (lufia)
+* migrate to use mkr.XxxHostParam instead of mackerel.HostSpec #554 (lufia)
+* support Go Modules #549 (lufia)
+
+
 ## 0.59.3 (2019-05-08)
 
 * Add rc script for FreeBSD #559 (owatan)

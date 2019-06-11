@@ -1,3 +1,20 @@
+mackerel-agent (0.60.0-1) stable; urgency=low
+
+  * migrate CreatingMetricsValue to mackerel.HostMetricValue (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/565>
+  * migrate to use mkr.GraphDefsParam instead of CreateGraphDefsPayload (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/564>
+  * migrate to use mkr.CheckReports instead of monitoringChecksPayload (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/563>
+  * update appveyor.yml to build 64bit binaries (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/561>
+  * migrate to use mkr.XxxHostParam instead of mackerel.HostSpec (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/554>
+  * support Go Modules (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/549>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 11 Jun 2019 03:11:20 +0000
+
 mackerel-agent (0.59.3-1) stable; urgency=low
 
   * Add rc script for FreeBSD (by owatan)
