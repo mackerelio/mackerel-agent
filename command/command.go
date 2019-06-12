@@ -62,7 +62,7 @@ func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mkr
 				logger.Warningf("%s", msg)
 			}
 		}
-		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
+		if mackerel.IsClientError(err) {
 			// don't retry when client error (APIKey error etc.) occurred
 			return nil
 		}
@@ -319,7 +319,7 @@ func loop(app *App, termCh chan struct{}) error {
 			for _, v := range origPostValues {
 				postValues = append(postValues, v.values...)
 			}
-			err := app.API.PostMetricValues(postValues)
+			err := app.API.PostHostMetricValues(postValues)
 			if err != nil {
 				logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
 				if lState != loopStateTerminating {
@@ -541,7 +541,7 @@ func reportCheckMonitors(app *App, reports []*checks.Report) {
 
 		logger.Errorf("ReportCheckMonitors: %s", err)
 
-		if apiErr, ok := err.(*mackerel.Error); ok && apiErr.IsClientError() {
+		if mackerel.IsClientError(err) {
 			break
 		}
 
@@ -553,10 +553,10 @@ func reportCheckMonitors(app *App, reports []*checks.Report) {
 }
 
 // collectHostParam collects host specs (correspond to "name", "meta", "interfaces" and "customIdentifier" fields in API v0)
-func collectHostParam(conf *config.Config, ameta *AgentMeta) (mkr.CreateHostParam, error) {
+func collectHostParam(conf *config.Config, ameta *AgentMeta) (*mkr.CreateHostParam, error) {
 	hostname, err := os.Hostname()
 	if err != nil {
-		return mkr.CreateHostParam{}, fmt.Errorf("failed to obtain hostname: %s", err.Error())
+		return nil, fmt.Errorf("failed to obtain hostname: %s", err.Error())
 	}
 
 	specGens := specGenerators()
@@ -576,7 +576,7 @@ func collectHostParam(conf *config.Config, ameta *AgentMeta) (mkr.CreateHostPara
 
 	interfaces, err := interfaceGenerator().Generate()
 	if err != nil {
-		return mkr.CreateHostParam{}, fmt.Errorf("failed to collect interfaces: %s", err.Error())
+		return nil, fmt.Errorf("failed to collect interfaces: %s", err.Error())
 	}
 
 	meta.AgentVersion = ameta.Version
@@ -592,7 +592,7 @@ func collectHostParam(conf *config.Config, ameta *AgentMeta) (mkr.CreateHostPara
 			})
 	}
 
-	return mkr.CreateHostParam{
+	return &mkr.CreateHostParam{
 		Name:             hostname,
 		Meta:             meta,
 		Interfaces:       interfaces,
@@ -613,8 +613,7 @@ func (app *App) UpdateHostSpecs() {
 		return
 	}
 
-	err = app.API.UpdateHost(app.Host.ID, mkr.UpdateHostParam(hostParam))
-
+	_, err = app.API.UpdateHost(app.Host.ID, (*mkr.UpdateHostParam)(hostParam))
 	if err != nil {
 		logger.Errorf("Error while updating host specs: %s", err)
 	} else {
@@ -632,10 +631,10 @@ func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool) (*mackere
 	if err != nil {
 		return nil, err
 	}
-	api.UA = buildUA(ver, rev)
-	api.DefaultHeaders = http.Header{}
-	api.DefaultHeaders.Add("X-Agent-Version", ver)
-	api.DefaultHeaders.Add("X-Revision", rev)
+	api.UserAgent = buildUA(ver, rev)
+	api.AdditionalHeaders = make(http.Header)
+	api.AdditionalHeaders.Add("X-Agent-Version", ver)
+	api.AdditionalHeaders.Add("X-Revision", rev)
 	return api, nil
 }
 
@@ -696,7 +695,7 @@ func runOncePayload(conf *config.Config, ameta *AgentMeta) ([]*mkr.GraphDefsPara
 	ag := NewAgent(conf)
 	graphdefs := ag.CollectGraphDefsOfPlugins()
 	metrics := ag.CollectMetrics(time.Now())
-	return graphdefs, &hostParam, metrics, nil
+	return graphdefs, hostParam, metrics, nil
 }
 
 // NewAgent creates a new instance of agent.Agent from its configuration conf.

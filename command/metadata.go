@@ -6,7 +6,9 @@ import (
 
 	"github.com/mackerelio/golib/pluginutil"
 	"github.com/mackerelio/mackerel-agent/config"
+	"github.com/mackerelio/mackerel-agent/mackerel"
 	"github.com/mackerelio/mackerel-agent/metadata"
+	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
 func metadataGenerators(conf *config.Config) []*metadata.Generator {
@@ -66,10 +68,11 @@ func runMetadataLoop(app *App, termMetadataCh <-chan struct{}, quit <-chan struc
 		}
 
 		for _, result := range results {
-			resp, err := app.API.PutMetadata(app.Host.ID, result.namespace, result.metadata)
+			err := app.API.PutHostMetaData(app.Host.ID, result.namespace, result.metadata)
 			// retry on 5XX errors
-			if resp != nil && resp.StatusCode >= 500 {
-				logger.Errorf("put metadata %q failed: status %s", result.namespace, resp.Status)
+			if mackerel.IsServerError(err) {
+				e := err.(*mkr.APIError)
+				logger.Errorf("put metadata %q failed: status %s", result.namespace, e.StatusCode)
 				go func() {
 					resultCh <- result
 				}()
