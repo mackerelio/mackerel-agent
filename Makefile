@@ -5,6 +5,13 @@ CURRENT_REVISION := $(shell git rev-parse --short HEAD)
 ARGS := "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS := "linux darwin freebsd windows netbsd"
 
+GOBIN ?= $(shell go env GOPATH)/bin
+DEP_PROGS=\
+	$(GOBIN)/golint\
+	$(GOBIN)/gotestcover\
+	$(GOBIN)/goxz\
+	$(GOBIN)/goveralls\
+
 BUILD_LDFLAGS := "\
 	  -X main.version=$(VERSION) \
 	  -X main.gitcommit=$(CURRENT_REVISION) \
@@ -28,13 +35,19 @@ run: build
 	./build/$(MACKEREL_AGENT_NAME) $(ARGS)
 
 .PHONY: deps
-deps:
-	GO111MODULE=off \
-	go get golang.org/x/lint/golint   \
-	  github.com/pierrre/gotestcover  \
-	  github.com/Songmu/goxz/cmd/goxz \
-	  github.com/mattn/goveralls      \
-	  github.com/motemen/go-cli/gen
+deps: $(DEP_PROGS)
+
+$(GOBIN)/golint:
+	GO111MODULE=off go get golang.org/x/lint/golint
+
+$(GOBIN)/gotestcover:
+	GO111MODULE=off go get github.com/pierrre/gotestcover
+
+$(GOBIN)/goxz:
+	GO111MODULE=off go get github.com/Songmu/goxz/cmd/goxz
+
+$(GOBIN)/goveralls:
+	GO111MODULE=off go get github.com/mattn/goveralls
 
 .PHONY: lint
 lint: deps
