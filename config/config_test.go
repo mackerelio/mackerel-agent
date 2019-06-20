@@ -406,10 +406,10 @@ func TestLoadConfigFile(t *testing.T) {
 		t.Errorf("config should have 2 custom_identifier")
 	}
 	// In fact they should be [app1, app2], but we don't mind their order here
-	if customIdentifiers[0] != "app1.example.com" && customIdentifiers[1] != "app1.example.com"{
+	if customIdentifiers[0] != "app1.example.com" && customIdentifiers[1] != "app1.example.com" {
 		t.Errorf("custom_identifier should include 'app1.example.com'")
 	}
-	if customIdentifiers[0] != "app2.example.com" && customIdentifiers[1] != "app2.example.com"{
+	if customIdentifiers[0] != "app2.example.com" && customIdentifiers[1] != "app2.example.com" {
 		t.Errorf("custom_identifier should include 'app2.example.com'")
 	}
 	if pluginConf.IncludePattern != nil {
