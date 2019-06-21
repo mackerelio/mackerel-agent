@@ -53,7 +53,7 @@ func init() {
 		KillAfter: 1 * time.Second,
 	}
 	exitSt, _, stderr, err := tio.Run()
-	if err == nil && exitSt.Code != 0 && strings.Contains(stderr, "df: invalid option -- ") {
+	if err == nil && exitSt.Code != 0 && (strings.Contains(stderr, "df: invalid option -- ") || strings.Contains(stderr, "df: unrecognized option: ")) {
 		dfOpt = "-k"
 	}
 }
