@@ -5,6 +5,13 @@ CURRENT_REVISION := $(shell git rev-parse --short HEAD)
 ARGS := "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS := "linux darwin freebsd windows netbsd"
 
+GOBIN ?= $(shell go env GOPATH)/bin
+DEP_PROGS=\
+	$(GOBIN)/golint\
+	$(GOBIN)/gotestcover\
+	$(GOBIN)/goxz\
+	$(GOBIN)/goveralls\
+
 BUILD_LDFLAGS := "\
 	  -X main.version=$(VERSION) \
 	  -X main.gitcommit=$(CURRENT_REVISION) \
@@ -28,13 +35,19 @@ run: build
 	./build/$(MACKEREL_AGENT_NAME) $(ARGS)
 
 .PHONY: deps
-deps:
-	GO111MODULE=off \
-	go get golang.org/x/lint/golint   \
-	  github.com/pierrre/gotestcover  \
-	  github.com/Songmu/goxz/cmd/goxz \
-	  github.com/mattn/goveralls      \
-	  github.com/motemen/go-cli/gen
+deps: $(DEP_PROGS)
+
+$(GOBIN)/golint:
+	GO111MODULE=off go get golang.org/x/lint/golint
+
+$(GOBIN)/gotestcover:
+	GO111MODULE=off go get github.com/pierrre/gotestcover
+
+$(GOBIN)/goxz:
+	GO111MODULE=off go get github.com/Songmu/goxz/cmd/goxz
+
+$(GOBIN)/goveralls:
+	GO111MODULE=off go get github.com/mattn/goveralls
 
 .PHONY: lint
 lint: deps
@@ -62,8 +75,12 @@ crossbuild: deps
 cover: deps
 	gotestcover -v -race -short -covermode=atomic -coverprofile=.profile.cov -parallelpackages=4 ./...
 
+# Depending to deps looks like not needed.
+# However `make build` in recipe depends deps,
+# and it would install some tools as GOARCH=386 if tools are not installed.
+# We should be installed tools of native architecture.
 .PHONY: crossbuild-package
-crossbuild-package:
+crossbuild-package: deps
 	mkdir -p ./build-linux-386 ./build-linux-amd64
 	GOOS=linux GOARCH=386 make build
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-386/
