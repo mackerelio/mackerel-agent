@@ -525,13 +525,12 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 			if report.CustomIdentfier != nil {
 				customIdentifier = *report.CustomIdentfier
 			}
-			partialReports, exists := reportsByCustomIdentifier[customIdentifier]
-			if !exists {
-				partialReports = make([]*checks.Report, 0, checkReportMaxSize)
+			if _, exists := reportsByCustomIdentifier[customIdentifier]; !exists {
+				reportsByCustomIdentifier[customIdentifier] = make([]*checks.Report, 0, checkReportMaxSize)
 			}
-			partialReports = append(partialReports, report)
-			if len(partialReports) >= checkReportMaxSize {
-				reportCheckMonitorsForCustomIdentifier(app, customIdentifier, partialReports)
+			reportsByCustomIdentifier[customIdentifier] = append(reportsByCustomIdentifier[customIdentifier], report)
+			if len(reportsByCustomIdentifier[customIdentifier]) >= checkReportMaxSize {
+				reportCheckMonitorsForCustomIdentifier(app, customIdentifier, reportsByCustomIdentifier[customIdentifier])
 				delete(reportsByCustomIdentifier, customIdentifier)
 				time.Sleep(time.Duration(reportCheckDelay) * time.Second)
 			}
