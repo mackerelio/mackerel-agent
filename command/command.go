@@ -542,14 +542,16 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 }
 
 func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Report) {
-	host := app.Host
+	hostID := app.Host.ID
 	if customIdentifier != "" {
-		if h, ok := app.CustomIdentifierHosts[customIdentifier]; ok {
-			host = h
+		if host, ok := app.CustomIdentifierHosts[customIdentifier]; ok {
+			hostID = host.ID
+		} else {
+			return
 		}
 	}
 	for {
-		err := app.API.ReportCheckMonitors(host.ID, reports)
+		err := app.API.ReportCheckMonitors(hostID, reports)
 		if err == nil {
 			break
 		}
