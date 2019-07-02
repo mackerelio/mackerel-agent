@@ -85,11 +85,15 @@ cover: deps
 # We should be installed tools of native architecture.
 .PHONY: crossbuild-package
 crossbuild-package: deps
-	mkdir -p ./build-linux-386 ./build-linux-amd64
+	mkdir -p ./build-linux-386 ./build-linux-amd64 ./build-linux-arm64 ./build-linux-mips
 	GOOS=linux GOARCH=386 make build
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-386/
 	GOOS=linux GOARCH=amd64 make build
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-amd64/
+	GOOS=linux GOARCH=arm64 make build
+	mv build/$(MACKEREL_AGENT_NAME) build-linux-arm64/
+	GOOS=linux GOARCH=mips make build
+	mv build/$(MACKEREL_AGENT_NAME) build-linux-mips/
 
 .PHONY: crossbuild-package-kcps
 crossbuild-package-kcps:
