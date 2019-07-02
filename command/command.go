@@ -518,23 +518,40 @@ func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct
 			logger.Debugf("RunChekcerLoop: Extend the delay to %d seconds. There are %d reports.", reportCheckDelay, len(reports))
 		}
 
-		partialReports := make([]*checks.Report, 0, checkReportMaxSize)
-		for i, report := range reports {
-			logger.Debugf("reports[%d]: %#v", i, report)
-			partialReports = append(partialReports, report)
-			if len(partialReports) >= checkReportMaxSize {
-				reportCheckMonitors(app, partialReports)
-				partialReports = make([]*checks.Report, 0, checkReportMaxSize)
+		// "" means no CustomIdentifier, which means the host running this agent itself.
+		reportsByCustomIdentifier := map[string][]*checks.Report{}
+		for _, report := range reports {
+			customIdentifier := ""
+			if report.CustomIdentfier != nil {
+				customIdentifier = *report.CustomIdentfier
+			}
+			if _, exists := reportsByCustomIdentifier[customIdentifier]; !exists {
+				reportsByCustomIdentifier[customIdentifier] = make([]*checks.Report, 0, checkReportMaxSize)
+			}
+			reportsByCustomIdentifier[customIdentifier] = append(reportsByCustomIdentifier[customIdentifier], report)
+			if len(reportsByCustomIdentifier[customIdentifier]) >= checkReportMaxSize {
+				reportCheckMonitors(app, customIdentifier, reportsByCustomIdentifier[customIdentifier])
+				delete(reportsByCustomIdentifier, customIdentifier)
 				time.Sleep(time.Duration(reportCheckDelay) * time.Second)
 			}
 		}
-		reportCheckMonitors(app, partialReports)
+		for customIdentifier, partialReports := range reportsByCustomIdentifier {
+			reportCheckMonitors(app, customIdentifier, partialReports)
+		}
 	}
 }
 
-func reportCheckMonitors(app *App, reports []*checks.Report) {
+func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Report) {
+	hostID := app.Host.ID
+	if customIdentifier != "" {
+		if host, ok := app.CustomIdentifierHosts[customIdentifier]; ok {
+			hostID = host.ID
+		} else {
+			return
+		}
+	}
 	for {
-		err := app.API.ReportCheckMonitors(app.Host.ID, reports)
+		err := app.API.ReportCheckMonitors(hostID, reports)
 		if err == nil {
 			break
 		}
@@ -585,6 +602,10 @@ func collectHostParam(conf *config.Config, ameta *AgentMeta) (*mkr.CreateHostPar
 
 	checks := make([]mkr.CheckConfig, 0, len(conf.CheckPlugins))
 	for name, checkPlugin := range conf.CheckPlugins {
+		// Exclude checks with customIdentifiers, which is not for the host itself.
+		if checkPlugin.CustomIdentifier != nil {
+			continue
+		}
 		checks = append(checks,
 			mkr.CheckConfig{
 				Name: name,

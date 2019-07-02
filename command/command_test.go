@@ -189,7 +189,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 	}
 }
 
-func TestCollectHostSpecs(t *testing.T) {
+func TestCollectHostParam(t *testing.T) {
 	conf := config.Config{}
 	hostParam, err := collectHostParam(&conf, &AgentMeta{})
 
@@ -215,6 +215,32 @@ func TestCollectHostSpecs(t *testing.T) {
 
 	if len(hostParam.Meta.Kernel) == 0 {
 		t.Error("meta.kernel should exist")
+	}
+}
+
+func TestCollectHostParamWithChecks(t *testing.T) {
+	customIdentifier := "app.example.com"
+	conf := config.Config{
+		CheckPlugins: map[string]*config.CheckPlugin{
+			"chk1": &config.CheckPlugin{
+				CustomIdentifier: nil,
+			},
+			"chk2": &config.CheckPlugin{
+				CustomIdentifier: &customIdentifier,
+			},
+		},
+	}
+	hostParam, err := collectHostParam(&conf, &AgentMeta{})
+
+	if err != nil {
+		t.Errorf("collectHostParam should not fail: %s", err)
+	}
+
+	if len(hostParam.Checks) != 1 {
+		t.Error("only checks without customIdentifier should be included in param")
+	}
+	if hostParam.Checks[0].Name != "chk1" {
+		t.Error("only checks without customIdentifier should be included in param")
 	}
 }
 
@@ -415,7 +441,7 @@ func TestReportCheckMonitors(t *testing.T) {
 		}
 
 		go func() {
-			reportCheckMonitors(app, []*checks.Report{})
+			reportCheckMonitors(app, "", []*checks.Report{})
 		}()
 
 		time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * 3 * time.Second)
