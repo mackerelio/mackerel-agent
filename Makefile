@@ -70,6 +70,10 @@ crossbuild: deps
 		-os=linux,freebsd,netbsd -arch=arm -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
+	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+		-os=linux -arch=arm64,mips -d ./snapshot \
+		-include=mackerel-agent.conf \
+		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
 
 .PHONY: cover
 cover: deps
