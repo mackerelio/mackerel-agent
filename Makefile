@@ -4,6 +4,7 @@ VERSION := 0.60.0
 CURRENT_REVISION := $(shell git rev-parse --short HEAD)
 ARGS := "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS := "linux darwin freebsd windows netbsd"
+export GO111MODULE=on
 
 GOBIN ?= $(shell go env GOPATH)/bin
 DEP_PROGS=\
@@ -236,3 +237,8 @@ release: check-release-deps
 clean:
 	rm -f build/$(MACKEREL_AGENT_NAME) build-linux-amd64/$(MACKEREL_AGENT_NAME) build-linux-386/$(MACKEREL_AGENT_NAME)
 	go clean
+
+.PHONY: update
+update:
+	go get -u ./...
+	go mod tidy
