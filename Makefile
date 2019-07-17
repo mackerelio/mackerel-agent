@@ -9,7 +9,6 @@ GOBIN ?= $(shell go env GOPATH)/bin
 DEP_PROGS=\
 	$(GOBIN)/golint\
 	$(GOBIN)/gotestcover\
-	$(GOBIN)/gocredits\
 	$(GOBIN)/goxz\
 	$(GOBIN)/goveralls\
 
