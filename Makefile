@@ -9,6 +9,7 @@ GOBIN ?= $(shell go env GOPATH)/bin
 DEP_PROGS=\
 	$(GOBIN)/golint\
 	$(GOBIN)/gotestcover\
+	$(GOBIN)/gocredits\
 	$(GOBIN)/goxz\
 	$(GOBIN)/goveralls\
 
@@ -42,6 +43,9 @@ $(GOBIN)/golint:
 
 $(GOBIN)/gotestcover:
 	GO111MODULE=off go get github.com/pierrre/gotestcover
+
+$(GOBIN)/gocredits:
+	GO111MODULE=off go get github.com/Songmu/gocredits/cmd/gocredits
 
 $(GOBIN)/goxz:
 	GO111MODULE=off go get github.com/Songmu/goxz/cmd/goxz
