@@ -40,6 +40,7 @@ deps: $(DEP_PROGS)
 
 .PHONY: credits
 credits: $(GOBIN)/gocredits
+	go mod tidy
 	gocredits -w .
 
 $(GOBIN)/golint:
