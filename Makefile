@@ -38,6 +38,10 @@ run: build
 .PHONY: deps
 deps: $(DEP_PROGS)
 
+.PHONY: credits
+credits: $(GOBIN)/gocredits
+	gocredits -w .
+
 $(GOBIN)/golint:
 	GO111MODULE=off go get golang.org/x/lint/golint
 
@@ -64,7 +68,7 @@ convention:
 	  (echo 'please `go generate ./...` and commit them' && false)
 
 .PHONY: crossbuild
-crossbuild: deps
+crossbuild: deps credits
 	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,darwin,freebsd,netbsd -arch=386,amd64 -d ./snapshot \
@@ -84,7 +88,7 @@ cover: deps
 # and it would install some tools as GOARCH=386 if tools are not installed.
 # We should be installed tools of native architecture.
 .PHONY: crossbuild-package
-crossbuild-package: deps
+crossbuild-package: deps credits
 	mkdir -p ./build-linux-386 ./build-linux-amd64
 	GOOS=linux GOARCH=386 make build
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-386/
