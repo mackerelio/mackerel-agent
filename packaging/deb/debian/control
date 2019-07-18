@@ -1,7 +1,7 @@
 Source: mackerel-agent
 Section: admin
 Priority: extra
-Maintainer: Hatena <mackerel-developers@hatena.ne.jp>
+Maintainer: mackerel <mackerel-developers@hatena.ne.jp>
 Build-Depends: debhelper (>= 9)
 Standards-Version: 3.9.6
 Vcs-Browser: https://github.com/mackerelio/mackerel-agent
