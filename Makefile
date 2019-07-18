@@ -39,7 +39,7 @@ deps: $(DEP_PROGS)
 
 .PHONY: credits
 credits: $(GOBIN)/gocredits
-	go mod tidy
+	go mod tidy # not `go get` to get all the dependencies regardress of OS, architecture and build tags
 	gocredits -w .
 
 $(GOBIN)/golint:
