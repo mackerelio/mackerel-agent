@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.61.0 (2019-07-22)
+
+* Generate and include CREDITS file in the release artifacts #575 (itchyny)
+* Migrate docker repository #572 (hayajo)
+* [check-plugin] Support custom_identifier  #571 (astj)
+* Stop unnecessary builds #569 (lufia)
+* Care newer busybox #570 (astj)
+* migrate to mackerel.Client #566 (lufia)
+
+
 ## 0.60.0 (2019-06-11)
 
 * migrate CreatingMetricsValue to mackerel.HostMetricValue #565 (lufia)

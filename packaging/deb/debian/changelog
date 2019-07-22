@@ -1,3 +1,20 @@
+mackerel-agent (0.61.0-1) stable; urgency=low
+
+  * Generate and include CREDITS file in the release artifacts (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/575>
+  * Migrate docker repository (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/572>
+  * [check-plugin] Support custom_identifier  (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/571>
+  * Stop unnecessary builds (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/569>
+  * Care newer busybox (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/570>
+  * migrate to mackerel.Client (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/566>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 22 Jul 2019 13:08:38 +0900
+
 mackerel-agent (0.60.0-1) stable; urgency=low
 
   * migrate CreatingMetricsValue to mackerel.HostMetricValue (by lufia)
