@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.61.1 (2019-07-23)
+
+* Set rpm dist to ".el7.centos", not ".el7" in rpm-v2 #581 (astj)
+
+
 ## 0.61.0 (2019-07-22)
 
 * Generate and include CREDITS file in the release artifacts #575 (itchyny)

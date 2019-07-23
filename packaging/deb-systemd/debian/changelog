@@ -1,3 +1,10 @@
+mackerel-agent (0.61.1-1.systemd) stable; urgency=low
+
+  * Set rpm dist to ".el7.centos", not ".el7" in rpm-v2 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/581>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 23 Jul 2019 16:24:08 +0900
+
 mackerel-agent (0.61.0-1.systemd) stable; urgency=low
 
   * Generate and include CREDITS file in the release artifacts (by itchyny)
