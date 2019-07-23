@@ -21,6 +21,14 @@ func init() {
 	}
 }
 
+func TestMain(m *testing.M) {
+	// overwrite os.Args[0] to make pid check pass
+	oldArg0 := os.Args[0]
+	os.Args[0] = stubAgent
+	defer func() { os.Args[0] = oldArg0 }()
+	os.Exit(m.Run())
+}
+
 func TestSupervise(t *testing.T) {
 	ch := make(chan os.Signal, 1)
 	done := make(chan error)
