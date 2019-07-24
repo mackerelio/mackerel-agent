@@ -55,6 +55,17 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Jul 23 2019 <mackerel-developers@hatena.ne.jp> - 0.61.1
+- Set rpm dist to ".el7.centos", not ".el7" in rpm-v2 (by astj)
+
+* Mon Jul 22 2019 <mackerel-developers@hatena.ne.jp> - 0.61.0
+- Generate and include CREDITS file in the release artifacts (by itchyny)
+- Migrate docker repository (by hayajo)
+- [check-plugin] Support custom_identifier  (by astj)
+- Stop unnecessary builds (by lufia)
+- Care newer busybox (by astj)
+- migrate to mackerel.Client (by lufia)
+
 * Tue Jun 11 2019 <mackerel-developers@hatena.ne.jp> - 0.60.0
 - migrate CreatingMetricsValue to mackerel.HostMetricValue (by lufia)
 - migrate to use mkr.GraphDefsParam instead of CreateGraphDefsPayload (by lufia)

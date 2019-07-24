@@ -1,6 +1,6 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
 MACKEREL_API_BASE ?= "https://api.mackerelio.com"
-VERSION := 0.60.0
+VERSION := 0.61.1
 CURRENT_REVISION := $(shell git rev-parse --short HEAD)
 ARGS := "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS := "linux darwin freebsd windows netbsd"
@@ -37,11 +37,19 @@ run: build
 .PHONY: deps
 deps: $(DEP_PROGS)
 
+.PHONY: credits
+credits: $(GOBIN)/gocredits
+	go mod tidy # not `go get` to get all the dependencies regardress of OS, architecture and build tags
+	gocredits -w .
+
 $(GOBIN)/golint:
 	GO111MODULE=off go get golang.org/x/lint/golint
 
 $(GOBIN)/gotestcover:
 	GO111MODULE=off go get github.com/pierrre/gotestcover
+
+$(GOBIN)/gocredits:
+	GO111MODULE=off go get github.com/Songmu/gocredits/cmd/gocredits
 
 $(GOBIN)/goxz:
 	GO111MODULE=off go get github.com/Songmu/goxz/cmd/goxz
@@ -60,7 +68,7 @@ convention:
 	  (echo 'please `go generate ./...` and commit them' && false)
 
 .PHONY: crossbuild
-crossbuild: deps
+crossbuild: deps credits
 	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,darwin,freebsd,netbsd -arch=386,amd64 -d ./snapshot \
@@ -124,7 +132,7 @@ rpm-v2: crossbuild-package
 	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
-	--define "_version ${VERSION}" --define "buildarch x86_64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" --define "dist .el7.centos" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
@@ -174,7 +182,7 @@ rpm-kcps-v2: crossbuild-package-kcps
 	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
-	--define "_version ${VERSION}" --define "buildarch x86_64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" --define "dist .el7.centos" \
 	-bb packaging/rpm-build/mackerel-agent-kcps.spec
 
 .PHONY: deb-kcps
@@ -208,7 +216,7 @@ rpm-stage-v2: crossbuild-package-stage
 	BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
 	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
-	--define "_version ${VERSION}" --define "buildarch x86_64" \
+	--define "_version ${VERSION}" --define "buildarch x86_64" --define "dist .el7.centos" \
 	-bb packaging/rpm-build/mackerel-agent-stage.spec
 
 .PHONY: deb-stage
@@ -228,12 +236,12 @@ deb-stage-v2: crossbuild-package-stage
 
 tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
 .PHONY: tgz
-tgz:
+tgz: credits
 	GOOS=linux GOARCH=386 make build
 	rm -rf $(tgz_dir)
 	mkdir -p $(tgz_dir)
 	cp mackerel-agent.sample.conf $(tgz_dir)/$(MACKEREL_AGENT_NAME).conf
-	cp build/$(MACKEREL_AGENT_NAME) $(tgz_dir)/
+	cp build/$(MACKEREL_AGENT_NAME) LICENSE CREDITS $(tgz_dir)/
 	tar cvfz build/$(MACKEREL_AGENT_NAME)-latest.tar.gz -C build/tgz $(MACKEREL_AGENT_NAME)
 
 .PHONY: check-release-deps
@@ -254,5 +262,5 @@ release: check-release-deps
 
 .PHONY: clean
 clean:
-	rm -f build/$(MACKEREL_AGENT_NAME) build-linux-amd64/$(MACKEREL_AGENT_NAME) build-linux-386/$(MACKEREL_AGENT_NAME)
+	rm -f build/$(MACKEREL_AGENT_NAME) build-linux-amd64/$(MACKEREL_AGENT_NAME) build-linux-386/$(MACKEREL_AGENT_NAME) CREDITS
 	go clean
