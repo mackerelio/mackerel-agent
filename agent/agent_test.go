@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -58,8 +59,8 @@ func TestAgent_Watch(t *testing.T) {
 	// we cannot set interval less than 1 second
 	config.PostMetricsInterval = 1 * time.Second
 
-	quit := make(chan struct{})
-	metricsResult := ag.Watch(quit)
+	ctx := context.Background()
+	metricsResult := ag.Watch(ctx)
 
 	cnt := 0
 	end := time.After(5 * time.Second)
