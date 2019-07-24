@@ -2,6 +2,7 @@ package command
 
 import (
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/mackerelio/golib/pluginutil"
@@ -14,18 +15,35 @@ import (
 func metadataGenerators(conf *config.Config) []*metadata.Generator {
 	generators := make([]*metadata.Generator, 0, len(conf.MetadataPlugins))
 
-	workdir := pluginutil.PluginWorkDir()
+	workdir := filepath.Join(pluginutil.PluginWorkDir(), "mackerel-metadata")
 	for name, pluginConfig := range conf.MetadataPlugins {
+		workdir := workdir
+		if dir := lookupPluginWorkDir(pluginConfig.Command.Env); dir != "" {
+			workdir = dir
+		}
 		generator := &metadata.Generator{
 			Name:      name,
 			Config:    pluginConfig,
-			Cachefile: filepath.Join(workdir, "mackerel-metadata", name),
+			Cachefile: filepath.Join(workdir, name),
 		}
 		logger.Debugf("Metadata plugin generator created: %#v %#v", generator, generator.Config)
 		generators = append(generators, generator)
 	}
 
 	return generators
+}
+
+// The directory configuration in the env config of metadata should work as
+// same as metric plugins. Since the working directory of metadata plugin is
+// handled by mackerel-agent (not the plugin process), we have to lookup here.
+func lookupPluginWorkDir(env []string) string {
+	workDirPrefix := "MACKEREL_PLUGIN_WORKDIR="
+	for _, e := range env {
+		if strings.HasPrefix(e, workDirPrefix) {
+			return strings.TrimPrefix(e, workDirPrefix)
+		}
+	}
+	return ""
 }
 
 type metadataResult struct {
