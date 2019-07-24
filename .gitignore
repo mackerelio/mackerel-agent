@@ -19,5 +19,10 @@ packaging/deb/debian/mackerel-agent.bin
 packaging/*.tar.gz
 packaging/deb-build
 packaging/rpm-build
+packaging/*.deb
+packaging/*.changes
+packaging/*.dsc
+packaging/*.build*
+packaging/*.debian.tar.xz
 
 /mackerel-agent.conf
