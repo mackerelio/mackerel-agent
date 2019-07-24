@@ -17,8 +17,6 @@ func TestMemoryGenerator(t *testing.T) {
 	metricNames := []string{
 		"total",
 		"mem_available",
-		"active",
-		"inactive",
 		"swap_cached",
 		"swap_total",
 		"swap_free",
