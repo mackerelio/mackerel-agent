@@ -16,7 +16,7 @@ func TestCreate(t *testing.T) {
 		t.Errorf("err should be nil but: %v", err)
 	}
 
-	dir, err := ioutil.TempDir("", "")
+	dir, err := ioutil.TempDir("", "mackerel-agent-test-pidfile")
 	if err != nil {
 		t.Fatalf("failed to create tempdir")
 	}
@@ -43,7 +43,7 @@ func TestRemove(t *testing.T) {
 	if err != nil {
 		t.Errorf("err should be nil but: %v", err)
 	}
-	dir, err := ioutil.TempDir("", "")
+	dir, err := ioutil.TempDir("", "mackerel-agent-test-pidfile")
 	if err != nil {
 		t.Fatalf("failed to create tempdir")
 	}
