@@ -146,20 +146,20 @@ deb: deb-v1 deb-v2
 .PHONY: deb-v1
 deb-v1: crossbuild-package
 	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build mackerel/docker-mackerel-deb-builder \
-		--no-tgz-check -uc -us
+	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build --entrypoint /bin/sh mackerel/docker-mackerel-deb-builder \
+		-c "debuild --no-tgz-check -uc -us; chown $(shell id -u):$(shell id -g) -R /workspace/packaging/deb-build"
 
 .PHONY: deb-v2
 deb-v2: crossbuild-package
 	BUILD_DIRECTORY=build-linux-amd64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build mackerel/docker-mackerel-deb-builder \
-		--no-tgz-check -uc -us
+	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build --entrypoint /bin/sh mackerel/docker-mackerel-deb-builder \
+		-c "debuild --no-tgz-check -uc -us; chown $(shell id -u):$(shell id -g) -R /workspace/packaging/deb-build"
 	BUILD_DIRECTORY=build-linux-arm64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build mackerel/docker-mackerel-deb-builder \
-		--no-tgz-check -uc -us -aarm64
+	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build --entrypoint /bin/sh mackerel/docker-mackerel-deb-builder \
+		-c "debuild --no-tgz-check -uc -us -aarm64; chown $(shell id -u):$(shell id -g) -R /workspace/packaging/deb-build"
 	BUILD_DIRECTORY=build-linux-mips BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build mackerel/docker-mackerel-deb-builder \
-		--no-tgz-check -uc -us -amips
+	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build --entrypoint /bin/sh mackerel/docker-mackerel-deb-builder \
+		-c "debuild --no-tgz-check -uc -us -amips; chown $(shell id -u):$(shell id -g) -R /workspace/packaging/deb-build"
 
 .PHONY: rpm-kcps
 rpm-kcps: rpm-kcps-v1 rpm-kcps-v2
@@ -191,14 +191,14 @@ deb-kcps: deb-kcps-v1 deb-kcps-v2
 .PHONY: deb-kcps-v1
 deb-kcps-v1: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build mackerel/docker-mackerel-deb-builder \
-		--no-tgz-check -uc -us
+	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build --entrypoint /bin/sh mackerel/docker-mackerel-deb-builder \
+		-c "debuild --no-tgz-check -uc -us; chown $(shell id -u):$(shell id -g) -R /workspace/packaging/deb-build"
 
 .PHONY: deb-kcps-v2
 deb-kcps-v2: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_SYSTEMD=1 BUILD_DIRECTORY=build-linux-amd64 _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build mackerel/docker-mackerel-deb-builder \
-		--no-tgz-check -uc -us
+	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build --entrypoint /bin/sh mackerel/docker-mackerel-deb-builder \
+		-c "debuild --no-tgz-check -uc -us; chown $(shell id -u):$(shell id -g) -R /workspace/packaging/deb-build"
 
 .PHONY: rpm-stage
 rpm-stage: rpm-stage-v1 rpm-stage-v2
@@ -225,14 +225,14 @@ deb-stage: deb-stage-v1 deb-stage-v2
 .PHONY: deb-stage-v1
 deb-stage-v1: crossbuild-package-stage
 	MACKEREL_AGENT_NAME=mackerel-agent-stage BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build mackerel/docker-mackerel-deb-builder \
-		--no-tgz-check -uc -us
+	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build --entrypoint /bin/sh mackerel/docker-mackerel-deb-builder \
+		-c "debuild --no-tgz-check -uc -us; chown $(shell id -u):$(shell id -g) -R /workspace/packaging/deb-build"
 
 .PHONY: deb-stage-v2
 deb-stage-v2: crossbuild-package-stage
 	MACKEREL_AGENT_NAME=mackerel-agent-stage BUILD_SYSTEMD=1 BUILD_DIRECTORY=build-linux-amd64 _tools/packaging/prepare-deb-build.sh
-	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build mackerel/docker-mackerel-deb-builder \
-		--no-tgz-check -uc -us
+	docker run --rm -v "$(PWD)":/workspace -w /workspace/packaging/deb-build --entrypoint /bin/sh mackerel/docker-mackerel-deb-builder \
+		-c "debuild --no-tgz-check -uc -us; chown $(shell id -u):$(shell id -g) -R /workspace/packaging/deb-build"
 
 tgz_dir = "build/tgz/$(MACKEREL_AGENT_NAME)"
 .PHONY: tgz
