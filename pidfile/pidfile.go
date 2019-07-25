@@ -22,7 +22,7 @@ func Create(pidfile string) error {
 			if pid == os.Getpid() {
 				return nil
 			}
-			if ExistsPid(pid) {
+			if GetCmdName(pid) == filepath.Base(os.Args[0]) {
 				return fmt.Errorf("pidfile found, try stopping another running mackerel-agent or delete %s", pidfile)
 			}
 			// Note mackerel-agent in windows can't remove pidfile during stoping the service
