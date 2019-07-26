@@ -13,7 +13,7 @@ MemoryGenerator collect memory usage
 
 `memory.{metric}`: using memory size[KiB] retrieved from /proc/meminfo
 
-metric = "total", "free", "buffers", "cached", "active", "inactive", "swap_cached", "swap_total", "swap_free"
+metric = "total", "free", "buffers", "cached", "swap_cached", "swap_total", "swap_free"
 
 Metrics "used" is calculated by
   (total - available) when MemAvailable is available in /proc/meminfo and
@@ -37,8 +37,6 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	ret := map[string]float64{
 		"memory.total":       float64(mem.Total),
 		"memory.used":        float64(mem.Used),
-		"memory.active":      float64(mem.Active),
-		"memory.inactive":    float64(mem.Inactive),
 		"memory.swap_total":  float64(mem.SwapTotal),
 		"memory.swap_cached": float64(mem.SwapCached),
 		"memory.swap_free":   float64(mem.SwapFree),

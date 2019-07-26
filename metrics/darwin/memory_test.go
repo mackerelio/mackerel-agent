@@ -16,8 +16,6 @@ func TestMemoryGenerator(t *testing.T) {
 		"total",
 		"free",
 		"cached",
-		"active",
-		"inactive",
 		"used",
 		"swap_total",
 		"swap_free",

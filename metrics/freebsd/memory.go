@@ -47,14 +47,6 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 						k = k[0 : len(k)-1]
 					}
 					switch k {
-					case "Active":
-						ret["memory.active"] = v
-					case "Inact":
-						ret["memory.inactive"] = v
-					/*
-						case "Wired":
-							ret["memory.wired"] = v
-					*/
 					case "Cache":
 						ret["memory.cached"] = v
 					case "Buf":
