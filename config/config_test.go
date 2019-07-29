@@ -663,6 +663,7 @@ func TestFileSystemHostIDStorage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer os.RemoveAll(root)
 
 	s := FileSystemHostIDStorage{Root: root}
 	err = s.SaveHostID("test-host-id")
