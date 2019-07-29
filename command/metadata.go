@@ -17,14 +17,10 @@ func metadataGenerators(conf *config.Config) []*metadata.Generator {
 
 	workdir := filepath.Join(pluginutil.PluginWorkDir(), "mackerel-metadata")
 	for name, pluginConfig := range conf.MetadataPlugins {
-		workdir := workdir
-		if dir := lookupPluginWorkDir(pluginConfig.Command.Env); dir != "" {
-			workdir = dir
-		}
 		generator := &metadata.Generator{
 			Name:      name,
 			Config:    pluginConfig,
-			Cachefile: filepath.Join(workdir, name),
+			Cachefile: getCacheFileName(name, workdir, pluginConfig),
 		}
 		logger.Debugf("Metadata plugin generator created: %#v %#v", generator, generator.Config)
 		generators = append(generators, generator)
@@ -44,6 +40,13 @@ func lookupPluginWorkDir(env []string) string {
 		}
 	}
 	return ""
+}
+
+func getCacheFileName(name, defaultWorkDir string, plugin *config.MetadataPlugin) string {
+	if dir := lookupPluginWorkDir(plugin.Command.Env); dir != "" {
+		return filepath.Join(dir, "mackerel-plugin-metadata-"+name)
+	}
+	return filepath.Join(defaultWorkDir, name)
 }
 
 type metadataResult struct {
