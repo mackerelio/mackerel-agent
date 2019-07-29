@@ -1,6 +1,7 @@
 package agent
 
 import (
+	"context"
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/checks"
@@ -36,7 +37,7 @@ func (agent *Agent) CollectMetrics(collectedTime time.Time) *MetricsResult {
 }
 
 // Watch XXX
-func (agent *Agent) Watch(quit chan struct{}) chan *MetricsResult {
+func (agent *Agent) Watch(ctx context.Context) chan *MetricsResult {
 
 	metricsResult := make(chan *MetricsResult)
 	ticker := make(chan time.Time)
@@ -50,7 +51,7 @@ func (agent *Agent) Watch(quit chan struct{}) chan *MetricsResult {
 
 		for {
 			select {
-			case <-quit:
+			case <-ctx.Done():
 				close(ticker)
 				t.Stop()
 				return

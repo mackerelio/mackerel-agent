@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"crypto/sha1"
 	"encoding/json"
 	"fmt"
@@ -198,14 +199,14 @@ const (
 )
 
 func loop(app *App, termCh chan struct{}) error {
-	quit := make(chan struct{})
-	defer close(quit) // broadcast terminating
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	// Periodically update host specs.
-	go updateHostSpecsLoop(app, quit)
+	go updateHostSpecsLoop(ctx, app)
 
 	postQueue := make(chan *postValue, postMetricsBufferSize)
-	go enqueueLoop(app, postQueue, quit)
+	go enqueueLoop(ctx, app, postQueue)
 
 	postDelaySeconds := delayByHost(app.Host)
 	initialDelay := postDelaySeconds / 2
@@ -245,11 +246,11 @@ func loop(app *App, termCh chan struct{}) error {
 	}()
 
 	if hasChecks {
-		go runCheckersLoop(app, termCheckerCh, quit)
+		go runCheckersLoop(ctx, app, termCheckerCh)
 	}
 
 	if hasMetadataPlugins {
-		go runMetadataLoop(app, termMetadataCh, quit)
+		go runMetadataLoop(ctx, app, termMetadataCh)
 	}
 
 	lState := loopStateFirst
@@ -353,11 +354,11 @@ func loop(app *App, termCh chan struct{}) error {
 	}
 }
 
-func updateHostSpecsLoop(app *App, quit chan struct{}) {
+func updateHostSpecsLoop(ctx context.Context, app *App) {
 	for {
 		app.UpdateHostSpecs()
 		select {
-		case <-quit:
+		case <-ctx.Done():
 			return
 		case <-time.After(specsUpdateInterval):
 			// nop
@@ -365,11 +366,11 @@ func updateHostSpecsLoop(app *App, quit chan struct{}) {
 	}
 }
 
-func enqueueLoop(app *App, postQueue chan *postValue, quit chan struct{}) {
-	metricsResult := app.Agent.Watch(quit)
+func enqueueLoop(ctx context.Context, app *App, postQueue chan *postValue) {
+	metricsResult := app.Agent.Watch(ctx)
 	for {
 		select {
-		case <-quit:
+		case <-ctx.Done():
 			return
 		case result := <-metricsResult:
 			created := result.Created.Unix()
@@ -408,7 +409,7 @@ func enqueueLoop(app *App, postQueue chan *postValue, quit chan struct{}) {
 	}
 }
 
-func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, reportImmediateCh chan struct{}, quit <-chan struct{}) {
+func runChecker(ctx context.Context, checker *checks.Checker, checkReportCh chan *checks.Report, reportImmediateCh chan struct{}) {
 	lastStatus := checks.StatusUndefined
 	lastMessage := ""
 	interval := checker.Interval()
@@ -462,7 +463,7 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 
 			lastStatus = report.Status
 			lastMessage = report.Message
-		case <-quit:
+		case <-ctx.Done():
 			return
 		}
 	}
@@ -471,13 +472,13 @@ func runChecker(checker *checks.Checker, checkReportCh chan *checks.Report, repo
 // runCheckersLoop generates "checker" goroutines
 // which run for each checker commands and one for HTTP POSTing
 // the reports to Mackerel API.
-func runCheckersLoop(app *App, termCheckerCh <-chan struct{}, quit <-chan struct{}) {
+func runCheckersLoop(ctx context.Context, app *App, termCheckerCh <-chan struct{}) {
 	// Do not block checking.
 	checkReportCh := make(chan *checks.Report, reportCheckBufferSize*len(app.Agent.Checkers))
 	reportImmediateCh := make(chan struct{}, reportCheckBufferSize*len(app.Agent.Checkers))
 
 	for _, checker := range app.Agent.Checkers {
-		go runChecker(checker, checkReportCh, reportImmediateCh, quit)
+		go runChecker(ctx, checker, checkReportCh, reportImmediateCh)
 	}
 
 	exit := false

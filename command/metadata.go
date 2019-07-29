@@ -1,6 +1,7 @@
 package command
 
 import (
+	"context"
 	"path/filepath"
 	"time"
 
@@ -34,10 +35,10 @@ type metadataResult struct {
 	createdAt time.Time
 }
 
-func runMetadataLoop(app *App, termMetadataCh <-chan struct{}, quit <-chan struct{}) {
+func runMetadataLoop(ctx context.Context, app *App, termMetadataCh <-chan struct{}) {
 	resultCh := make(chan *metadataResult)
 	for _, g := range app.Agent.MetadataGenerators {
-		go runEachMetadataLoop(g, resultCh, quit)
+		go runEachMetadataLoop(ctx, g, resultCh)
 	}
 
 	exit := false
@@ -97,7 +98,7 @@ func clearMetadataCache(generators []*metadata.Generator, namespace string) {
 	}
 }
 
-func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult, quit <-chan struct{}) {
+func runEachMetadataLoop(ctx context.Context, g *metadata.Generator, resultCh chan<- *metadataResult) {
 	interval := g.Interval()
 	nextInterval := 10 * time.Second
 	nextTime := time.Now()
@@ -134,7 +135,7 @@ func runEachMetadataLoop(g *metadata.Generator, resultCh chan<- *metadataResult,
 				createdAt: time.Now(),
 			}
 
-		case <-quit:
+		case <-ctx.Done():
 			return
 		}
 	}
