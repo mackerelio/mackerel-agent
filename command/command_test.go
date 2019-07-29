@@ -48,7 +48,7 @@ func TestDelayByHost(t *testing.T) {
 type jsonObject map[string]interface{}
 
 // newMockAPIServer makes a dummy root directry, a mock API server, a conf.Config to using them
-// and returns the Config, mock handlers map and the server.
+// and returns the Config, mock handlers map, the server and cleanup function which should be called finally.
 // The mock handlers map is "<method> <path>"-to-jsonObject-generator map.
 func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Request) (int, jsonObject), *httptest.Server, func()) {
 	mockHandlers := map[string]func(*http.Request) (int, jsonObject){}
@@ -86,13 +86,13 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 	}
 
 	return conf, mockHandlers, ts, func() {
+		ts.Close()
 		os.RemoveAll(root)
 	}
 }
 
 func TestPrepareWithCreate(t *testing.T) {
 	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
-	defer ts.Close()
 	defer deferFunc()
 
 	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
@@ -131,7 +131,6 @@ func TestPrepareWithCreate(t *testing.T) {
 
 func TestPrepareWithCreateWithFail(t *testing.T) {
 	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
-	defer ts.Close()
 	defer deferFunc()
 
 	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
@@ -155,7 +154,6 @@ func TestPrepareWithCreateWithFail(t *testing.T) {
 
 func TestPrepareWithUpdate(t *testing.T) {
 	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
-	defer ts.Close()
 	defer deferFunc()
 	tempDir, _ := ioutil.TempDir("", "")
 	conf.Root = tempDir
@@ -274,7 +272,6 @@ func TestLoop(t *testing.T) {
 	}
 
 	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
-	defer ts.Close()
 	defer deferFunc()
 
 	if testing.Short() {
@@ -412,7 +409,6 @@ func TestReportCheckMonitors(t *testing.T) {
 
 	for _, tc := range cases {
 		conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
-		defer ts.Close()
 		defer deferFunc()
 
 		if testing.Short() {
