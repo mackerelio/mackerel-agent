@@ -130,7 +130,7 @@ func TestPrepareWithCreate(t *testing.T) {
 }
 
 func TestPrepareWithCreateWithFail(t *testing.T) {
-	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
 
 	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
@@ -271,7 +271,7 @@ func TestLoop(t *testing.T) {
 		logging.SetLogLevel(logging.DEBUG)
 	}
 
-	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
 
 	if testing.Short() {
@@ -408,7 +408,7 @@ func TestReportCheckMonitors(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
+		conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 		defer deferFunc()
 
 		if testing.Short() {
