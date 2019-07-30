@@ -1,3 +1,20 @@
+mackerel-agent (0.62.0-1.systemd) stable; urgency=low
+
+  * Allow working directory configuration in env of metadata plugins (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/585>
+  * Remove tempdir in tests (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/588>
+  * Remove memory.active and inactive metrics (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/584>
+  * Check command name on pid check for pid confliction after OS restart (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/583>
+  * change the owner of files created in docker (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/587>
+  * Fix to fit #557 into our workflow. (by hayajo)
+    <https://github.com/mackerelio/mackerel-agent/pull/577>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 30 Jul 2019 08:31:10 +0000
+
 mackerel-agent (0.61.1-1.systemd) stable; urgency=low
 
   * Set rpm dist to ".el7.centos", not ".el7" in rpm-v2 (by astj)
