@@ -8,6 +8,7 @@
 * Check command name on pid check for pid confliction after OS restart #583 (itchyny)
 * change the owner of files created in docker #587 (hayajo)
 * Fix to fit #557 into our workflow. #577 (hayajo)
+* Add mips and arm64 architecture debian packaging support #557 (tnishinaga)
 
 
 ## 0.61.1 (2019-07-23)
