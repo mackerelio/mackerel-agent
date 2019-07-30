@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.62.0 (2019-07-30)
+
+* Allow working directory configuration in env of metadata plugins #585 (itchyny)
+* Remove tempdir in tests #588 (astj)
+* Remove memory.active and inactive metrics #584 (itchyny)
+* Check command name on pid check for pid confliction after OS restart #583 (itchyny)
+* change the owner of files created in docker #587 (hayajo)
+* Fix to fit #557 into our workflow. #577 (hayajo)
+* Add mips and arm64 architecture debian packaging support #557 (tnishinaga)
+
+
 ## 0.61.1 (2019-07-23)
 
 * Set rpm dist to ".el7.centos", not ".el7" in rpm-v2 #581 (astj)

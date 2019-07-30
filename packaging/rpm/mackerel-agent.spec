@@ -62,6 +62,14 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Jul 30 2019 <mackerel-developers@hatena.ne.jp> - 0.62.0
+- Allow working directory configuration in env of metadata plugins (by itchyny)
+- Remove tempdir in tests (by astj)
+- Remove memory.active and inactive metrics (by itchyny)
+- Check command name on pid check for pid confliction after OS restart (by itchyny)
+- change the owner of files created in docker (by hayajo)
+- Fix to fit #557 into our workflow. (by hayajo)
+
 * Tue Jul 23 2019 <mackerel-developers@hatena.ne.jp> - 0.61.1
 - Set rpm dist to ".el7.centos", not ".el7" in rpm-v2 (by astj)
 
