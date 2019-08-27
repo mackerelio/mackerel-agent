@@ -12,14 +12,15 @@ require (
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mackerelio/go-osstat v0.0.0-20190712033226-e9f3fb840708
 	github.com/mackerelio/golib v0.0.0-20190411032134-c87047ca454e
-	github.com/mackerelio/mackerel-client-go v0.5.0
+	github.com/mackerelio/mackerel-client-go v0.6.0
 	github.com/mattn/go-encoding v0.0.2
-	github.com/mattn/go-isatty v0.0.8 // indirect
+	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.8.1
 	github.com/shirou/gopsutil v2.18.12+incompatible
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
-	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
-	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7
+	github.com/stretchr/testify v1.4.0 // indirect
+	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586 // indirect
+	golang.org/x/sys v0.0.0-20190826190057-c7b8b68b1456
 	golang.org/x/text v0.3.2
 )
