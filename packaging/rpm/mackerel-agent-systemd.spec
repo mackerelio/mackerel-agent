@@ -55,6 +55,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Aug 29 2019 <mackerel-developers@hatena.ne.jp> - 0.62.1
+- Update dependencies (by astj)
+
 * Tue Jul 30 2019 <mackerel-developers@hatena.ne.jp> - 0.62.0
 - Allow working directory configuration in env of metadata plugins (by itchyny)
 - Remove tempdir in tests (by astj)
