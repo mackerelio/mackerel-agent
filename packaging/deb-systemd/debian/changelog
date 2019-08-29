@@ -1,3 +1,10 @@
+mackerel-agent (0.62.1-1.systemd) stable; urgency=low
+
+  * Update dependencies (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/590>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 29 Aug 2019 01:48:46 +0000
+
 mackerel-agent (0.62.0-1.systemd) stable; urgency=low
 
   * Allow working directory configuration in env of metadata plugins (by itchyny)

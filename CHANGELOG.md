@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.62.1 (2019-08-29)
+
+* Update dependencies #590 (astj)
+
+
 ## 0.62.0 (2019-07-30)
 
 * Allow working directory configuration in env of metadata plugins #585 (itchyny)
