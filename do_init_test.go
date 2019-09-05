@@ -21,10 +21,10 @@ func TestDoInitialize(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Could not create temporary dir for test")
 	}
-	defer os.RemoveAll(root)
+	// defer os.RemoveAll(root)
 
 	{
-		// confファイルがのディレクトリが存在しないとき
+		// not exist config file directory
 		confdir := filepath.Join(root, "confdir-test")
 		conffile := filepath.Join(confdir, "mackerel-agent.conf")
 		argv := []string{"-conf", conffile, "-apikey", "hoge"}
