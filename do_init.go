@@ -28,7 +28,7 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 		if !os.IsNotExist(err) {
 			return err
 		}
-		err := os.MkdirAll(filepath.Dir(*conffile), 0744)
+		err := os.MkdirAll(root, 0744)
 		if err != nil {
 			return err
 		}

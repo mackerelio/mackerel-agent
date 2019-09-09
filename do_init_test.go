@@ -21,7 +21,7 @@ func TestDoInitialize(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Could not create temporary dir for test")
 	}
-	// defer os.RemoveAll(root)
+	defer os.RemoveAll(root)
 
 	{
 		// not exist config file directory
