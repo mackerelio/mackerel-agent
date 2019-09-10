@@ -35,14 +35,15 @@ func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
 			continue
 		}
 
+		// XXX occur mojibake when containing multi-byte strings
 		name := ifi.Name
 		for ; ai != nil; ai = ai.Next {
 			if ifi.Index == int(ai.Index) {
-				s, err := windows.AnsiBytePtrToString(&ai.Description[0])
-				if err == nil && s != "" {
-					name = s
-				}
+				name = windows.BytePtrToString(&ai.Description[0])
 			}
+		}
+		if name == "" {
+			continue
 		}
 
 		addrs, err := ifi.Addrs()
