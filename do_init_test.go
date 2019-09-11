@@ -24,6 +24,17 @@ func TestDoInitialize(t *testing.T) {
 	defer os.RemoveAll(root)
 
 	{
+		// not exist config file directory
+		confdir := filepath.Join(root, "confdir-test")
+		conffile := filepath.Join(confdir, "mackerel-agent.conf")
+		argv := []string{"-conf", conffile, "-apikey", "hoge"}
+		err := doInit(&flag.FlagSet{}, argv)
+		if err != nil {
+			t.Errorf("err should be nil but: %s", err)
+		}
+	}
+
+	{
 		conffile := filepath.Join(root, "mackerel-agent.conf")
 		argv := []string{"-conf", conffile, "-apikey", "hoge"}
 		err := doInit(&flag.FlagSet{}, argv)

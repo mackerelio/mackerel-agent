@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/mackerelio/mackerel-agent/config"
 )
@@ -20,6 +21,19 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 		// Setting apikey via environment variable should be supported or not?
 		return fmt.Errorf("-apikey option is required")
 	}
+
+	// make the config file directory if not exist
+	root := filepath.Dir(*conffile)
+	if _, err := os.Stat(root); err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+		err := os.MkdirAll(root, 0755)
+		if err != nil {
+			return err
+		}
+	}
+
 	_, err := os.Stat(*conffile)
 	confExists := err == nil
 	if confExists {
