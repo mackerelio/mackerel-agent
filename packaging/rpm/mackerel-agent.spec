@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Sep 11 2019 <mackerel-developers@hatena.ne.jp> - 0.63.0
+- avoid to use unnamed NICs for registering hosts on Windows (by lufia)
+- Fixed to create configuration directory directory when executing init command if not exist directory (by homedm)
+
 * Thu Aug 29 2019 <mackerel-developers@hatena.ne.jp> - 0.62.1
 - Update dependencies (by astj)
 
