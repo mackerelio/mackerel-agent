@@ -1,3 +1,12 @@
+mackerel-agent (0.63.0-1.systemd) stable; urgency=low
+
+  * avoid to use unnamed NICs for registering hosts on Windows (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/580>
+  * Fixed to create configuration directory directory when executing init command if not exist directory (by homedm)
+    <https://github.com/mackerelio/mackerel-agent/pull/592>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 11 Sep 2019 14:41:31 +0000
+
 mackerel-agent (0.62.1-1.systemd) stable; urgency=low
 
   * Update dependencies (by astj)

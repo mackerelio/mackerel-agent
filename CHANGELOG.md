@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.63.0 (2019-09-11)
+
+* avoid to use unnamed NICs for registering hosts on Windows #580 (lufia)
+* Fixed to create configuration directory directory when executing init command if not exist directory #592 (homedm)
+
+
 ## 0.62.1 (2019-08-29)
 
 * Update dependencies #590 (astj)
