@@ -42,6 +42,9 @@ func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
 				name = windows.BytePtrToString(&ai.Description[0])
 			}
 		}
+		if name == "" {
+			continue
+		}
 
 		addrs, err := ifi.Addrs()
 		if err != nil {

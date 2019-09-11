@@ -62,7 +62,7 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 	names := []string{}
 	for ai = first; ai != nil; ai = ai.Next {
 		name, err := windows.AnsiBytePtrToString(&ai.Description[0])
-		if err == nil {
+		if err == nil && name != "" {
 			names = append(names, name)
 		}
 	}
