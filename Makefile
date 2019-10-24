@@ -72,7 +72,11 @@ convention:
 crossbuild: deps credits
 	cp mackerel-agent.sample.conf mackerel-agent.conf
 	goxz -build-ldflags=$(BUILD_LDFLAGS) \
-		-os=linux,darwin,freebsd,netbsd -arch=386,amd64 -d ./snapshot \
+		-os=linux,freebsd,netbsd -arch=386 -d ./snapshot \
+		-include=mackerel-agent.conf \
+		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
+	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+		-os=linux,darwin,freebsd,netbsd -arch=amd64 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
 	goxz -build-ldflags=$(BUILD_LDFLAGS) \
