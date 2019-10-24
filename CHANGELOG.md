@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.64.0 (2019-10-24)
+
+* Build with Go 1.12.12
+* stop building 32bit Darwin artifacts #600 (astj)
+* Fix wix/mackerel-agent.sample.conf #597 (ryosms)
+* Pass the check monitoring result message to "action" by env #598 (a-know)
+* Bump github.com/mackerelio/mackerel-client-go from 0.6.0 to 0.8.0 #595 (dependabot-preview[bot])
+* add .dependabot/config.yml #594 (lufia)
+
+
 ## 0.63.0 (2019-09-11)
 
 * avoid to use unnamed NICs for registering hosts on Windows #580 (lufia)

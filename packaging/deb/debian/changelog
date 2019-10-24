@@ -1,3 +1,19 @@
+mackerel-agent (0.64.0-1) stable; urgency=low
+
+  * Build with Go 1.12.12
+  * stop building 32bit Darwin artifacts (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/600>
+  * Fix wix/mackerel-agent.sample.conf (by ryosms)
+    <https://github.com/mackerelio/mackerel-agent/pull/597>
+  * Pass the check monitoring result message to "action" by env (by a-know)
+    <https://github.com/mackerelio/mackerel-agent/pull/598>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.6.0 to 0.8.0 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/595>
+  * add .dependabot/config.yml (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/594>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 24 Oct 2019 07:30:11 +0000
+
 mackerel-agent (0.63.0-1) stable; urgency=low
 
   * avoid to use unnamed NICs for registering hosts on Windows (by lufia)
