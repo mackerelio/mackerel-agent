@@ -55,6 +55,13 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Oct 24 2019 <mackerel-developers@hatena.ne.jp> - 0.64.0
+- stop building 32bit Darwin artifacts (by astj)
+- Fix wix/mackerel-agent.sample.conf (by ryosms)
+- Pass the check monitoring result message to "action" by env (by a-know)
+- Bump github.com/mackerelio/mackerel-client-go from 0.6.0 to 0.8.0 (by dependabot-preview[bot])
+- add .dependabot/config.yml (by lufia)
+
 * Wed Sep 11 2019 <mackerel-developers@hatena.ne.jp> - 0.63.0
 - avoid to use unnamed NICs for registering hosts on Windows (by lufia)
 - Fixed to create configuration directory directory when executing init command if not exist directory (by homedm)
