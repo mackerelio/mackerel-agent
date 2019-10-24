@@ -1,5 +1,6 @@
 mackerel-agent (0.64.0-1) stable; urgency=low
 
+  * Build with Go 1.12.12
   * stop building 32bit Darwin artifacts (by astj)
     <https://github.com/mackerelio/mackerel-agent/pull/600>
   * Fix wix/mackerel-agent.sample.conf (by ryosms)

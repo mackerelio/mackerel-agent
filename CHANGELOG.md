@@ -2,6 +2,7 @@
 
 ## 0.64.0 (2019-10-24)
 
+* Build with Go 1.12.12
 * stop building 32bit Darwin artifacts #600 (astj)
 * Fix wix/mackerel-agent.sample.conf #597 (ryosms)
 * Pass the check monitoring result message to "action" by env #598 (a-know)

@@ -56,6 +56,7 @@ systemctl enable %{name}.service
 
 %changelog
 * Thu Oct 24 2019 <mackerel-developers@hatena.ne.jp> - 0.64.0
+- Build with Go 1.12.12
 - stop building 32bit Darwin artifacts (by astj)
 - Fix wix/mackerel-agent.sample.conf (by ryosms)
 - Pass the check monitoring result message to "action" by env (by a-know)
