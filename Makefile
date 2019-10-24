@@ -103,7 +103,7 @@ crossbuild-package: deps
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-arm64/
 	GOOS=linux GOARCH=mips make build
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-mips/
-	GOOS=linux GOARCH=arm GOARM=6 make build
+	GOOS=linux GOARCH=arm GOARM=6 make build # specify ARMv6 for supporting Raspberry Pi 1 / Zero
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-armhf/
 
 .PHONY: crossbuild-package-kcps
