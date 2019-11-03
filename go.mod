@@ -17,7 +17,7 @@ require (
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.8.1
-	github.com/shirou/gopsutil v2.18.12+incompatible
+	github.com/shirou/gopsutil v2.19.10+incompatible
 	github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
 	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586 // indirect
