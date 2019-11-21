@@ -44,19 +44,19 @@ credits: $(GOBIN)/gocredits
 	gocredits -w .
 
 $(GOBIN)/golint:
-	GO111MODULE=off go get golang.org/x/lint/golint
+	cd && go get golang.org/x/lint/golint
 
 $(GOBIN)/gotestcover:
-	GO111MODULE=off go get github.com/pierrre/gotestcover
+	cd && go get github.com/pierrre/gotestcover
 
 $(GOBIN)/gocredits:
-	GO111MODULE=off go get github.com/Songmu/gocredits/cmd/gocredits
+	cd && go get github.com/Songmu/gocredits/cmd/gocredits
 
 $(GOBIN)/goxz:
-	GO111MODULE=off go get github.com/Songmu/goxz/cmd/goxz
+	cd && go get github.com/Songmu/goxz/cmd/goxz
 
 $(GOBIN)/goveralls:
-	GO111MODULE=off go get github.com/mattn/goveralls
+	cd && go get github.com/mattn/goveralls
 
 .PHONY: lint
 lint: deps
