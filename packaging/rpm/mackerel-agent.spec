@@ -62,6 +62,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Nov 21 2019 <mackerel-developers@hatena.ne.jp> - 0.64.1
+- Bump github.com/shirou/gopsutil from 2.18.12+incompatible to 2.19.10+incompatible (by dependabot-preview[bot])
+- Add armhf Debian package to release (by hnw)
+
 * Thu Oct 24 2019 <mackerel-developers@hatena.ne.jp> - 0.64.0
 - Build with Go 1.12.12
 - stop building 32bit Darwin artifacts (by astj)

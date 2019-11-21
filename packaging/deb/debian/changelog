@@ -1,3 +1,12 @@
+mackerel-agent (0.64.1-1) stable; urgency=low
+
+  * Bump github.com/shirou/gopsutil from 2.18.12+incompatible to 2.19.10+incompatible (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/602>
+  * Add armhf Debian package to release (by hnw)
+    <https://github.com/mackerelio/mackerel-agent/pull/599>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 21 Nov 2019 05:57:31 +0000
+
 mackerel-agent (0.64.0-1) stable; urgency=low
 
   * Build with Go 1.12.12

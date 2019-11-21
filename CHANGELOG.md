@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.64.1 (2019-11-21)
+
+* Bump github.com/shirou/gopsutil from 2.18.12+incompatible to 2.19.10+incompatible #602 (dependabot-preview[bot])
+* Add armhf Debian package to release #599 (hnw)
+
+
 ## 0.64.0 (2019-10-24)
 
 * Build with Go 1.12.12
