@@ -306,7 +306,7 @@ func TestSuggestCloudGenerator(t *testing.T) {
 		}
 	}()
 
-	func() { // multiple generators are available, but suggest the first responded one (in this case EC2)
+	func() { // multiple generators are available, but suggest the first responded one (in this case Azure)
 		// azure. ok immediately
 		tsA := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			fmt.Fprint(res, "ok")
