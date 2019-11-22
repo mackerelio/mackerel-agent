@@ -35,6 +35,21 @@ type CloudMetaGenerator interface {
 	SuggestCustomIdentifier() (string, error)
 }
 
+type ec2Generator interface {
+	CloudMetaGenerator
+	IsEC2(ctx context.Context) bool
+}
+
+type gceGenerator interface {
+	CloudMetaGenerator
+	IsGCE(ctx context.Context) bool
+}
+
+type azureVMGenerator interface {
+	CloudMetaGenerator
+	IsAzureVM(ctx context.Context) bool
+}
+
 var cloudLogger = logging.GetLogger("spec.cloud")
 
 var ec2BaseURL, gceMetaURL, azureVMBaseURL *url.URL
@@ -47,18 +62,30 @@ func init() {
 
 var timeout = 3 * time.Second
 
-// SuggestCloudGenerator returns suitable CloudGenerator
-func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
+type cloudGeneratorSuggestor struct {
+	ec2Generator     ec2Generator
+	gceGenerator     gceGenerator
+	azureVMGenerator azureVMGenerator
+}
+
+var CloudGeneratorSuggestor = &cloudGeneratorSuggestor{
+	ec2Generator:     &EC2Generator{ec2BaseURL},
+	gceGenerator:     &GCEGenerator{gceMetaURL},
+	azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
+}
+
+// Suggest returns suitable CloudGenerator
+func (s *cloudGeneratorSuggestor) Suggest(conf *config.Config) *CloudGenerator {
 	// if CloudPlatform is specified, return corresponding one
 	switch conf.CloudPlatform {
 	case config.CloudPlatformNone:
 		return nil
 	case config.CloudPlatformEC2:
-		return &CloudGenerator{&EC2Generator{ec2BaseURL}}
+		return &CloudGenerator{s.ec2Generator}
 	case config.CloudPlatformGCE:
-		return &CloudGenerator{&GCEGenerator{gceMetaURL}}
+		return &CloudGenerator{s.gceGenerator}
 	case config.CloudPlatformAzureVM:
-		return &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+		return &CloudGenerator{s.azureVMGenerator}
 	}
 
 	var wg sync.WaitGroup
@@ -69,22 +96,22 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 
 	wg.Add(3)
 	go func() {
-		if isEC2(ctx) {
-			gCh <- &CloudGenerator{&EC2Generator{ec2BaseURL}}
+		if s.ec2Generator.IsEC2(ctx) {
+			gCh <- &CloudGenerator{s.ec2Generator}
 			cancel()
 		}
 		wg.Done()
 	}()
 	go func() {
-		if isGCE(ctx) {
-			gCh <- &CloudGenerator{&GCEGenerator{gceMetaURL}}
+		if s.gceGenerator.IsGCE(ctx) {
+			gCh <- &CloudGenerator{s.gceGenerator}
 			cancel()
 		}
 		wg.Done()
 	}()
 	go func() {
-		if isAzure(ctx) {
-			gCh <- &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+		if s.azureVMGenerator.IsAzureVM(ctx) {
+			gCh <- &CloudGenerator{s.azureVMGenerator}
 			cancel()
 		}
 		wg.Done()
@@ -165,6 +192,11 @@ type EC2Generator struct {
 	baseURL *url.URL
 }
 
+// IsEC2 checks current environment is EC2 or not
+func (g *EC2Generator) IsEC2(ctx context.Context) bool {
+	return isEC2(ctx)
+}
+
 // Generate collects metadata from cloud platform.
 func (g *EC2Generator) Generate() (interface{}, error) {
 	cl := httpCli()
@@ -241,6 +273,11 @@ type GCEGenerator struct {
 	metaURL *url.URL
 }
 
+// IsGCE checks current environment is EC2 or not
+func (g *GCEGenerator) IsGCE(ctx context.Context) bool {
+	return isGCE(ctx)
+}
+
 // Generate collects metadata from cloud platform.
 func (g *GCEGenerator) Generate() (interface{}, error) {
 	bytes, err := requestGCEMeta(context.Background())
@@ -303,6 +340,11 @@ func (g *GCEGenerator) SuggestCustomIdentifier() (string, error) {
 // AzureVMGenerator meta generator for Azure VM
 type AzureVMGenerator struct {
 	baseURL *url.URL
+}
+
+// IsAzureVM checks current environment is AzureVM or not
+func (g *AzureVMGenerator) IsAzureVM(ctx context.Context) bool {
+	return isAzure(ctx)
 }
 
 // Generate collects metadata from cloud platform.
