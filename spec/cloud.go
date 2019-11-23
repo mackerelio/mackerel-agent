@@ -60,22 +60,6 @@ type cloudGeneratorSuggestor struct {
 	azureVMGenerator azureVMGenerator
 }
 
-var CloudGeneratorSuggestor *cloudGeneratorSuggestor
-
-func init() {
-	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
-	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
-	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
-
-	CloudGeneratorSuggestor = &cloudGeneratorSuggestor{
-		ec2Generator:     &EC2Generator{ec2BaseURL},
-		gceGenerator:     &GCEGenerator{gceMetaURL},
-		azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
-	}
-}
-
-var timeout = 3 * time.Second
-
 // Suggest returns suitable CloudGenerator
 func (s *cloudGeneratorSuggestor) Suggest(conf *config.Config) *CloudGenerator {
 	// if CloudPlatform is specified, return corresponding one
@@ -127,6 +111,22 @@ func (s *cloudGeneratorSuggestor) Suggest(conf *config.Config) *CloudGenerator {
 
 	return <-gCh
 }
+
+var CloudGeneratorSuggestor *cloudGeneratorSuggestor
+
+func init() {
+	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
+	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
+	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
+
+	CloudGeneratorSuggestor = &cloudGeneratorSuggestor{
+		ec2Generator:     &EC2Generator{ec2BaseURL},
+		gceGenerator:     &GCEGenerator{gceMetaURL},
+		azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
+	}
+}
+
+var timeout = 3 * time.Second
 
 func httpCli() *http.Client {
 	return &http.Client{
