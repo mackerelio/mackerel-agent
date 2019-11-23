@@ -143,6 +143,7 @@ type EC2Generator struct {
 
 // IsEC2 checks current environment is EC2 or not
 func (g *EC2Generator) IsEC2(ctx context.Context) bool {
+	// implementation varies between OSs. see ec2_XXX.go
 	return isEC2(ctx)
 }
 
