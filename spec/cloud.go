@@ -112,6 +112,7 @@ func (s *cloudGeneratorSuggestor) Suggest(conf *config.Config) *CloudGenerator {
 	return <-gCh
 }
 
+// CloudGeneratorSuggestor suggests suitable CloudGenerator
 var CloudGeneratorSuggestor *cloudGeneratorSuggestor
 
 func init() {
