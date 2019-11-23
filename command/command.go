@@ -578,7 +578,7 @@ func collectHostParam(conf *config.Config, ameta *AgentMeta) (*mkr.CreateHostPar
 	}
 
 	specGens := specGenerators()
-	cGen := spec.CloudGeneratorSuggestor.Suggest(conf)
+	cGen := spec.CloudGeneratorSuggester.Suggest(conf)
 	if cGen != nil {
 		specGens = append(specGens, cGen)
 	}

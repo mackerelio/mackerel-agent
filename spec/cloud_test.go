@@ -282,16 +282,16 @@ func (g *slowCloudMetaGenerator) IsGCE(ctx context.Context) bool {
 	return true
 }
 
-func TestCloudGeneratorSuggestor(t *testing.T) {
+func TestCloudGeneratorSuggester(t *testing.T) {
 	conf := config.Config{}
 	// none
 	{
-		suggestor := &cloudGeneratorSuggestor{
+		suggester := &cloudGeneratorSuggester{
 			ec2Generator:     &mockEC2CloudMetaGenerator{isEC2: false},
 			gceGenerator:     &mockGCECloudMetaGenerator{isGCE: false},
 			azureVMGenerator: &mockAzureCloudMetaGenerator{isAzureVM: false},
 		}
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen != nil {
 			t.Errorf("cGen should be nil but, %s", cGen)
 		}
@@ -299,12 +299,12 @@ func TestCloudGeneratorSuggestor(t *testing.T) {
 
 	// EC2
 	{
-		suggestor := &cloudGeneratorSuggestor{
+		suggester := &cloudGeneratorSuggester{
 			ec2Generator:     &mockEC2CloudMetaGenerator{isEC2: true},
 			gceGenerator:     &mockGCECloudMetaGenerator{isGCE: false},
 			azureVMGenerator: &mockAzureCloudMetaGenerator{isAzureVM: false},
 		}
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
 			t.Errorf("cGen should not be nil.")
 		}
@@ -317,12 +317,12 @@ func TestCloudGeneratorSuggestor(t *testing.T) {
 
 	// GCE
 	{
-		suggestor := &cloudGeneratorSuggestor{
+		suggester := &cloudGeneratorSuggester{
 			ec2Generator:     &mockEC2CloudMetaGenerator{isEC2: false},
 			gceGenerator:     &mockGCECloudMetaGenerator{isGCE: true},
 			azureVMGenerator: &mockAzureCloudMetaGenerator{isAzureVM: false},
 		}
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
 			t.Errorf("cGen should not be nil.")
 		}
@@ -335,12 +335,12 @@ func TestCloudGeneratorSuggestor(t *testing.T) {
 
 	// AzureVM
 	{
-		suggestor := &cloudGeneratorSuggestor{
+		suggester := &cloudGeneratorSuggester{
 			ec2Generator:     &mockEC2CloudMetaGenerator{isEC2: false},
 			gceGenerator:     &mockGCECloudMetaGenerator{isGCE: false},
 			azureVMGenerator: &mockAzureCloudMetaGenerator{isAzureVM: true},
 		}
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
 			t.Errorf("cGen should not be nil.")
 		}
@@ -353,12 +353,12 @@ func TestCloudGeneratorSuggestor(t *testing.T) {
 
 	// multiple generators are available, but suggest the first responded one (in this case Azure)
 	{
-		suggestor := &cloudGeneratorSuggestor{
+		suggester := &cloudGeneratorSuggester{
 			ec2Generator:     &slowCloudMetaGenerator{},
 			gceGenerator:     &slowCloudMetaGenerator{},
 			azureVMGenerator: &mockAzureCloudMetaGenerator{isAzureVM: true},
 		}
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
 			t.Errorf("cGen should not be nil.")
 		}
@@ -370,8 +370,8 @@ func TestCloudGeneratorSuggestor(t *testing.T) {
 	}
 }
 
-func TestCloudGeneratorSuggestor_CloudPlatformSpecified(t *testing.T) {
-	suggestor := &cloudGeneratorSuggestor{
+func TestCloudGeneratorSuggester_CloudPlatformSpecified(t *testing.T) {
+	suggester := &cloudGeneratorSuggester{
 		ec2Generator:     &mockEC2CloudMetaGenerator{isEC2: false},
 		gceGenerator:     &mockGCECloudMetaGenerator{isGCE: false},
 		azureVMGenerator: &mockAzureCloudMetaGenerator{isAzureVM: false},
@@ -381,7 +381,7 @@ func TestCloudGeneratorSuggestor_CloudPlatformSpecified(t *testing.T) {
 			CloudPlatform: config.CloudPlatformNone,
 		}
 
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen != nil {
 			t.Errorf("cGen should be nil.")
 		}
@@ -392,7 +392,7 @@ func TestCloudGeneratorSuggestor_CloudPlatformSpecified(t *testing.T) {
 			CloudPlatform: config.CloudPlatformEC2,
 		}
 
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
 			t.Errorf("cGen should not be nil.")
 		}
@@ -408,7 +408,7 @@ func TestCloudGeneratorSuggestor_CloudPlatformSpecified(t *testing.T) {
 			CloudPlatform: config.CloudPlatformGCE,
 		}
 
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
 			t.Errorf("cGen should not be nil.")
 		}
@@ -424,7 +424,7 @@ func TestCloudGeneratorSuggestor_CloudPlatformSpecified(t *testing.T) {
 			CloudPlatform: config.CloudPlatformAzureVM,
 		}
 
-		cGen := suggestor.Suggest(&conf)
+		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
 			t.Errorf("cGen should not be nil.")
 		}
@@ -436,9 +436,9 @@ func TestCloudGeneratorSuggestor_CloudPlatformSpecified(t *testing.T) {
 	}
 }
 
-func TestCloudGeneratorSuggestor_Public(t *testing.T) {
+func TestCloudGeneratorSuggester_Public(t *testing.T) {
 	{
-		gen, ok := CloudGeneratorSuggestor.ec2Generator.(*EC2Generator)
+		gen, ok := CloudGeneratorSuggester.ec2Generator.(*EC2Generator)
 		if !ok {
 			t.Error("EC2Generator should be injected as ec2Generator")
 		}
@@ -447,7 +447,7 @@ func TestCloudGeneratorSuggestor_Public(t *testing.T) {
 		}
 	}
 	{
-		gen, ok := CloudGeneratorSuggestor.gceGenerator.(*GCEGenerator)
+		gen, ok := CloudGeneratorSuggester.gceGenerator.(*GCEGenerator)
 		if !ok {
 			t.Error("GCEGenerator should be injected as gceGenerator")
 		}
@@ -456,7 +456,7 @@ func TestCloudGeneratorSuggestor_Public(t *testing.T) {
 		}
 	}
 	{
-		gen, ok := CloudGeneratorSuggestor.azureVMGenerator.(*AzureVMGenerator)
+		gen, ok := CloudGeneratorSuggester.azureVMGenerator.(*AzureVMGenerator)
 		if !ok {
 			t.Error("AzureVMGenerator should be injected as azureVMGenerator")
 		}

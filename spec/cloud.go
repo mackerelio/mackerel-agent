@@ -54,14 +54,14 @@ var cloudLogger = logging.GetLogger("spec.cloud")
 
 var ec2BaseURL, gceMetaURL, azureVMBaseURL *url.URL
 
-type cloudGeneratorSuggestor struct {
+type cloudGeneratorSuggester struct {
 	ec2Generator     ec2Generator
 	gceGenerator     gceGenerator
 	azureVMGenerator azureVMGenerator
 }
 
 // Suggest returns suitable CloudGenerator
-func (s *cloudGeneratorSuggestor) Suggest(conf *config.Config) *CloudGenerator {
+func (s *cloudGeneratorSuggester) Suggest(conf *config.Config) *CloudGenerator {
 	// if CloudPlatform is specified, return corresponding one
 	switch conf.CloudPlatform {
 	case config.CloudPlatformNone:
@@ -112,15 +112,15 @@ func (s *cloudGeneratorSuggestor) Suggest(conf *config.Config) *CloudGenerator {
 	return <-gCh
 }
 
-// CloudGeneratorSuggestor suggests suitable CloudGenerator
-var CloudGeneratorSuggestor *cloudGeneratorSuggestor
+// CloudGeneratorSuggester suggests suitable CloudGenerator
+var CloudGeneratorSuggester *cloudGeneratorSuggester
 
 func init() {
 	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
 	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
 	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
 
-	CloudGeneratorSuggestor = &cloudGeneratorSuggestor{
+	CloudGeneratorSuggester = &cloudGeneratorSuggester{
 		ec2Generator:     &EC2Generator{ec2BaseURL},
 		gceGenerator:     &GCEGenerator{gceMetaURL},
 		azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
