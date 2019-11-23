@@ -136,57 +136,6 @@ func httpCli() *http.Client {
 	}
 }
 
-func isGCE(ctx context.Context) bool {
-	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
-		_, err := requestGCEMeta(ctx)
-		return err
-	})
-	return err == nil
-}
-
-// Note: May want to check without using the API.
-func isAzure(ctx context.Context) bool {
-	isAzure := false
-	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
-		cl := httpCli()
-		// '/vmId` is probably Azure VM specific URL
-		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
-		if err != nil {
-			return err
-		}
-		req.Header.Set("Metadata", "true")
-
-		resp, err := cl.Do(req.WithContext(ctx))
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		isAzure = resp.StatusCode == 200
-		return nil
-	})
-	return err == nil && isAzure
-}
-
-func requestGCEMeta(ctx context.Context) ([]byte, error) {
-	cl := httpCli()
-	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Metadata-Flavor", "Google")
-
-	resp, err := cl.Do(req.WithContext(ctx))
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
-	}
-	return ioutil.ReadAll(resp.Body)
-}
-
 // EC2Generator meta generator for EC2
 type EC2Generator struct {
 	baseURL *url.URL
@@ -273,9 +222,33 @@ type GCEGenerator struct {
 	metaURL *url.URL
 }
 
-// IsGCE checks current environment is EC2 or not
+func requestGCEMeta(ctx context.Context) ([]byte, error) {
+	cl := httpCli()
+	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Metadata-Flavor", "Google")
+
+	resp, err := cl.Do(req.WithContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
+	}
+	return ioutil.ReadAll(resp.Body)
+}
+
+// IsGCE checks current environment is GCE or not
 func (g *GCEGenerator) IsGCE(ctx context.Context) bool {
-	return isGCE(ctx)
+	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
+		_, err := requestGCEMeta(ctx)
+		return err
+	})
+	return err == nil
 }
 
 // Generate collects metadata from cloud platform.
@@ -344,7 +317,25 @@ type AzureVMGenerator struct {
 
 // IsAzureVM checks current environment is AzureVM or not
 func (g *AzureVMGenerator) IsAzureVM(ctx context.Context) bool {
-	return isAzure(ctx)
+	isAzureVM := false
+	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
+		cl := httpCli()
+		// '/vmId` is probably Azure VM specific URL
+		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Metadata", "true")
+
+		resp, err := cl.Do(req.WithContext(ctx))
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		isAzureVM = resp.StatusCode == 200
+		return nil
+	})
+	return err == nil && isAzureVM
 }
 
 // Generate collects metadata from cloud platform.
