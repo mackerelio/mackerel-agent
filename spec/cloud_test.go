@@ -435,3 +435,33 @@ func TestCloudGeneratorSuggestor_CloudPlatformSpecified(t *testing.T) {
 		}
 	}
 }
+
+func TestCloudGeneratorSuggestor_Public(t *testing.T) {
+	{
+		gen, ok := CloudGeneratorSuggestor.ec2Generator.(*EC2Generator)
+		if !ok {
+			t.Error("EC2Generator should be injected as ec2Generator")
+		}
+		if gen.baseURL.String() != ec2BaseURL.String() {
+			t.Error("real baseURL should be embedded to ec2Generator")
+		}
+	}
+	{
+		gen, ok := CloudGeneratorSuggestor.gceGenerator.(*GCEGenerator)
+		if !ok {
+			t.Error("GCEGenerator should be injected as gceGenerator")
+		}
+		if gen.metaURL.String() != gceMetaURL.String() {
+			t.Error("real metaURL should be embedded to gceGenerator")
+		}
+	}
+	{
+		gen, ok := CloudGeneratorSuggestor.azureVMGenerator.(*AzureVMGenerator)
+		if !ok {
+			t.Error("AzureVMGenerator should be injected as azureVMGenerator")
+		}
+		if gen.baseURL.String() != azureVMBaseURL.String() {
+			t.Error("real baseURL should be embedded to azureVMGenerator ")
+		}
+	}
+}
