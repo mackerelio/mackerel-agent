@@ -17,11 +17,11 @@ import (
 )
 
 type mockCloudMetaGenerator struct {
-	metadata         interface{}
+	metadata         *mackerel.Cloud
 	customIdentifier string
 }
 
-func (g *mockCloudMetaGenerator) Generate() (interface{}, error) {
+func (g *mockCloudMetaGenerator) Generate() (*mackerel.Cloud, error) {
 	return g.metadata, nil
 }
 
@@ -121,14 +121,9 @@ func TestEC2Generator(t *testing.T) {
 	}
 	g := &EC2Generator{u}
 
-	value, err := g.Generate()
+	cloud, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
-	}
-
-	cloud, typeOk := value.(*mackerel.Cloud)
-	if !typeOk {
-		t.Errorf("value should be *mackerel.Cloud. %+v", value)
 	}
 
 	metadata, typeOk := cloud.MetaData.(map[string]string)
