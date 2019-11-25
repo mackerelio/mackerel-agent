@@ -103,7 +103,12 @@ func TestCloudGenerate(t *testing.T) {
 
 func TestEC2Generate(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
-		fmt.Fprint(res, "i-4f90d537")
+		// XXX: should be refined by removing path from ec2BaseURL
+		if req.URL.Path == "/instance-id" {
+			fmt.Fprint(res, "i-4f90d537")
+		} else {
+			http.Error(res, "not found", 404)
+		}
 	}
 	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		handler(res, req)
@@ -131,8 +136,8 @@ func TestEC2Generate(t *testing.T) {
 		t.Errorf("MetaData should be map. %+v", cloud.MetaData)
 	}
 
-	if len(metadata["instance-id"]) == 0 {
-		t.Error("instance-id should be filled")
+	if metadata["instance-id"] != "i-4f90d537" {
+		t.Errorf("Unexpected metadata: %s", metadata["instance-id"])
 	}
 
 	customIdentifier, err := g.SuggestCustomIdentifier()
@@ -140,8 +145,8 @@ func TestEC2Generate(t *testing.T) {
 		t.Errorf("should not raise error: %s", err)
 	}
 
-	if len(customIdentifier) == 0 {
-		t.Error("customIdentifier should be retrieved")
+	if customIdentifier != "i-4f90d537.ec2.amazonaws.com" {
+		t.Errorf("Unexpected customIdentifier: %s", customIdentifier)
 	}
 }
 
