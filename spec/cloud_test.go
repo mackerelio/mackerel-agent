@@ -16,18 +16,21 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 )
 
-type emptyCloudMetaGenerator struct{}
-
-func (g *emptyCloudMetaGenerator) Generate() (interface{}, error) {
-	return nil, nil
+type mockCloudMetaGenerator struct {
+	metadata         interface{}
+	customIdentifier string
 }
 
-func (g *emptyCloudMetaGenerator) SuggestCustomIdentifier() (string, error) {
-	return "", nil
+func (g *mockCloudMetaGenerator) Generate() (interface{}, error) {
+	return g.metadata, nil
+}
+
+func (g *mockCloudMetaGenerator) SuggestCustomIdentifier() (string, error) {
+	return g.customIdentifier, nil
 }
 
 type mockAzureCloudMetaGenerator struct {
-	emptyCloudMetaGenerator
+	mockCloudMetaGenerator
 	isAzureVM bool
 }
 
@@ -36,7 +39,7 @@ func (g *mockAzureCloudMetaGenerator) IsAzureVM(ctx context.Context) bool {
 }
 
 type mockEC2CloudMetaGenerator struct {
-	emptyCloudMetaGenerator
+	mockCloudMetaGenerator
 	isEC2 bool
 }
 
@@ -45,7 +48,7 @@ func (g *mockEC2CloudMetaGenerator) IsEC2(ctx context.Context) bool {
 }
 
 type mockGCECloudMetaGenerator struct {
-	emptyCloudMetaGenerator
+	mockCloudMetaGenerator
 	isGCE bool
 }
 
@@ -269,7 +272,7 @@ func TestGCEGenerate(t *testing.T) {
 }
 
 type slowCloudMetaGenerator struct {
-	emptyCloudMetaGenerator
+	mockCloudMetaGenerator
 }
 
 func (g *slowCloudMetaGenerator) IsEC2(ctx context.Context) bool {
