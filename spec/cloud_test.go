@@ -101,7 +101,7 @@ func TestCloudGenerate(t *testing.T) {
 	}
 }
 
-func TestEC2Generate(t *testing.T) {
+func TestEC2Generator(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
 		// XXX: should be refined by removing path from ec2BaseURL
 		if req.URL.Path == "/instance-id" {
@@ -150,7 +150,7 @@ func TestEC2Generate(t *testing.T) {
 	}
 }
 
-func TestEC2SuggestCustomIdentifier(t *testing.T) {
+func TestEC2SuggestCustomIdentifier_ChangingHttpStatus(t *testing.T) {
 	i := 0
 	threshold := 100
 	handler := func(res http.ResponseWriter, req *http.Request) {
