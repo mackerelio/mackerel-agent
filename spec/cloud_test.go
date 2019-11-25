@@ -103,7 +103,8 @@ func TestCloudGenerate(t *testing.T) {
 
 func TestEC2Generator(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
-		// XXX: should be refined by removing path from ec2BaseURL
+		// The REAL path is /latest/meta-data/instance-id.
+		// This odd Path is due to current implementation.
 		if req.URL.Path == "/instance-id" {
 			fmt.Fprint(res, "i-4f90d537")
 		} else {
