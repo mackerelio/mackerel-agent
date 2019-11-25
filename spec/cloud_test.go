@@ -57,6 +57,51 @@ func (g *mockGCECloudMetaGenerator) IsGCE(ctx context.Context) bool {
 }
 
 func TestCloudGenerate(t *testing.T) {
+	generator := &mockCloudMetaGenerator{
+		metadata: &mackerel.Cloud{
+			Provider: "mock",
+			MetaData: map[string]string{
+				"mockKey": "mockValue",
+			},
+		},
+		customIdentifier: "mock-generated-identifier.example.com",
+	}
+	g := &CloudGenerator{generator}
+
+	value, err := g.Generate()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	cloud, typeOk := value.(*mackerel.Cloud)
+	if !typeOk {
+		t.Errorf("value should be *mackerel.Cloud. %+v", value)
+	}
+
+	if cloud.Provider != "mock" {
+		t.Errorf("Unexpected Provider: %s", cloud.Provider)
+	}
+
+	metadata, typeOk := cloud.MetaData.(map[string]string)
+	if !typeOk {
+		t.Errorf("MetaData should be map. %+v", cloud.MetaData)
+	}
+
+	if metadata["mockKey"] != "mockValue" {
+		t.Errorf("Unexpected metadata: %s", metadata["mockKey"])
+	}
+
+	customIdentifier, err := g.SuggestCustomIdentifier()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	if customIdentifier != "mock-generated-identifier.example.com" {
+		t.Errorf("Unexpected customIdentifier: %s", customIdentifier)
+	}
+}
+
+func TestEC2Generate(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(res, "i-4f90d537")
 	}
