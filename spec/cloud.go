@@ -19,7 +19,7 @@ import (
 )
 
 // This Generator collects metadata about cloud instances.
-// Currently EC2 and GCE are supported.
+// Currently EC2, AzureVM and GCE are supported.
 // EC2: http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AESDG-chapter-instancedata.html
 // GCE: https://developers.google.com/compute/docs/metadata
 // AzureVM: https://docs.microsoft.com/azure/virtual-machines/virtual-machines-instancemetadataservice-overview
@@ -35,30 +35,43 @@ type CloudMetaGenerator interface {
 	SuggestCustomIdentifier() (string, error)
 }
 
+type ec2Generator interface {
+	CloudMetaGenerator
+	IsEC2(ctx context.Context) bool
+}
+
+type gceGenerator interface {
+	CloudMetaGenerator
+	IsGCE(ctx context.Context) bool
+}
+
+type azureVMGenerator interface {
+	CloudMetaGenerator
+	IsAzureVM(ctx context.Context) bool
+}
+
 var cloudLogger = logging.GetLogger("spec.cloud")
 
 var ec2BaseURL, gceMetaURL, azureVMBaseURL *url.URL
 
-func init() {
-	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
-	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
-	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
+type cloudGeneratorSuggester struct {
+	ec2Generator     ec2Generator
+	gceGenerator     gceGenerator
+	azureVMGenerator azureVMGenerator
 }
 
-var timeout = 3 * time.Second
-
-// SuggestCloudGenerator returns suitable CloudGenerator
-func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
+// Suggest returns suitable CloudGenerator
+func (s *cloudGeneratorSuggester) Suggest(conf *config.Config) *CloudGenerator {
 	// if CloudPlatform is specified, return corresponding one
 	switch conf.CloudPlatform {
 	case config.CloudPlatformNone:
 		return nil
 	case config.CloudPlatformEC2:
-		return &CloudGenerator{&EC2Generator{ec2BaseURL}}
+		return &CloudGenerator{s.ec2Generator}
 	case config.CloudPlatformGCE:
-		return &CloudGenerator{&GCEGenerator{gceMetaURL}}
+		return &CloudGenerator{s.gceGenerator}
 	case config.CloudPlatformAzureVM:
-		return &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+		return &CloudGenerator{s.azureVMGenerator}
 	}
 
 	var wg sync.WaitGroup
@@ -69,22 +82,22 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 
 	wg.Add(3)
 	go func() {
-		if isEC2(ctx) {
-			gCh <- &CloudGenerator{&EC2Generator{ec2BaseURL}}
+		if s.ec2Generator.IsEC2(ctx) {
+			gCh <- &CloudGenerator{s.ec2Generator}
 			cancel()
 		}
 		wg.Done()
 	}()
 	go func() {
-		if isGCE(ctx) {
-			gCh <- &CloudGenerator{&GCEGenerator{gceMetaURL}}
+		if s.gceGenerator.IsGCE(ctx) {
+			gCh <- &CloudGenerator{s.gceGenerator}
 			cancel()
 		}
 		wg.Done()
 	}()
 	go func() {
-		if isAzure(ctx) {
-			gCh <- &CloudGenerator{&AzureVMGenerator{azureVMBaseURL}}
+		if s.azureVMGenerator.IsAzureVM(ctx) {
+			gCh <- &CloudGenerator{s.azureVMGenerator}
 			cancel()
 		}
 		wg.Done()
@@ -99,6 +112,23 @@ func SuggestCloudGenerator(conf *config.Config) *CloudGenerator {
 	return <-gCh
 }
 
+// CloudGeneratorSuggester suggests suitable CloudGenerator
+var CloudGeneratorSuggester *cloudGeneratorSuggester
+
+func init() {
+	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
+	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
+	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
+
+	CloudGeneratorSuggester = &cloudGeneratorSuggester{
+		ec2Generator:     &EC2Generator{ec2BaseURL},
+		gceGenerator:     &GCEGenerator{gceMetaURL},
+		azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
+	}
+}
+
+var timeout = 3 * time.Second
+
 func httpCli() *http.Client {
 	return &http.Client{
 		Timeout: timeout,
@@ -109,60 +139,15 @@ func httpCli() *http.Client {
 	}
 }
 
-func isGCE(ctx context.Context) bool {
-	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
-		_, err := requestGCEMeta(ctx)
-		return err
-	})
-	return err == nil
-}
-
-// Note: May want to check without using the API.
-func isAzure(ctx context.Context) bool {
-	isAzure := false
-	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
-		cl := httpCli()
-		// '/vmId` is probably Azure VM specific URL
-		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
-		if err != nil {
-			return err
-		}
-		req.Header.Set("Metadata", "true")
-
-		resp, err := cl.Do(req.WithContext(ctx))
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		isAzure = resp.StatusCode == 200
-		return nil
-	})
-	return err == nil && isAzure
-}
-
-func requestGCEMeta(ctx context.Context) ([]byte, error) {
-	cl := httpCli()
-	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Metadata-Flavor", "Google")
-
-	resp, err := cl.Do(req.WithContext(ctx))
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
-	}
-	return ioutil.ReadAll(resp.Body)
-}
-
 // EC2Generator meta generator for EC2
 type EC2Generator struct {
 	baseURL *url.URL
+}
+
+// IsEC2 checks current environment is EC2 or not
+func (g *EC2Generator) IsEC2(ctx context.Context) bool {
+	// implementation varies between OSs. see isec2_XXX.go
+	return isEC2(ctx)
 }
 
 // Generate collects metadata from cloud platform.
@@ -241,6 +226,35 @@ type GCEGenerator struct {
 	metaURL *url.URL
 }
 
+func requestGCEMeta(ctx context.Context) ([]byte, error) {
+	cl := httpCli()
+	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Metadata-Flavor", "Google")
+
+	resp, err := cl.Do(req.WithContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
+	}
+	return ioutil.ReadAll(resp.Body)
+}
+
+// IsGCE checks current environment is GCE or not
+func (g *GCEGenerator) IsGCE(ctx context.Context) bool {
+	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
+		_, err := requestGCEMeta(ctx)
+		return err
+	})
+	return err == nil
+}
+
 // Generate collects metadata from cloud platform.
 func (g *GCEGenerator) Generate() (interface{}, error) {
 	bytes, err := requestGCEMeta(context.Background())
@@ -303,6 +317,29 @@ func (g *GCEGenerator) SuggestCustomIdentifier() (string, error) {
 // AzureVMGenerator meta generator for Azure VM
 type AzureVMGenerator struct {
 	baseURL *url.URL
+}
+
+// IsAzureVM checks current environment is AzureVM or not
+func (g *AzureVMGenerator) IsAzureVM(ctx context.Context) bool {
+	isAzureVM := false
+	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
+		cl := httpCli()
+		// '/vmId` is probably Azure VM specific URL
+		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Metadata", "true")
+
+		resp, err := cl.Do(req.WithContext(ctx))
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		isAzureVM = resp.StatusCode == 200
+		return nil
+	})
+	return err == nil && isAzureVM
 }
 
 // Generate collects metadata from cloud platform.
