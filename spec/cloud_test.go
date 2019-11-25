@@ -114,7 +114,7 @@ func TestEC2Generate(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
-	g := &CloudGenerator{&EC2Generator{u}}
+	g := &EC2Generator{u}
 
 	value, err := g.Generate()
 	if err != nil {
@@ -165,7 +165,7 @@ func TestEC2SuggestCustomIdentifier(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
-	g := &CloudGenerator{&EC2Generator{u}}
+	g := &EC2Generator{u}
 
 	// 404, 404, 404 => give up
 	{
