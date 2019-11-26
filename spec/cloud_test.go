@@ -56,7 +56,7 @@ func (g *mockGCECloudMetaGenerator) IsGCE(ctx context.Context) bool {
 	return g.isGCE
 }
 
-func TestCloudGenerate(t *testing.T) {
+func TestCloudGenerator(t *testing.T) {
 	generator := &mockCloudMetaGenerator{
 		metadata: &mackerel.Cloud{
 			Provider: "mock",
@@ -68,14 +68,24 @@ func TestCloudGenerate(t *testing.T) {
 	}
 	g := &CloudGenerator{generator}
 
+	customIdentifier, err := g.SuggestCustomIdentifier()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	if customIdentifier != "mock-generated-identifier.example.com" {
+		t.Errorf("Unexpected customIdentifier: %s", customIdentifier)
+	}
+
 	value, err := g.Generate()
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
 
 	cloud, typeOk := value.(*mackerel.Cloud)
-	if !typeOk {
+	if !typeOk || cloud == nil {
 		t.Errorf("value should be *mackerel.Cloud. %+v", value)
+		return
 	}
 
 	if cloud.Provider != "mock" {
@@ -89,15 +99,6 @@ func TestCloudGenerate(t *testing.T) {
 
 	if metadata["mockKey"] != "mockValue" {
 		t.Errorf("Unexpected metadata: %s", metadata["mockKey"])
-	}
-
-	customIdentifier, err := g.SuggestCustomIdentifier()
-	if err != nil {
-		t.Errorf("should not raise error: %s", err)
-	}
-
-	if customIdentifier != "mock-generated-identifier.example.com" {
-		t.Errorf("Unexpected customIdentifier: %s", customIdentifier)
 	}
 }
 
@@ -122,20 +123,6 @@ func TestEC2Generator(t *testing.T) {
 	}
 	g := &EC2Generator{u}
 
-	cloud, err := g.Generate()
-	if err != nil {
-		t.Errorf("should not raise error: %s", err)
-	}
-
-	metadata, typeOk := cloud.MetaData.(map[string]string)
-	if !typeOk {
-		t.Errorf("MetaData should be map. %+v", cloud.MetaData)
-	}
-
-	if metadata["instance-id"] != "i-4f90d537" {
-		t.Errorf("Unexpected metadata: %s", metadata["instance-id"])
-	}
-
 	customIdentifier, err := g.SuggestCustomIdentifier()
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
@@ -143,6 +130,25 @@ func TestEC2Generator(t *testing.T) {
 
 	if customIdentifier != "i-4f90d537.ec2.amazonaws.com" {
 		t.Errorf("Unexpected customIdentifier: %s", customIdentifier)
+	}
+
+	cloud, err := g.Generate()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	if cloud == nil {
+		t.Error("cloud should not be nil")
+		return
+	}
+
+	metadata, typeOk := cloud.MetaData.(map[string]string)
+	if !typeOk {
+		t.Errorf("MetaData should be map. %+v", cloud.MetaData)
+	}
+
+	if metadata == nil || metadata["instance-id"] != "i-4f90d537" {
+		t.Errorf("Unexpected metadata: %+v", metadata)
 	}
 }
 
