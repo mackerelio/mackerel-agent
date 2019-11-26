@@ -16,18 +16,21 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 )
 
-type emptyCloudMetaGenerator struct{}
-
-func (g *emptyCloudMetaGenerator) Generate() (interface{}, error) {
-	return nil, nil
+type mockCloudMetaGenerator struct {
+	metadata         *mackerel.Cloud
+	customIdentifier string
 }
 
-func (g *emptyCloudMetaGenerator) SuggestCustomIdentifier() (string, error) {
-	return "", nil
+func (g *mockCloudMetaGenerator) Generate() (*mackerel.Cloud, error) {
+	return g.metadata, nil
+}
+
+func (g *mockCloudMetaGenerator) SuggestCustomIdentifier() (string, error) {
+	return g.customIdentifier, nil
 }
 
 type mockAzureCloudMetaGenerator struct {
-	emptyCloudMetaGenerator
+	mockCloudMetaGenerator
 	isAzureVM bool
 }
 
@@ -36,7 +39,7 @@ func (g *mockAzureCloudMetaGenerator) IsAzureVM(ctx context.Context) bool {
 }
 
 type mockEC2CloudMetaGenerator struct {
-	emptyCloudMetaGenerator
+	mockCloudMetaGenerator
 	isEC2 bool
 }
 
@@ -45,7 +48,7 @@ func (g *mockEC2CloudMetaGenerator) IsEC2(ctx context.Context) bool {
 }
 
 type mockGCECloudMetaGenerator struct {
-	emptyCloudMetaGenerator
+	mockCloudMetaGenerator
 	isGCE bool
 }
 
@@ -53,9 +56,61 @@ func (g *mockGCECloudMetaGenerator) IsGCE(ctx context.Context) bool {
 	return g.isGCE
 }
 
-func TestCloudGenerate(t *testing.T) {
+func TestCloudGenerator(t *testing.T) {
+	generator := &mockCloudMetaGenerator{
+		metadata: &mackerel.Cloud{
+			Provider: "mock",
+			MetaData: map[string]string{
+				"mockKey": "mockValue",
+			},
+		},
+		customIdentifier: "mock-generated-identifier.example.com",
+	}
+	g := &CloudGenerator{generator}
+
+	customIdentifier, err := g.SuggestCustomIdentifier()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	if customIdentifier != "mock-generated-identifier.example.com" {
+		t.Errorf("Unexpected customIdentifier: %s", customIdentifier)
+	}
+
+	value, err := g.Generate()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	cloud, typeOk := value.(*mackerel.Cloud)
+	if !typeOk || cloud == nil {
+		t.Errorf("value should be *mackerel.Cloud. %+v", value)
+		return
+	}
+
+	if cloud.Provider != "mock" {
+		t.Errorf("Unexpected Provider: %s", cloud.Provider)
+	}
+
+	metadata, typeOk := cloud.MetaData.(map[string]string)
+	if !typeOk {
+		t.Errorf("MetaData should be map. %+v", cloud.MetaData)
+	}
+
+	if metadata["mockKey"] != "mockValue" {
+		t.Errorf("Unexpected metadata: %s", metadata["mockKey"])
+	}
+}
+
+func TestEC2Generator(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
-		fmt.Fprint(res, "i-4f90d537")
+		// The REAL path is /latest/meta-data/instance-id.
+		// This odd Path is due to current implementation.
+		if req.URL.Path == "/instance-id" {
+			fmt.Fprint(res, "i-4f90d537")
+		} else {
+			http.Error(res, "not found", 404)
+		}
 	}
 	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		handler(res, req)
@@ -66,16 +121,25 @@ func TestCloudGenerate(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
-	g := &CloudGenerator{&EC2Generator{u}}
+	g := &EC2Generator{u}
 
-	value, err := g.Generate()
+	customIdentifier, err := g.SuggestCustomIdentifier()
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
 
-	cloud, typeOk := value.(*mackerel.Cloud)
-	if !typeOk {
-		t.Errorf("value should be *mackerel.Cloud. %+v", value)
+	if customIdentifier != "i-4f90d537.ec2.amazonaws.com" {
+		t.Errorf("Unexpected customIdentifier: %s", customIdentifier)
+	}
+
+	cloud, err := g.Generate()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	if cloud == nil {
+		t.Error("cloud should not be nil")
+		return
 	}
 
 	metadata, typeOk := cloud.MetaData.(map[string]string)
@@ -83,21 +147,12 @@ func TestCloudGenerate(t *testing.T) {
 		t.Errorf("MetaData should be map. %+v", cloud.MetaData)
 	}
 
-	if len(metadata["instance-id"]) == 0 {
-		t.Error("instance-id should be filled")
-	}
-
-	customIdentifier, err := g.SuggestCustomIdentifier()
-	if err != nil {
-		t.Errorf("should not raise error: %s", err)
-	}
-
-	if len(customIdentifier) == 0 {
-		t.Error("customIdentifier should be retrieved")
+	if metadata == nil || metadata["instance-id"] != "i-4f90d537" {
+		t.Errorf("Unexpected metadata: %+v", metadata)
 	}
 }
 
-func TestEC2SuggestCustomIdentifier(t *testing.T) {
+func TestEC2SuggestCustomIdentifier_ChangingHttpStatus(t *testing.T) {
 	i := 0
 	threshold := 100
 	handler := func(res http.ResponseWriter, req *http.Request) {
@@ -117,7 +172,7 @@ func TestEC2SuggestCustomIdentifier(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
-	g := &CloudGenerator{&EC2Generator{u}}
+	g := &EC2Generator{u}
 
 	// 404, 404, 404 => give up
 	{
@@ -269,7 +324,7 @@ func TestGCEGenerate(t *testing.T) {
 }
 
 type slowCloudMetaGenerator struct {
-	emptyCloudMetaGenerator
+	mockCloudMetaGenerator
 }
 
 func (g *slowCloudMetaGenerator) IsEC2(ctx context.Context) bool {

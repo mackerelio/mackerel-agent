@@ -29,9 +29,14 @@ type CloudGenerator struct {
 	CloudMetaGenerator
 }
 
+// Generate generates metadata
+func (c *CloudGenerator) Generate() (interface{}, error) {
+	return c.CloudMetaGenerator.Generate()
+}
+
 // CloudMetaGenerator interface of metadata generator for each cloud platform
 type CloudMetaGenerator interface {
-	Generate() (interface{}, error)
+	Generate() (*mackerel.Cloud, error)
 	SuggestCustomIdentifier() (string, error)
 }
 
@@ -151,7 +156,7 @@ func (g *EC2Generator) IsEC2(ctx context.Context) bool {
 }
 
 // Generate collects metadata from cloud platform.
-func (g *EC2Generator) Generate() (interface{}, error) {
+func (g *EC2Generator) Generate() (*mackerel.Cloud, error) {
 	cl := httpCli()
 
 	metadataKeys := []string{
@@ -256,7 +261,7 @@ func (g *GCEGenerator) IsGCE(ctx context.Context) bool {
 }
 
 // Generate collects metadata from cloud platform.
-func (g *GCEGenerator) Generate() (interface{}, error) {
+func (g *GCEGenerator) Generate() (*mackerel.Cloud, error) {
 	bytes, err := requestGCEMeta(context.Background())
 	if err != nil {
 		return nil, err
@@ -343,7 +348,7 @@ func (g *AzureVMGenerator) IsAzureVM(ctx context.Context) bool {
 }
 
 // Generate collects metadata from cloud platform.
-func (g *AzureVMGenerator) Generate() (interface{}, error) {
+func (g *AzureVMGenerator) Generate() (*mackerel.Cloud, error) {
 	metadataComputeKeys := map[string]string{
 		"location":  "location",
 		"offer":     "imageReferenceOffer",
