@@ -93,6 +93,7 @@ func (h *handler) start() error {
 		CreationFlags: syscall.CREATE_NEW_PROCESS_GROUP,
 	}
 	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), makeFallbackEnv(dir)...)
 
 	h.cmd = cmd
 	h.r, h.w = io.Pipe()
@@ -104,6 +105,21 @@ func (h *handler) start() error {
 	}
 
 	return h.aggregate()
+}
+
+func makeFallbackEnv(wdir string) []string {
+	// The host that has installed mackerel-agent x86 edition is having id, pid and mackerel-agent.conf files
+	// in C:\Program Files (x86)\Mackerel.
+	// Though mackerel-agent refers to a directory containing mackerel-agent.exe,
+	// it should still refer these old files in x86 folder even if mackerel-agent is upgraded to x64 edition.
+	var env []string
+	if dir := os.Getenv("PROGRAMFILES(X86)"); dir != "" {
+		dir := filepath.Join(dir, "Mackerel")
+		if dir != wdir {
+			env = append(env, "MACKEREL_CONFIG_FALLBACK="+dir)
+		}
+	}
+	return env
 }
 
 func (h *handler) aggregate() error {

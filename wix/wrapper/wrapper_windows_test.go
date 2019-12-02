@@ -2,7 +2,10 @@ package main
 
 import (
 	"io"
+	"os"
+	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -156,5 +159,32 @@ func TestAggregate(t *testing.T) {
 		if !reflect.DeepEqual(tl.err, test.err) {
 			t.Fatalf("%s: err log: want: %v, got: %v", test.name, test.err, tl.err)
 		}
+	}
+}
+
+func TestMakeFallbackEnv_386(t *testing.T) {
+	if runtime.GOARCH != "386" {
+		t.Skip()
+	}
+	wdir := filepath.Join(os.Getenv("PROGRAMFILES"), "Mackerel")
+	env := makeFallbackEnv(wdir)
+	var want []string
+	if !reflect.DeepEqual(env, want) {
+		t.Errorf("makeFallbackEnv(%q) = %v; want %v", wdir, env, want)
+	}
+}
+
+func TestMakeFallbackEnv_amd64(t *testing.T) {
+	if runtime.GOARCH != "amd64" {
+		t.Skip()
+	}
+	wdir := filepath.Join(os.Getenv("PROGRAMFILES"), "Mackerel")
+	env := makeFallbackEnv(wdir)
+	dir := filepath.Join(os.Getenv("PROGRAMFILES(X86)"), "Mackerel")
+	want := []string{
+		"MACKEREL_CONFIG_FALLBACK=" + dir,
+	}
+	if !reflect.DeepEqual(env, want) {
+		t.Errorf("makeFallbackEnv(%q) = %v; want %v", wdir, env, want)
 	}
 }
