@@ -241,13 +241,16 @@ func notifyUpdateFile(c chan<- os.Signal, file string, interval time.Duration) {
 		time.Sleep(interval)
 		stat, err := os.Stat(file)
 		if err != nil {
+			if os.IsNotExist(err) {
+				break
+			}
 			logger.Errorf("Can't stat %s: %v", file, err)
 			continue
 		}
 		if stat.ModTime().After(lastUpdated) {
-			logger.Infof("Detected %s was updated; quitting", file)
-			c <- os.Interrupt
-			return
+			break
 		}
 	}
+	logger.Infof("Detected %s was updated; quitting", file)
+	c <- os.Interrupt
 }
