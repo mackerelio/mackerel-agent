@@ -104,6 +104,11 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 
 	fs.Parse(argv)
 
+	// fallback
+	if dir := os.Getenv("MACKEREL_CONFIG_FALLBACK"); dir != "" {
+		// TODO(lufia): write tests
+	}
+
 	conf, confErr := config.LoadConfig(*conffile)
 	if confErr != nil {
 		return nil, fmt.Errorf("failed to load the config file: %s", confErr)

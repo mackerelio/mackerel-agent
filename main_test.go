@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/command"
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/pidfile"
 )
 
@@ -54,6 +55,75 @@ diagnostic=false
 
 	if mergedConfig.Diagnostic != true {
 		t.Error("Diagnostic(overwritten by command line option) shoud be true")
+	}
+}
+
+func TestParseFlagsFallback(t *testing.T) {
+	tests := []struct {
+		Name string
+		Args []string
+		Dir  string
+
+		Pidfile  string
+		Conffile string
+		Root     string
+	}{
+		{
+			Name: "default settings",
+			Args: []string{},
+			Dir:  "",
+
+			Conffile: config.DefaultConfig.Conffile,
+			Pidfile:  config.DefaultConfig.Pidfile,
+			Root:     config.DefaultConfig.Root,
+		},
+		{
+			Name: "overwritten by config(exist)",
+			Args: []string{"-conf", "testdata/case1/agent.conf"},
+			Dir:  "",
+
+			Conffile: "testdata/case1/agent.conf",
+			Pidfile:  "testdata/case1/pid",
+			Root:     "testdata/case1",
+		},
+		{
+			Name: "overwritten by config(not exist)",
+			Args: []string{"-conf", "testdata/case2/agent.conf"},
+			Dir:  "",
+
+			Conffile: "testdata/case2/agent.conf",
+			Pidfile:  "testdata/case2x/pid",
+			Root:     "testdata/case2x",
+		},
+		{
+			Name: "overwritten by config(not exist)",
+			Args: []string{"-conf", "testdata/case2/agent.conf"},
+			Dir:  "",
+
+			Conffile: "testdata/case2/agent.conf",
+			Pidfile:  "testdata/case2x/pid",
+			Root:     "testdata/case2x",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			var fs flag.FlagSet
+			if tt.Dir == "" {
+				os.Unsetenv("MACKEREL_CONFIG_FALLBACK")
+			} else {
+				os.Setenv("MACKEREL_CONFIG_FALLBACK", tt.Dir)
+			}
+			c, _ := resolveConfig(&fs, tt.Args)
+			if c.Conffile != tt.Conffile {
+				t.Errorf("Conffile = %s; want %s", c.Conffile, tt.Conffile)
+			}
+			if c.Pidfile != tt.Pidfile {
+				t.Errorf("Pidfile = %s; want %s", c.Pidfile, tt.Pidfile)
+			}
+			if c.Root != tt.Root {
+				t.Errorf("Root = %s; want %s", c.Root, tt.Root)
+			}
+		})
 	}
 }
 
