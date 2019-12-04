@@ -12,6 +12,8 @@ import (
 	"github.com/mackerelio/mackerel-agent/util/windows"
 )
 
+const registryKey = `Software\Microsoft\Windows NT\CurrentVersion`
+
 // KernelGenerator XXX
 type KernelGenerator struct {
 }
@@ -23,30 +25,22 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 	results := make(mackerel.Kernel)
 
 	osname, _, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE,
-		`Software\Microsoft\Windows NT\CurrentVersion`,
-		`ProductName`)
+		windows.HKEY_LOCAL_MACHINE, registryKey, `ProductName`)
 	if err != nil {
 		return nil, err
 	}
 	edition, _, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE,
-		`Software\Microsoft\Windows NT\CurrentVersion`,
-		`EditionID`)
+		windows.HKEY_LOCAL_MACHINE, registryKey, `EditionID`)
 	if err != nil {
 		return nil, err
 	}
 	version, _, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE,
-		`Software\Microsoft\Windows NT\CurrentVersion`,
-		`CurrentVersion`)
+		windows.HKEY_LOCAL_MACHINE, registryKey, `CurrentVersion`)
 	if err != nil {
 		return nil, err
 	}
 	release, errno, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE,
-		`Software\Microsoft\Windows NT\CurrentVersion`,
-		`CSDVersion`)
+		windows.HKEY_LOCAL_MACHINE, registryKey, `CSDVersion`)
 	if err != nil && errno != windows.ERROR_FILE_NOT_FOUND { // CSDVersion is nullable
 		return nil, err
 	}
