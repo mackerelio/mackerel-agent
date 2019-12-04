@@ -177,6 +177,52 @@ func TestSignalHandler(t *testing.T) {
 	}
 }
 
+func TestNotifyUpdateFile(t *testing.T) {
+	app := &command.App{}
+	termCh := make(chan struct{})
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
+	go signalHandler(c, app, termCh)
+
+	file := "testdata/fake-agent"
+	interval := 100 * time.Millisecond
+	go notifyUpdateFile(c, file, interval)
+	time.Sleep(interval)
+	os.Chtimes(file, time.Now(), time.Now())
+	select {
+	case <-termCh:
+	case <-time.After(time.Second):
+		t.Errorf("Interrupt signal is not received in a second")
+	}
+}
+
+func TestNotifyUpdateFileDelete(t *testing.T) {
+	app := &command.App{}
+	termCh := make(chan struct{})
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
+	go signalHandler(c, app, termCh)
+
+	f, err := ioutil.TempFile("", "mackerel-agent.test.*")
+	if err != nil {
+		t.Fatalf("can't create a temporary file: %v", err)
+	}
+	file := f.Name()
+	f.Close()
+
+	interval := 100 * time.Millisecond
+	go notifyUpdateFile(c, file, interval)
+	time.Sleep(interval)
+	if err := os.Remove(file); err != nil {
+		t.Fatalf("can't remove %v: %v", file, err)
+	}
+	select {
+	case <-termCh:
+	case <-time.After(time.Second):
+		t.Errorf("Interrupt signal is not received in a second")
+	}
+}
+
 func TestConfigTestOK(t *testing.T) {
 	// prepare dummy config
 	confFile, err := ioutil.TempFile("", "mackerel-config-test")
