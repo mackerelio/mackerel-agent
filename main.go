@@ -90,7 +90,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
 		apikey        = fs.String("apikey", "", "(DEPRECATED) API key from mackerel.io web site")
 		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
-		quit          = fs.Bool("quit", false, "Quit if agent is updated")
+		autoShutdown  = fs.Bool("private-autoshutdown", false, "(internal use) Shutdown automatically if agent is updated")
 		child         = fs.Bool("child", false, "(internal use) child process of the supervise mode")
 		verbose       bool
 		roleFullnames roleFullnamesFlag
@@ -123,8 +123,8 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 			conf.Root = *root
 		case "diagnostic":
 			conf.Diagnostic = *diagnostic
-		case "quit":
-			conf.Quit = *quit
+		case "private-autoshutdown":
+			conf.AutoShutdown = *autoShutdown
 		case "verbose", "v":
 			conf.Verbose = verbose
 		case "role":
@@ -190,7 +190,7 @@ func start(conf *config.Config, termCh chan struct{}) error {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go signalHandler(c, app, termCh)
 
-	if conf.Quit {
+	if conf.AutoShutdown {
 		go notifyUpdateFile(c, os.Args[0], 10*time.Second)
 	}
 
@@ -251,6 +251,6 @@ func notifyUpdateFile(c chan<- os.Signal, file string, interval time.Duration) {
 			break
 		}
 	}
-	logger.Infof("Detected %s was updated; quitting", file)
+	logger.Infof("Detected %s was updated; shutting down", file)
 	c <- os.Interrupt
 }
