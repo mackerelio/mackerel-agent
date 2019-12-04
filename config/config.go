@@ -121,6 +121,7 @@ type Config struct {
 	MetricPlugins   map[string]*MetricPlugin
 	CheckPlugins    map[string]*CheckPlugin
 	MetadataPlugins map[string]*MetadataPlugin
+	AutoShutdown    bool
 }
 
 // PluginConfig represents a plugin configuration.
