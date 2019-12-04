@@ -3,6 +3,7 @@
 package windows
 
 import (
+	"strings"
 	"unsafe"
 
 	"github.com/mackerelio/golib/logging"
@@ -21,10 +22,17 @@ var kernelLogger = logging.GetLogger("spec.kernel")
 func (g *KernelGenerator) Generate() (interface{}, error) {
 	results := make(mackerel.Kernel)
 
-	name, _, err := windows.RegGetString(
+	osname, _, err := windows.RegGetString(
 		windows.HKEY_LOCAL_MACHINE,
 		`Software\Microsoft\Windows NT\CurrentVersion`,
 		`ProductName`)
+	if err != nil {
+		return nil, err
+	}
+	edition, _, err := windows.RegGetString(
+		windows.HKEY_LOCAL_MACHINE,
+		`Software\Microsoft\Windows NT\CurrentVersion`,
+		`EditionID`)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +51,12 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		return nil, err
 	}
 
+	if edition != "" && strings.Index(osname, edition) == -1 {
+		osname += " (" + edition + ")"
+	}
+
 	results["name"] = "Microsoft Windows"
-	results["os"] = name
+	results["os"] = osname
 	results["version"] = version
 	results["release"] = release
 
