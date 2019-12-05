@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"testing"
 	"time"
@@ -143,14 +144,14 @@ func TestParseFlagsFallback(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if c.Conffile != tt.Conffile {
-				t.Errorf("Conffile = %s; want %s", c.Conffile, tt.Conffile)
+			if s := filepath.ToSlash(c.Conffile); s != tt.Conffile {
+				t.Errorf("Conffile = %s; want %s", s, tt.Conffile)
 			}
-			if c.Pidfile != tt.Pidfile {
-				t.Errorf("Pidfile = %s; want %s", c.Pidfile, tt.Pidfile)
+			if s := filepath.ToSlash(c.Pidfile); s != tt.Pidfile {
+				t.Errorf("Pidfile = %s; want %s", s, tt.Pidfile)
 			}
-			if c.Root != tt.Root {
-				t.Errorf("Root = %s; want %s", c.Root, tt.Root)
+			if s := filepath.ToSlash(c.Root); s != tt.Root {
+				t.Errorf("Root = %s; want %s", s, tt.Root)
 			}
 		})
 	}
