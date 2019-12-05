@@ -60,9 +60,10 @@ diagnostic=false
 
 func TestParseFlagsFallback(t *testing.T) {
 	tests := []struct {
-		Name string
-		Args []string
-		Dir  string
+		Name           string
+		Args           []string
+		Dir            string
+		CrunchDefaults bool // will overwrite config.DefaultConfig.Xxxfile
 
 		Pidfile  string
 		Conffile string
@@ -79,41 +80,65 @@ func TestParseFlagsFallback(t *testing.T) {
 		},
 		{
 			Name: "overwritten by config(exist)",
-			Args: []string{"-conf", "testdata/case1/agent.conf"},
+			Args: []string{"-conf", "testdata/case1/mackerel-agent.conf"},
 			Dir:  "",
 
-			Conffile: "testdata/case1/agent.conf",
+			Conffile: "testdata/case1/mackerel-agent.conf",
 			Pidfile:  "testdata/case1/pid",
 			Root:     "testdata/case1",
 		},
 		{
 			Name: "overwritten by config(not exist)",
-			Args: []string{"-conf", "testdata/case2/agent.conf"},
+			Args: []string{"-conf", "testdata/case2/mackerel-agent.conf"},
 			Dir:  "",
 
-			Conffile: "testdata/case2/agent.conf",
+			Conffile: "testdata/case2/mackerel-agent.conf",
 			Pidfile:  "testdata/case2x/pid",
 			Root:     "testdata/case2x",
 		},
 		{
-			Name: "overwritten by config(not exist)",
-			Args: []string{"-conf", "testdata/case2/agent.conf"},
-			Dir:  "",
+			Name: "overwritten by options",
+			Args: []string{
+				"-conf", "testdata/case2/mackerel-agent.conf",
+				"-pidfile", "testdata/case2/pid",
+				"-root", "testdata/case2",
+			},
+			Dir: "",
 
-			Conffile: "testdata/case2/agent.conf",
-			Pidfile:  "testdata/case2x/pid",
-			Root:     "testdata/case2x",
+			Conffile: "testdata/case2/mackerel-agent.conf",
+			Pidfile:  "testdata/case2/pid",
+			Root:     "testdata/case2",
+		},
+		{
+			Name:           "overwritten by fallback",
+			Args:           []string{},
+			Dir:            "testdata/case3",
+			CrunchDefaults: true,
+
+			Conffile: "testdata/case3/mackerel-agent.conf",
+			Pidfile:  "testdata/case3/pid",
+			Root:     "testdata/case3",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
-			var fs flag.FlagSet
 			if tt.Dir == "" {
 				os.Unsetenv("MACKEREL_CONFIG_FALLBACK")
 			} else {
 				os.Setenv("MACKEREL_CONFIG_FALLBACK", tt.Dir)
 			}
-			c, _ := resolveConfig(&fs, tt.Args)
+			defaultConfig := *config.DefaultConfig
+			if tt.CrunchDefaults {
+				config.DefaultConfig.Conffile = "blahblah"
+				config.DefaultConfig.Pidfile = "blahblah"
+				config.DefaultConfig.Root = "blahblah"
+			}
+			var fs flag.FlagSet
+			c, err := resolveConfig(&fs, tt.Args)
+			*config.DefaultConfig = defaultConfig
+			if err != nil {
+				t.Fatal(err)
+			}
 			if c.Conffile != tt.Conffile {
 				t.Errorf("Conffile = %s; want %s", c.Conffile, tt.Conffile)
 			}

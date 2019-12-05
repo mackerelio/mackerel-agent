@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"regexp"
 	"runtime"
 	"strings"
@@ -84,10 +85,10 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	conf := &config.Config{}
 
 	var (
-		conffile      = fs.String("conf", config.DefaultConfig.Conffile, "Config file path (Configs in this file are over-written by command line options)")
+		conffile      = PathValue{Path: config.DefaultConfig.Conffile}
 		apibase       = fs.String("apibase", config.DefaultConfig.Apibase, "API base")
-		pidfile       = fs.String("pidfile", config.DefaultConfig.Pidfile, "File containing PID")
-		root          = fs.String("root", config.DefaultConfig.Root, "Directory containing variable state information")
+		root          = PathValue{Path: config.DefaultConfig.Root}
+		pidfile       = PathValue{Path: config.DefaultConfig.Pidfile}
 		apikey        = fs.String("apikey", "", "(DEPRECATED) API key from mackerel.io web site")
 		diagnostic    = fs.Bool("diagnostic", false, "Enables diagnostic features")
 		autoShutdown  = fs.Bool("private-autoshutdown", false, "(internal use) Shutdown automatically if agent is updated")
@@ -95,25 +96,36 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		verbose       bool
 		roleFullnames roleFullnamesFlag
 	)
+	fs.Var(&conffile, "conf", "Config file path (Configs in this file are over-written by command line options)")
+	fs.Var(&pidfile, "pidfile", "File containing PID")
+	fs.Var(&root, "root", "Directory containing variable state information")
 	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
 	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
 
 	// The value of "role" option is internally "roll fullname",
 	// but we call it "role" here for ease.
 	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
+	if dir := os.Getenv("MACKEREL_CONFIG_FALLBACK"); dir != "" {
+		conffile.SetFallback(filepath.Join(dir, "mackerel-agent.conf"))
+		pidfile.SetFallback(filepath.Join(dir, "pid"))
+		root.SetFallback(filepath.Join(dir, "id"))
+	}
 
 	fs.Parse(argv)
 
-	// fallback
-	if dir := os.Getenv("MACKEREL_CONFIG_FALLBACK"); dir != "" {
-		// TODO(lufia): write tests
-	}
-
-	conf, confErr := config.LoadConfig(*conffile)
+	confFile := conffile.ResolveFile()
+	conf, confErr := config.LoadConfig(confFile)
 	if confErr != nil {
 		return nil, fmt.Errorf("failed to load the config file: %s", confErr)
 	}
-	conf.Conffile = *conffile
+	// conf.Conffile reflects only the value written in mackerel-agent.conf, so it is probably not set.
+	// Therefore we should update Conffile field after LoadConfig.
+	conf.Conffile = confFile
+
+	pidfile.SetDefault(conf.Pidfile)
+	root.SetDefault(conf.Root)
+	conf.Pidfile = pidfile.ResolveFile()
+	conf.Root = root.ResolveDir()
 
 	// overwrite config from file by config from args
 	fs.Visit(func(f *flag.Flag) {
@@ -123,9 +135,9 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		case "apikey":
 			conf.Apikey = *apikey
 		case "pidfile":
-			conf.Pidfile = *pidfile
+			conf.Pidfile = pidfile.String()
 		case "root":
-			conf.Root = *root
+			conf.Root = root.String()
 		case "diagnostic":
 			conf.Diagnostic = *diagnostic
 		case "private-autoshutdown":
