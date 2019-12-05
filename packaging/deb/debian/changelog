@@ -1,3 +1,20 @@
+mackerel-agent (0.65.0-1) stable; urgency=low
+
+  * add -private-autoshutdown option (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/612>
+  * Fix Windows Edition name (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/614>
+  * Bump github.com/shirou/gopsutil from 2.19.10+incompatible to 2.19.11+incompatible (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/611>
+  * update go-osstat and golang.org/x (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/610>
+  * refactor: improve interface and testing for spec/cloud (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/609>
+  * refactor: Inject CloudMetaGenerators to Suggester in order to test them in safer way (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/608>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 05 Dec 2019 05:44:09 +0000
+
 mackerel-agent (0.64.1-1) stable; urgency=low
 
   * Install development tools in module-aware mode (by lufia)
