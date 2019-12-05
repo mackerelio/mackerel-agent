@@ -74,9 +74,9 @@ func TestParseFlagsFallback(t *testing.T) {
 			Args: []string{},
 			Dir:  "",
 
-			Conffile: config.DefaultConfig.Conffile,
-			Pidfile:  config.DefaultConfig.Pidfile,
-			Root:     config.DefaultConfig.Root,
+			Conffile: "testdata/default/mackerel-agent.conf",
+			Pidfile:  "testdata/default/pid",
+			Root:     "testdata/default",
 		},
 		{
 			Name: "overwritten by config(exist)",
@@ -132,6 +132,10 @@ func TestParseFlagsFallback(t *testing.T) {
 				config.DefaultConfig.Conffile = "blahblah"
 				config.DefaultConfig.Pidfile = "blahblah"
 				config.DefaultConfig.Root = "blahblah"
+			} else {
+				config.DefaultConfig.Conffile = "testdata/default/mackerel-agent.conf"
+				config.DefaultConfig.Pidfile = "testdata/default/pid"
+				config.DefaultConfig.Root = "testdata/default"
 			}
 			var fs flag.FlagSet
 			c, err := resolveConfig(&fs, tt.Args)
