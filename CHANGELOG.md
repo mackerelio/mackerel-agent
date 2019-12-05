@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.65.0 (2019-12-05)
+
+* add -private-autoshutdown option #612 (lufia)
+* Fix Windows Edition name #614 (mattn)
+* Bump github.com/shirou/gopsutil from 2.19.10+incompatible to 2.19.11+incompatible #611 (dependabot-preview[bot])
+* update go-osstat and golang.org/x #610 (lufia)
+* refactor: improve interface and testing for spec/cloud #609 (astj)
+* refactor: Inject CloudMetaGenerators to Suggester in order to test them in safer way #608 (astj)
+
+
 ## 0.64.1 (2019-11-21)
 
 * Install development tools in module-aware mode #606 (lufia)
