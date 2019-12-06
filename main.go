@@ -96,20 +96,20 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		verbose       bool
 		roleFullnames roleFullnamesFlag
 	)
-	fs.Var(&conffile, "conf", "Config file path (Configs in this file are over-written by command line options)")
-	fs.Var(&pidfile, "pidfile", "File containing PID")
-	fs.Var(&root, "root", "Directory containing variable state information")
+	fs.Var(&conffile, "conf", "Config file `path` (Configs in this file are over-written by command line options)")
+	fs.Var(&pidfile, "pidfile", "File `path` containing PID")
+	fs.Var(&root, "root", "Directory `path` containing variable state information")
+	if dir := os.Getenv("MACKEREL_CONFIG_FALLBACK"); dir != "" {
+		conffile.SetFallback(filepath.Join(dir, "mackerel-agent.conf"))
+		pidfile.SetFallback(filepath.Join(dir, "pid"))
+		root.SetFallback(filepath.Join(dir, "id"))
+	}
 	fs.BoolVar(&verbose, "verbose", config.DefaultConfig.Verbose, "Toggle verbosity")
 	fs.BoolVar(&verbose, "v", config.DefaultConfig.Verbose, "Toggle verbosity (shorthand)")
 
 	// The value of "role" option is internally "roll fullname",
 	// but we call it "role" here for ease.
 	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
-	if dir := os.Getenv("MACKEREL_CONFIG_FALLBACK"); dir != "" {
-		conffile.SetFallback(filepath.Join(dir, "mackerel-agent.conf"))
-		pidfile.SetFallback(filepath.Join(dir, "pid"))
-		root.SetFallback(filepath.Join(dir, "id"))
-	}
 
 	fs.Parse(argv)
 
