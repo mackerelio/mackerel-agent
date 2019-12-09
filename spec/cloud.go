@@ -122,7 +122,7 @@ var CloudGeneratorSuggester *cloudGeneratorSuggester
 
 func init() {
 	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
-	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
+	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1")
 	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
 
 	CloudGeneratorSuggester = &cloudGeneratorSuggester{
