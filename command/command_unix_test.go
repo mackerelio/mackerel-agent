@@ -43,7 +43,7 @@ func TestRunOnce(t *testing.T) {
 func TestRunOncePayload(t *testing.T) {
 	if testing.Short() {
 		origMetricsInterval := metricsInterval
-		metricsInterval = 1
+		metricsInterval = 1 * time.Second
 		defer func() {
 			metricsInterval = origMetricsInterval
 		}()
