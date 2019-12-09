@@ -206,7 +206,7 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 		key := "instance-id"
 		resp, err := cl.Get(g.baseURL.String() + "/" + key)
 		if err != nil {
-			return fmt.Errorf("error while retrieving instance-id")
+			return fmt.Errorf("error while retrieving instance-id: %s", err)
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
@@ -324,13 +324,13 @@ func (g *GCEGenerator) SuggestCustomIdentifier() (string, error) {
 		// https://cloud.google.com/compute/docs/storing-retrieving-metadata#default
 		req, err := http.NewRequest("GET", g.metaURL.String()+"/instance/id", nil)
 		if err != nil {
-			return fmt.Errorf("error while retrieving vmId")
+			return fmt.Errorf("error on create new request to retrieve instance id: %s", err)
 		}
 		req.Header.Set("Metadata-Flavor", "Google")
 
 		resp, err := cl.Do(req)
 		if err != nil {
-			return fmt.Errorf("error while retrieving vmId")
+			return fmt.Errorf("error while retrieving instance Id: %s", err)
 		}
 		defer resp.Body.Close()
 
@@ -444,13 +444,13 @@ func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
 		cl := httpCli()
 		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
 		if err != nil {
-			return fmt.Errorf("error while retrieving vmId")
+			return fmt.Errorf("error on create new request to retrieve vmId: %s", err)
 		}
 		req.Header.Set("Metadata", "true")
 
 		resp, err := cl.Do(req)
 		if err != nil {
-			return fmt.Errorf("error while retrieving vmId")
+			return fmt.Errorf("error while retrieving vmId: %s", err)
 		}
 		defer resp.Body.Close()
 
