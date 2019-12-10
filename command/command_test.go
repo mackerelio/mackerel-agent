@@ -95,6 +95,9 @@ func TestPrepareWithCreate(t *testing.T) {
 	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
 
+	// To prevent unexpected behavior in the TravisCI environment
+	conf.CloudPlatform = config.CloudPlatformNone
+
 	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"id": "xxx1234567890",
@@ -132,6 +135,9 @@ func TestPrepareWithCreate(t *testing.T) {
 func TestPrepareWithCreateWithFail(t *testing.T) {
 	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
+
+	// To prevent unexpected behavior in the TravisCI environment
+	conf.CloudPlatform = config.CloudPlatformNone
 
 	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
 		return 403, jsonObject{
