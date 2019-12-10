@@ -233,7 +233,7 @@ type GCEGenerator struct {
 
 func requestGCEMeta(ctx context.Context) ([]byte, error) {
 	cl := httpCli()
-	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
+	req, err := http.NewRequest("GET", gceMetaURL.String()+"?recursive=true", nil)
 	if err != nil {
 		return nil, err
 	}
