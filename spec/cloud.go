@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -127,7 +128,7 @@ func init() {
 
 	CloudGeneratorSuggester = &cloudGeneratorSuggester{
 		ec2Generator:     &EC2Generator{ec2BaseURL},
-		gceGenerator:     &GCEGenerator{gceMetaURL},
+		gceGenerator:     &GCEGenerator{gceMetaURL, gceMeta{}},
 		azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
 	}
 }
@@ -229,6 +230,7 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 // GCEGenerator generate for GCE
 type GCEGenerator struct {
 	metaURL *url.URL
+	meta    gceMeta
 }
 
 func requestGCEMeta(ctx context.Context) ([]byte, error) {
@@ -267,7 +269,11 @@ func (g *GCEGenerator) Generate() (*mackerel.Cloud, error) {
 		return nil, err
 	}
 	var data gceMeta
-	json.Unmarshal(bytes, &data)
+	err = json.Unmarshal(bytes, &data)
+	if err != nil {
+		return nil, err
+	}
+	g.meta = data
 	return data.toGeneratorResults(), nil
 }
 
@@ -316,6 +322,11 @@ func (g gceMeta) toGeneratorResults() *mackerel.Cloud {
 
 // SuggestCustomIdentifier the identifier of the GCE VM instance
 func (g *GCEGenerator) SuggestCustomIdentifier() (string, error) {
+	if g.meta.Instance != nil && g.meta.Instance.InstanceID != 0 {
+		instanceID := strconv.FormatUint(g.meta.Instance.InstanceID, 10)
+		return builtGCECustomIdentifier(instanceID), nil
+	}
+
 	identifier := ""
 	err := retry.Retry(3, 2*time.Second, func() error {
 		cl := httpCli()
@@ -345,10 +356,14 @@ func (g *GCEGenerator) SuggestCustomIdentifier() (string, error) {
 		if instanceID == "" {
 			return fmt.Errorf("invalid instance id")
 		}
-		identifier = instanceID + ".gce.cloud.google.com"
+		identifier = builtGCECustomIdentifier(instanceID)
 		return nil
 	})
 	return identifier, err
+}
+
+func builtGCECustomIdentifier(instanceID string) string {
+	return instanceID + ".gce.cloud.google.com"
 }
 
 // AzureVMGenerator meta generator for Azure VM
