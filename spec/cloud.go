@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -122,12 +123,12 @@ var CloudGeneratorSuggester *cloudGeneratorSuggester
 
 func init() {
 	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
-	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
+	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1")
 	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
 
 	CloudGeneratorSuggester = &cloudGeneratorSuggester{
 		ec2Generator:     &EC2Generator{ec2BaseURL},
-		gceGenerator:     &GCEGenerator{gceMetaURL},
+		gceGenerator:     &GCEGenerator{gceMetaURL, gceMeta{}},
 		azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
 	}
 }
@@ -206,7 +207,7 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 		key := "instance-id"
 		resp, err := cl.Get(g.baseURL.String() + "/" + key)
 		if err != nil {
-			return fmt.Errorf("error while retrieving instance-id")
+			return fmt.Errorf("error while retrieving instance-id: %s", err)
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
@@ -229,11 +230,12 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 // GCEGenerator generate for GCE
 type GCEGenerator struct {
 	metaURL *url.URL
+	meta    gceMeta
 }
 
 func requestGCEMeta(ctx context.Context) ([]byte, error) {
 	cl := httpCli()
-	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
+	req, err := http.NewRequest("GET", gceMetaURL.String()+"?recursive=true", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +269,11 @@ func (g *GCEGenerator) Generate() (*mackerel.Cloud, error) {
 		return nil, err
 	}
 	var data gceMeta
-	json.Unmarshal(bytes, &data)
+	err = json.Unmarshal(bytes, &data)
+	if err != nil {
+		return nil, err
+	}
+	g.meta = data
 	return data.toGeneratorResults(), nil
 }
 
@@ -314,9 +320,20 @@ func (g gceMeta) toGeneratorResults() *mackerel.Cloud {
 	return &mackerel.Cloud{Provider: "gce", MetaData: g.toGeneratorMeta()}
 }
 
-// SuggestCustomIdentifier for GCE is not implemented yet
+func builtGCECustomIdentifier(instanceID string) string {
+	return instanceID + ".gce.cloud.google.com"
+}
+
+// SuggestCustomIdentifier the identifier of the GCE VM instance
 func (g *GCEGenerator) SuggestCustomIdentifier() (string, error) {
-	return "", nil
+	if g.meta.Instance == nil || g.meta.Instance.InstanceID == 0 {
+		_, err := g.Generate()
+		if err != nil {
+			return "", err
+		}
+	}
+	instanceID := strconv.FormatUint(g.meta.Instance.InstanceID, 10)
+	return builtGCECustomIdentifier(instanceID), nil
 }
 
 // AzureVMGenerator meta generator for Azure VM
@@ -412,13 +429,13 @@ func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
 		cl := httpCli()
 		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
 		if err != nil {
-			return fmt.Errorf("error while retrieving vmId")
+			return fmt.Errorf("error on create new request to retrieve vmId: %s", err)
 		}
 		req.Header.Set("Metadata", "true")
 
 		resp, err := cl.Do(req)
 		if err != nil {
-			return fmt.Errorf("error while retrieving vmId")
+			return fmt.Errorf("error while retrieving vmId: %s", err)
 		}
 		defer resp.Body.Close()
 
