@@ -32,6 +32,6 @@ func TestGetCmdName(t *testing.T) {
 
 	expected := "sleep"
 	if got := GetCmdName(pid); got != expected {
-		t.Errorf("GetCmdName should return %q bot got: %q", expected, got)
+		t.Errorf("GetCmdName should return %q but got: %q", expected, got)
 	}
 }
