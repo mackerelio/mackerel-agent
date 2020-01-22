@@ -1,3 +1,18 @@
+mackerel-agent (0.66.0-1) stable; urgency=low
+
+  * Bump github.com/pkg/errors from 0.8.1 to 0.9.1 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/623>
+  * Bump github.com/shirou/gopsutil from 2.19.11+incompatible to 2.19.12+incompatible (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/620>
+  * Bump github.com/Songmu/prompter from 0.2.0 to 0.3.0 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/617>
+  * Implement GCEGenerator.SuggestCustomIdentifier (by tanatana)
+    <https://github.com/mackerelio/mackerel-agent/pull/618>
+  * fix how to get self executable path for autoshutdown option (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/616>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 22 Jan 2020 07:14:51 +0000
+
 mackerel-agent (0.65.0-1) stable; urgency=low
 
   * add -private-autoshutdown option (by lufia)

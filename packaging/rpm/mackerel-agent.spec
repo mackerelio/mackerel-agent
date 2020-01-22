@@ -62,6 +62,13 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jan 22 2020 <mackerel-developers@hatena.ne.jp> - 0.66.0
+- Bump github.com/pkg/errors from 0.8.1 to 0.9.1 (by dependabot-preview[bot])
+- Bump github.com/shirou/gopsutil from 2.19.11+incompatible to 2.19.12+incompatible (by dependabot-preview[bot])
+- Bump github.com/Songmu/prompter from 0.2.0 to 0.3.0 (by dependabot-preview[bot])
+- Implement GCEGenerator.SuggestCustomIdentifier (by tanatana)
+- fix how to get self executable path for autoshutdown option (by lufia)
+
 * Thu Dec 05 2019 <mackerel-developers@hatena.ne.jp> - 0.65.0
 - add -private-autoshutdown option (by lufia)
 - Fix Windows Edition name (by mattn)
