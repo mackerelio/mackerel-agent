@@ -39,12 +39,15 @@ env = { "MYSQL_USERNAME" = "USERNAME", "MYSQL_PASSWORD" = "PASSWORD" }
 command = "heartbeat.sh"
 user = "xyz"
 notification_interval = 60
+check_interval = 30
 max_check_attempts = 3
 timeout_seconds = 60
 action = { command = "cardiac_massage", user = "doctor" }
 
 [plugin.checks.heartbeat2]
 command = "heartbeat.sh"
+notification_interval = "1h30m"
+check_interval = "1h"
 env = { "ES_HOSTS" = "10.45.3.2:9220,10.45.3.1:9230" }
 action = { command = "cardiac_massage", user = "doctor", env = { "NAME_1" = "VALUE_1", "NAME_2" = "VALUE_2", "NAME_3" = "VALUE_3" } }
 
@@ -58,7 +61,7 @@ custom_identifier = "app2.example.com"
 [plugin.metadata.hostinfo]
 command = "hostinfo.sh"
 user = "zzz"
-execution_interval = 60
+execution_interval = "1h"
 timeout_seconds = 60
 
 [plugin.metadata.hostinfo2]
@@ -457,6 +460,9 @@ func TestLoadConfigFile(t *testing.T) {
 	if *checks.NotificationInterval != 60 {
 		t.Error("notification_interval should be 60")
 	}
+	if *checks.CheckInterval != 30 {
+		t.Error("check_interval should be 30")
+	}
 	if *checks.MaxCheckAttempts != 3 {
 		t.Error("max_check_attempts should be 3")
 	}
@@ -480,6 +486,12 @@ func TestLoadConfigFile(t *testing.T) {
 	if !expectContainsString(checks2.Command.Env, "ES_HOSTS=10.45.3.2:9220,10.45.3.1:9230") {
 		t.Errorf("Command.Env should contain 'ES_HOSTS=10.45.3.2:9220,10.45.3.1:9230'")
 	}
+	if *checks2.NotificationInterval != 90 {
+		t.Error("notification_interval should be 90")
+	}
+	if *checks2.CheckInterval != 60 {
+		t.Error("check_interval should be 60")
+	}
 	if checks2.Action.Env == nil {
 		t.Error("config should have action.env of check plugin")
 	}
@@ -499,6 +511,12 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if checks3.CustomIdentifier != nil {
 		t.Error("config should not have customIdentifier")
+	}
+	if checks3.NotificationInterval != nil {
+		t.Error("config should not have notification_interval")
+	}
+	if checks3.CheckInterval != nil {
+		t.Error("config should not have check_interval")
 	}
 
 	checks4 := config.CheckPlugins["heartbeat4"]
@@ -533,6 +551,9 @@ func TestLoadConfigFile(t *testing.T) {
 	}
 	if !expectContainsString(metadataPlugin2.Command.Env, "NAME_1=VALUE_1") {
 		t.Errorf("Command.Env should contain 'NAME_1=VALUE_1'")
+	}
+	if metadataPlugin2.ExecutionInterval != nil {
+		t.Errorf("config should not have execution_interva but got %v", *metadataPlugin2.ExecutionInterval)
 	}
 
 	if config.Plugin != nil {
