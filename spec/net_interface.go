@@ -63,7 +63,7 @@ func (ifs Interfaces) AppendIPv6Address(name, addr string) {
 	ifs[name] = iface
 }
 
-// InterfaceGenerator retrieve network informations
+// InterfaceGenerator retrieve network information
 type InterfaceGenerator interface {
 	Generate() ([]mkr.Interface, error)
 }
