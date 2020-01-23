@@ -14,9 +14,8 @@ import (
 
 	"github.com/Songmu/retry"
 	"github.com/mackerelio/golib/logging"
-	"github.com/mackerelio/mackerel-client-go"
-
 	"github.com/mackerelio/mackerel-agent/config"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 // This Generator collects metadata about cloud instances.
@@ -122,12 +121,12 @@ func (s *cloudGeneratorSuggester) Suggest(conf *config.Config) *CloudGenerator {
 var CloudGeneratorSuggester *cloudGeneratorSuggester
 
 func init() {
-	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
+	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/")
 	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1")
 	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
 
 	CloudGeneratorSuggester = &cloudGeneratorSuggester{
-		ec2Generator:     &EC2Generator{ec2BaseURL},
+		ec2Generator:     &EC2Generator{baseURL: ec2BaseURL},
 		gceGenerator:     &GCEGenerator{gceMetaURL, gceMeta{}},
 		azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
 	}
@@ -148,12 +147,80 @@ func httpCli() *http.Client {
 // EC2Generator meta generator for EC2
 type EC2Generator struct {
 	baseURL *url.URL
+
+	mu       sync.Mutex
+	token    string
+	deadline time.Time
 }
 
 // IsEC2 checks current environment is EC2 or not
 func (g *EC2Generator) IsEC2(ctx context.Context) bool {
 	// implementation varies between OSs. see isec2_XXX.go
-	return isEC2(ctx)
+	return g.isEC2(ctx)
+}
+
+// check whether IMDS(Instance Metadata Service) is available.
+// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html
+func (g *EC2Generator) hasMetadataService(ctx context.Context) (bool, error) {
+	cl := httpCli()
+
+	// try to refresh api token for IMDSv2
+	if token := g.refreshToken(); token != "" {
+		return true, nil
+	}
+
+	// fallback to IMDSv1
+	req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/ami-id", nil)
+	if err != nil {
+		return false, nil // something wrong. give up
+	}
+	resp, err := cl.Do(req.WithContext(ctx))
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode == 200, nil
+}
+
+// refresh api token for IMDSv2
+func (g *EC2Generator) refreshToken() string {
+	cl := httpCli()
+	g.mu.Lock()
+	defer g.mu.Unlock()
+
+	now := time.Now()
+	if !g.deadline.IsZero() && now.Before(g.deadline) {
+		return g.token // no need to refresh
+	}
+
+	req, err := http.NewRequest("PUT", g.baseURL.String()+"/api/token", nil)
+	if err != nil {
+		return ""
+	}
+	// TTL is 6 hours
+	req.Header.Set("X-aws-ec2-metadata-token-ttl-seconds", "21600")
+	resp, err := cl.Do(req)
+	if err != nil {
+		// IMDSv2 may be disabled? fallback to IMDSv1
+		g.token = ""
+		g.deadline = now.Add(30 * time.Minute)
+		return ""
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		// IMDSv2 may be disabled? fallback to IMDSv1
+		g.token = ""
+		g.deadline = now.Add(30 * time.Minute)
+		return ""
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
+	g.deadline = now.Add(6*time.Hour - 30*time.Minute)
+	g.token = string(body)
+	return g.token
 }
 
 // Generate collects metadata from cloud platform.
@@ -177,7 +244,15 @@ func (g *EC2Generator) Generate() (*mackerel.Cloud, error) {
 	metadata := make(map[string]string)
 
 	for _, key := range metadataKeys {
-		resp, err := cl.Get(g.baseURL.String() + "/" + key)
+		req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/"+key, nil)
+		if err != nil {
+			cloudLogger.Debugf("Unexpected error while requesting metadata: '%s'", err)
+			return nil, nil
+		}
+		if token := g.refreshToken(); token != "" {
+			req.Header.Set("X-aws-ec2-metadata-token", token)
+		}
+		resp, err := cl.Do(req)
 		if err != nil {
 			cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", key)
 			return nil, nil
@@ -201,11 +276,17 @@ func (g *EC2Generator) Generate() (*mackerel.Cloud, error) {
 
 // SuggestCustomIdentifier suggests the identifier of the EC2 instance
 func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
+	cl := httpCli()
 	identifier := ""
 	err := retry.Retry(3, 2*time.Second, func() error {
-		cl := httpCli()
-		key := "instance-id"
-		resp, err := cl.Get(g.baseURL.String() + "/" + key)
+		req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/instance-id", nil)
+		if err != nil {
+			return fmt.Errorf("error while retrieving instance-id: %s", err)
+		}
+		if token := g.refreshToken(); token != "" {
+			req.Header.Set("X-aws-ec2-metadata-token", token)
+		}
+		resp, err := cl.Do(req)
 		if err != nil {
 			return fmt.Errorf("error while retrieving instance-id: %s", err)
 		}

@@ -8,12 +8,12 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 
-	"github.com/mackerelio/mackerel-client-go"
-
 	"github.com/mackerelio/mackerel-agent/config"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 type mockCloudMetaGenerator struct {
@@ -102,11 +102,11 @@ func TestCloudGenerator(t *testing.T) {
 	}
 }
 
-func TestEC2Generator(t *testing.T) {
+func TestEC2GeneratorIMDSv1(t *testing.T) {
 	handler := func(res http.ResponseWriter, req *http.Request) {
 		// The REAL path is /latest/meta-data/instance-id.
 		// This odd Path is due to current implementation.
-		if req.URL.Path == "/instance-id" {
+		if req.URL.Path == "/meta-data/instance-id" {
 			fmt.Fprint(res, "i-4f90d537")
 		} else {
 			http.Error(res, "not found", 404)
@@ -121,7 +121,74 @@ func TestEC2Generator(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
-	g := &EC2Generator{u}
+	g := &EC2Generator{baseURL: u}
+
+	customIdentifier, err := g.SuggestCustomIdentifier()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	if customIdentifier != "i-4f90d537.ec2.amazonaws.com" {
+		t.Errorf("Unexpected customIdentifier: %s", customIdentifier)
+	}
+
+	cloud, err := g.Generate()
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+
+	if cloud == nil {
+		t.Error("cloud should not be nil")
+		return
+	}
+
+	metadata, typeOk := cloud.MetaData.(map[string]string)
+	if !typeOk {
+		t.Errorf("MetaData should be map. %+v", cloud.MetaData)
+	}
+
+	if metadata == nil || metadata["instance-id"] != "i-4f90d537" {
+		t.Errorf("Unexpected metadata: %+v", metadata)
+	}
+}
+
+func TestEC2GeneratorIMDSv2(t *testing.T) {
+	handler := func(res http.ResponseWriter, req *http.Request) {
+		const token = "very-secret"
+		switch req.Method {
+		case "PUT":
+			if _, err := strconv.Atoi(req.Header.Get("X-aws-ec2-metadata-token-ttl-seconds")); err != nil {
+				http.Error(res, "X-aws-ec2-metadata-token-ttl-seconds header is missing", 400)
+				return
+			}
+			if req.URL.Path == "/api/token" {
+				fmt.Fprint(res, token)
+				return
+			}
+		case "GET":
+			if req.Header.Get("X-aws-ec2-metadata-token") != token {
+				http.Error(res, "Unauthorized", 400)
+				return
+			}
+			// The REAL path is /latest/meta-data/instance-id.
+			// This odd Path is due to current implementation.
+			if req.URL.Path == "/meta-data/instance-id" {
+				fmt.Fprint(res, "i-4f90d537")
+				return
+			}
+		}
+		http.Error(res, "not found", 404)
+	}
+	ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		handler(res, req)
+	}))
+	defer ts.Close()
+
+	u, err := url.Parse(ts.URL)
+	if err != nil {
+		t.Errorf("should not raise error: %s", err)
+	}
+	g := &EC2Generator{baseURL: u}
 
 	customIdentifier, err := g.SuggestCustomIdentifier()
 	if err != nil {
@@ -172,7 +239,7 @@ func TestEC2SuggestCustomIdentifier_ChangingHttpStatus(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %s", err)
 	}
-	g := &EC2Generator{u}
+	g := &EC2Generator{baseURL: u}
 
 	// 404, 404, 404 => give up
 	{
