@@ -165,7 +165,7 @@ func (g *EC2Generator) hasMetadataService(ctx context.Context) (bool, error) {
 	cl := httpCli()
 
 	// try to refresh api token for IMDSv2
-	if token := g.refreshToken(); token != "" {
+	if token := g.refreshToken(ctx); token != "" {
 		return true, nil
 	}
 
@@ -183,7 +183,7 @@ func (g *EC2Generator) hasMetadataService(ctx context.Context) (bool, error) {
 }
 
 // refresh api token for IMDSv2
-func (g *EC2Generator) refreshToken() string {
+func (g *EC2Generator) refreshToken(ctx context.Context) string {
 	cl := httpCli()
 	g.mu.Lock()
 	defer g.mu.Unlock()
@@ -199,7 +199,7 @@ func (g *EC2Generator) refreshToken() string {
 	}
 	// TTL is 6 hours
 	req.Header.Set("X-aws-ec2-metadata-token-ttl-seconds", "21600")
-	resp, err := cl.Do(req)
+	resp, err := cl.Do(req.WithContext(ctx))
 	if err != nil {
 		// IMDSv2 may be disabled? fallback to IMDSv1
 		g.token = ""
@@ -249,7 +249,7 @@ func (g *EC2Generator) Generate() (*mackerel.Cloud, error) {
 			cloudLogger.Debugf("Unexpected error while requesting metadata: '%s'", err)
 			return nil, nil
 		}
-		if token := g.refreshToken(); token != "" {
+		if token := g.refreshToken(context.Background()); token != "" {
 			req.Header.Set("X-aws-ec2-metadata-token", token)
 		}
 		resp, err := cl.Do(req)
@@ -283,7 +283,7 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 		if err != nil {
 			return fmt.Errorf("error while retrieving instance-id: %s", err)
 		}
-		if token := g.refreshToken(); token != "" {
+		if token := g.refreshToken(context.Background()); token != "" {
 			req.Header.Set("X-aws-ec2-metadata-token", token)
 		}
 		resp, err := cl.Do(req)
