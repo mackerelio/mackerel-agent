@@ -77,7 +77,7 @@ func (agent *Agent) Watch(ctx context.Context) chan *MetricsResult {
 
 	go func() {
 		// Start collectMetrics concurrently
-		// so that it does not prevent runnnig next collectMetrics.
+		// so that it does not prevent running next collectMetrics.
 		sem := make(chan struct{}, collectMetricsWorkerMax)
 		for tickedTime := range ticker {
 			ti := tickedTime

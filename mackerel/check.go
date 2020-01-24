@@ -36,7 +36,7 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 	return api.Client.PostCheckReports(payload)
 }
 
-// normalize returns rounded valid number for Mackerel's Cehck API.
+// normalize returns rounded valid number for Mackerel's Check API.
 //
 // In Mackerel, notification_interval regards nil as none,
 // but regards zero as default (10 minutes).
