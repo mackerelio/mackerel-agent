@@ -6,7 +6,6 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -38,7 +37,7 @@ func (g *EC2Generator) isEC2(ctx context.Context) bool {
 	if len(records) == 0 {
 		return false
 	}
-	return isEC2WithSpecifiedWmiRecords(ctx, records)
+	return g.isEC2WithSpecifiedWmiRecords(ctx, records)
 }
 
 func (g *EC2Generator) isEC2WithSpecifiedWmiRecords(ctx context.Context, records []Win32ComputerSystemProduct) bool {
