@@ -40,6 +40,6 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	ret["memory.pagefile_total"] = float64(memoryStatusEx.TotalPageFile)
 	ret["memory.pagefile_free"] = float64(memoryStatusEx.AvailPageFile)
 
-	memoryLogger.Debugf("memory : %s", ret)
+	memoryLogger.Debugf("memory : %#v", ret)
 	return metrics.Values(ret), nil
 }

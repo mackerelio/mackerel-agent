@@ -158,7 +158,7 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 		}
 	}
 
-	interfaceLogger.Debugf("%q", results)
+	interfaceLogger.Debugf("interface: %#v", results)
 
 	return results, nil
 }

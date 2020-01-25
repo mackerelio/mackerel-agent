@@ -50,7 +50,7 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 		results[fmt.Sprintf(`disk.%s.reads.delta`, name)] = float64(record.DiskReadsPerSec)
 		results[fmt.Sprintf(`disk.%s.writes.delta`, name)] = float64(record.DiskWritesPerSec)
 	}
-	diskLogger.Debugf("%q", results)
+	diskLogger.Debugf("disk %#v", results)
 	return results, nil
 }
 

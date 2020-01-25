@@ -73,7 +73,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 		}
 	}
 
-	cpuUsageLogger.Debugf("cpuusage: %q", results)
+	cpuUsageLogger.Debugf("cpuusage: %#v", results)
 
 	return results, nil
 }
