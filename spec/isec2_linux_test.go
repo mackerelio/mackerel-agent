@@ -85,6 +85,8 @@ func TestIsEC2(t *testing.T) {
 				if !tc.existsAMIId {
 					res.WriteHeader(http.StatusNotFound)
 				}
+				res.WriteHeader(http.StatusOK)
+				res.Write([]byte("aws"))
 			}
 			ts := httptest.NewServer(http.HandlerFunc(handler))
 			defer ts.Close()
