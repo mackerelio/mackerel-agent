@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -164,22 +165,36 @@ func (g *EC2Generator) IsEC2(ctx context.Context) bool {
 func (g *EC2Generator) hasMetadataService(ctx context.Context) (bool, error) {
 	cl := httpCli()
 
-	// try to refresh api token for IMDSv2
-	if token := g.refreshToken(ctx); token != "" {
-		return true, nil
-	}
-
-	// fallback to IMDSv1
-	req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/ami-id", nil)
+	// services/partition is an AWS specific URL
+	req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/services/partition", nil)
 	if err != nil {
 		return false, nil // something wrong. give up
 	}
+
+	// try to refresh api token for IMDSv2
+	// if it fails, fallback to IMDSv1.
+	if token := g.refreshToken(ctx); token != "" {
+		req.Header.Set("X-aws-ec2-metadata-token", token)
+	}
+
 	resp, err := cl.Do(req.WithContext(ctx))
 	if err != nil {
 		return false, err
 	}
 	defer resp.Body.Close()
-	return resp.StatusCode == 200, nil
+	if resp.StatusCode != 200 {
+		return false, nil
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	// For standard AWS Regions, the partition is "aws".
+	// If you have resources in other partitions, the partition is "aws-partitionname".
+	// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-categories.html
+	return bytes.HasPrefix(body, []byte("aws")), nil
 }
 
 // refresh api token for IMDSv2
