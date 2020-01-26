@@ -12,7 +12,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mackerelio/go-osstat v0.0.0-20191128064056-9345daf7831a
 	github.com/mackerelio/golib v0.0.0-20191002020229-a65782d392ca
-	github.com/mackerelio/mackerel-client-go v0.8.0
+	github.com/mackerelio/mackerel-client-go v0.9.0
 	github.com/mattn/go-encoding v0.0.2
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
