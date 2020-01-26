@@ -58,7 +58,7 @@ func (g *ProcessorQueueLengthGenerator) Generate() (metrics.Values, error) {
 		}
 	}
 
-	processorQueueLengthLogger.Debugf("processor_queue_length: %q", results)
+	processorQueueLengthLogger.Debugf("processor_queue_length: %#v", results)
 
 	return results, nil
 }

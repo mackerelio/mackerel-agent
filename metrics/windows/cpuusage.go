@@ -25,28 +25,28 @@ func NewCPUUsageGenerator() (*CPUUsageGenerator, error) {
 	var err error
 	g.query, err = windows.CreateQuery()
 	if err != nil {
-		cpuUsageLogger.Criticalf(err.Error())
+		cpuUsageLogger.Criticalf("%s", err.Error())
 		return nil, err
 	}
 	var counter *windows.CounterInfo
 
 	counter, err = windows.CreateCounter(g.query, "cpu.user.percentage", `\Processor(_Total)\% User Time`)
 	if err != nil {
-		cpuUsageLogger.Criticalf(err.Error())
+		cpuUsageLogger.Criticalf("%s", err.Error())
 		return nil, err
 	}
 	g.counters = append(g.counters, counter)
 
 	counter, err = windows.CreateCounter(g.query, "cpu.system.percentage", `\Processor(_Total)\% Privileged Time`)
 	if err != nil {
-		cpuUsageLogger.Criticalf(err.Error())
+		cpuUsageLogger.Criticalf("%s", err.Error())
 		return nil, err
 	}
 	g.counters = append(g.counters, counter)
 
 	counter, err = windows.CreateCounter(g.query, "cpu.idle.percentage", `\Processor(_Total)\% Idle Time`)
 	if err != nil {
-		cpuUsageLogger.Criticalf(err.Error())
+		cpuUsageLogger.Criticalf("%s", err.Error())
 		return nil, err
 	}
 	g.counters = append(g.counters, counter)
@@ -73,7 +73,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 		}
 	}
 
-	cpuUsageLogger.Debugf("cpuusage: %q", results)
+	cpuUsageLogger.Debugf("cpuusage: %#v", results)
 
 	return results, nil
 }
