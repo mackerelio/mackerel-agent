@@ -23,7 +23,7 @@ before_deploy:
 - docker pull mackerel/docker-mackerel-rpm-builder:c7
 - docker pull mackerel/docker-mackerel-deb-builder
 - make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
-- go get github.com/motemen/gobump/cmd/gobump
+- go get github.com/x-motemen/gobump/cmd/gobump
 - go get github.com/mackerelio/golib/cmd/mackerel-github-release
 deploy:
 - provider: script
