@@ -127,9 +127,9 @@ type Config struct {
 // PluginConfig represents a plugin configuration.
 type PluginConfig struct {
 	CommandConfig
-	NotificationInterval  *int32        `toml:"notification_interval"`
-	CheckInterval         *int32        `toml:"check_interval"`
-	ExecutionInterval     *int32        `toml:"execution_interval"`
+	NotificationInterval  *duration     `toml:"notification_interval"`
+	CheckInterval         *duration     `toml:"check_interval"`
+	ExecutionInterval     *duration     `toml:"execution_interval"`
 	MaxCheckAttempts      *int32        `toml:"max_check_attempts"`
 	CustomIdentifier      *string       `toml:"custom_identifier"`
 	PreventAlertAutoClose bool          `toml:"prevent_alert_auto_close"`
@@ -289,8 +289,8 @@ func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
 	plugin := CheckPlugin{
 		Command:               *cmd,
 		CustomIdentifier:      pconf.CustomIdentifier,
-		NotificationInterval:  pconf.NotificationInterval,
-		CheckInterval:         pconf.CheckInterval,
+		NotificationInterval:  pconf.NotificationInterval.Minutes(),
+		CheckInterval:         pconf.CheckInterval.Minutes(),
 		MaxCheckAttempts:      pconf.MaxCheckAttempts,
 		PreventAlertAutoClose: pconf.PreventAlertAutoClose,
 		Action:                action,
@@ -321,7 +321,7 @@ func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
 
 	return &MetadataPlugin{
 		Command:           *cmd,
-		ExecutionInterval: pconf.ExecutionInterval,
+		ExecutionInterval: pconf.ExecutionInterval.Minutes(),
 	}, nil
 }
 
