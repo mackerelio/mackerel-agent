@@ -62,6 +62,14 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Feb 05 2020 <mackerel-developers@hatena.ne.jp> - 0.67.0
+- Bump github.com/shirou/gopsutil from 2.19.12+incompatible to 2.20.1+incompatible (by dependabot-preview[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.8.0 to 0.9.0 (by dependabot-preview[bot])
+- Allow formatted duration in config (by itchyny)
+- rename: github.com/motemen/gobump -> github.com/x-motemen/gobump (by lufia)
+- Support IMDSv2 for AWS EC2 (by shogo82148)
+- `%q` verb of fmt is invalid for map[string]float64 types (by shogo82148)
+
 * Wed Jan 22 2020 <mackerel-developers@hatena.ne.jp> - 0.66.0
 - Bump github.com/pkg/errors from 0.8.1 to 0.9.1 (by dependabot-preview[bot])
 - Bump github.com/shirou/gopsutil from 2.19.11+incompatible to 2.19.12+incompatible (by dependabot-preview[bot])

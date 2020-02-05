@@ -1,3 +1,20 @@
+mackerel-agent (0.67.0-1.systemd) stable; urgency=low
+
+  * Bump github.com/shirou/gopsutil from 2.19.12+incompatible to 2.20.1+incompatible (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/631>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.8.0 to 0.9.0 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/629>
+  * Allow formatted duration in config (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/624>
+  * rename: github.com/motemen/gobump -> github.com/x-motemen/gobump (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/630>
+  * Support IMDSv2 for AWS EC2 (by shogo82148)
+    <https://github.com/mackerelio/mackerel-agent/pull/627>
+  * `%q` verb of fmt is invalid for map[string]float64 types (by shogo82148)
+    <https://github.com/mackerelio/mackerel-agent/pull/628>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 05 Feb 2020 07:57:06 +0000
+
 mackerel-agent (0.66.0-1.systemd) stable; urgency=low
 
   * Bump github.com/pkg/errors from 0.8.1 to 0.9.1 (by dependabot-preview[bot])
