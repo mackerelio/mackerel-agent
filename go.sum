@@ -34,8 +34,8 @@ github.com/mackerelio/go-osstat v0.1.0 h1:e57QHeHob8kKJ5FhcXGdzx5O6Ktuc5RHMDIkeq
 github.com/mackerelio/go-osstat v0.1.0/go.mod h1:1K3NeYLhMHPvzUu+ePYXtoB58wkaRpxZsGClZBJyIFw=
 github.com/mackerelio/golib v1.0.0 h1:wiJv4l8xU9jmMn/JZV6gfpJeLUQxVFG0kVFWnsoF9wA=
 github.com/mackerelio/golib v1.0.0/go.mod h1:Udb4zyFG2ui7TNTMOX8In0U8AT4woLu53/46ncRwNzE=
-github.com/mackerelio/mackerel-client-go v0.9.0 h1:pBPiB1qghZlv2oyDSmial+9qWwOEUbJ4ew3Fe4SyE4M=
-github.com/mackerelio/mackerel-client-go v0.9.0/go.mod h1:/FVnUK7nsg/MEBpIVOCZLYzdIwY5mg/SyAlXDnxVcAI=
+github.com/mackerelio/mackerel-client-go v0.9.1 h1:IkH7EZMCmu/PWStwSq+ICfwNLGGNSXfSE24ar4eVDCc=
+github.com/mackerelio/mackerel-client-go v0.9.1/go.mod h1:/FVnUK7nsg/MEBpIVOCZLYzdIwY5mg/SyAlXDnxVcAI=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
 github.com/mattn/go-encoding v0.0.2 h1:OC1L+QXLJge9n7yIE3R5Os/UNasUeFvK3Sa4NjbDi6c=
 github.com/mattn/go-encoding v0.0.2/go.mod h1:WUNsdPQLK4JYRzkn8IAdmYKFYGGJ4/9YPxdPoMumPgY=
