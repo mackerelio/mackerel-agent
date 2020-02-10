@@ -40,6 +40,8 @@ github.com/mackerelio/mackerel-client-go v0.8.0 h1:qN3g3JVVNqh7lkXCU6xMshZq5wqUP
 github.com/mackerelio/mackerel-client-go v0.8.0/go.mod h1:/FVnUK7nsg/MEBpIVOCZLYzdIwY5mg/SyAlXDnxVcAI=
 github.com/mackerelio/mackerel-client-go v0.9.0 h1:pBPiB1qghZlv2oyDSmial+9qWwOEUbJ4ew3Fe4SyE4M=
 github.com/mackerelio/mackerel-client-go v0.9.0/go.mod h1:/FVnUK7nsg/MEBpIVOCZLYzdIwY5mg/SyAlXDnxVcAI=
+github.com/mackerelio/mackerel-client-go v0.9.1 h1:IkH7EZMCmu/PWStwSq+ICfwNLGGNSXfSE24ar4eVDCc=
+github.com/mackerelio/mackerel-client-go v0.9.1/go.mod h1:/FVnUK7nsg/MEBpIVOCZLYzdIwY5mg/SyAlXDnxVcAI=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
 github.com/mattn/go-encoding v0.0.2 h1:OC1L+QXLJge9n7yIE3R5Os/UNasUeFvK3Sa4NjbDi6c=
 github.com/mattn/go-encoding v0.0.2/go.mod h1:WUNsdPQLK4JYRzkn8IAdmYKFYGGJ4/9YPxdPoMumPgY=
