@@ -259,34 +259,44 @@ func (g *EC2Generator) Generate() (*mackerel.Cloud, error) {
 	metadata := make(map[string]string)
 
 	for _, key := range metadataKeys {
-		req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/"+key, nil)
+		value, err := g.getMetadata(cl, key)
 		if err != nil {
-			cloudLogger.Debugf("Unexpected error while requesting metadata: '%s'", err)
 			return nil, nil
 		}
-		if token := g.refreshToken(context.Background()); token != "" {
-			req.Header.Set("X-aws-ec2-metadata-token", token)
-		}
-		resp, err := cl.Do(req)
-		if err != nil {
-			cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", key)
-			return nil, nil
-		}
-		defer resp.Body.Close()
-		if resp.StatusCode == 200 {
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
-				break
-			}
-			metadata[key] = string(body)
-			cloudLogger.Debugf("results %s:%s", key, string(body))
-		} else {
-			cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
-		}
+		metadata[key] = value
 	}
 
 	return &mackerel.Cloud{Provider: "ec2", MetaData: metadata}, nil
+}
+
+func (g *EC2Generator) getMetadata(cl *http.Client, key string) (string, error) {
+	req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/"+key, nil)
+	if err != nil {
+		cloudLogger.Debugf("Unexpected error while requesting metadata: '%s'", err)
+		return "", err
+	}
+	if token := g.refreshToken(context.Background()); token != "" {
+		req.Header.Set("X-aws-ec2-metadata-token", token)
+	}
+	resp, err := cl.Do(req)
+	if err != nil {
+		cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", key)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
+		return "", nil
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
+		return "", err
+	}
+	cloudLogger.Debugf("results %s:%s", key, string(body))
+	return string(body), nil
 }
 
 // SuggestCustomIdentifier suggests the identifier of the EC2 instance
