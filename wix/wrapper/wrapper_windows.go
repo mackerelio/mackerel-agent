@@ -25,7 +25,10 @@ const stopEid = 3
 const loggerEid = 4
 
 const (
-	maxPathLen             = 260
+	// (snip) the maximum length for a path is MAX_PATH, which is defined as 260 characters.
+	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#maximum-path-length-limitation
+	maxPathLen = 260
+
 	CSIDL_PROGRAM_FILESX86 = 0x2a
 )
 
