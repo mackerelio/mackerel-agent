@@ -24,10 +24,18 @@ const startEid = 2
 const stopEid = 3
 const loggerEid = 4
 
+const (
+	maxPathLen             = 260
+	CSIDL_PROGRAM_FILESX86 = 0x2a
+)
+
 var (
 	kernel32                     = syscall.NewLazyDLL("kernel32")
 	procAllocConsole             = kernel32.NewProc("AllocConsole")
 	procGenerateConsoleCtrlEvent = kernel32.NewProc("GenerateConsoleCtrlEvent")
+
+	shell32                     = syscall.NewLazyDLL("shell32")
+	procSHGetSpecialFolderPathW = shell32.NewProc("SHGetSpecialFolderPathW")
 )
 
 func main() {
@@ -112,14 +120,25 @@ func makeFallbackEnv(wdir string) []string {
 	// in C:\Program Files (x86)\Mackerel.
 	// Though mackerel-agent refers to a directory containing mackerel-agent.exe,
 	// it should still refer these old files in x86 folder even if mackerel-agent is upgraded to x64 edition.
+
 	var env []string
-	if dir := os.Getenv("PROGRAMFILES(X86)"); dir != "" {
-		dir := filepath.Join(dir, "Mackerel")
+	if dir := getProgramFilesX86(); dir != "" {
+		dir := filepath.Join(dir, "Mackerel", "mackerel-agent")
 		if dir != wdir {
 			env = append(env, "MACKEREL_CONFIG_FALLBACK="+dir)
 		}
 	}
 	return env
+}
+
+func getProgramFilesX86() string {
+	var buf [maxPathLen]uint16
+	p := unsafe.Pointer(&buf[0])
+	rv, _, _ := procSHGetSpecialFolderPathW.Call(0, uintptr(p), CSIDL_PROGRAM_FILESX86, 0)
+	if rv == 0 {
+		return ""
+	}
+	return syscall.UTF16ToString(buf[:])
 }
 
 func (h *handler) aggregate() error {
