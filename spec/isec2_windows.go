@@ -6,7 +6,6 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -29,7 +28,7 @@ type Win32ComputerSystemProduct struct {
 
 // If the OS is Windows, check UUID in WMI class Win32_ComputerSystemProduct first. If UUID seems to be EC2-ish, call the metadata API (up to 3 times).
 // ref. https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
-func isEC2(ctx context.Context) bool {
+func (g *EC2Generator) isEC2(ctx context.Context) bool {
 	var records []Win32ComputerSystemProduct
 	err := wmi.Query("SELECT UUID FROM Win32_ComputerSystemProduct", &records)
 	if err != nil {
@@ -38,10 +37,10 @@ func isEC2(ctx context.Context) bool {
 	if len(records) == 0 {
 		return false
 	}
-	return isEC2WithSpecifiedWmiRecords(ctx, records)
+	return g.isEC2WithSpecifiedWmiRecords(ctx, records)
 }
 
-func isEC2WithSpecifiedWmiRecords(ctx context.Context, records []Win32ComputerSystemProduct) bool {
+func (g *EC2Generator) isEC2WithSpecifiedWmiRecords(ctx context.Context, records []Win32ComputerSystemProduct) bool {
 	looksLikeEC2 := false
 	for _, r := range records {
 		if isEC2UUID(r.UUID) {
@@ -60,29 +59,16 @@ func isEC2WithSpecifiedWmiRecords(ctx context.Context, records []Win32ComputerSy
 	default:
 	}
 
-	res := false
-	cl := httpCli()
+	var res bool
 	err := retry.WithContext(ctx, 3, 2*time.Second, func() error {
-		// '/ami-id` is probably an AWS specific URL
-		req, err := http.NewRequest("GET", ec2BaseURL.String()+"/ami-id", nil)
-		if err != nil {
-			return nil // something wrong. give up
-		}
-		resp, err := cl.Do(req.WithContext(ctx))
+		res0, err := g.hasMetadataService(ctx)
 		if err != nil {
 			return err
 		}
-		defer resp.Body.Close()
-
-		res = resp.StatusCode == 200
+		res = res0
 		return nil
 	})
-
-	if err == nil {
-		return res
-	}
-
-	return false
+	return err == nil && res
 }
 
 func isEC2UUID(uuid string) bool {

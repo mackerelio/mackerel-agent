@@ -1,3 +1,52 @@
+mackerel-agent (0.67.0-1) stable; urgency=low
+
+  * Bump github.com/shirou/gopsutil from 2.19.12+incompatible to 2.20.1+incompatible (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/631>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.8.0 to 0.9.0 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/629>
+  * Allow formatted duration in config (by itchyny)
+    <https://github.com/mackerelio/mackerel-agent/pull/624>
+  * rename: github.com/motemen/gobump -> github.com/x-motemen/gobump (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/630>
+  * Support IMDSv2 for AWS EC2 (by shogo82148)
+    <https://github.com/mackerelio/mackerel-agent/pull/627>
+  * `%q` verb of fmt is invalid for map[string]float64 types (by shogo82148)
+    <https://github.com/mackerelio/mackerel-agent/pull/628>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 05 Feb 2020 07:57:06 +0000
+
+mackerel-agent (0.66.0-1) stable; urgency=low
+
+  * Bump github.com/pkg/errors from 0.8.1 to 0.9.1 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/623>
+  * Bump github.com/shirou/gopsutil from 2.19.11+incompatible to 2.19.12+incompatible (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/620>
+  * Bump github.com/Songmu/prompter from 0.2.0 to 0.3.0 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/617>
+  * Implement GCEGenerator.SuggestCustomIdentifier (by tanatana)
+    <https://github.com/mackerelio/mackerel-agent/pull/618>
+  * fix how to get self executable path for autoshutdown option (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/616>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 22 Jan 2020 07:14:51 +0000
+
+mackerel-agent (0.65.0-1) stable; urgency=low
+
+  * add -private-autoshutdown option (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/612>
+  * Fix Windows Edition name (by mattn)
+    <https://github.com/mackerelio/mackerel-agent/pull/614>
+  * Bump github.com/shirou/gopsutil from 2.19.10+incompatible to 2.19.11+incompatible (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/611>
+  * update go-osstat and golang.org/x (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/610>
+  * refactor: improve interface and testing for spec/cloud (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/609>
+  * refactor: Inject CloudMetaGenerators to Suggester in order to test them in safer way (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/608>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 05 Dec 2019 05:44:09 +0000
+
 mackerel-agent (0.64.1-1) stable; urgency=low
 
   * Install development tools in module-aware mode (by lufia)

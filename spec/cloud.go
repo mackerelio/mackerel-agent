@@ -1,21 +1,22 @@
 package spec
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/Songmu/retry"
 	"github.com/mackerelio/golib/logging"
-	"github.com/mackerelio/mackerel-client-go"
-
 	"github.com/mackerelio/mackerel-agent/config"
+	"github.com/mackerelio/mackerel-client-go"
 )
 
 // This Generator collects metadata about cloud instances.
@@ -121,13 +122,13 @@ func (s *cloudGeneratorSuggester) Suggest(conf *config.Config) *CloudGenerator {
 var CloudGeneratorSuggester *cloudGeneratorSuggester
 
 func init() {
-	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest/meta-data")
-	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1/?recursive=true")
+	ec2BaseURL, _ = url.Parse("http://169.254.169.254/latest")
+	gceMetaURL, _ = url.Parse("http://metadata.google.internal./computeMetadata/v1")
 	azureVMBaseURL, _ = url.Parse("http://169.254.169.254/metadata/instance")
 
 	CloudGeneratorSuggester = &cloudGeneratorSuggester{
-		ec2Generator:     &EC2Generator{ec2BaseURL},
-		gceGenerator:     &GCEGenerator{gceMetaURL},
+		ec2Generator:     &EC2Generator{baseURL: ec2BaseURL},
+		gceGenerator:     &GCEGenerator{gceMetaURL, gceMeta{}},
 		azureVMGenerator: &AzureVMGenerator{azureVMBaseURL},
 	}
 }
@@ -147,12 +148,94 @@ func httpCli() *http.Client {
 // EC2Generator meta generator for EC2
 type EC2Generator struct {
 	baseURL *url.URL
+
+	mu       sync.Mutex
+	token    string
+	deadline time.Time
 }
 
 // IsEC2 checks current environment is EC2 or not
 func (g *EC2Generator) IsEC2(ctx context.Context) bool {
 	// implementation varies between OSs. see isec2_XXX.go
-	return isEC2(ctx)
+	return g.isEC2(ctx)
+}
+
+// check whether IMDS(Instance Metadata Service) is available.
+// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html
+func (g *EC2Generator) hasMetadataService(ctx context.Context) (bool, error) {
+	cl := httpCli()
+
+	// services/partition is an AWS specific URL
+	req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/services/partition", nil)
+	if err != nil {
+		return false, nil // something wrong. give up
+	}
+
+	// try to refresh api token for IMDSv2
+	// if it fails, fallback to IMDSv1.
+	if token := g.refreshToken(ctx); token != "" {
+		req.Header.Set("X-aws-ec2-metadata-token", token)
+	}
+
+	resp, err := cl.Do(req.WithContext(ctx))
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return false, nil
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	// For standard AWS Regions, the partition is "aws".
+	// If you have resources in other partitions, the partition is "aws-partitionname".
+	// https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-categories.html
+	return bytes.HasPrefix(body, []byte("aws")), nil
+}
+
+// refresh api token for IMDSv2
+func (g *EC2Generator) refreshToken(ctx context.Context) string {
+	cl := httpCli()
+	g.mu.Lock()
+	defer g.mu.Unlock()
+
+	now := time.Now()
+	if !g.deadline.IsZero() && now.Before(g.deadline) {
+		return g.token // no need to refresh
+	}
+
+	req, err := http.NewRequest("PUT", g.baseURL.String()+"/api/token", nil)
+	if err != nil {
+		return ""
+	}
+	// TTL is 6 hours
+	req.Header.Set("X-aws-ec2-metadata-token-ttl-seconds", "21600")
+	resp, err := cl.Do(req.WithContext(ctx))
+	if err != nil {
+		// IMDSv2 may be disabled? fallback to IMDSv1
+		g.token = ""
+		g.deadline = now.Add(30 * time.Minute)
+		return ""
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		// IMDSv2 may be disabled? fallback to IMDSv1
+		g.token = ""
+		g.deadline = now.Add(30 * time.Minute)
+		return ""
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
+	g.deadline = now.Add(6*time.Hour - 30*time.Minute)
+	g.token = string(body)
+	return g.token
 }
 
 // Generate collects metadata from cloud platform.
@@ -176,37 +259,61 @@ func (g *EC2Generator) Generate() (*mackerel.Cloud, error) {
 	metadata := make(map[string]string)
 
 	for _, key := range metadataKeys {
-		resp, err := cl.Get(g.baseURL.String() + "/" + key)
+		value, err := g.getMetadata(cl, key)
 		if err != nil {
-			cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", key)
 			return nil, nil
 		}
-		defer resp.Body.Close()
-		if resp.StatusCode == 200 {
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
-				break
-			}
-			metadata[key] = string(body)
-			cloudLogger.Debugf("results %s:%s", key, string(body))
-		} else {
-			cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
-		}
+		metadata[key] = value
 	}
 
 	return &mackerel.Cloud{Provider: "ec2", MetaData: metadata}, nil
 }
 
+func (g *EC2Generator) getMetadata(cl *http.Client, key string) (string, error) {
+	req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/"+key, nil)
+	if err != nil {
+		cloudLogger.Debugf("Unexpected error while requesting metadata: '%s'", err)
+		return "", err
+	}
+	if token := g.refreshToken(context.Background()); token != "" {
+		req.Header.Set("X-aws-ec2-metadata-token", token)
+	}
+	resp, err := cl.Do(req)
+	if err != nil {
+		cloudLogger.Debugf("This host may not be running on EC2. Error while reading '%s'", key)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
+		return "", nil
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
+		return "", err
+	}
+	cloudLogger.Debugf("results %s:%s", key, string(body))
+	return string(body), nil
+}
+
 // SuggestCustomIdentifier suggests the identifier of the EC2 instance
 func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
+	cl := httpCli()
 	identifier := ""
 	err := retry.Retry(3, 2*time.Second, func() error {
-		cl := httpCli()
-		key := "instance-id"
-		resp, err := cl.Get(g.baseURL.String() + "/" + key)
+		req, err := http.NewRequest("GET", g.baseURL.String()+"/meta-data/instance-id", nil)
 		if err != nil {
-			return fmt.Errorf("error while retrieving instance-id")
+			return fmt.Errorf("error while retrieving instance-id: %s", err)
+		}
+		if token := g.refreshToken(context.Background()); token != "" {
+			req.Header.Set("X-aws-ec2-metadata-token", token)
+		}
+		resp, err := cl.Do(req)
+		if err != nil {
+			return fmt.Errorf("error while retrieving instance-id: %s", err)
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
@@ -229,11 +336,12 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 // GCEGenerator generate for GCE
 type GCEGenerator struct {
 	metaURL *url.URL
+	meta    gceMeta
 }
 
 func requestGCEMeta(ctx context.Context) ([]byte, error) {
 	cl := httpCli()
-	req, err := http.NewRequest("GET", gceMetaURL.String(), nil)
+	req, err := http.NewRequest("GET", gceMetaURL.String()+"?recursive=true", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -267,7 +375,11 @@ func (g *GCEGenerator) Generate() (*mackerel.Cloud, error) {
 		return nil, err
 	}
 	var data gceMeta
-	json.Unmarshal(bytes, &data)
+	err = json.Unmarshal(bytes, &data)
+	if err != nil {
+		return nil, err
+	}
+	g.meta = data
 	return data.toGeneratorResults(), nil
 }
 
@@ -314,9 +426,20 @@ func (g gceMeta) toGeneratorResults() *mackerel.Cloud {
 	return &mackerel.Cloud{Provider: "gce", MetaData: g.toGeneratorMeta()}
 }
 
-// SuggestCustomIdentifier for GCE is not implemented yet
+func builtGCECustomIdentifier(instanceID string) string {
+	return instanceID + ".gce.cloud.google.com"
+}
+
+// SuggestCustomIdentifier the identifier of the GCE VM instance
 func (g *GCEGenerator) SuggestCustomIdentifier() (string, error) {
-	return "", nil
+	if g.meta.Instance == nil || g.meta.Instance.InstanceID == 0 {
+		_, err := g.Generate()
+		if err != nil {
+			return "", err
+		}
+	}
+	instanceID := strconv.FormatUint(g.meta.Instance.InstanceID, 10)
+	return builtGCECustomIdentifier(instanceID), nil
 }
 
 // AzureVMGenerator meta generator for Azure VM
@@ -412,13 +535,13 @@ func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
 		cl := httpCli()
 		req, err := http.NewRequest("GET", azureVMBaseURL.String()+"/compute/vmId?api-version=2017-04-02&format=text", nil)
 		if err != nil {
-			return fmt.Errorf("error while retrieving vmId")
+			return fmt.Errorf("error on create new request to retrieve vmId: %s", err)
 		}
 		req.Header.Set("Metadata", "true")
 
 		resp, err := cl.Do(req)
 		if err != nil {
-			return fmt.Errorf("error while retrieving vmId")
+			return fmt.Errorf("error while retrieving vmId: %s", err)
 		}
 		defer resp.Body.Close()
 

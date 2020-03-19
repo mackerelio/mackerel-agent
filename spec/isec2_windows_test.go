@@ -8,14 +8,6 @@ import (
 	"testing"
 )
 
-func setEc2BaseURL(url *url.URL) func() {
-	oldEC2BaseURL := ec2BaseURL
-	ec2BaseURL = url
-	return func() {
-		ec2BaseURL = oldEC2BaseURL // restore value
-	}
-}
-
 func TestIsEC2UUID(t *testing.T) {
 	tests := []struct {
 		uuid   string
@@ -23,8 +15,8 @@ func TestIsEC2UUID(t *testing.T) {
 	}{
 		{"ec2e1916-9099-7caf-fd21-01234abcdef", true},
 		{"EC2E1916-9099-7CAF-FD21-01234ABCDEF", true},
-		{"45e12aec-dcd1-b213-94ed-01234abcdef", true}, // litte endian
-		{"45E12AEC-DCD1-B213-94ED-01234ABCDEF", true}, // litte endian
+		{"45e12aec-dcd1-b213-94ed-01234abcdef", true}, // little endian
+		{"45E12AEC-DCD1-B213-94ED-01234ABCDEF", true}, // little endian
 		{"abcd1916-9099-7caf-fd21-01234abcdef", false},
 		{"ABCD1916-9099-7CAF-FD21-01234ABCDEF", false},
 		{"", false},
@@ -91,12 +83,15 @@ func TestIsEC2(t *testing.T) {
 				if !tc.existsAMIId {
 					res.WriteHeader(http.StatusNotFound)
 				}
+				res.WriteHeader(http.StatusOK)
+				res.Write([]byte("aws"))
 			}
 			ts := httptest.NewServer(http.HandlerFunc(handler))
-			defer func() { ts.Close() }()
-
+			defer ts.Close()
 			u, _ := url.Parse(ts.URL)
-			defer setEc2BaseURL(u)()
+			g := &EC2Generator{
+				baseURL: u,
+			}
 
 			wmiRecords := make([]Win32ComputerSystemProduct, 2)
 			for i, exist := range tc.existsWmicRecords {
@@ -107,7 +102,7 @@ func TestIsEC2(t *testing.T) {
 				}
 			}
 
-			if isEC2WithSpecifiedWmiRecords(context.Background(), wmiRecords) != tc.expect {
+			if g.isEC2WithSpecifiedWmiRecords(context.Background(), wmiRecords) != tc.expect {
 				t.Errorf("isEC2() should be %v: %#v", tc.expect, tc)
 			}
 		}()

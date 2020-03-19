@@ -40,19 +40,19 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 	var err error
 	g.query, err = windows.CreateQuery()
 	if err != nil {
-		interfaceLogger.Criticalf(err.Error())
+		interfaceLogger.Criticalf("%s", err.Error())
 		return nil, err
 	}
 
 	ifs, err := net.Interfaces()
 	if err != nil {
-		interfaceLogger.Criticalf(err.Error())
+		interfaceLogger.Criticalf("%s", err.Error())
 		return nil, err
 	}
 
 	ai, err := windows.GetAdapterList()
 	if err != nil {
-		interfaceLogger.Criticalf(err.Error())
+		interfaceLogger.Criticalf("%s", err.Error())
 		return nil, err
 	}
 
@@ -158,7 +158,7 @@ func (g *InterfaceGenerator) Generate() (metrics.Values, error) {
 		}
 	}
 
-	interfaceLogger.Debugf("%q", results)
+	interfaceLogger.Debugf("interface: %#v", results)
 
 	return results, nil
 }

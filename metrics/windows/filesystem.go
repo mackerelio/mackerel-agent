@@ -42,6 +42,6 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 			ret["filesystem."+device+".used"] = values.KbUsed * 1024
 		}
 	}
-	logger.Debugf("%q", ret)
+	logger.Debugf("filesystem %#v", ret)
 	return ret, nil
 }

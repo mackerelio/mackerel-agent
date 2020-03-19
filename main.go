@@ -205,11 +205,14 @@ func start(conf *config.Config, termCh chan struct{}) error {
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
-	go signalHandler(c, app, termCh)
-
 	if conf.AutoShutdown {
-		go notifyUpdateFile(c, os.Args[0], 10*time.Second)
+		prog, err := os.Executable()
+		if err != nil {
+			return fmt.Errorf("can't get executable file: %v", err)
+		}
+		go notifyUpdateFile(c, prog, 10*time.Second)
 	}
+	go signalHandler(c, app, termCh)
 
 	return command.Run(app, termCh)
 }

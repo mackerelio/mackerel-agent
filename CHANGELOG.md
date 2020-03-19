@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.67.0 (2020-02-05)
+
+* Bump github.com/shirou/gopsutil from 2.19.12+incompatible to 2.20.1+incompatible #631 (dependabot-preview[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.8.0 to 0.9.0 #629 (dependabot-preview[bot])
+* Allow formatted duration in config #624 (itchyny)
+* rename: github.com/motemen/gobump -> github.com/x-motemen/gobump #630 (lufia)
+* Support IMDSv2 for AWS EC2 #627 (shogo82148)
+* `%q` verb of fmt is invalid for map[string]float64 types #628 (shogo82148)
+
+
+## 0.66.0 (2020-01-22)
+
+* Bump github.com/pkg/errors from 0.8.1 to 0.9.1 #623 (dependabot-preview[bot])
+* Bump github.com/shirou/gopsutil from 2.19.11+incompatible to 2.19.12+incompatible #620 (dependabot-preview[bot])
+* Bump github.com/Songmu/prompter from 0.2.0 to 0.3.0 #617 (dependabot-preview[bot])
+* Implement GCEGenerator.SuggestCustomIdentifier #618 (tanatana)
+* fix how to get self executable path for autoshutdown option #616 (lufia)
+
+
+## 0.65.0 (2019-12-05)
+
+* add -private-autoshutdown option #612 (lufia)
+* Fix Windows Edition name #614 (mattn)
+* Bump github.com/shirou/gopsutil from 2.19.10+incompatible to 2.19.11+incompatible #611 (dependabot-preview[bot])
+* update go-osstat and golang.org/x #610 (lufia)
+* refactor: improve interface and testing for spec/cloud #609 (astj)
+* refactor: Inject CloudMetaGenerators to Suggester in order to test them in safer way #608 (astj)
+
+
 ## 0.64.1 (2019-11-21)
 
 * Install development tools in module-aware mode #606 (lufia)

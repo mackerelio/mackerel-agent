@@ -4,30 +4,21 @@ package spec
 
 import (
 	"context"
-	"net/http"
 	"time"
 
 	"github.com/Songmu/retry"
 )
 
 // For instances other than Linux, retry only 1 times to shorten whole process
-func isEC2(ctx context.Context) bool {
-	isEC2 := false
+func (g *EC2Generator) isEC2(ctx context.Context) bool {
+	var res bool
 	err := retry.WithContext(ctx, 2, 2*time.Second, func() error {
-		cl := httpCli()
-		// '/ami-id` is probably an AWS specific URL
-		req, err := http.NewRequest("GET", ec2BaseURL.String()+"/ami-id", nil)
+		res0, err := g.hasMetadataService(ctx)
 		if err != nil {
 			return err
 		}
-		resp, err := cl.Do(req.WithContext(ctx))
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-
-		isEC2 = resp.StatusCode == 200
+		res = res0
 		return nil
 	})
-	return err == nil && isEC2
+	return err == nil && res
 }

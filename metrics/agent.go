@@ -7,7 +7,7 @@ import (
 )
 
 // AgentGenerator is generator of metrics
-// about the runnning agent itself
+// about the running agent itself
 type AgentGenerator struct {
 }
 

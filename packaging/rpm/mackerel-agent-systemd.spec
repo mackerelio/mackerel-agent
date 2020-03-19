@@ -55,6 +55,29 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Feb 05 2020 <mackerel-developers@hatena.ne.jp> - 0.67.0
+- Bump github.com/shirou/gopsutil from 2.19.12+incompatible to 2.20.1+incompatible (by dependabot-preview[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.8.0 to 0.9.0 (by dependabot-preview[bot])
+- Allow formatted duration in config (by itchyny)
+- rename: github.com/motemen/gobump -> github.com/x-motemen/gobump (by lufia)
+- Support IMDSv2 for AWS EC2 (by shogo82148)
+- `%q` verb of fmt is invalid for map[string]float64 types (by shogo82148)
+
+* Wed Jan 22 2020 <mackerel-developers@hatena.ne.jp> - 0.66.0
+- Bump github.com/pkg/errors from 0.8.1 to 0.9.1 (by dependabot-preview[bot])
+- Bump github.com/shirou/gopsutil from 2.19.11+incompatible to 2.19.12+incompatible (by dependabot-preview[bot])
+- Bump github.com/Songmu/prompter from 0.2.0 to 0.3.0 (by dependabot-preview[bot])
+- Implement GCEGenerator.SuggestCustomIdentifier (by tanatana)
+- fix how to get self executable path for autoshutdown option (by lufia)
+
+* Thu Dec 05 2019 <mackerel-developers@hatena.ne.jp> - 0.65.0
+- add -private-autoshutdown option (by lufia)
+- Fix Windows Edition name (by mattn)
+- Bump github.com/shirou/gopsutil from 2.19.10+incompatible to 2.19.11+incompatible (by dependabot-preview[bot])
+- update go-osstat and golang.org/x (by lufia)
+- refactor: improve interface and testing for spec/cloud (by astj)
+- refactor: Inject CloudMetaGenerators to Suggester in order to test them in safer way (by astj)
+
 * Thu Nov 21 2019 <mackerel-developers@hatena.ne.jp> - 0.64.1
 - Install development tools in module-aware mode (by lufia)
 - Bump github.com/shirou/gopsutil from 2.18.12+incompatible to 2.19.10+incompatible (by dependabot-preview[bot])
