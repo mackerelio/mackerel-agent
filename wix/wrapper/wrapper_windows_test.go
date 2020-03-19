@@ -166,7 +166,7 @@ func TestMakeFallbackEnv_386(t *testing.T) {
 	if runtime.GOARCH != "386" {
 		t.Skip()
 	}
-	wdir := filepath.Join(os.Getenv("PROGRAMFILES"), "Mackerel")
+	wdir := filepath.Join(os.Getenv("PROGRAMFILES"), "Mackerel", "mackerel-agent")
 	env := makeFallbackEnv(wdir)
 	var want []string
 	if !reflect.DeepEqual(env, want) {
@@ -178,9 +178,9 @@ func TestMakeFallbackEnv_amd64(t *testing.T) {
 	if runtime.GOARCH != "amd64" {
 		t.Skip()
 	}
-	wdir := filepath.Join(os.Getenv("PROGRAMFILES"), "Mackerel")
+	wdir := filepath.Join(os.Getenv("PROGRAMFILES"), "Mackerel", "mackerel-agent")
 	env := makeFallbackEnv(wdir)
-	dir := filepath.Join(os.Getenv("PROGRAMFILES(X86)"), "Mackerel")
+	dir := filepath.Join(os.Getenv("PROGRAMFILES(X86)"), "Mackerel", "mackerel-agent")
 	want := []string{
 		"MACKEREL_CONFIG_FALLBACK=" + dir,
 	}

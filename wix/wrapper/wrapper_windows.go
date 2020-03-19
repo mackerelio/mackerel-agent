@@ -30,7 +30,7 @@ const (
 	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#maximum-path-length-limitation
 	maxPathLen = 260
 
-	CSIDL_PROGRAM_FILESX86 = 0x2a
+	csidlProgramFilesX86 = 0x2a
 )
 
 var (
@@ -138,7 +138,7 @@ func makeFallbackEnv(wdir string) []string {
 func getProgramFilesX86() string {
 	var buf [maxPathLen]uint16
 	p := unsafe.Pointer(&buf[0])
-	rv, _, _ := procSHGetSpecialFolderPathW.Call(0, uintptr(p), CSIDL_PROGRAM_FILESX86, 0)
+	rv, _, _ := procSHGetSpecialFolderPathW.Call(0, uintptr(p), csidlProgramFilesX86, 0)
 	if rv == 0 {
 		return ""
 	}
