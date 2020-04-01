@@ -11,6 +11,9 @@ const (
 	// https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#maximum-path-length-limitation
 	maxPathLen = 260
 
+	// This value is defined in shlobj.h, but it's published only name.
+	// But its value is used, such as JNI, so probably it isn't changed.
+	// https://docs.microsoft.com/en-us/windows/win32/shell/csidl
 	csidlProgramFilesX86 = 0x2a
 )
 
