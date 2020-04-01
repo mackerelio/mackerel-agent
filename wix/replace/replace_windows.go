@@ -46,7 +46,7 @@ func main() {
 		name := filepath.Base(outFile)
 		if oldDir := FallbackConfigDir(dir); oldDir != "" {
 			oldFile := filepath.Join(oldDir, name)
-			if err := migrateConfig(outFile, oldFile); err != nil {
+			if err := migrateFile(outFile, oldFile); err != nil {
 				if !os.IsNotExist(err) {
 					log.Fatalf("migrate %q to %q: %v", oldFile, outFile, err)
 				}
@@ -55,7 +55,7 @@ func main() {
 			}
 			idFile := filepath.Join(dir, "id")
 			oldIDFile := filepath.Join(oldDir, "id")
-			if err := migrateConfig(idFile, oldIDFile); err != nil {
+			if err := migrateFile(idFile, oldIDFile); err != nil {
 				if !os.IsNotExist(err) {
 					log.Fatalf("migrate %q to %q: %v", oldIDFile, idFile, err)
 				}
@@ -80,9 +80,9 @@ out:
 	}
 }
 
-// migrateConfig copies inFile to outFile if needed.
+// migrateFile copies inFile to outFile if needed.
 // If inFile is not exist, this will return os.ErrNotExist or its variants.
-func migrateConfig(outFile, inFile string) error {
+func migrateFile(outFile, inFile string) error {
 	w, err := os.OpenFile(outFile, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0666)
 	if err != nil {
 		if os.IsExist(err) {
