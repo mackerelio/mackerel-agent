@@ -55,6 +55,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Apr 03 2020 <mackerel-developers@hatena.ne.jp> - 0.67.1
+- Bump github.com/shirou/gopsutil from 2.20.1+incompatible to 2.20.2+incompatible (by dependabot-preview[bot])
+- fix too late closing the response body (by shogo82148)
+- Bump github.com/mackerelio/mackerel-client-go from 0.9.0 to 0.9.1 (by dependabot-preview[bot])
+
 * Wed Feb 05 2020 <mackerel-developers@hatena.ne.jp> - 0.67.0
 - Bump github.com/shirou/gopsutil from 2.19.12+incompatible to 2.20.1+incompatible (by dependabot-preview[bot])
 - Bump github.com/mackerelio/mackerel-client-go from 0.8.0 to 0.9.0 (by dependabot-preview[bot])
