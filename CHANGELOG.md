@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.67.1 (2020-04-03)
+
+* Bump github.com/shirou/gopsutil from 2.20.1+incompatible to 2.20.2+incompatible #636 (dependabot-preview[bot])
+* fix too late closing the response body #635 (shogo82148)
+* Bump github.com/mackerelio/mackerel-client-go from 0.9.0 to 0.9.1 #634 (dependabot-preview[bot])
+
+
 ## 0.67.0 (2020-02-05)
 
 * Bump github.com/shirou/gopsutil from 2.19.12+incompatible to 2.20.1+incompatible #631 (dependabot-preview[bot])
