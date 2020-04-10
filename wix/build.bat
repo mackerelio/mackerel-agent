@@ -17,7 +17,7 @@ FOR /F %%w in (.\wix\pluginlist.txt) DO (
 CD %~dp0
 
 go build -o ..\build\wrapper.exe wrapper\wrapper_windows.go wrapper\install.go
-go build -o ..\build\replace.exe replace\replace_windows.go
+go build -o ..\build\replace.exe replace\replace_windows.go replace\shell_windows.go
 go build -o ..\build\generate_wxs.exe generate_wxs\generate_wxs.go
 
 REM retrieve numeric version from git tag
