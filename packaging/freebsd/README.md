@@ -1,22 +1,67 @@
 mackerel-agent for FreeBSD
 ==========================
 
-1. Get binary for FreeBSD at release page. https://github.com/mackerelio/mackerel-agent/releases
-    - `amd64`: `mackerel-agent_freebsd_amd64.tar.gz`
-    - `i386` : `mackerel-agent_freebsd_386.tar.gz`
-    - (`arm` : `mackerel-agent_freebsd_arm.tar.gz`)
-2. Extract file, and `cd`.
-    - `tar -xzvf mackerel-agent_freebsd_*.tar.gz`
-3. Copy `mackerel-agent` to `/usr/local/bin/`.
-    - `(sudo) cp mackerel-agent /usr/local/bin/`
-4. Edit `mackerel-agent.conf`, then copy it to `/usr/local/etc/`.
-    - `${EDITOR} mackerel-agent.conf`
-    - `(sudo) cp mackerel-agent.conf /usr/local/etc/`
-5. Copy `mackerel_agent` (this directory file; rc script) to `/usr/local/etc/rc.d/`.
-    - `(sudo) cp mackerel_agent /usr/local/etc/rc.d/`
-6. Add `mackerel_agent_enable="YES"` at `/etc/rc.conf` (or use `sysrc`).
-    - `(sudo) sysrc mackerel_agent_enable="YES"`
-    - (or `sudoedit /etc/rc.conf`)
-7. Start `mackerel_agent`.
-    - `(sudo) service mackerel_agent start`
+## Install from ports (recommended)
 
+mackerel-agent is now available  FreeBSD Ports Collection.
+
+### Install
+```
+$ sudo make -C /usr/ports/sysutils/mackerel-agent
+or
+$ sudo portmaster sysutils/mackerel-agent
+or
+$ sudo pkg install mackerel-agent
+```
+
+### Configure
+```
+$ sudoedit /usr/local/etc/mackerel-agent/mackerel-agent.conf
+```
+
+### Register as startup and start agent
+
+```
+$ sudo sysrc mackerel_agent_enable=YES
+$ sudo service mackerel_agent start
+```
+
+## Install from tarball
+
+### Fetch and extract
+
+Fetch the release tarball matches your architecture.
+
+```
+$ fetch https://github.com/mackerelio/mackerel-agent/releases/download/v0.67.1/mackerel-agent_freebsd_amd64.tar.gz
+$ tar zxfv mackerel-agent_freebsd_amd64.tar.gz
+$ cd mackerel-agent_freebsd_amd64
+```
+
+The release tarball doesn't include rc script so far. Fetch it from the git repository.
+
+```
+$ fetch https://raw.githubusercontent.com/mackerelio/mackerel-agent/master/packaging/freebsd/mackerel_agent
+```
+
+### Install
+
+```
+$ sudo install -d /usr/local/etc/mackerel-agent
+$ sudo install -m 0600 mackerel-agent.conf /usr/local/etc/mackerel-agent
+$ sudo install -m 555 mackerel-agent /usr/local/bin
+$ sudo install -m mackerel_agent /usr/local/etc/rc.d
+```
+
+### Configure
+
+```
+$ sudoedit /usr/local/etc/mackerel-agent/mackerel-agent.conf
+```
+
+### Register as startup and start agent
+
+```
+$ sudo sysrc mackerel_agent_enable=YES
+$ sudo service mackerel_agent start
+```
