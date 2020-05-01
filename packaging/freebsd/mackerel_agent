@@ -4,11 +4,15 @@
 # REQUIRE: NETWORKING SERVERS DAEMON
 # KEYWORD: shutdown
 
-# 
+#
 # Add the following lines to /etc/rc.conf to enable mackerel_agent:
 # mackerel_agent_enable (bool) : Set to "NO" by default.
 #                                Set it to "YES" to enable
-# 
+# mackerel_agent_config (str)  : Path to mackerel-agent.conf.
+#                                Default: ${PREFIX}/etc/mackerel-agent/mackerel-agent.conf
+# mackerel_agent_flags (str)   : Extra flags to pass to mackerel-agent.
+#                                Default: empty
+#
 
 . /etc/rc.subr
 
@@ -17,9 +21,17 @@ rcvar=mackerel_agent_enable
 load_rc_config ${name}
 
 : ${mackerel_agent_enable:=NO}
-: ${mackerel_agent_config:=/usr/local/etc/mackerel-agent.conf}
+: ${mackerel_agent_config:=/usr/local/etc/mackerel-agent/mackerel-agent.conf}
 
 command="/usr/local/bin/mackerel-agent"
-command_args="--conf=${mackerel_agent_config} &"
+required_files="${mackerel_agent_config}"
+command_args="supervise -conf ${mackerel_agent_config} ${mackerel_agent_flags}"
+
+start_cmd=mackerel_agent_start
+
+mackerel_agent_start()
+{
+	/usr/sbin/daemon -cf -S -T mackerel-agent ${command} ${command_args}
+}
 
 run_rc_command "$1"
