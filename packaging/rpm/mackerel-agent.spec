@@ -62,6 +62,12 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu May 14 2020 <mackerel-developers@hatena.ne.jp> - 0.68.0
+- Bump github.com/shirou/gopsutil from 2.20.3+incompatible to 2.20.4+incompatible (by dependabot-preview[bot])
+- Improve FreeBSD rc script (by metalefty)
+- Bump github.com/shirou/gopsutil from 2.20.2+incompatible to 2.20.3+incompatible (by dependabot-preview[bot])
+- [Windows]support x64 installation (by lufia)
+
 * Fri Apr 03 2020 <mackerel-developers@hatena.ne.jp> - 0.67.1
 - Bump github.com/shirou/gopsutil from 2.20.1+incompatible to 2.20.2+incompatible (by dependabot-preview[bot])
 - fix too late closing the response body (by shogo82148)
