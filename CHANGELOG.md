@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.68.0 (2020-05-14)
+
+* Bump github.com/shirou/gopsutil from 2.20.3+incompatible to 2.20.4+incompatible #641 (dependabot-preview[bot])
+* Improve FreeBSD rc script #640 (metalefty)
+* Bump github.com/shirou/gopsutil from 2.20.2+incompatible to 2.20.3+incompatible #639 (dependabot-preview[bot])
+* [Windows]support x64 installation #637 (lufia)
+
+
 ## 0.67.1 (2020-04-03)
 
 * Bump github.com/shirou/gopsutil from 2.20.1+incompatible to 2.20.2+incompatible #636 (dependabot-preview[bot])
