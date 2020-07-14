@@ -6,13 +6,6 @@ ARGS := "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS := "linux darwin freebsd windows netbsd"
 export GO111MODULE=on
 
-GOBIN ?= $(shell go env GOPATH)/bin
-DEP_PROGS=\
-	$(GOBIN)/golint\
-	$(GOBIN)/gotestcover\
-	$(GOBIN)/goxz\
-	$(GOBIN)/goveralls\
-
 BUILD_LDFLAGS := "\
 	  -X main.version=$(VERSION) \
 	  -X main.gitcommit=$(CURRENT_REVISION) \
@@ -36,27 +29,17 @@ run: build
 	./build/$(MACKEREL_AGENT_NAME) $(ARGS)
 
 .PHONY: deps
-deps: $(DEP_PROGS)
+deps:
+	go install \
+		golang.org/x/lint/golint \
+		github.com/Songmu/gocredits/cmd/gocredits \
+		github.com/Songmu/goxz/cmd/goxz \
+		github.com/mattn/goveralls \
 
 .PHONY: credits
-credits: $(GOBIN)/gocredits
+credits: deps
 	go mod tidy # not `go get` to get all the dependencies regardress of OS, architecture and build tags
 	gocredits -w .
-
-$(GOBIN)/golint:
-	cd && go get golang.org/x/lint/golint
-
-$(GOBIN)/gotestcover:
-	cd && go get github.com/pierrre/gotestcover
-
-$(GOBIN)/gocredits:
-	cd && go get github.com/Songmu/gocredits/cmd/gocredits
-
-$(GOBIN)/goxz:
-	cd && go get github.com/Songmu/goxz/cmd/goxz
-
-$(GOBIN)/goveralls:
-	cd && go get github.com/mattn/goveralls
 
 .PHONY: lint
 lint: deps
@@ -90,7 +73,7 @@ crossbuild: deps credits
 
 .PHONY: cover
 cover: deps
-	gotestcover -v -race -short -covermode=atomic -coverprofile=.profile.cov -parallelpackages=4 ./...
+	go test -race -covermode=atomic -coverprofile=.profile.cov ./...
 
 # Depending to deps looks like not needed.
 # However `make build` in recipe depends deps,
