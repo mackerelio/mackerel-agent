@@ -16,6 +16,7 @@ environment:
       MSI_SUFFIX: -x64
       GOROOT: c:\go112
       MINGW: C:\mingw-w64\x86_64-7.2.0-posix-seh-rt_v5-rev1\mingw64
+stack: go 1.14
 install:
   - md c:\mackerel-secure
   - ps: if ($env:CERT) { Set-Content c:\mackerel-secure\cert.p12.base64 $env:CERT }
