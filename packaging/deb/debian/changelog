@@ -1,3 +1,14 @@
+mackerel-agent (0.68.1-1) stable; urgency=low
+
+  * Bump github.com/mackerelio/mackerel-client-go from 0.10.0 to 0.10.1 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/646>
+  * Bump golang.org/x/text from 0.3.2 to 0.3.3 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/645>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.9.1 to 0.10.0 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/643>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 20 Jul 2020 03:05:48 +0000
+
 mackerel-agent (0.68.0-1) stable; urgency=low
 
   * Bump github.com/shirou/gopsutil from 2.20.3+incompatible to 2.20.4+incompatible (by dependabot-preview[bot])
