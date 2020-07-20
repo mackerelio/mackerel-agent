@@ -62,6 +62,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Mon Jul 20 2020 <mackerel-developers@hatena.ne.jp> - 0.68.1
+- Bump github.com/mackerelio/mackerel-client-go from 0.10.0 to 0.10.1 (by dependabot-preview[bot])
+- Bump golang.org/x/text from 0.3.2 to 0.3.3 (by dependabot-preview[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.9.1 to 0.10.0 (by dependabot-preview[bot])
+
 * Thu May 14 2020 <mackerel-developers@hatena.ne.jp> - 0.68.0
 - Bump github.com/shirou/gopsutil from 2.20.3+incompatible to 2.20.4+incompatible (by dependabot-preview[bot])
 - Improve FreeBSD rc script (by metalefty)
