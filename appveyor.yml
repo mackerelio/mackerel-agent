@@ -46,7 +46,7 @@ deploy:
   release: $(appveyor_repo_tag_name)
   provider: GitHub
   auth_token:
-    secure: nT6f+l3sILrBAyVGLE1il+wkv5BvrnEnVkiPGDZQegePa81MUC4AIDTNQ/gX8AWW
+    secure: O6VQQo8/Hb69LwB/RtbhuTN/y8XOKnurxqhC6HpfMcSOKziuCdr0zKaI8coAEXcz
   artifact: mackerel-agent-msi
   appveyor_repo_tag: true
   force_update: true

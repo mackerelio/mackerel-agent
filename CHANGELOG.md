@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.68.2 (2020-07-29)
+
+* Bump github.com/shirou/gopsutil from 2.20.4+incompatible to 2.20.6+incompatible #647 (dependabot-preview[bot])
+
+
+## 0.68.1 (2020-07-20)
+
+* Bump github.com/mackerelio/mackerel-client-go from 0.10.0 to 0.10.1 #646 (dependabot-preview[bot])
+* Bump golang.org/x/text from 0.3.2 to 0.3.3 #645 (dependabot-preview[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.9.1 to 0.10.0 #643 (dependabot-preview[bot])
+
+
 ## 0.68.0 (2020-05-14)
 
 * Bump github.com/shirou/gopsutil from 2.20.3+incompatible to 2.20.4+incompatible #641 (dependabot-preview[bot])
