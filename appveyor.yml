@@ -1,7 +1,7 @@
 version: 0.19.{build}
 clone_folder: c:\gopath\src\github.com\mackerelio\mackerel-agent
 environment:
-  GOVERSION: go1.14.4
+  GOVERSION: go1.14.7
   GOPATH: c:\gopath
   GOROOT: c:\tools\go
   GO111MODULE: on
