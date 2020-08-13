@@ -39,7 +39,7 @@ deps:
 .PHONY: credits
 credits: deps
 	go mod tidy # not `go get` to get all the dependencies regardress of OS, architecture and build tags
-	gocredits -w .
+	gocredits -skip-missing -w .
 
 .PHONY: lint
 lint: deps
