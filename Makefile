@@ -73,7 +73,7 @@ crossbuild: deps credits
 
 .PHONY: cover
 cover: deps
-	go test -race -covermode=atomic -coverprofile=.profile.cov ./...
+	go test -race -short -covermode=atomic -coverprofile=.profile.cov ./...
 
 # Depending to deps looks like not needed.
 # However `make build` in recipe depends deps,
