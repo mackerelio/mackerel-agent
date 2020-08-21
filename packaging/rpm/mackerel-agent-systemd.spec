@@ -14,7 +14,6 @@ Source0:   %{name}.sysconfig
 Source1:   %{name}.conf
 Source2:   %{name}.service
 Packager:  Hatena Co., Ltd.
-BuildArch: %{buildarch}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %{?systemd_requires}

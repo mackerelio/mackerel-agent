@@ -15,7 +15,6 @@ Source1:   %{name}.sysconfig
 Source2:   %{name}.logrotate
 Source3:   %{name}.conf
 Packager:  Hatena Co., Ltd.
-BuildArch: %{buildarch}
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires(post): /sbin/chkconfig
 Requires(preun): /sbin/chkconfig, /sbin/service
