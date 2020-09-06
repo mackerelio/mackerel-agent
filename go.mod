@@ -6,7 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Songmu/gocredits v0.2.0
 	github.com/Songmu/goxz v0.6.0
-	github.com/Songmu/prompter v0.3.0
+	github.com/Songmu/prompter v0.4.0
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
