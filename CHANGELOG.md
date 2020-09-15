@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.69.1 (2020-09-15)
+
+* kcps, stage: add --target option to build rpm #660 (lufia)
+
+
 ## 0.69.0 (2020-09-15)
 
 * revert changing filename unexpectedly #658 (lufia)

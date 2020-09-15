@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Sep 15 2020 <mackerel-developers@hatena.ne.jp> - 0.69.1
+- kcps, stage: add --target option to build rpm (by lufia)
+
 * Tue Sep 15 2020 <mackerel-developers@hatena.ne.jp> - 0.69.0
 - revert changing filename unexpectedly (by lufia)
 - Bump github.com/shirou/gopsutil from 2.20.6+incompatible to 2.20.8+incompatible (by dependabot-preview[bot])

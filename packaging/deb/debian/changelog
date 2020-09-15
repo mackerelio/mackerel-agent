@@ -1,3 +1,10 @@
+mackerel-agent (0.69.1-1) stable; urgency=low
+
+  * kcps, stage: add --target option to build rpm (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/660>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 15 Sep 2020 08:00:38 +0000
+
 mackerel-agent (0.69.0-1) stable; urgency=low
 
   * revert changing filename unexpectedly (by lufia)
