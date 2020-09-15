@@ -54,6 +54,15 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Sep 15 2020 <mackerel-developers@hatena.ne.jp> - 0.69.0
+- revert changing filename unexpectedly (by lufia)
+- Bump github.com/shirou/gopsutil from 2.20.6+incompatible to 2.20.8+incompatible (by dependabot-preview[bot])
+- Bump github.com/mattn/goveralls from 0.0.6 to 0.0.7 (by dependabot-preview[bot])
+- Bump github.com/Songmu/prompter from 0.3.0 to 0.4.0 (by dependabot-preview[bot])
+- revert mkdir with shell expansion (by lufia)
+- add arm64 RPM packages, and change deb architecture to be correct (by lufia)
+- update go: 1.12 -> 1.14 (by lufia)
+
 * Wed Jul 29 2020 <mackerel-developers@hatena.ne.jp> - 0.68.2
 - Bump github.com/shirou/gopsutil from 2.20.4+incompatible to 2.20.6+incompatible (by dependabot-preview[bot])
 
