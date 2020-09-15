@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.69.0 (2020-09-15)
+
+* revert changing filename unexpectedly #658 (lufia)
+* Bump github.com/shirou/gopsutil from 2.20.6+incompatible to 2.20.8+incompatible #656 (dependabot-preview[bot])
+* Bump github.com/mattn/goveralls from 0.0.6 to 0.0.7 #657 (dependabot-preview[bot])
+* Bump github.com/Songmu/prompter from 0.3.0 to 0.4.0 #655 (dependabot-preview[bot])
+* revert mkdir with shell expansion #654 (lufia)
+* add arm64 RPM packages, and change deb architecture to be correct #653 (lufia)
+* update go: 1.12 -> 1.14 #648 (lufia)
+
+
 ## 0.68.2 (2020-07-29)
 
 * Bump github.com/shirou/gopsutil from 2.20.4+incompatible to 2.20.6+incompatible #647 (dependabot-preview[bot])
