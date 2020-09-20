@@ -13,7 +13,7 @@ require (
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/mackerelio/go-osstat v0.1.0
 	github.com/mackerelio/golib v1.0.0
-	github.com/mackerelio/mackerel-client-go v0.10.1
+	github.com/mackerelio/mackerel-client-go v0.11.0
 	github.com/mattn/go-encoding v0.0.2
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mattn/goveralls v0.0.7
