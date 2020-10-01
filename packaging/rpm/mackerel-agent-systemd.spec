@@ -54,6 +54,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Oct 01 2020 <mackerel-developers@hatena.ne.jp> - 0.69.2
+- Bump github.com/mackerelio/mackerel-client-go from 0.10.1 to 0.11.0 (by dependabot-preview[bot])
+
 * Tue Sep 15 2020 <mackerel-developers@hatena.ne.jp> - 0.69.1
 - kcps, stage: add --target option to build rpm (by lufia)
 
