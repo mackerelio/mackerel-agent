@@ -1,3 +1,10 @@
+mackerel-agent (0.69.2-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mackerel-client-go from 0.10.1 to 0.11.0 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/662>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 01 Oct 2020 05:56:54 +0000
+
 mackerel-agent (0.69.1-1.systemd) stable; urgency=low
 
   * kcps, stage: add --target option to build rpm (by lufia)

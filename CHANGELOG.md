@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.69.2 (2020-10-01)
+
+* Bump github.com/mackerelio/mackerel-client-go from 0.10.1 to 0.11.0 #662 (dependabot-preview[bot])
+
+
 ## 0.69.1 (2020-09-15)
 
 * kcps, stage: add --target option to build rpm #660 (lufia)
