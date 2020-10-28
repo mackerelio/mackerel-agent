@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Oct 28 2020 <mackerel-developers@hatena.ne.jp> - 0.69.3
+- Bump github.com/shirou/gopsutil from 2.20.8+incompatible to 2.20.9+incompatible (by dependabot-preview[bot])
+
 * Thu Oct 01 2020 <mackerel-developers@hatena.ne.jp> - 0.69.2
 - Bump github.com/mackerelio/mackerel-client-go from 0.10.1 to 0.11.0 (by dependabot-preview[bot])
 

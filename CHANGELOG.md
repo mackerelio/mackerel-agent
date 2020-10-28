@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.69.3 (2020-10-28)
+
+* Bump github.com/shirou/gopsutil from 2.20.8+incompatible to 2.20.9+incompatible #664 (dependabot-preview[bot])
+
+
 ## 0.69.2 (2020-10-01)
 
 * Bump github.com/mackerelio/mackerel-client-go from 0.10.1 to 0.11.0 #662 (dependabot-preview[bot])
