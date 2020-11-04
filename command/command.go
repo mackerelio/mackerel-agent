@@ -516,7 +516,7 @@ func runCheckersLoop(ctx context.Context, app *App, termCheckerCh <-chan struct{
 		// Extend the delay when there are lots of reports
 		if len(reports) > len(app.Agent.Checkers) {
 			reportCheckDelay = reportCheckDelaySecondsMax
-			logger.Debugf("RunChekcerLoop: Extend the delay to %d seconds. There are %d reports.", reportCheckDelay, len(reports))
+			logger.Debugf("RunCheckerLoop: Extend the delay to %d seconds. There are %d reports.", reportCheckDelay, len(reports))
 		}
 
 		// "" means no CustomIdentifier, which means the host running this agent itself.
