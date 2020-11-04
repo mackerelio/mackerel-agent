@@ -50,6 +50,8 @@ github.com/mackerelio/golib v1.0.0 h1:wiJv4l8xU9jmMn/JZV6gfpJeLUQxVFG0kVFWnsoF9w
 github.com/mackerelio/golib v1.0.0/go.mod h1:Udb4zyFG2ui7TNTMOX8In0U8AT4woLu53/46ncRwNzE=
 github.com/mackerelio/mackerel-client-go v0.11.0 h1:a8d4uTEz4fMEM9tt8pit6xZ5CNOJM27bv4wz+B15Jtk=
 github.com/mackerelio/mackerel-client-go v0.11.0/go.mod h1:/GNOj+y1eFsd3CK8c6IQ/uS38/GT0+NWImk5YGJs5Lk=
+github.com/mackerelio/mackerel-client-go v0.11.1-0.20201020082629-c602edfc857f h1:BDxXJsuTKD8l36bFS6C5e9EKkgAliPR09OQ1oUXOSEE=
+github.com/mackerelio/mackerel-client-go v0.11.1-0.20201020082629-c602edfc857f/go.mod h1:/GNOj+y1eFsd3CK8c6IQ/uS38/GT0+NWImk5YGJs5Lk=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
 github.com/mattn/go-encoding v0.0.2 h1:OC1L+QXLJge9n7yIE3R5Os/UNasUeFvK3Sa4NjbDi6c=
 github.com/mattn/go-encoding v0.0.2/go.mod h1:WUNsdPQLK4JYRzkn8IAdmYKFYGGJ4/9YPxdPoMumPgY=

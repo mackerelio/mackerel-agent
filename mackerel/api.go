@@ -54,6 +54,7 @@ func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
 		return nil, err
 	}
 	c.PrioritizedLogger = logger
+	c.SetMaxRetries(1) // retry once on network error
 	return &API{Client: c}, nil
 }
 
