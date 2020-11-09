@@ -555,7 +555,7 @@ func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Re
 		doReports := func() error {
 			err := app.API.ReportCheckMonitors(hostID, reports)
 			if err != nil {
-				logger.Errorf("ReportCheckMonitors: %s", err)
+				logger.Warningf("ReportCheckMonitors: failed to report (will retry): %s", err)
 			}
 			return err
 		}
