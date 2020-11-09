@@ -326,7 +326,7 @@ func loop(app *App, termCh chan struct{}) error {
 				if mackerel.IsNetworkError(err) {
 					logger.Warningf("Failed to post metrics value (will retry immediately): %s", err.Error())
 					err = app.API.PostHostMetricValues(postValues)
-					if err != nil {
+					if err == nil {
 						logger.Debugf("Posting metrics recovered.")
 						continue
 					}
