@@ -1,0 +1,46 @@
+name: Go
+
+on: [push]
+
+jobs:
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - run: make lint
+    - run: make convention
+    - run: make cover
+    - run: test `gofmt -l . | wc -l` = 0
+    - run: make crossbuild
+    #- run: goveralls -coverprofile=.profile.cov
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/master'
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      GO111MODULE: on
+    steps:
+    # before-deploy
+    - run: mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+    - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
+    - run: docker pull mackerel/docker-mackerel-deb-builder
+    - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
+    - run: go get github.com/x-motemen/gobump/cmd/gobump
+    - run: go get github.com/mackerelio/golib/cmd/mackerel-github-release
+    # deploy
+    # - run: mackerel-github-release && mackerel-github-release -staging
+    # TODO: add something like GITHUB_TOKEN
+
