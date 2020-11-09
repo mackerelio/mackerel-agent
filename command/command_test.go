@@ -469,3 +469,118 @@ func TestReportCheckMonitors(t *testing.T) {
 		}
 	}
 }
+
+func TestReportCheckMonitors_NetworkError(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
+	defer deferFunc()
+
+	if testing.Short() {
+		reportCheckRetryDelaySeconds = 5
+	}
+
+	postCount := 0
+	mu := &sync.Mutex{}
+
+	// XXX dirty hack to happen net/url.Error in net/http.Client#Do
+	// returning StatusSeeOther without Location header causes url.Error
+	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+		mu.Lock()
+		defer mu.Unlock()
+		postCount++
+		return http.StatusSeeOther, jsonObject{}
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	host := &mkr.Host{ID: "xyzabc12345"}
+
+	app := &App{
+		Agent:     &agent.Agent{},
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
+	}
+
+	expectedPostCount := 0
+	checkPostCount := func() {
+		mu.Lock()
+		defer mu.Unlock()
+		if postCount != expectedPostCount {
+			if postCount != expectedPostCount {
+				t.Errorf("the agent should try sending reports %d times, but %d", expectedPostCount, postCount)
+			}
+		}
+	}
+
+	go func() {
+		reportCheckMonitors(app, "", []*checks.Report{})
+	}()
+
+	// wait 1 cycle
+	time.Sleep(1 * time.Second)
+	expectedPostCount += 2
+	checkPostCount()
+
+	// wait another cycle
+	time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * time.Second)
+	expectedPostCount += 2
+	checkPostCount()
+}
+
+func TestReportCheckMonitors_NetworkErrorWithRecovery(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
+	defer deferFunc()
+
+	postCount := 0
+	mu := &sync.Mutex{}
+
+	// XXX dirty hack to happen net/url.Error in net/http.Client#Do
+	// returning StatusSeeOther without Location header causes url.Error
+	// therefore url.Error happens on first request, and no error happens afterwards
+	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+		mu.Lock()
+		defer mu.Unlock()
+		postCount++
+		if postCount == 1 {
+			return http.StatusSeeOther, jsonObject{}
+		}
+		return http.StatusOK, jsonObject{}
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	host := &mkr.Host{ID: "xyzabc12345"}
+
+	app := &App{
+		Agent:     &agent.Agent{},
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
+	}
+
+	reportCheckMonitors(app, "", []*checks.Report{})
+
+	expectedPostCount := 2
+	if postCount != expectedPostCount {
+		if postCount != expectedPostCount {
+			t.Errorf("the agent should try sending reports %d times, but %d", expectedPostCount, postCount)
+		}
+	}
+
+}
