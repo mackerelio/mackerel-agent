@@ -110,7 +110,7 @@ func (agent *Agent) CollectGraphDefsOfPlugins() []*mkr.GraphDefsParam {
 }
 
 // InitPluginGenerators XXX
-func (agent *Agent) InitPluginGenerators(api *mackerel.API) {
+func (agent *Agent) InitPluginGenerators(api mackerel.API) {
 	payloads := agent.CollectGraphDefsOfPlugins()
 
 	if len(payloads) > 0 {

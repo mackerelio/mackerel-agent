@@ -12,7 +12,7 @@ const (
 )
 
 // ReportCheckMonitors sends reports of *checks.Checker() to Mackrel API server.
-func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) error {
+func (api *APIImpl) ReportCheckMonitors(hostID string, reports []*checks.Report) error {
 	payload := &mkr.CheckReports{
 		Reports: make([]*mkr.CheckReport, len(reports)),
 	}

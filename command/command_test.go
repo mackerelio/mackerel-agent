@@ -116,9 +116,13 @@ func TestPrepareWithCreate(t *testing.T) {
 	}
 
 	c, _ := Prepare(&conf, &AgentMeta{})
-	api := c.API
+	api, ok := c.API.(*mackerel.APIImpl)
+	if !ok {
+		t.Error("failed to cast")
+	}
 	host := c.Host
 
+	// TODO: remove or move to other test
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
 	}
@@ -183,9 +187,13 @@ func TestPrepareWithUpdate(t *testing.T) {
 	}
 
 	c, _ := Prepare(&conf, &AgentMeta{})
-	api := c.API
+	api, ok := c.API.(*mackerel.APIImpl)
+	if !ok {
+		t.Error("failed to cast")
+	}
 	host := c.Host
 
+	// TODO: remove or move to other test
 	if api.BaseURL.String() != ts.URL {
 		t.Errorf("Apibase mismatch: %s != %s", api.BaseURL, ts.URL)
 	}

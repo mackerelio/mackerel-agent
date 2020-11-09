@@ -47,7 +47,7 @@ type AgentMeta struct {
 
 // prepareHost collects specs of the host and sends them to Mackerel server.
 // A unique host-id is returned by the server if one is not specified.
-func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mkr.Host, error) {
+func prepareHost(conf *config.Config, ameta *AgentMeta, api mackerel.API) (*mkr.Host, error) {
 	doRetry := func(f func() error) {
 		retry.Retry(retryNum, retryInterval, f)
 	}
@@ -148,7 +148,7 @@ func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mkr
 
 // prepareCustomIdentiferHosts collects the host information based on the
 // configuration of the custom_identifier fields.
-func prepareCustomIdentiferHosts(conf *config.Config, api *mackerel.API) map[string]*mkr.Host {
+func prepareCustomIdentiferHosts(conf *config.Config, api mackerel.API) map[string]*mkr.Host {
 	customIdentifierHosts := make(map[string]*mkr.Host)
 	for _, customIdentifier := range conf.ListCustomIdentifiers() {
 		host, err := api.FindHostByCustomIdentifier(customIdentifier)
@@ -174,7 +174,7 @@ type App struct {
 	Agent                 *agent.Agent
 	Config                *config.Config
 	Host                  *mkr.Host
-	API                   *mackerel.API
+	API                   mackerel.API
 	CustomIdentifierHosts map[string]*mkr.Host
 	AgentMeta             *AgentMeta
 }
@@ -648,15 +648,16 @@ func buildUA(ver, rev string) string {
 }
 
 // NewMackerelClient returns Mackerel API client for mackerel-agent
-func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool) (*mackerel.API, error) {
+func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool) (mackerel.API, error) {
 	api, err := mackerel.NewAPI(apibase, apikey, verbose)
 	if err != nil {
 		return nil, err
 	}
-	api.UserAgent = buildUA(ver, rev)
-	api.AdditionalHeaders = make(http.Header)
-	api.AdditionalHeaders.Add("X-Agent-Version", ver)
-	api.AdditionalHeaders.Add("X-Revision", rev)
+	api.SetUserAgent(buildUA(ver, rev))
+	h := make(http.Header)
+	h.Add("X-Agent-Version", ver)
+	h.Add("X-Revision", rev)
+	api.SetAdditionalHeader(h)
 	return api, nil
 }
 

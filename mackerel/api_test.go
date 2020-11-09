@@ -12,7 +12,7 @@ import (
 )
 
 func TestNewAPI(t *testing.T) {
-	api, err := NewAPI(
+	apiImpl, err := NewAPI(
 		"http://example.com",
 		"dummy-key",
 		true,
@@ -20,6 +20,10 @@ func TestNewAPI(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
+	}
+	api, ok := apiImpl.(*APIImpl)
+	if !ok {
+		t.Error("failed to cast to APIImpl")
 	}
 
 	if api.BaseURL.String() != "http://example.com" {
