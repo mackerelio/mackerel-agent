@@ -1,7 +1,9 @@
 package mackerel
 
 import (
+	"errors"
 	"fmt"
+	"net/url"
 
 	"github.com/mackerelio/golib/logging"
 	mkr "github.com/mackerelio/mackerel-client-go"
@@ -12,6 +14,12 @@ var logger = logging.GetLogger("api")
 // API is the main interface of Mackerel API.
 type API struct {
 	*mkr.Client
+}
+
+// IsNetworkError returns true if err is url.Error caused by net/http
+func IsNetworkError(err error) bool {
+	var e *url.Error
+	return errors.As(err, &e)
 }
 
 // IsClientError returns true if err is HTTP 4xx.
