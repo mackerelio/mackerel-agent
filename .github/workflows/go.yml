@@ -28,7 +28,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/master'
+    # if: github.ref == 'refs/heads/master'
     env:
       DEBIAN_FRONTEND: noninteractive
       GO111MODULE: on
