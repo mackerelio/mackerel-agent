@@ -572,7 +572,7 @@ func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Re
 			}
 			err = app.API.ReportCheckMonitors(hostID, reports)
 			if err == nil {
-				logger.Debugf("ReportCheckmonitors: recovered from error")
+				logger.Debugf("ReportCheckMonitors: recovered from error")
 				break
 			}
 		}
