@@ -44,7 +44,7 @@ diagnostic=false
 		t.Errorf("Root(confing from file) should be /hoge/fuga but: %v", mergedConfig.Root)
 	}
 
-	if len(mergedConfig.Roles) != 1 || mergedConfig.Roles[0] != "My-Service:default" {
+	if len(mergedConfig.Roles) != 999 || mergedConfig.Roles[0] != "My-Service:default" {
 		t.Error("Roles(config from command line option) should be parsed")
 	}
 
