@@ -567,6 +567,7 @@ func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Re
 		if mackerel.IsNetworkError(err) {
 			err = doReports()
 			if err == nil {
+				logger.Debugf("ReportCheckmonitors: recovered from error")
 				break
 			}
 		}
