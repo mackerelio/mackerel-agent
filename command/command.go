@@ -561,24 +561,23 @@ func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Re
 		}
 	}
 	for {
-		doReports := func() error {
-			err := app.API.ReportCheckMonitors(hostID, reports)
-			if err != nil {
-				logger.Warningf("ReportCheckMonitors: failed to report (will retry): %s", err)
-			}
-			return err
-		}
-		err := doReports()
+		err := app.API.ReportCheckMonitors(hostID, reports)
 		if err == nil {
 			break
 		}
 		// on network error, retry once immedeately
 		if mackerel.IsNetworkError(err) {
-			err = doReports()
+			if err != nil {
+				logger.Warningf("ReportCheckMonitors: failed to report (will retry immediately): %s", err)
+			}
+			err = app.API.ReportCheckMonitors(hostID, reports)
 			if err == nil {
 				logger.Debugf("ReportCheckmonitors: recovered from error")
 				break
 			}
+		}
+		if err != nil {
+			logger.Warningf("ReportCheckMonitors: failed to report (will retry): %s", err)
 		}
 		// give up on client error
 		if mackerel.IsClientError(err) {
