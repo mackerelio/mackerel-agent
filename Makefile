@@ -35,6 +35,7 @@ deps:
 		github.com/Songmu/gocredits/cmd/gocredits \
 		github.com/Songmu/goxz/cmd/goxz \
 		github.com/mattn/goveralls \
+		github.com/golang/mock/mockgen \
 
 .PHONY: credits
 credits: deps
