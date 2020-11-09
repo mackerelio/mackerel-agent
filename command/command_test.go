@@ -12,11 +12,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/mock/gomock"
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/agent"
 	"github.com/mackerelio/mackerel-agent/checks"
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/mackerel"
+	mockMackerel "github.com/mackerelio/mackerel-agent/mackerel/mock"
 	"github.com/mackerelio/mackerel-agent/metrics"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
@@ -408,52 +410,68 @@ func TestLoop(t *testing.T) {
 }
 
 func TestReportCheckMonitors(t *testing.T) {
+	ctrl := gomock.NewController(t)
 	if testing.Verbose() {
 		logging.SetLogLevel(logging.DEBUG)
 	}
 
 	cases := []struct {
-		Status      int
+		label       string
+		err         error
 		expectRetry bool
 	}{
-		{http.StatusOK, false},
-		{http.StatusBadRequest, false},
-		{http.StatusInternalServerError, true},
+		{
+			"no error",
+			nil,
+			false,
+		},
+		{
+			"BadRequest",
+			&mkr.APIError{
+				StatusCode: http.StatusBadRequest,
+				Message:    "BadRequest",
+			},
+			false,
+		},
+		{
+			"InternalServerError",
+			&mkr.APIError{
+				StatusCode: http.StatusInternalServerError,
+				Message:    "InternalServerError",
+			},
+			true,
+		},
 	}
 
 	for _, tc := range cases {
-		conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
-		defer deferFunc()
-
 		if testing.Short() {
 			reportCheckRetryDelaySeconds = 1
 		}
 
-		postCount := 0
 		retried := false
-		mu := &sync.Mutex{}
 
-		mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
-			mu.Lock()
-			defer mu.Unlock()
-			postCount++
-			if postCount > 1 {
-				retried = true
-			}
-			return tc.Status, jsonObject{}
-		}
+		mockAPI := mockMackerel.NewMockAPI(ctrl)
+		mockAPI.
+			EXPECT().
+			ReportCheckMonitors("xyzabc12345", gomock.Any()).
+			Return(tc.err).Times(1)
 
-		api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
-		if err != nil {
-			t.Fatal(err)
+		if tc.expectRetry {
+			mockAPI.
+				EXPECT().
+				ReportCheckMonitors("xyzabc12345", gomock.Any()).
+				DoAndReturn(func(_ string, _ interface{}) error {
+					retried = true
+					return tc.err
+				}).MinTimes(1)
 		}
 
 		host := &mkr.Host{ID: "xyzabc12345"}
 
 		app := &App{
 			Agent:     &agent.Agent{},
-			Config:    &conf,
-			API:       api,
+			Config:    &config.Config{},
+			API:       mockAPI,
 			Host:      host,
 			AgentMeta: &AgentMeta{},
 		}
@@ -464,15 +482,11 @@ func TestReportCheckMonitors(t *testing.T) {
 
 		time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * 3 * time.Second)
 
-		mu.Lock()
-		defer mu.Unlock()
-
 		if retried != tc.expectRetry {
-			text := http.StatusText(tc.Status)
 			if tc.expectRetry {
-				t.Errorf("the agent should have resend reports when got %d %q", tc.Status, text)
+				t.Errorf("the agent should have resend reports when %q", tc.label)
 			} else {
-				t.Errorf("the agent should not have resend reports when got %d %q", tc.Status, text)
+				t.Errorf("the agent should not have resend reports when %q", tc.label)
 			}
 		}
 	}
