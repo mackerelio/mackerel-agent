@@ -183,3 +183,26 @@ func TestServerError(t *testing.T) {
 		}
 	}
 }
+
+func TestAPIImpl_SetUserAgent(t *testing.T) {
+	api := &APIImpl{
+		Client: &mkr.Client{},
+	}
+	ua := "some-user-agent"
+	api.SetUserAgent(ua)
+	if got := api.Client.UserAgent; got != ua {
+		t.Errorf("UserAgent should be %s, but %s", ua, got)
+	}
+}
+
+func TestAPIImpl_SetAdditionalHeader(t *testing.T) {
+	api := &APIImpl{
+		Client: &mkr.Client{},
+	}
+	header := make(http.Header)
+	header.Add("X-Foo-Baz", "bar")
+	api.SetAdditionalHeader(header)
+	if got := api.Client.AdditionalHeaders; !reflect.DeepEqual(got, header) {
+		t.Errorf("AdditionalHeader should be %s, but %s", header, got)
+	}
+}
