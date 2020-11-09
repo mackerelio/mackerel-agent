@@ -35,6 +35,13 @@ jobs:
     steps:
     # before-deploy
     - run: mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
     - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
     - run: docker pull mackerel/docker-mackerel-deb-builder
     - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
