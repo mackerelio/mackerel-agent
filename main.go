@@ -19,7 +19,7 @@ import (
 )
 
 // allow options like -role=... -role=...
-type   roleFullnamesFlag []string
+type roleFullnamesFlag []string
 
 var roleFullnamePattern = regexp.MustCompile(`^[a-zA-Z0-9][-_a-zA-Z0-9]*:\s*[a-zA-Z0-9][-_a-zA-Z0-9]*$`)
 
