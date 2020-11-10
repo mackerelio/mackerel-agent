@@ -320,18 +320,8 @@ func loop(app *App, termCh chan struct{}) error {
 			for _, v := range origPostValues {
 				postValues = append(postValues, v.values...)
 			}
-			err := app.API.PostHostMetricValues(postValues)
+			err := postHostMetricValuesWithRetry(app, postValues)
 			if err != nil {
-				// on network error, retry once immedeately
-				if mackerel.IsNetworkError(err) {
-					logger.Warningf("Failed to post metrics value (will retry immediately): %s", err.Error())
-					err = app.API.PostHostMetricValues(postValues)
-					if err == nil {
-						logger.Debugf("Posting metrics recovered.")
-						continue
-					}
-				}
-				logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
 				if lState != loopStateTerminating {
 					lState = loopStateHadError
 				}
@@ -354,13 +344,41 @@ func loop(app *App, termCh chan struct{}) error {
 				}()
 				continue
 			}
-			logger.Debugf("Posting metrics succeeded.")
 
 			if lState == loopStateTerminating && len(postQueue) <= 0 {
 				return nil
 			}
 		}
 	}
+}
+
+func postHostMetricValuesWithRetry(app *App, postValues []*mkr.HostMetricValue) (err error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), 25*time.Second)
+	defer cancel()
+
+	err = app.API.PostHostMetricValues(postValues)
+	if err == nil {
+		logger.Debugf("Posting metrics succeeded.")
+		return
+	}
+	// Do not retry when first request already took long.
+	// (Typically when first request has timeout)
+	if ctxErr := ctx.Err(); ctxErr != nil {
+		logger.Warningf("Failed to post metrics value", err.Error())
+		return
+	}
+
+	// If first request did not take so long and it failed on network error, retry once immedeately
+	if mackerel.IsNetworkError(err) {
+		logger.Warningf("Failed to post metrics value (will retry immediately): %s", err.Error())
+		err = app.API.PostHostMetricValues(postValues)
+		if err == nil {
+			logger.Debugf("Posting metrics recovered.")
+			return
+		}
+	}
+	logger.Warningf("Failed to post metrics value", err.Error())
+	return
 }
 
 func updateHostSpecsLoop(ctx context.Context, app *App) {
@@ -561,23 +579,9 @@ func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Re
 		}
 	}
 	for {
-		err := app.API.ReportCheckMonitors(hostID, reports)
+		err := reportCheckMonitorsInternal(app, hostID, reports)
 		if err == nil {
 			break
-		}
-		// on network error, retry once immedeately
-		if mackerel.IsNetworkError(err) {
-			if err != nil {
-				logger.Warningf("ReportCheckMonitors: failed to report (will retry immediately): %s", err)
-			}
-			err = app.API.ReportCheckMonitors(hostID, reports)
-			if err == nil {
-				logger.Debugf("ReportCheckMonitors: recovered from error")
-				break
-			}
-		}
-		if err != nil {
-			logger.Warningf("ReportCheckMonitors: failed to report (will retry): %s", err)
 		}
 		// give up on client error
 		if mackerel.IsClientError(err) {
@@ -589,6 +593,35 @@ func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Re
 		// retry until report succeeds
 		time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * time.Second)
 	}
+}
+
+func reportCheckMonitorsInternal(app *App, hostID string, reports []*checks.Report) (err error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), 25*time.Second)
+	defer cancel()
+
+	err = app.API.ReportCheckMonitors(hostID, reports)
+	if err == nil {
+		logger.Debugf("ReportCheckMonitors: succeeded")
+		return
+	}
+	// Do not retry when first request already took long.
+	// (Typically when first request has timeout)
+	if ctxErr := ctx.Err(); ctxErr != nil {
+		logger.Warningf("ReportCheckMonitors: failed to report (will retry): %s", err)
+		return
+	}
+
+	// If first request did not take so long and it failed on network error, retry once immedeately
+	if mackerel.IsNetworkError(err) {
+		logger.Warningf("ReportCheckMonitors: failed to report (will retry immediately): %s", err)
+		err = app.API.ReportCheckMonitors(hostID, reports)
+		if err == nil {
+			logger.Debugf("ReportCheckMonitors: recovered from error")
+			return
+		}
+	}
+	logger.Warningf("ReportCheckMonitors: failed to report (will retry): %s", err)
+	return
 }
 
 // collectHostParam collects host specs (correspond to "name", "meta", "interfaces" and "customIdentifier" fields in API v0)
