@@ -49,7 +49,14 @@ jobs:
     - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
     - run: go get github.com/x-motemen/gobump/cmd/gobump
     - run: go get github.com/mackerelio/golib/cmd/mackerel-github-release
+    - uses: actions/upload-artifact@v2
+      with:
+        name: package releases
+        path: |
+          ~/rpmbuild/RPMS/*/*.rpm
+          packaging/*.deb
     # deploy
     # - run: mackerel-github-release && mackerel-github-release -staging
     # TODO: add something like GITHUB_TOKEN
+    # TODO: maybe we need `make crossbuild` artifact too. separete jobs?
 
