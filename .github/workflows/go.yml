@@ -21,7 +21,6 @@ jobs:
     - run: make convention
     - run: make cover
     - run: test `gofmt -l . | wc -l` = 0
-    - run: make crossbuild
     - uses: shogo82148/actions-goveralls@v1
       with:
         path-to-profile: .profile.cov
