@@ -36,7 +36,6 @@ jobs:
       GO111MODULE: on
     steps:
     # before-deploy
-    - run: mkdir -p ~/rpmbuild/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
@@ -53,7 +52,7 @@ jobs:
       with:
         name: package releases
         path: |
-          ~/rpmbuild/RPMS/*/*.rpm
+          rpmbuild/RPMS/*/*.rpm
           packaging/*.deb
     # deploy
     # - run: mackerel-github-release && mackerel-github-release -staging
