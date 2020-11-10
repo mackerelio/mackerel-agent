@@ -397,6 +397,169 @@ func TestLoop(t *testing.T) {
 	}
 }
 
+func TestLoop_NetworkError(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
+	defer deferFunc()
+
+	// 1(network error) =(retry immediately)=> 2(network error) =(wait while retry)=> 3(success)
+	const (
+		totalFailures = 2
+		totalPosts    = 3
+	)
+	postCount := 0
+	done := make(chan struct{})
+
+	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
+		payload := []mkr.HostMetricValue{}
+		json.NewDecoder(req.Body).Decode(&payload)
+
+		for _, p := range payload {
+			value := p.Value.(float64)
+			if value == 1 {
+				postCount++
+				if postCount <= totalFailures {
+					// returning StatusSeeOther without Location header causes url.Error
+					return http.StatusSeeOther, jsonObject{}
+				}
+
+				if postCount == totalPosts {
+					defer func() { done <- struct{}{} }()
+				}
+			}
+		}
+
+		return 200, jsonObject{
+			"success": true,
+		}
+	}
+	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "OK",
+		}
+	}
+
+	// Prepare required objects...
+	ag := &agent.Agent{
+		MetricsGenerators: []metrics.Generator{
+			&counterGenerator{},
+		},
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	host := &mkr.Host{ID: "xyzabc12345"}
+
+	termCh := make(chan struct{})
+	exitCh := make(chan error)
+	app := &App{
+		Agent:     ag,
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
+	}
+	// Start looping!
+	go func() {
+		exitCh <- loop(app, termCh)
+	}()
+
+	<-done
+	termCh <- struct{}{}
+	exitErr := <-exitCh
+	if exitErr != nil {
+		t.Errorf("exitErr should be nil, got: %s", exitErr)
+	}
+}
+
+func TestLoop_NetworkErrorWithRecovery(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
+	defer deferFunc()
+
+	// expected scenario.
+	// datapoint 1: 1(network error) =(retry immediately)=> 2(success)
+	const (
+		totalFailures = 1
+		totalPosts    = 2
+	)
+	postCount := 0
+	done := make(chan struct{})
+
+	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
+		payload := []mkr.HostMetricValue{}
+		json.NewDecoder(req.Body).Decode(&payload)
+
+		for _, p := range payload {
+			value := p.Value.(float64)
+			if value == 1 {
+				postCount++
+				if postCount <= totalFailures {
+					// returning StatusSeeOther without Location header causes url.Error
+					return http.StatusSeeOther, jsonObject{}
+				}
+
+				if postCount == totalPosts {
+					defer func() { done <- struct{}{} }()
+				}
+			}
+		}
+
+		return 200, jsonObject{
+			"success": true,
+		}
+	}
+	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "OK",
+		}
+	}
+
+	// Prepare required objects...
+	ag := &agent.Agent{
+		MetricsGenerators: []metrics.Generator{
+			&counterGenerator{},
+		},
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	host := &mkr.Host{ID: "xyzabc12345"}
+
+	termCh := make(chan struct{})
+	exitCh := make(chan error)
+	app := &App{
+		Agent:     ag,
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
+	}
+	// Start looping!
+	go func() {
+		exitCh <- loop(app, termCh)
+	}()
+
+	<-done
+	termCh <- struct{}{}
+	exitErr := <-exitCh
+	if exitErr != nil {
+		t.Errorf("exitErr should be nil, got: %s", exitErr)
+	}
+}
+
 func TestReportCheckMonitors(t *testing.T) {
 	if testing.Verbose() {
 		logging.SetLogLevel(logging.DEBUG)
