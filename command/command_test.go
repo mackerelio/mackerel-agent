@@ -21,6 +21,21 @@ import (
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
+func init() {
+	// Shrink time scale
+	originalPostMetricsInterval := config.PostMetricsInterval
+
+	config.PostMetricsInterval = 10 * time.Second
+	ratio := config.PostMetricsInterval.Seconds() / originalPostMetricsInterval.Seconds()
+
+	postMetricsDequeueDelaySeconds =
+		int(float64(postMetricsDequeueDelaySeconds) * ratio)
+	postMetricsRetryDelaySeconds =
+		int(float64(postMetricsRetryDelaySeconds) * ratio)
+
+	reportCheckRetryDelaySeconds = 1
+}
+
 func TestDelayByHost(t *testing.T) {
 	delay1 := time.Duration(delayByHost(&mkr.Host{
 		ID:     "246PUVUngPo",
@@ -280,23 +295,6 @@ func TestLoop(t *testing.T) {
 	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
 
-	if testing.Short() {
-		// Shrink time scale
-		originalPostMetricsInterval := config.PostMetricsInterval
-
-		config.PostMetricsInterval = 10 * time.Second
-		ratio := config.PostMetricsInterval.Seconds() / originalPostMetricsInterval.Seconds()
-
-		postMetricsDequeueDelaySeconds =
-			int(float64(postMetricsDequeueDelaySeconds) * ratio)
-		postMetricsRetryDelaySeconds =
-			int(float64(postMetricsRetryDelaySeconds) * ratio)
-
-		defer func() {
-			config.PostMetricsInterval = originalPostMetricsInterval
-		}()
-	}
-
 	/// Simulate the situation that mackerel.io is down for 3 min
 	// Strategy:
 	// counterGenerator generates values 1,2,3,4,...
@@ -417,10 +415,6 @@ func TestReportCheckMonitors(t *testing.T) {
 		conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 		defer deferFunc()
 
-		if testing.Short() {
-			reportCheckRetryDelaySeconds = 1
-		}
-
 		postCount := 0
 		retried := false
 		mu := &sync.Mutex{}
@@ -477,10 +471,6 @@ func TestReportCheckMonitors_NetworkError(t *testing.T) {
 
 	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
-
-	if testing.Short() {
-		reportCheckRetryDelaySeconds = 5
-	}
 
 	postCount := 0
 	mu := &sync.Mutex{}
