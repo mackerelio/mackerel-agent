@@ -27,3 +27,4 @@ packaging/*.build*
 packaging/*.debian.tar.xz
 
 /mackerel-agent.conf
+*.test
