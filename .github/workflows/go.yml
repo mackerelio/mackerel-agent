@@ -22,7 +22,9 @@ jobs:
     - run: make cover
     - run: test `gofmt -l . | wc -l` = 0
     - run: make crossbuild
-    #- run: goveralls -coverprofile=.profile.cov
+    - uses: shogo82148/actions-goveralls@v1
+      with:
+        path-to-profile: .profile.cov
 
   deploy:
     name: Deploy
