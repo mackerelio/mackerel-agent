@@ -46,6 +46,7 @@ jobs:
     - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
     - run: docker pull mackerel/docker-mackerel-deb-builder
     - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
+    - run: make crossbuild
     - run: go get github.com/x-motemen/gobump/cmd/gobump
     - run: go get github.com/mackerelio/golib/cmd/mackerel-github-release
     - uses: actions/upload-artifact@v2
@@ -54,8 +55,8 @@ jobs:
         path: |
           rpmbuild/RPMS/*/*.rpm
           packaging/*.deb
+          snapshot/*.{zip, tgz}
     # deploy
     # - run: mackerel-github-release && mackerel-github-release -staging
     # TODO: add something like GITHUB_TOKEN
-    # TODO: maybe we need `make crossbuild` artifact too. separete jobs?
 
