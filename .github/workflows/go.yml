@@ -56,6 +56,7 @@ jobs:
           rpmbuild/RPMS/*/*.rpm
           packaging/*.deb
           snapshot/*.{zip, tgz}
+          build/*.tar.gz
     # deploy
     #- run: mackerel-github-release -dry-run
     #  env:
