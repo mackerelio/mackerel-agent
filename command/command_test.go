@@ -638,12 +638,11 @@ func TestReportCheckMonitors_NetworkError(t *testing.T) {
 	postCount := 0
 	mu := &sync.Mutex{}
 
-	// XXX dirty hack to happen net/url.Error in net/http.Client#Do
-	// returning StatusSeeOther without Location header causes url.Error
 	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
 		mu.Lock()
 		defer mu.Unlock()
 		postCount++
+		// returning StatusSeeOther without Location header causes url.Error
 		return http.StatusSeeOther, jsonObject{}
 	}
 
@@ -699,7 +698,6 @@ func TestReportCheckMonitors_NetworkErrorWithRecovery(t *testing.T) {
 	postCount := 0
 	mu := &sync.Mutex{}
 
-	// XXX dirty hack to happen net/url.Error in net/http.Client#Do
 	// returning StatusSeeOther without Location header causes url.Error
 	// therefore url.Error happens on first request, and no error happens afterwards
 	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
