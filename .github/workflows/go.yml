@@ -57,6 +57,9 @@ jobs:
           packaging/*.deb
           snapshot/*.{zip, tgz}
     # deploy
-    # - run: mackerel-github-release && mackerel-github-release -staging
-    # TODO: add something like GITHUB_TOKEN
-
+    #- run: mackerel-github-release -dry-run
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: mackerel-github-release -staging -dry-run
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
