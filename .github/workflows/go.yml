@@ -4,8 +4,8 @@ on: [push]
 
 jobs:
 
-  test:
-    name: Test
+  test-linux:
+    name: Test (Linux)
     runs-on: ubuntu-latest
     env:
       GO111MODULE: on
@@ -24,11 +24,12 @@ jobs:
     - uses: shogo82148/actions-goveralls@v1
       with:
         path-to-profile: .profile.cov
+  # TODO add test-windows
 
-  deploy:
-    name: Deploy
+  build-linux:
+    name: Build (Linux)
     runs-on: ubuntu-latest
-    needs: test
+    needs: test-linux
     # if: github.ref == 'refs/heads/master'
     env:
       DEBIAN_FRONTEND: noninteractive
@@ -50,16 +51,38 @@ jobs:
     - run: go get github.com/mackerelio/golib/cmd/mackerel-github-release
     - uses: actions/upload-artifact@v2
       with:
-        name: package releases
+        name: linux-build-artifacts
         path: |
           rpmbuild/RPMS/*/*.rpm
           packaging/*.deb
           snapshot/*.{zip, tgz}
           build/*.tar.gz
-    # deploy
+  # TODO add build-windows
+
+  release:
+    name: Release to GitHub Releases
+    runs-on: ubuntu-latest
+    needs: build-linux
+    # if: github.ref == 'refs/heads/master'
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      GO111MODULE: on
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - run: go get github.com/x-motemen/gobump/cmd/gobump
+    - run: go get github.com/mackerelio/golib/cmd/mackerel-github-release
+    - uses: actions/download-artifact@v2
+      with:
+        name: linux-build-artifacts
     #- run: mackerel-github-release -dry-run
     #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #    GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
     - run: mackerel-github-release -staging -dry-run
       env:
         GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
