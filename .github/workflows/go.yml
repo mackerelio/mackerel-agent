@@ -78,9 +78,9 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: linux-build-artifacts
-    - run: mackerel-github-release -dry-run
+    - run: mackerel-github-release
       env:
         GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
-    - run: mackerel-github-release -staging -dry-run
+    - run: mackerel-github-release -staging
       env:
         GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
