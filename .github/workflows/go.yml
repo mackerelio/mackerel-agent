@@ -47,8 +47,6 @@ jobs:
     - run: docker pull mackerel/docker-mackerel-deb-builder
     - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
     - run: make crossbuild
-    - run: go get github.com/x-motemen/gobump/cmd/gobump
-    - run: go get github.com/mackerelio/golib/cmd/mackerel-github-release
     - uses: actions/upload-artifact@v2
       with:
         name: linux-build-artifacts
