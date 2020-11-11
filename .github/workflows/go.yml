@@ -30,7 +30,7 @@ jobs:
     name: Build (Linux)
     runs-on: ubuntu-latest
     needs: test-linux
-    # if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     env:
       DEBIAN_FRONTEND: noninteractive
       GO111MODULE: on
@@ -61,7 +61,7 @@ jobs:
     name: Release to GitHub Releases
     runs-on: ubuntu-latest
     needs: build-linux
-    # if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     env:
       DEBIAN_FRONTEND: noninteractive
       GO111MODULE: on
@@ -78,9 +78,9 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: linux-build-artifacts
-    #- run: mackerel-github-release -dry-run
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
+    - run: mackerel-github-release -dry-run
+      env:
+        GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
     - run: mackerel-github-release -staging -dry-run
       env:
         GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
