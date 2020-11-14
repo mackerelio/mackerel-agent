@@ -364,7 +364,7 @@ func postHostMetricValuesWithRetry(app *App, postValues []*mkr.HostMetricValue) 
 	// Do not retry when first request already took long.
 	// (Typically when first request has timeout)
 	if ctxErr := ctx.Err(); ctxErr != nil {
-		logger.Warningf("Failed to post metrics value", err.Error())
+		logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
 		return
 	}
 
@@ -377,7 +377,7 @@ func postHostMetricValuesWithRetry(app *App, postValues []*mkr.HostMetricValue) 
 			return
 		}
 	}
-	logger.Warningf("Failed to post metrics value", err.Error())
+	logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
 	return
 }
 
