@@ -353,23 +353,16 @@ func loop(app *App, termCh chan struct{}) error {
 }
 
 func postHostMetricValuesWithRetry(app *App, postValues []*mkr.HostMetricValue) (err error) {
-	ctx, cancel := context.WithTimeout(context.TODO(), 25*time.Second)
-	defer cancel()
+	deadline := time.Now().Add(25 * time.Second)
 
 	err = app.API.PostHostMetricValues(postValues)
 	if err == nil {
 		logger.Debugf("Posting metrics succeeded.")
 		return
 	}
-	// Do not retry when first request already took long.
-	// (Typically when first request has timeout)
-	if ctxErr := ctx.Err(); ctxErr != nil {
-		logger.Warningf("Failed to post metrics value (will retry): %s", err.Error())
-		return
-	}
 
 	// If first request did not take so long and it failed on network error, retry once immedeately
-	if mackerel.IsNetworkError(err) {
+	if time.Now().Before(deadline) && mackerel.IsNetworkError(err) {
 		logger.Warningf("Failed to post metrics value (will retry immediately): %s", err.Error())
 		err = app.API.PostHostMetricValues(postValues)
 		if err == nil {
@@ -596,23 +589,16 @@ func reportCheckMonitors(app *App, customIdentifier string, reports []*checks.Re
 }
 
 func reportCheckMonitorsInternal(app *App, hostID string, reports []*checks.Report) (err error) {
-	ctx, cancel := context.WithTimeout(context.TODO(), 25*time.Second)
-	defer cancel()
+	deadline := time.Now().Add(25 * time.Second)
 
 	err = app.API.ReportCheckMonitors(hostID, reports)
 	if err == nil {
 		logger.Debugf("ReportCheckMonitors: succeeded")
 		return
 	}
-	// Do not retry when first request already took long.
-	// (Typically when first request has timeout)
-	if ctxErr := ctx.Err(); ctxErr != nil {
-		logger.Warningf("ReportCheckMonitors: failed to report (will retry): %s", err)
-		return
-	}
 
 	// If first request did not take so long and it failed on network error, retry once immedeately
-	if mackerel.IsNetworkError(err) {
+	if time.Now().Before(deadline) && mackerel.IsNetworkError(err) {
 		logger.Warningf("ReportCheckMonitors: failed to report (will retry immediately): %s", err)
 		err = app.API.ReportCheckMonitors(hostID, reports)
 		if err == nil {
