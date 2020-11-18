@@ -21,6 +21,21 @@ import (
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
+func init() {
+	// Shrink time scale
+	originalPostMetricsInterval := config.PostMetricsInterval
+
+	config.PostMetricsInterval = 10 * time.Second
+	ratio := config.PostMetricsInterval.Seconds() / originalPostMetricsInterval.Seconds()
+
+	postMetricsDequeueDelaySeconds =
+		int(float64(postMetricsDequeueDelaySeconds) * ratio)
+	postMetricsRetryDelaySeconds =
+		int(float64(postMetricsRetryDelaySeconds) * ratio)
+
+	reportCheckRetryDelaySeconds = 1
+}
+
 func TestDelayByHost(t *testing.T) {
 	delay1 := time.Duration(delayByHost(&mkr.Host{
 		ID:     "246PUVUngPo",
@@ -280,23 +295,6 @@ func TestLoop(t *testing.T) {
 	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
 
-	if testing.Short() {
-		// Shrink time scale
-		originalPostMetricsInterval := config.PostMetricsInterval
-
-		config.PostMetricsInterval = 10 * time.Second
-		ratio := config.PostMetricsInterval.Seconds() / originalPostMetricsInterval.Seconds()
-
-		postMetricsDequeueDelaySeconds =
-			int(float64(postMetricsDequeueDelaySeconds) * ratio)
-		postMetricsRetryDelaySeconds =
-			int(float64(postMetricsRetryDelaySeconds) * ratio)
-
-		defer func() {
-			config.PostMetricsInterval = originalPostMetricsInterval
-		}()
-	}
-
 	/// Simulate the situation that mackerel.io is down for 3 min
 	// Strategy:
 	// counterGenerator generates values 1,2,3,4,...
@@ -399,6 +397,169 @@ func TestLoop(t *testing.T) {
 	}
 }
 
+func TestLoop_NetworkError(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
+	defer deferFunc()
+
+	// 1(network error) =(retry immediately)=> 2(network error) =(wait while retry)=> 3(success)
+	const (
+		totalFailures = 2
+		totalPosts    = 3
+	)
+	postCount := 0
+	done := make(chan struct{})
+
+	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
+		payload := []mkr.HostMetricValue{}
+		json.NewDecoder(req.Body).Decode(&payload)
+
+		for _, p := range payload {
+			value := p.Value.(float64)
+			if value == 1 {
+				postCount++
+				if postCount <= totalFailures {
+					// returning StatusSeeOther without Location header causes url.Error
+					return http.StatusSeeOther, jsonObject{}
+				}
+
+				if postCount == totalPosts {
+					defer func() { done <- struct{}{} }()
+				}
+			}
+		}
+
+		return 200, jsonObject{
+			"success": true,
+		}
+	}
+	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "OK",
+		}
+	}
+
+	// Prepare required objects...
+	ag := &agent.Agent{
+		MetricsGenerators: []metrics.Generator{
+			&counterGenerator{},
+		},
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	host := &mkr.Host{ID: "xyzabc12345"}
+
+	termCh := make(chan struct{})
+	exitCh := make(chan error)
+	app := &App{
+		Agent:     ag,
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
+	}
+	// Start looping!
+	go func() {
+		exitCh <- loop(app, termCh)
+	}()
+
+	<-done
+	termCh <- struct{}{}
+	exitErr := <-exitCh
+	if exitErr != nil {
+		t.Errorf("exitErr should be nil, got: %s", exitErr)
+	}
+}
+
+func TestLoop_NetworkErrorWithRecovery(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
+	defer deferFunc()
+
+	// expected scenario.
+	// datapoint 1: 1(network error) =(retry immediately)=> 2(success)
+	const (
+		totalFailures = 1
+		totalPosts    = 2
+	)
+	postCount := 0
+	done := make(chan struct{})
+
+	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
+		payload := []mkr.HostMetricValue{}
+		json.NewDecoder(req.Body).Decode(&payload)
+
+		for _, p := range payload {
+			value := p.Value.(float64)
+			if value == 1 {
+				postCount++
+				if postCount <= totalFailures {
+					// returning StatusSeeOther without Location header causes url.Error
+					return http.StatusSeeOther, jsonObject{}
+				}
+
+				if postCount == totalPosts {
+					defer func() { done <- struct{}{} }()
+				}
+			}
+		}
+
+		return 200, jsonObject{
+			"success": true,
+		}
+	}
+	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(req *http.Request) (int, jsonObject) {
+		return 200, jsonObject{
+			"result": "OK",
+		}
+	}
+
+	// Prepare required objects...
+	ag := &agent.Agent{
+		MetricsGenerators: []metrics.Generator{
+			&counterGenerator{},
+		},
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	host := &mkr.Host{ID: "xyzabc12345"}
+
+	termCh := make(chan struct{})
+	exitCh := make(chan error)
+	app := &App{
+		Agent:     ag,
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
+	}
+	// Start looping!
+	go func() {
+		exitCh <- loop(app, termCh)
+	}()
+
+	<-done
+	termCh <- struct{}{}
+	exitErr := <-exitCh
+	if exitErr != nil {
+		t.Errorf("exitErr should be nil, got: %s", exitErr)
+	}
+}
+
 func TestReportCheckMonitors(t *testing.T) {
 	if testing.Verbose() {
 		logging.SetLogLevel(logging.DEBUG)
@@ -416,10 +577,6 @@ func TestReportCheckMonitors(t *testing.T) {
 	for _, tc := range cases {
 		conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
 		defer deferFunc()
-
-		if testing.Short() {
-			reportCheckRetryDelaySeconds = 1
-		}
 
 		postCount := 0
 		retried := false
@@ -468,4 +625,113 @@ func TestReportCheckMonitors(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestReportCheckMonitors_NetworkError(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
+	defer deferFunc()
+
+	postCount := 0
+	mu := &sync.Mutex{}
+
+	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+		mu.Lock()
+		defer mu.Unlock()
+		postCount++
+		// returning StatusSeeOther without Location header causes url.Error
+		return http.StatusSeeOther, jsonObject{}
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	host := &mkr.Host{ID: "xyzabc12345"}
+
+	app := &App{
+		Agent:     &agent.Agent{},
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
+	}
+
+	expectedPostCount := 0
+	checkPostCount := func() {
+		mu.Lock()
+		defer mu.Unlock()
+		if postCount != expectedPostCount {
+			if postCount != expectedPostCount {
+				t.Errorf("the agent should try sending reports %d times, but %d", expectedPostCount, postCount)
+			}
+		}
+	}
+
+	go func() {
+		reportCheckMonitors(app, "", []*checks.Report{})
+	}()
+
+	// wait 1 cycle
+	time.Sleep(1 * time.Second)
+	expectedPostCount += 2
+	checkPostCount()
+
+	// wait another cycle
+	time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * time.Second)
+	expectedPostCount += 2
+	checkPostCount()
+}
+
+func TestReportCheckMonitors_NetworkErrorWithRecovery(t *testing.T) {
+	if testing.Verbose() {
+		logging.SetLogLevel(logging.DEBUG)
+	}
+
+	conf, mockHandlers, _, deferFunc := newMockAPIServer(t)
+	defer deferFunc()
+
+	postCount := 0
+	mu := &sync.Mutex{}
+
+	// returning StatusSeeOther without Location header causes url.Error
+	// therefore url.Error happens on first request, and no error happens afterwards
+	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+		mu.Lock()
+		defer mu.Unlock()
+		postCount++
+		if postCount == 1 {
+			return http.StatusSeeOther, jsonObject{}
+		}
+		return http.StatusOK, jsonObject{}
+	}
+
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	host := &mkr.Host{ID: "xyzabc12345"}
+
+	app := &App{
+		Agent:     &agent.Agent{},
+		Config:    &conf,
+		API:       api,
+		Host:      host,
+		AgentMeta: &AgentMeta{},
+	}
+
+	reportCheckMonitors(app, "", []*checks.Report{})
+
+	expectedPostCount := 2
+	if postCount != expectedPostCount {
+		if postCount != expectedPostCount {
+			t.Errorf("the agent should try sending reports %d times, but %d", expectedPostCount, postCount)
+		}
+	}
+
 }

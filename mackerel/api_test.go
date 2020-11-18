@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"reflect"
 	"testing"
 
 	mkr "github.com/mackerelio/mackerel-client-go"
+	"github.com/pkg/errors"
 )
 
 func TestNewAPI(t *testing.T) {
@@ -116,6 +118,40 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 		}
 		if reflect.DeepEqual(host, tc.host) != true {
 			t.Error("request sends json including memo but: ", host)
+		}
+	}
+}
+
+func TestIsNetworkError(t *testing.T) {
+	tests := []struct {
+		Err  error
+		Want bool
+	}{
+		{
+			Err:  &url.Error{URL: "https://mackerel.io/api/v0/hosts"},
+			Want: true,
+		},
+		{
+			Err:  errors.Wrap(&url.Error{URL: "https://mackerel.io/api/v0/hosts"}, "wrap"),
+			Want: true,
+		},
+		{
+			Err:  &mkr.APIError{StatusCode: 500, Message: "500"},
+			Want: false,
+		},
+		{
+			Err:  fmt.Errorf("err"),
+			Want: false,
+		},
+		{
+			Err:  nil,
+			Want: false,
+		},
+	}
+	for _, tt := range tests {
+		v := IsNetworkError(tt.Err)
+		if v != tt.Want {
+			t.Errorf("IsNetworkError(%v) = %v; want %v", tt.Err, v, tt.Want)
 		}
 	}
 }
