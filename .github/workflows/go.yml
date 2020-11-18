@@ -1,0 +1,89 @@
+name: Go
+
+on:
+  pull_request: {}
+  push:
+    branches: [master]
+
+jobs:
+
+  test-linux:
+    name: Test (Linux)
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - run: make lint
+    - run: make convention
+    - run: make cover
+    - run: test `gofmt -l . | wc -l` = 0
+    - uses: shogo82148/actions-goveralls@v1
+      with:
+        path-to-profile: .profile.cov
+  # TODO add test-windows
+
+  build-linux:
+    name: Build (Linux)
+    runs-on: ubuntu-latest
+    needs: test-linux
+    if: github.ref == 'refs/heads/master'
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      GO111MODULE: on
+    steps:
+    # before-deploy
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
+    - run: docker pull mackerel/docker-mackerel-deb-builder
+    - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
+    - run: make crossbuild
+    - uses: actions/upload-artifact@v2
+      with:
+        name: linux-build-artifacts
+        path: |
+          rpmbuild/RPMS/*/*.rpm
+          packaging/*.deb
+          snapshot/*.{zip, tgz}
+          build/*.tar.gz
+  # TODO add build-windows
+
+  release:
+    name: Release to GitHub Releases
+    runs-on: ubuntu-latest
+    needs: build-linux
+    if: github.ref == 'refs/heads/master'
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      GO111MODULE: on
+    steps:
+    - name: Set up Go 1.x
+      uses: actions/setup-go@v2
+      with:
+        go-version: ^1.14
+      id: go
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v2
+    - run: go get github.com/x-motemen/gobump/cmd/gobump
+    - run: go get github.com/mackerelio/golib/cmd/mackerel-github-release
+    - uses: actions/download-artifact@v2
+      with:
+        name: linux-build-artifacts
+    - run: mackerel-github-release
+      env:
+        GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
+    - run: mackerel-github-release -staging
+      env:
+        GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
