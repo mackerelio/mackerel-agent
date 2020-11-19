@@ -1,3 +1,12 @@
+mackerel-agent (0.70.0-1) stable; urgency=low
+
+  * replace Travis CI workflow with GitHub Actions (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/670>
+  * Retry once immediately on posting metrics and check reports when error is caused by net/http (network error) (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/669>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 19 Nov 2020 02:33:03 +0000
+
 mackerel-agent (0.69.3-1) stable; urgency=low
 
   * Bump github.com/shirou/gopsutil from 2.20.8+incompatible to 2.20.9+incompatible (by dependabot-preview[bot])
