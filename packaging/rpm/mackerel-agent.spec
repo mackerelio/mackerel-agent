@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Nov 19 2020 <mackerel-developers@hatena.ne.jp> - 0.70.2
+- Fix artifact filename pattern again to include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts (by astj)
+
 * Thu Nov 19 2020 <mackerel-developers@hatena.ne.jp> - 0.70.1
 - include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts (by astj)
 
