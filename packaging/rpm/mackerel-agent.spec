@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Nov 19 2020 <mackerel-developers@hatena.ne.jp> - 0.70.1
+- include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts (by astj)
+
 * Thu Nov 19 2020 <mackerel-developers@hatena.ne.jp> - 0.70.0
 - replace Travis CI workflow with GitHub Actions (by astj)
 - Retry once immediately on posting metrics and check reports when error is caused by net/http (network error) (by astj)

@@ -1,3 +1,10 @@
+mackerel-agent (0.70.1-1.systemd) stable; urgency=low
+
+  * include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/674>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 19 Nov 2020 07:48:57 +0000
+
 mackerel-agent (0.70.0-1.systemd) stable; urgency=low
 
   * replace Travis CI workflow with GitHub Actions (by astj)
