@@ -56,7 +56,7 @@ jobs:
         path: |
           rpmbuild/RPMS/*/*.rpm
           packaging/*.deb
-          snapshot/*.{zip, tgz}
+          snapshot/*.{zip, tar.gz}
           build/*.tar.gz
   # TODO add build-windows
 
