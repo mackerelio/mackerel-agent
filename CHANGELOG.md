@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.70.0 (2020-11-19)
+
+* replace Travis CI workflow with GitHub Actions #670 (astj)
+* Retry once immediately on posting metrics and check reports when error is caused by net/http (network error) #669 (astj)
+
+
 ## 0.69.3 (2020-10-28)
 
 * Bump github.com/shirou/gopsutil from 2.20.8+incompatible to 2.20.9+incompatible #664 (dependabot-preview[bot])

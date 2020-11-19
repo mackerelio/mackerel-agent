@@ -54,6 +54,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Nov 19 2020 <mackerel-developers@hatena.ne.jp> - 0.70.0
+- replace Travis CI workflow with GitHub Actions (by astj)
+- Retry once immediately on posting metrics and check reports when error is caused by net/http (network error) (by astj)
+
 * Wed Oct 28 2020 <mackerel-developers@hatena.ne.jp> - 0.69.3
 - Bump github.com/shirou/gopsutil from 2.20.8+incompatible to 2.20.9+incompatible (by dependabot-preview[bot])
 
