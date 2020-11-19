@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.70.2 (2020-11-19)
+
+* Fix artifact filename pattern again to include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts #676 (astj)
+
+
 ## 0.70.1 (2020-11-19)
 
 * include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts #674 (astj)
