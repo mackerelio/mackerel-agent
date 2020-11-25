@@ -1,3 +1,10 @@
+mackerel-agent (0.70.3-1.systemd) stable; urgency=low
+
+  * Build with Go 1.14 in CI (was 1.15 by mistake) (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/678>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 25 Nov 2020 06:41:31 +0000
+
 mackerel-agent (0.70.2-1.systemd) stable; urgency=low
 
   * Fix artifact filename pattern again to include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts (by astj)

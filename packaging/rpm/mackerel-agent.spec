@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Nov 25 2020 <mackerel-developers@hatena.ne.jp> - 0.70.3
+- Build with Go 1.14 in CI (was 1.15 by mistake) (by astj)
+
 * Thu Nov 19 2020 <mackerel-developers@hatena.ne.jp> - 0.70.2
 - Fix artifact filename pattern again to include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts (by astj)
 
