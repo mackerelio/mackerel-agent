@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.70.3 (2020-11-25)
+
+* Build with Go 1.14 in CI (was 1.15 by mistake) #678 (astj)
+
+
 ## 0.70.2 (2020-11-19)
 
 * Fix artifact filename pattern again to include mackerel-agent_{os}_{arch}.tar.gz to GitHub Release artifacts #676 (astj)
