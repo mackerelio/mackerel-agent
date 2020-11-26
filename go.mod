@@ -24,5 +24,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200206161412-a0c6ece9d31a // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
 	golang.org/x/sys v0.0.0-20200202164722-d101bd2416d5
-	golang.org/x/text v0.3.3
+	golang.org/x/text v0.3.4
 )
