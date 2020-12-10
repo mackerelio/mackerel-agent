@@ -27,7 +27,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 		&metrics.LoadavgGenerator{},
 		&metricsLinux.CPUUsageGenerator{Interval: metricsInterval},
 		&metricsLinux.MemoryGenerator{},
-		&metrics.InterfaceGenerator{Interval: metricsInterval},
+		&metrics.InterfaceGenerator{IgnoreRegexp: conf.Interfaces.Ignore.Regexp, Interval: metricsInterval},
 		&metricsLinux.DiskGenerator{Interval: metricsInterval, UseMountpoint: conf.Filesystems.UseMountpoint},
 		&metrics.FilesystemGenerator{IgnoreRegexp: conf.Filesystems.Ignore.Regexp, UseMountpoint: conf.Filesystems.UseMountpoint},
 	}

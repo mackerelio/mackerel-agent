@@ -3,6 +3,7 @@
 package metrics
 
 import (
+	"regexp"
 	"strings"
 	"time"
 
@@ -21,7 +22,8 @@ interface = "eth0", "eth1" and so on... ("en0" on darwin)
 
 // InterfaceGenerator generates interface metric values
 type InterfaceGenerator struct {
-	Interval time.Duration
+	IgnoreRegexp *regexp.Regexp
+	Interval     time.Duration
 }
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
@@ -63,6 +65,9 @@ func (g *InterfaceGenerator) collectInterfacesValues() (map[string]uint64, error
 	for _, network := range networks {
 		name := util.SanitizeMetricKey(network.Name)
 		if strings.HasPrefix(name, "veth") {
+			continue
+		}
+		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
 			continue
 		}
 		results["interface."+name+".rxBytes"] = network.RxBytes

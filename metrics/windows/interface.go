@@ -5,6 +5,7 @@ package windows
 import (
 	"fmt"
 	"net"
+	"regexp"
 	"sort"
 	"strings"
 	"syscall"
@@ -17,9 +18,10 @@ import (
 
 // InterfaceGenerator XXX
 type InterfaceGenerator struct {
-	Interval time.Duration
-	query    syscall.Handle
-	counters []*windows.CounterInfo
+	IgnoreRegexp *regexp.Regexp
+	Interval     time.Duration
+	query        syscall.Handle
+	counters     []*windows.CounterInfo
 }
 
 var interfaceLogger = logging.GetLogger("metrics.interface")
@@ -34,8 +36,8 @@ func normalizeName(s string) string {
 }
 
 // NewInterfaceGenerator XXX
-func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) {
-	g := &InterfaceGenerator{interval, 0, nil}
+func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration) (*InterfaceGenerator, error) {
+	g := &InterfaceGenerator{ignoreReg, interval, 0, nil}
 
 	var err error
 	g.query, err = windows.CreateQuery()
@@ -92,6 +94,9 @@ func NewInterfaceGenerator(interval time.Duration) (*InterfaceGenerator, error) 
 				// convert to escaped name
 				escaped, ok := nameMap[name]
 				if !ok {
+					continue
+				}
+				if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
 					continue
 				}
 				name = strings.Replace(name, "(", "[", -1)
