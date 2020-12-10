@@ -182,7 +182,7 @@ func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid ignore case.")
 	}
 }
 
