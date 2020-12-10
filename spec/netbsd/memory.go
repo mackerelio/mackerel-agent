@@ -35,14 +35,14 @@ func (g *MemoryGenerator) Generate() (interface{}, error) {
 	output := string(outputBytes)
 
 	memsizeInBytes, err := strconv.ParseInt(strings.TrimSpace(output), 10, 64)
-	fmt.Printf("[DEBUG] memsizeInBytes: %d", memsizeInBytes)
+	memoryLogger.Debugf("memsizeInBytes: %d", memsizeInBytes)
 	if err != nil {
-		fmt.Printf("[DEBUG] MemoryGenerator err != nil")
+		memoryLogger.Debugf("MemoryGenerator err != nil")
 		return nil, fmt.Errorf("while parsing %q: %s", output, err)
 	}
 
 	spec["total"] = fmt.Sprintf("%dkB", memsizeInBytes/bytesInKibibytes)
-	fmt.Printf("[DEBUG] spec[total]: %s", spec["total"])
+	memoryLogger.Debugf("spec[total]: %s", spec["total"])
 
 	return spec, nil
 }
