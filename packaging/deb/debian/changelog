@@ -1,3 +1,14 @@
+mackerel-agent (0.71.0-1) stable; urgency=low
+
+  * Bump github.com/mackerelio/mackerel-client-go from 0.11.0 to 0.12.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/680>
+  * Network interface exclusion feature (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/681>
+  * Bump golang.org/x/text from 0.3.3 to 0.3.4 (by dependabot-preview[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/666>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 14 Dec 2020 07:17:26 +0000
+
 mackerel-agent (0.70.3-1) stable; urgency=low
 
   * Build with Go 1.14 in CI (was 1.15 by mistake) (by astj)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.71.0 (2020-12-14)
+
+* Bump github.com/mackerelio/mackerel-client-go from 0.11.0 to 0.12.0 #680 (dependabot[bot])
+* Network interface exclusion feature #681 (yseto)
+* Bump golang.org/x/text from 0.3.3 to 0.3.4 #666 (dependabot-preview[bot])
+
+
 ## 0.70.3 (2020-11-25)
 
 * Build with Go 1.14 in CI (was 1.15 by mistake) #678 (astj)
