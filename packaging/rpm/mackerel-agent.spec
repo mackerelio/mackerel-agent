@@ -61,6 +61,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Mon Dec 14 2020 <mackerel-developers@hatena.ne.jp> - 0.71.0
+- Bump github.com/mackerelio/mackerel-client-go from 0.11.0 to 0.12.0 (by dependabot[bot])
+- Network interface exclusion feature (by yseto)
+- Bump golang.org/x/text from 0.3.3 to 0.3.4 (by dependabot-preview[bot])
+
 * Wed Nov 25 2020 <mackerel-developers@hatena.ne.jp> - 0.70.3
 - Build with Go 1.14 in CI (was 1.15 by mistake) (by astj)
 
