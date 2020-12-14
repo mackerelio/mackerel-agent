@@ -10,7 +10,7 @@ import (
 )
 
 func TestInterfaceGenerator(t *testing.T) {
-	g := &InterfaceGenerator{1 * time.Second}
+	g := &InterfaceGenerator{nil, 1 * time.Second}
 	values, err := g.Generate()
 	if err != nil {
 		t.Errorf("error should be nil but got: %s", err)

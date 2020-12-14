@@ -106,6 +106,7 @@ type Config struct {
 	DisplayName   string        `toml:"display_name"`
 	HostStatus    HostStatus    `toml:"host_status"`
 	Filesystems   Filesystems   `toml:"filesystems"`
+	Interfaces    Interfaces    `toml:"interfaces"`
 	HTTPProxy     string        `toml:"http_proxy"`
 	CloudPlatform CloudPlatform `toml:"cloud_platform"`
 
@@ -373,6 +374,11 @@ type HostStatus struct {
 type Filesystems struct {
 	Ignore        Regexpwrapper `toml:"ignore"`
 	UseMountpoint bool          `toml:"use_mountpoint"`
+}
+
+// Interfaces configure intefaces related settings
+type Interfaces struct {
+	Ignore Regexpwrapper `toml:"ignore"`
 }
 
 // Regexpwrapper is a wrapper type for marshalling string
