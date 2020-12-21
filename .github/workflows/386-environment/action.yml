@@ -1,0 +1,31 @@
+name: "Setup golang 386, Setup Environment"
+description: "Setup golang 386, Set Environment Variables"
+
+# NOTE
+# x86 binary compile environment needed golang@386, mingw32.
+# why "Setup golang x86" : setup-go can not specify "arch"
+
+runs:
+  using: "composite"
+  steps:
+  - name: Set PATH for MINGW32
+    shell: pwsh
+    run: |
+      echo "$env:RUNNER_TEMP/msys/msys64/mingw32/bin/" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+  - name: Setup golang x86
+    shell: pwsh
+    run: |
+      $ProgressPreference = 'SilentlyContinue'
+      Invoke-WebRequest -Uri https://golang.org/dl/go1.14.13.windows-386.zip -OutFile ~/go.zip
+      Expand-Archive -Path ~/go.zip -DestinationPath $env:RUNNER_TEMP/tools/
+      echo "$env:RUNNER_TEMP/tools/go/bin/" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      echo "GOROOT=$env:RUNNER_TEMP/tools/go/" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      echo "GOTOOLDIR=$env:RUNNER_TEMP/tools/go/pkg/tool/windows_386/" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+  - name: Verify golang x86
+    shell: pwsh
+    run: |
+      go version
+      go env
+
