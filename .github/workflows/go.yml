@@ -67,7 +67,6 @@ jobs:
 
     - name: Run Test
       run: |
-        go vet -all .
         go test -short ./...
         foreach ($line in (Get-Content wix/pluginlist.txt) -as [string[]]) {
             powershell -Command "go list $line"
