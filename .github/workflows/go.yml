@@ -204,18 +204,26 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Unshallow
-      run: git fetch --prune --unshallow --tags
-
     - uses: actions/download-artifact@v2
       with:
         name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
         path: build/
 
+    - name: Get gobump binary
+      run: |
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri https://github.com/x-motemen/gobump/releases/download/v0.2.0/gobump_v0.2.0_windows_amd64.zip -OutFile ~/gobump.zip
+        Expand-Archive -Path ~/gobump.zip -DestinationPath ~/
+
     - name: Build Installer
       run: |
-        $VERSION = git describe --tags --abbrev=0 --match "v*" | %{ $_ -replace "v","" }
+        $INFO = (~/gobump_v0.2.0_windows_amd64/gobump.exe show | ConvertFrom-Json)
+        Write-Host $INFO
+        $VERSION = $INFO.version
         Write-Host $VERSION
+        if ($null -eq $VERSION) {
+          exit 1
+        }
         & "./wix/build.bat" "$VERSION"
       env:
         PLATFORM_ID: ${{ matrix.PLATFORM_ID }}
