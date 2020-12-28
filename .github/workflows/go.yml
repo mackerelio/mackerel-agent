@@ -208,15 +208,11 @@ jobs:
         name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
         path: build/
 
-    - name: Get gobump binary
-      run: |
-        $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://github.com/x-motemen/gobump/releases/download/v0.2.0/gobump_v0.2.0_windows_amd64.zip -OutFile ~/gobump.zip
-        Expand-Archive -Path ~/gobump.zip -DestinationPath ~/
+    - run: go get github.com/x-motemen/gobump/cmd/gobump
 
     - name: Build Installer
       run: |
-        $INFO = (~/gobump_v0.2.0_windows_amd64/gobump.exe show | ConvertFrom-Json)
+        $INFO = (~/go/bin/gobump show | ConvertFrom-Json)
         Write-Host $INFO
         $VERSION = $INFO.version
         Write-Host $VERSION
