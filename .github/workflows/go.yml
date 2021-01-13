@@ -192,7 +192,7 @@ jobs:
     name: Make Installer (Windows)
     runs-on: windows-2019
     needs: build-windows
-    if: github.ref == 'refs/heads/master'
+#   if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         include:
@@ -227,11 +227,10 @@ jobs:
     - name: Signing Installer
       run: |
         mkdir $env:RUNNER_TEMP/sign/
-        $bytes = [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_P12_BASE64 }}")
-        [IO.File]::WriteAllBytes("$env:RUNNER_TEMP/sign/cert.p12", $bytes)
+        [IO.File]::WriteAllBytes("$env:RUNNER_TEMP/sign/cert.p12", [Convert]::FromBase64String("${{ secrets.WINDOWS_CERT_P12_BASE64 }}"))
         $SIGNTOOL = "C:/Program Files (x86)/Windows Kits/10/bin/10.0.19041.0/x86/signtool.exe";
-        & "$SIGNTOOL" sign /fd sha256 /t "http://timestamp.verisign.com/scripts/timestamp.dll" /f "$env:RUNNER_TEMP/sign/cert.p12" /p "${{ secrets.WINDOWS_CERT_P12_PASS }}" /v "build/mackerel-agent${{ matrix.MSI_SUFFIX }}.msi"
-        & "$SIGNTOOL" sign /fd sha256 /t "http://timestamp.verisign.com/scripts/timestamp.dll" /f "$env:RUNNER_TEMP/sign/cert.p12" /p "${{ secrets.WINDOWS_CERT_P12_PASS }}" /v "build/mackerel-agent-k${{ matrix.MSI_SUFFIX }}.msi"
+        & "$SIGNTOOL" sign /fd sha256 /t "http://timestamp.sectigo.com" /f "$env:RUNNER_TEMP/sign/cert.p12" /p "${{ secrets.WINDOWS_CERT_P12_PASS }}" /v "build/mackerel-agent${{ matrix.MSI_SUFFIX }}.msi"
+        & "$SIGNTOOL" sign /fd sha256 /t "http://timestamp.sectigo.com" /f "$env:RUNNER_TEMP/sign/cert.p12" /p "${{ secrets.WINDOWS_CERT_P12_PASS }}" /v "build/mackerel-agent-k${{ matrix.MSI_SUFFIX }}.msi"
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
