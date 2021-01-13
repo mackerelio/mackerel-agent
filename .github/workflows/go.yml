@@ -239,7 +239,6 @@ jobs:
         path: |
           build/*.msi
 
-  # TODO append "windows msi filename" mackerel-github-release collectAssets
   release:
     name: Release to GitHub Releases
     runs-on: ubuntu-latest
@@ -261,6 +260,7 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: linux-build-artifacts
+        path: artifacts/
     - uses: actions/download-artifact@v2
       with:
         name: windows-packages-x86
@@ -269,9 +269,9 @@ jobs:
       with:
         name: windows-packages-x64
         path: artifacts/
-    - run: mackerel-github-release
+    - run: mackerel-github-release artifacts/
       env:
         GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
-    - run: mackerel-github-release -staging
+    - run: mackerel-github-release -staging artifacts/
       env:
         GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
