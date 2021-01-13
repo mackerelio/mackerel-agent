@@ -110,7 +110,7 @@ jobs:
     name: Build (Windows)
     runs-on: windows-2019
     needs: test-windows
-#   if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     env:
       GO111MODULE: on
     strategy:
@@ -192,7 +192,7 @@ jobs:
     name: Make Installer (Windows)
     runs-on: windows-2019
     needs: build-windows
-#   if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         include:
