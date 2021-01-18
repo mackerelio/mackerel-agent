@@ -50,6 +50,8 @@ jobs:
     - name: Setup golang 386, Setup Environment
       if: matrix.PLATFORM_ID == 'x86'
       uses: ./.github/workflows/386-environment
+      with:
+        go-version: 1.14.13
 
     - name: Setup golang x64
       if: matrix.PLATFORM_ID == 'x64'
@@ -135,6 +137,8 @@ jobs:
     - name: Setup golang 386, Setup Environment
       if: matrix.PLATFORM_ID == 'x86'
       uses: ./.github/workflows/386-environment
+      with:
+        go-version: 1.14.13
 
     - name: Setup golang x64
       if: matrix.PLATFORM_ID == 'x64'
