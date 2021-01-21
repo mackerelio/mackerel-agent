@@ -61,6 +61,14 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Jan 21 2021 <mackerel-developers@hatena.ne.jp> - 0.71.1
+- remove .circleci/config.yml (by yseto)
+- [ci] bump Windows i386 Golang to 1.14.14 (by astj)
+- Build Windows package on GitHub Actions (by yseto)
+- Bump github.com/mackerelio/golib from 1.0.0 to 1.1.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.12.0 to 0.13.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.3.4 to 0.3.5 (by dependabot[bot])
+
 * Mon Dec 14 2020 <mackerel-developers@hatena.ne.jp> - 0.71.0
 - Bump github.com/mackerelio/mackerel-client-go from 0.11.0 to 0.12.0 (by dependabot[bot])
 - Network interface exclusion feature (by yseto)
