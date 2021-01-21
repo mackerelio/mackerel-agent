@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.71.1 (2021-01-21)
+
+* remove .circleci/config.yml #689 (yseto)
+* [ci] bump Windows i386 Golang to 1.14.14 #688 (astj)
+* Build Windows package on GitHub Actions #684 (yseto)
+* Bump github.com/mackerelio/golib from 1.0.0 to 1.1.0 #686 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.12.0 to 0.13.0 #687 (dependabot[bot])
+* Bump golang.org/x/text from 0.3.4 to 0.3.5 #685 (dependabot[bot])
+
+
 ## 0.71.0 (2020-12-14)
 
 * Bump github.com/mackerelio/mackerel-client-go from 0.11.0 to 0.12.0 #680 (dependabot[bot])

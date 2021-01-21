@@ -1,3 +1,20 @@
+mackerel-agent (0.71.1-1) stable; urgency=low
+
+  * remove .circleci/config.yml (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/689>
+  * [ci] bump Windows i386 Golang to 1.14.14 (by astj)
+    <https://github.com/mackerelio/mackerel-agent/pull/688>
+  * Build Windows package on GitHub Actions (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/684>
+  * Bump github.com/mackerelio/golib from 1.0.0 to 1.1.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/686>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.12.0 to 0.13.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/687>
+  * Bump golang.org/x/text from 0.3.4 to 0.3.5 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/685>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 21 Jan 2021 07:07:15 +0000
+
 mackerel-agent (0.71.0-1) stable; urgency=low
 
   * Bump github.com/mackerelio/mackerel-client-go from 0.11.0 to 0.12.0 (by dependabot[bot])
