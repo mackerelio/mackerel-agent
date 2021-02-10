@@ -4,6 +4,8 @@ on:
   pull_request: {}
   push:
     branches: [master]
+    tags:
+    - v*
 
 jobs:
 
@@ -81,7 +83,7 @@ jobs:
     name: Build (Linux)
     runs-on: ubuntu-latest
     needs: test-linux
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     env:
       DEBIAN_FRONTEND: noninteractive
       GO111MODULE: on
@@ -112,7 +114,7 @@ jobs:
     name: Build (Windows)
     runs-on: windows-2019
     needs: test-windows
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     env:
       GO111MODULE: on
     strategy:
@@ -196,7 +198,7 @@ jobs:
     name: Make Installer (Windows)
     runs-on: windows-2019
     needs: build-windows
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         include:
@@ -247,20 +249,11 @@ jobs:
     name: Release to GitHub Releases
     runs-on: ubuntu-latest
     needs: [build-linux, windows-installer]
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     env:
       DEBIAN_FRONTEND: noninteractive
       GO111MODULE: on
     steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.14
-      id: go
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-    - run: go get github.com/x-motemen/gobump/cmd/gobump
-    - run: go get github.com/mackerelio/golib/cmd/mackerel-github-release
     - uses: actions/download-artifact@v2
       with:
         name: linux-build-artifacts
@@ -273,9 +266,18 @@ jobs:
       with:
         name: windows-packages-x64
         path: artifacts/
-    - run: mackerel-github-release artifacts/
-      env:
-        GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
-    - run: mackerel-github-release -staging artifacts/
-      env:
-        GITHUB_TOKEN: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
+
+    - uses: mackerelio/staging-release-update-action@main
+      if: github.ref == 'refs/heads/master'
+      with:
+        directory: artifacts/
+        github-token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
+        tag: staging
+
+    - uses: mackerelio/create-release-action@main
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        directory: artifacts/
+        github-token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
+        tag-prefix: 'refs/tags/v'
+        bump-up-branch-prefix: 'bump-version-'
