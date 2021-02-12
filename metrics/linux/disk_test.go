@@ -32,12 +32,6 @@ func TestDiskGenerator(t *testing.T) {
 			t.Logf("Disk '%s' delta collected: %+v", metric, value)
 		}
 	}
-
-	for _, key := range metrics {
-		if value, ok := values["disk.loop1."+key+".delta"]; ok {
-			t.Errorf("Value for disk.loop1.%s should not be collected but got %v. The value won't change.", key, value)
-		}
-	}
 }
 
 func TestParseDiskStats(t *testing.T) {
@@ -46,7 +40,8 @@ func TestParseDiskStats(t *testing.T) {
 
 202       2 xvda2 1641 9310 87552 1252 6365 3717 80664 24192 0 15040 25428
 253       0 dm-0 2 0 40 0 314 0 2512 2136 0 236 2136
-253       1 dm-1 964 0 57886 944 74855 0 644512 5421192 0 1580 5422136`)
+253       1 dm-1 964 0 57886 944 74855 0 644512 5421192 0 1580 5422136
+  7       0 loop0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0`)
 
 	var emptyMapping map[string]string
 	result, err := parseDiskStats(out, emptyMapping)
