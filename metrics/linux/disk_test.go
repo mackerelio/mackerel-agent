@@ -38,10 +38,7 @@ func TestParseDiskStats(t *testing.T) {
 	// insert empty line intentionally
 	out := []byte(`202       1 xvda1 750193 3037 28116978 368712 16600606 7233846 424712632 23987908 0 2355636 24345740
 
-202       2 xvda2 1641 9310 87552 1252 6365 3717 80664 24192 0 15040 25428
-253       0 dm-0 2 0 40 0 314 0 2512 2136 0 236 2136
-253       1 dm-1 964 0 57886 944 74855 0 644512 5421192 0 1580 5422136
-  7       0 loop0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0`)
+202       2 xvda2 1641 9310 87552 1252 6365 3717 80664 24192 0 15040 25428`)
 
 	var emptyMapping map[string]string
 	result, err := parseDiskStats(out, emptyMapping)
@@ -150,6 +147,22 @@ func TestParseDiskStats_MoreFields(t *testing.T) {
 		"disk.loop0.ioTime":         0,
 		"disk.loop0.ioTimeWeighted": 0,
 	}
+	if !reflect.DeepEqual(result, expect) {
+		t.Errorf("result is not expected one: %+v", result)
+	}
+}
+
+func TestParseDiskStats_ShouldIgnoreIfAllFieldsAreZeroOrSpecificDeviceName(t *testing.T) {
+	out := []byte(`253       0 dm-0 2 0 40 0 314 0 2512 2136 0 236 2136
+253       1 dm-1 964 0 57886 944 74855 0 644512 5421192 0 1580 5422136
+  7       0 loop0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0`)
+
+	var emptyMapping map[string]string
+	result, err := parseDiskStats(out, emptyMapping)
+	if err != nil {
+		t.Errorf("error should be nil but: %s", err)
+	}
+	expect := metrics.Values{}
 	if !reflect.DeepEqual(result, expect) {
 		t.Errorf("result is not expected one: %+v", result)
 	}
