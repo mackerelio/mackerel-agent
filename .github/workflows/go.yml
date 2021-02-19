@@ -271,13 +271,13 @@ jobs:
       if: github.ref == 'refs/heads/master'
       with:
         directory: artifacts/
-        github-token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         tag: staging
 
     - uses: mackerelio/create-release-action@main
       if: startsWith(github.ref, 'refs/tags/v')
       with:
         directory: artifacts/
-        github-token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         tag-prefix: 'refs/tags/v'
         bump-up-branch-prefix: 'bump-version-'
