@@ -281,3 +281,11 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         tag-prefix: 'refs/tags/v'
         bump-up-branch-prefix: 'bump-version-'
+
+    - name: update homebrew-mackerel-agent
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
+        event-type: release
+        client-payload: '{"product": "mackerel-agent"}'
