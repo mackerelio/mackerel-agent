@@ -6,20 +6,19 @@ on:
     branches: [master]
     tags:
     - v*
+env:
+  GO111MODULE: on
 
 jobs:
 
   test-linux:
     name: Test (Linux)
     runs-on: ubuntu-latest
-    env:
-      GO111MODULE: on
     steps:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
         go-version: 1.14
-      id: go
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
     - run: make lint
@@ -33,30 +32,10 @@ jobs:
   test-windows:
     name: Test (Windows)
     runs-on: windows-2019
-    env:
-      GO111MODULE: on
-    strategy:
-      matrix:
-        PLATFORM_ID: [x86, x64]
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup MINGW32
-      if: matrix.PLATFORM_ID == 'x86'
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW32
-        path-type: inherit
-        install: mingw-w64-i686-gcc
-
-    - name: Setup golang 386, Setup Environment
-      if: matrix.PLATFORM_ID == 'x86'
-      uses: ./.github/workflows/386-environment
-      with:
-        go-version: 1.14.14
-
-    - name: Setup golang x64
-      if: matrix.PLATFORM_ID == 'x64'
+    - name: Setup Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.14
@@ -65,9 +44,9 @@ jobs:
       with:
         path: |
           ~/go/pkg/mod
-        key: ${{ runner.os }}-${{ matrix.PLATFORM_ID }}-go-${{ hashFiles('**\go.sum') }}
+        key: ${{ runner.os }}-x64-go-${{ hashFiles('**\go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-${{ matrix.PLATFORM_ID }}-go-${{ hashFiles('**\go.sum') }}
+          ${{ runner.os }}-x64-go-
 
     - name: Run Test
       run: |
@@ -86,14 +65,12 @@ jobs:
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     env:
       DEBIAN_FRONTEND: noninteractive
-      GO111MODULE: on
     steps:
     # before-deploy
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
         go-version: 1.14
-      id: go
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
     - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
@@ -110,40 +87,41 @@ jobs:
           snapshot/*.tar.gz
           build/*.tar.gz
 
+  # Note:
+  # Mackerel-agent requires cgo for using Windows native API.
+  # So we need also to install 32bit MSYS2 and msys2 shell to compile
+  # 32bit mackerel-agent.
+  # The virtual environment of GitHub Actions includes 64bit MSYS2
+  # but msys2 shell is not contained in its environment.
+  # Therefore we installs msys2 on each 32bit and 64bit platforms.
   build-windows:
     name: Build (Windows)
     runs-on: windows-2019
     needs: test-windows
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
-    env:
-      GO111MODULE: on
+    #if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         include:
           - PLATFORM_ID: x86
             GOARCH: 386
+            MSYS: MINGW32
+            ARCH: i686
             CC: i686-w64-mingw32-gcc
           - PLATFORM_ID: x64
             GOARCH: amd64
+            MSYS: MINGW64
+            ARCH: x86_64
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup MINGW32
-      if: matrix.PLATFORM_ID == 'x86'
+    - name: Setup MINGW
       uses: msys2/setup-msys2@v2
       with:
-        msystem: MINGW32
+        msystem: ${{ matrix.MSYS }}
         path-type: inherit
-        install: mingw-w64-i686-gcc
+        install: mingw-w64-${{ matrix.ARCH }}-gcc
 
-    - name: Setup golang 386, Setup Environment
-      if: matrix.PLATFORM_ID == 'x86'
-      uses: ./.github/workflows/386-environment
-      with:
-        go-version: 1.14.14
-
-    - name: Setup golang x64
-      if: matrix.PLATFORM_ID == 'x64'
+    - name: Setup Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.14
@@ -154,17 +132,19 @@ jobs:
           ~/go/pkg/mod
         key: ${{ runner.os }}-${{ matrix.PLATFORM_ID }}-go-${{ hashFiles('**\go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-${{ matrix.PLATFORM_ID }}-go-${{ hashFiles('**\go.sum') }}
+          ${{ runner.os }}-${{ matrix.PLATFORM_ID }}-go-
 
     - name: Build mackerel-agent
       run: |
-        $COMMIT = git rev-parse --short HEAD
+        commit=$(git rev-parse --short HEAD)
         mkdir build/
         go build -o build/mackerel-agent.exe -ldflags="-X main.gitcommit=$COMMIT" github.com/mackerelio/mackerel-agent
         go build -o build/mackerel-agent-kcps.exe -ldflags="-X main.gitcommit=$COMMIT -X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16" github.com/mackerelio/mackerel-agent
       env:
         GOARCH: ${{ matrix.GOARCH }}
         CC: ${{ matrix.CC }}
+        CGO_ENABLED: 1
+      shell: msys2 {0}
 
     - name: Build mackerel-agent-plugins
       run: |
@@ -176,7 +156,6 @@ jobs:
         }
       env:
         GOARCH: ${{ matrix.GOARCH }}
-        CC: ${{ matrix.CC }}
 
     - name: Build tools
       run: |
@@ -185,7 +164,6 @@ jobs:
         go build -o build/generate_wxs.exe wix/generate_wxs/generate_wxs.go
       env:
         GOARCH: ${{ matrix.GOARCH }}
-        CC: ${{ matrix.CC }}
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
@@ -250,9 +228,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-linux, windows-installer]
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
-    env:
-      DEBIAN_FRONTEND: noninteractive
-      GO111MODULE: on
     steps:
     - uses: actions/download-artifact@v2
       with:
