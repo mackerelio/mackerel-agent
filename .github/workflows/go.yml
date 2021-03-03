@@ -138,8 +138,8 @@ jobs:
       run: |
         commit=$(git rev-parse --short HEAD)
         mkdir build/
-        go build -o build/mackerel-agent.exe -ldflags="-X main.gitcommit=$COMMIT" github.com/mackerelio/mackerel-agent
-        go build -o build/mackerel-agent-kcps.exe -ldflags="-X main.gitcommit=$COMMIT -X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16" github.com/mackerelio/mackerel-agent
+        go build -o build/mackerel-agent.exe -ldflags="-X main.gitcommit=$commit" github.com/mackerelio/mackerel-agent
+        go build -o build/mackerel-agent-kcps.exe -ldflags="-X main.gitcommit=$commit -X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16" github.com/mackerelio/mackerel-agent
       env:
         GOARCH: ${{ matrix.GOARCH }}
         CC: ${{ matrix.CC }}
