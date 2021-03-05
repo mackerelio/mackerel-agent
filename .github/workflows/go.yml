@@ -289,3 +289,4 @@ jobs:
         token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
         event-type: release
         client-payload: '{"product": "mackerel-agent"}'
+        repository: mackerelio/homebrew-mackerel-agent
