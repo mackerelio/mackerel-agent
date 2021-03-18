@@ -40,14 +40,14 @@ func TestDelayByHost(t *testing.T) {
 	delay1 := time.Duration(delayByHost(&mkr.Host{
 		ID:     "246PUVUngPo",
 		Name:   "hogehoge2.host.h",
-		Type:   "unknown",
+		Size:   "standard",
 		Status: "working",
 	})) * time.Second
 
 	delay2 := time.Duration(delayByHost(&mkr.Host{
 		ID:     "21GZjCE5Etb",
 		Name:   "hogehoge2.host.h",
-		Type:   "unknown",
+		Size:   "standard",
 		Status: "working",
 	})) * time.Second
 
@@ -124,7 +124,7 @@ func TestPrepareWithCreate(t *testing.T) {
 			"host": mkr.Host{
 				ID:     "xxx1234567890",
 				Name:   "host.example.com",
-				Type:   "unknown",
+				Size:   "standard",
 				Status: "standby",
 			},
 		}
@@ -191,7 +191,7 @@ func TestPrepareWithUpdate(t *testing.T) {
 			"host": mkr.Host{
 				ID:     "xxx12345678901",
 				Name:   "host.example.com",
-				Type:   "unknown",
+				Size:   "standard",
 				Status: "standby",
 			},
 		}
