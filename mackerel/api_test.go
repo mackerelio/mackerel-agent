@@ -57,6 +57,7 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 					"id":               "9rxGOHfVF8F",
 					"CustomIdentifier": "foo-bar",
 					"name":             "mydb001",
+					"size":             "standard",
 					"status":           "working",
 					"memo":             "memo",
 					"roles":            map[string][]string{"My-Service": {"db-master", "db-slave"}},
@@ -83,7 +84,7 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 			host: &mkr.Host{
 				ID:               "9rxGOHfVF8F",
 				Name:             "mydb001",
-				Type:             "",
+				Size:             "standard",
 				Status:           "working",
 				CustomIdentifier: "foo-bar",
 				Memo:             "memo",
