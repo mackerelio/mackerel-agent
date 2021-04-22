@@ -44,9 +44,9 @@ jobs:
       with:
         path: |
           ~/go/pkg/mod
-        key: ${{ runner.os }}-x64-go-${{ hashFiles('**\go.sum') }}
+        key: ${{ runner.os }}-go-${{ hashFiles('**\go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-x64-go-
+          ${{ runner.os }}-go-
 
     - name: Run Test
       run: |
@@ -101,16 +101,18 @@ jobs:
     #if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
+        GOARCH: ['amd64', '386']
         include:
-          - PLATFORM_ID: x86
-            GOARCH: 386
-            MSYS: MINGW32
-            ARCH: i686
-            CC: i686-w64-mingw32-gcc
-          - PLATFORM_ID: x64
-            GOARCH: amd64
-            MSYS: MINGW64
-            ARCH: x86_64
+        - GOARCH: amd64
+          PLATFORM_ID: x64
+          MSYS: MINGW64
+        - GOARCH: 386
+          PLATFORM_ID: x86
+          MSYS: MINGW32
+    env:
+      GOARCH: ${{ matrix.GOARCH }}
+      CGO_ENABLED: 1
+      CC_FOR_windows_386: i686-w64-mingw32-gcc
     steps:
     - uses: actions/checkout@v2
 
@@ -119,7 +121,7 @@ jobs:
       with:
         msystem: ${{ matrix.MSYS }}
         path-type: inherit
-        install: mingw-w64-${{ matrix.ARCH }}-gcc
+        install: mingw-w64-i686-gcc
 
     - name: Setup Go
       uses: actions/setup-go@v2
@@ -130,9 +132,9 @@ jobs:
       with:
         path: |
           ~/go/pkg/mod
-        key: ${{ runner.os }}-${{ matrix.PLATFORM_ID }}-go-${{ hashFiles('**\go.sum') }}
+        key: ${{ runner.os }}-go-${{ hashFiles('**\go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-${{ matrix.PLATFORM_ID }}-go-
+          ${{ runner.os }}-go-
 
     - name: Build mackerel-agent
       run: |
@@ -140,30 +142,23 @@ jobs:
         mkdir build/
         go build -o build/mackerel-agent.exe -ldflags="-X main.gitcommit=$commit" github.com/mackerelio/mackerel-agent
         go build -o build/mackerel-agent-kcps.exe -ldflags="-X main.gitcommit=$commit -X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16" github.com/mackerelio/mackerel-agent
-      env:
-        GOARCH: ${{ matrix.GOARCH }}
-        CC: ${{ matrix.CC }}
-        CGO_ENABLED: 1
       shell: msys2 {0}
 
     - name: Build mackerel-agent-plugins
       run: |
-        foreach ($line in (Get-Content wix/pluginlist.txt) -as [string[]]) {
-          $piece = $line -split "/"
-          $outputFilename = $piece[$piece.Length - 1]
-          Write-Host $outputFilename
-          go build -o build/$outputFilename.exe $line
-        }
-      env:
-        GOARCH: ${{ matrix.GOARCH }}
+        for plugin in $(tr -d '\r' <wix/pluginlist.txt)
+        do
+          name=$(basename "$plugin")
+          go build -o build/"$name.exe" "$plugin"
+        done
+      shell: msys2 {0}
 
     - name: Build tools
       run: |
         go build -o build/wrapper.exe wix/wrapper/wrapper_windows.go wix/wrapper/install.go
         go build -o build/replace.exe wix/replace/replace_windows.go wix/replace/shell_windows.go
         go build -o build/generate_wxs.exe wix/generate_wxs/generate_wxs.go
-      env:
-        GOARCH: ${{ matrix.GOARCH }}
+      shell: msys2 {0}
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v2
