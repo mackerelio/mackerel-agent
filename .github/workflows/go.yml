@@ -18,7 +18,7 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: 1.14
+        go-version: 1.16
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
     - run: make lint
@@ -38,7 +38,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.14
+        go-version: 1.16
 
     - uses: actions/cache@v2
       with:
@@ -70,7 +70,7 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: 1.14
+        go-version: 1.16
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
     - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
@@ -126,7 +126,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.14
+        go-version: 1.16
 
     - uses: actions/cache@v2
       with:
@@ -149,7 +149,7 @@ jobs:
         for plugin in $(tr -d '\r' <wix/pluginlist.txt)
         do
           name=$(basename "$plugin")
-          go build -o build/"$name.exe" "$plugin"
+          go build -o build/"$name.exe" "$plugin@master"
         done
       shell: msys2 {0}
 
