@@ -98,7 +98,7 @@ jobs:
     name: Build (Windows)
     runs-on: windows-2019
     needs: test-windows
-    #if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         GOARCH: ['amd64', '386']
