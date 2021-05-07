@@ -49,12 +49,6 @@ jobs:
     - name: Run Test
       run: |
         go test -short ./...
-        plugins=$(tr -d '\r' <wix/pluginlist.txt)
-        cd /
-        for p in $plugins
-        do
-          go list $p || exit 1
-        done
       shell: bash
 
   build-linux:
