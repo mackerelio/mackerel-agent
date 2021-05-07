@@ -6,8 +6,6 @@ on:
     branches: [master]
     tags:
     - v*
-env:
-  GO111MODULE: on
 
 jobs:
 
@@ -51,12 +49,13 @@ jobs:
     - name: Run Test
       run: |
         go test -short ./...
-        foreach ($line in (Get-Content wix/pluginlist.txt) -as [string[]]) {
-            powershell -Command "go list $line"
-            if ($LASTEXITCODE -ne 0) {
-              exit 1
-            }
-        }
+        plugins=$(tr -d '\r' <wix/pluginlist.txt)
+        cd /
+        for p in $plugins
+        do
+          go list $p || exit 1
+        done
+      shell: bash
 
   build-linux:
     name: Build (Linux)
@@ -146,10 +145,10 @@ jobs:
 
     - name: Build mackerel-agent-plugins
       run: |
-        for plugin in $(tr -d '\r' <wix/pluginlist.txt)
+        for p in $(./wix/pluginlist.sh)
         do
-          name=$(basename "$plugin")
-          go build -o build/"$name.exe" "$plugin@master"
+          name=$(basename "$p")
+          go build -o "build/$name.exe" "$p"
         done
       shell: msys2 {0}
 
