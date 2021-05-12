@@ -27,7 +27,7 @@ func TestSupervise(t *testing.T) {
 	go func() {
 		done <- Supervise(stubAgent, []string{"dummy"}, ch)
 	}()
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 	ch <- os.Interrupt
 	err := <-done
 	if err != nil {
