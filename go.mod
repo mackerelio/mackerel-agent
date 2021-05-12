@@ -11,7 +11,7 @@ require (
 	github.com/Songmu/timeout v0.4.0
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d
 	github.com/mackerelio/go-check-plugins v0.39.2
-	github.com/mackerelio/go-osstat v0.1.0
+	github.com/mackerelio/go-osstat v0.2.0
 	github.com/mackerelio/golib v1.2.0
 	github.com/mackerelio/mackerel-agent-plugins v0.64.0
 	github.com/mackerelio/mackerel-client-go v0.17.0
