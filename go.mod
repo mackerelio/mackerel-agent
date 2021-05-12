@@ -23,5 +23,5 @@ require (
 	github.com/shirou/gopsutil v2.20.9+incompatible
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
 	golang.org/x/sys v0.0.0-20210319071255-635bc2c9138d
-	golang.org/x/text v0.3.5
+	golang.org/x/text v0.3.6
 )
