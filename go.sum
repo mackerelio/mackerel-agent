@@ -502,8 +502,9 @@ github.com/mackerelio/go-mackerel-plugin v0.0.0-20200416053722-b68096c191d0 h1:l
 github.com/mackerelio/go-mackerel-plugin v0.0.0-20200416053722-b68096c191d0/go.mod h1:hV+0M18+q787IEDQhLficGPJoEfx0JbPuhqmU1z7l/M=
 github.com/mackerelio/go-mackerel-plugin-helper v0.0.0-20200416053706-9aba6664c25d h1:PSunsAhVzer4mAjkuABcrA7S0y4iC8ymtvAjJeASXCU=
 github.com/mackerelio/go-mackerel-plugin-helper v0.0.0-20200416053706-9aba6664c25d/go.mod h1:48LMM2vGACCD2ADEUAT+Ya5jnKh71lNoCNSdGmeUKf8=
-github.com/mackerelio/go-osstat v0.1.0 h1:e57QHeHob8kKJ5FhcXGdzx5O6Ktuc5RHMDIkeqhgkFA=
 github.com/mackerelio/go-osstat v0.1.0/go.mod h1:1K3NeYLhMHPvzUu+ePYXtoB58wkaRpxZsGClZBJyIFw=
+github.com/mackerelio/go-osstat v0.2.0 h1:UVn9Am/OOj2Ig0LNNHLqiHeXsZWmMNcMPZ3h+z/8+h8=
+github.com/mackerelio/go-osstat v0.2.0/go.mod h1:UzRL8dMCCTqG5WdRtsxbuljMpZt9PCAGXqxPst5QtaY=
 github.com/mackerelio/golib v0.0.0-20190411032134-c87047ca454e/go.mod h1:kbqYA8VcFqcMt07v+GPSZQwqtwc7Wr0V0vzxUNMrk7E=
 github.com/mackerelio/golib v0.0.0-20191002020229-a65782d392ca/go.mod h1:dzfX/B7IJm2KhmEWnLLNYjSjT1TroLxXJjrBLhKPiws=
 github.com/mackerelio/golib v1.0.0/go.mod h1:Udb4zyFG2ui7TNTMOX8In0U8AT4woLu53/46ncRwNzE=
@@ -1039,6 +1040,7 @@ golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20201201145000-ef89a241ccb3/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210112080510-489259a85091/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20210113181707-4bcb84eeeb78/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210216224549-f992740a1bac/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210217105451-b926d437f341/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
