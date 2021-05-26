@@ -61,6 +61,23 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed May 26 2021 <mackerel-developers@hatena.ne.jp> - 0.71.2
+- Bump github.com/mackerelio/go-osstat from 0.1.0 to 0.2.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.3.5 to 0.3.6 (by dependabot[bot])
+- Bump github.com/Songmu/goxz from 0.6.0 to 0.7.0 (by dependabot[bot])
+- upgrade Go 1.14 to 1.16 (by lufia)
+- [ci] avoid additional Go installation (by lufia)
+- Bump github.com/Songmu/prompter from 0.4.0 to 0.5.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.15.0 to 0.16.0 (by dependabot[bot])
+- Bump github.com/mattn/goveralls from 0.0.7 to 0.0.8 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.13.0 to 0.15.0 (by dependabot[bot])
+- Bump github.com/mackerelio/golib from 1.1.0 to 1.2.0 (by dependabot[bot])
+- [ci] fix option at repository-dispatch (by yseto)
+- [ci] added repository_dispatch to homebrew-mackerel-agent (by yseto)
+- [ci] replace token (by yseto)
+- [ci] replace mackerel-github-release (by yseto)
+- Changed the test method from TestDiskGenerator to TestParseDiskStats  because the test results are flaky. (by yseto)
+
 * Thu Jan 21 2021 <mackerel-developers@hatena.ne.jp> - 0.71.1
 - remove .circleci/config.yml (by yseto)
 - [ci] bump Windows i386 Golang to 1.14.14 (by astj)
