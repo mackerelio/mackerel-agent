@@ -1,3 +1,38 @@
+mackerel-agent (0.71.2-1) stable; urgency=low
+
+  * Bump github.com/mackerelio/go-osstat from 0.1.0 to 0.2.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/707>
+  * Bump golang.org/x/text from 0.3.5 to 0.3.6 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/703>
+  * Bump github.com/Songmu/goxz from 0.6.0 to 0.7.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/704>
+  * upgrade Go 1.14 to 1.16 (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/705>
+  * [ci] avoid additional Go installation (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/698>
+  * Bump github.com/Songmu/prompter from 0.4.0 to 0.5.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/702>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.15.0 to 0.16.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/701>
+  * Bump github.com/mattn/goveralls from 0.0.7 to 0.0.8 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/697>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.13.0 to 0.15.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/700>
+  * Bump github.com/mackerelio/golib from 1.1.0 to 1.2.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/696>
+  * [ci] fix option at repository-dispatch (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/699>
+  * [ci] added repository_dispatch to homebrew-mackerel-agent (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/694>
+  * [ci] replace token (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/695>
+  * [ci] replace mackerel-github-release (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/692>
+  * Changed the test method from TestDiskGenerator to TestParseDiskStats  because the test results are flaky. (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/693>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 26 May 2021 07:32:23 +0000
+
 mackerel-agent (0.71.1-1) stable; urgency=low
 
   * remove .circleci/config.yml (by yseto)
