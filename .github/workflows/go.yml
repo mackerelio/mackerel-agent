@@ -180,18 +180,11 @@ jobs:
         name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
         path: build/
 
-    - run: go get github.com/x-motemen/gobump/cmd/gobump
+    - run: node _tools/parse_version.js
+      id: parse_version
 
     - name: Build Installer
-      run: |
-        $INFO = (~/go/bin/gobump show | ConvertFrom-Json)
-        Write-Host $INFO
-        $VERSION = $INFO.version
-        Write-Host $VERSION
-        if ($null -eq $VERSION) {
-          exit 1
-        }
-        & "./wix/build.bat" "$VERSION"
+      run: ./wix/build.bat "${{ steps.parse_version.outputs.VERSION }}"
       env:
         PLATFORM_ID: ${{ matrix.PLATFORM_ID }}
         MSI_SUFFIX: ${{ matrix.MSI_SUFFIX }}
