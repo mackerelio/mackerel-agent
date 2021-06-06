@@ -13,7 +13,7 @@ require (
 	github.com/mackerelio/go-check-plugins v0.39.2
 	github.com/mackerelio/go-osstat v0.2.0
 	github.com/mackerelio/golib v1.2.0
-	github.com/mackerelio/mackerel-agent-plugins v0.64.0
+	github.com/mackerelio/mackerel-agent-plugins v0.64.1
 	github.com/mackerelio/mackerel-client-go v0.17.0
 	github.com/mackerelio/mkr v0.45.0
 	github.com/mattn/go-encoding v0.0.2
