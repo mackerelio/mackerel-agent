@@ -24,6 +24,9 @@ MACKEREL_PLUGIN_WORKDIR=${MACKEREL_PLUGIN_WORKDIR:="/var/tmp/$NAME"}
 if [ "$HTTP_PROXY" != "" ]; then
     export HTTP_PROXY=$HTTP_PROXY
 fi
+if [ "$HTTPS_PROXY" != "" ]; then
+    export HTTPS_PROXY=$HTTPS_PROXY
+fi
 
 # Exit if the package is not installed
 [ -x $DAEMON ] || exit 0
