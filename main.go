@@ -154,18 +154,34 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 		return nil, fmt.Errorf("apikey must be specified in the config file (or by the DEPRECATED command-line flag)")
 	}
 
-	if conf.HTTPProxy != "" {
-		os.Setenv("HTTP_PROXY", conf.HTTPProxy)
-	}
-	if conf.HTTPSProxy != "" {
-		os.Setenv("HTTPS_PROXY", conf.HTTPSProxy)
-	}
-	// fallback
-	if conf.HTTPProxy != "" && conf.HTTPSProxy == "" {
-		os.Setenv("HTTPS_PROXY", conf.HTTPProxy)
-	}
+	setProxy(conf)
 
 	return conf, nil
+}
+
+func setProxy(conf *config.Config) {
+	if canEnableProxy(conf.HTTPProxy) {
+		os.Setenv("HTTP_PROXY", conf.HTTPProxy)
+	}
+	if canEnableProxy(conf.HTTPSProxy) {
+		os.Setenv("HTTPS_PROXY", conf.HTTPSProxy)
+	}
+
+	// Fallback.
+	// Since Go 1.16, HTTP_PROXY and HTTPS_PROXY are now handled specifically separately.
+	// https://github.com/golang/go/issues/40909
+	//
+	// Originally, the mackerel-agent configuration was for http_proxy, which was
+	// also handled as https_proxy, so there could be cases where the plugin depends on
+	// the environment variables set here.
+	// So, to support the behavior in the old configuration file
+	if canEnableProxy(conf.HTTPProxy) && conf.HTTPSProxy == "" {
+		os.Setenv("HTTPS_PROXY", conf.HTTPProxy)
+	}
+}
+
+func canEnableProxy(address string) bool {
+	return address != "" && address != "direct"
 }
 
 func setLogLevel(silent, verbose bool) {
