@@ -251,14 +251,14 @@ func TestConfigProxy(t *testing.T) {
 				HTTPSProxy: tt.httpsProxy,
 			})
 
-			http_proxy := os.Getenv("HTTP_PROXY")
-			if http_proxy != tt.wantHTTPProxy {
-				t.Errorf("HTTP_PROXY=%s; but want %s", http_proxy, tt.wantHTTPProxy)
+			httpProxy := os.Getenv("HTTP_PROXY")
+			if httpProxy != tt.wantHTTPProxy {
+				t.Errorf("HTTP_PROXY=%s; but want %s", httpProxy, tt.wantHTTPProxy)
 			}
 
-			https_proxy := os.Getenv("HTTPS_PROXY")
-			if https_proxy != tt.wantHTTPSProxy {
-				t.Errorf("HTTPS_PROXY=%s; but want %s", https_proxy, tt.wantHTTPSProxy)
+			httpsProxy := os.Getenv("HTTPS_PROXY")
+			if httpsProxy != tt.wantHTTPSProxy {
+				t.Errorf("HTTPS_PROXY=%s; but want %s", httpsProxy, tt.wantHTTPSProxy)
 			}
 		})
 	}
