@@ -157,6 +157,14 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	if conf.HTTPProxy != "" {
 		os.Setenv("HTTP_PROXY", conf.HTTPProxy)
 	}
+	if conf.HTTPSProxy != "" {
+		os.Setenv("HTTPS_PROXY", conf.HTTPSProxy)
+	}
+	// fallback
+	if conf.HTTPProxy != "" && conf.HTTPSProxy == "" {
+		os.Setenv("HTTPS_PROXY", conf.HTTPProxy)
+	}
+
 	return conf, nil
 }
 
