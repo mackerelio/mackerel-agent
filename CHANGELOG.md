@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.72.0 (2021-06-17)
+
+* fix http_proxy option in v0.71.2 #715 (yseto)
+
+
 ## 0.71.2 (2021-05-26)
 
 * Bump github.com/mackerelio/go-osstat from 0.1.0 to 0.2.0 #707 (dependabot[bot])
