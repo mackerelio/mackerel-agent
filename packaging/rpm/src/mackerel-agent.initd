@@ -29,6 +29,9 @@ MACKEREL_PLUGIN_WORKDIR=${MACKEREL_PLUGIN_WORKDIR:="/var/tmp/$prog"}
 if [ "$HTTP_PROXY" != "" ]; then
     export HTTP_PROXY=$HTTP_PROXY
 fi
+if [ "$HTTPS_PROXY" != "" ]; then
+    export HTTPS_PROXY=$HTTPS_PROXY
+fi
 
 lockfile=/var/lock/subsys/$prog
 

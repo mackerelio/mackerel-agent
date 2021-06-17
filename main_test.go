@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/mackerelio/mackerel-agent/command"
+	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/pidfile"
 )
 
@@ -220,6 +221,46 @@ func TestNotifyUpdateFileDelete(t *testing.T) {
 	case <-termCh:
 	case <-time.After(time.Second):
 		t.Errorf("Interrupt signal is not received in a second")
+	}
+}
+
+func TestConfigProxy(t *testing.T) {
+	tests := []struct {
+		name           string
+		httpProxy      string
+		httpsProxy     string
+		wantHTTPProxy  string
+		wantHTTPSProxy string
+	}{
+		{"empty", "", "", "", ""},
+		{"http is direct", "direct", "", "", ""},
+		{"http only", "http", "", "http", "http"},
+		{"https only", "", "https", "", "https"},
+		{"http only, https is direct", "http", "direct", "http", ""},
+		{"http and https", "http", "https", "http", "https"},
+		{"http and https is direct", "direct", "direct", "", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			os.Unsetenv("HTTP_PROXY")
+			os.Unsetenv("HTTPS_PROXY")
+
+			setProxy(&config.Config{
+				HTTPProxy:  tt.httpProxy,
+				HTTPSProxy: tt.httpsProxy,
+			})
+
+			httpProxy := os.Getenv("HTTP_PROXY")
+			if httpProxy != tt.wantHTTPProxy {
+				t.Errorf("HTTP_PROXY=%s; but want %s", httpProxy, tt.wantHTTPProxy)
+			}
+
+			httpsProxy := os.Getenv("HTTPS_PROXY")
+			if httpsProxy != tt.wantHTTPSProxy {
+				t.Errorf("HTTPS_PROXY=%s; but want %s", httpsProxy, tt.wantHTTPSProxy)
+			}
+		})
 	}
 }
 
