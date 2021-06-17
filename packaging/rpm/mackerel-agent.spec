@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu Jun 17 2021 <mackerel-developers@hatena.ne.jp> - 0.72.0
+- fix http_proxy option in v0.71.2 (by yseto)
+
 * Wed May 26 2021 <mackerel-developers@hatena.ne.jp> - 0.71.2
 - Bump github.com/mackerelio/go-osstat from 0.1.0 to 0.2.0 (by dependabot[bot])
 - Bump golang.org/x/text from 0.3.5 to 0.3.6 (by dependabot[bot])
