@@ -17,7 +17,7 @@ require (
 	github.com/mackerelio/mackerel-client-go v0.17.0
 	github.com/mackerelio/mkr v0.45.1
 	github.com/mattn/go-encoding v0.0.2
-	github.com/mattn/goveralls v0.0.8
+	github.com/mattn/goveralls v0.0.9
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
 	github.com/shirou/gopsutil v2.20.9+incompatible
