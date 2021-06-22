@@ -15,13 +15,13 @@ require (
 	github.com/mackerelio/golib v1.2.0
 	github.com/mackerelio/mackerel-agent-plugins v0.64.0
 	github.com/mackerelio/mackerel-client-go v0.17.0
-	github.com/mackerelio/mkr v0.45.0
+	github.com/mackerelio/mkr v0.45.1
 	github.com/mattn/go-encoding v0.0.2
 	github.com/mattn/goveralls v0.0.8
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
 	github.com/shirou/gopsutil v2.20.9+incompatible
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
-	golang.org/x/sys v0.0.0-20210319071255-635bc2c9138d
+	golang.org/x/sys v0.0.0-20210510120138-977fb7262007
 	golang.org/x/text v0.3.6
 )
