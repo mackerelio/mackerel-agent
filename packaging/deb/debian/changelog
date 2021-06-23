@@ -1,3 +1,16 @@
+mackerel-agent (0.72.1-1) stable; urgency=low
+
+  * Bump github.com/mackerelio/go-check-plugins from 0.39.2 to 0.39.3 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/711>
+  * Bump github.com/mattn/goveralls from 0.0.8 to 0.0.9 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/709>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.64.0 to 0.64.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/714>
+  * Bump github.com/mackerelio/mkr from 0.45.0 to 0.45.1 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/712>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 23 Jun 2021 06:57:02 +0000
+
 mackerel-agent (0.72.0-1) stable; urgency=low
 
   * fix http_proxy option in v0.71.2 (by yseto)
