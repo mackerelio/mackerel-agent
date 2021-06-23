@@ -54,6 +54,12 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Jun 23 2021 <mackerel-developers@hatena.ne.jp> - 0.72.1
+- Bump github.com/mackerelio/go-check-plugins from 0.39.2 to 0.39.3 (by dependabot[bot])
+- Bump github.com/mattn/goveralls from 0.0.8 to 0.0.9 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.64.0 to 0.64.2 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.45.0 to 0.45.1 (by dependabot[bot])
+
 * Thu Jun 17 2021 <mackerel-developers@hatena.ne.jp> - 0.72.0
 - fix http_proxy option in v0.71.2 (by yseto)
 

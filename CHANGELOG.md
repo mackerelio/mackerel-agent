@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.72.1 (2021-06-23)
+
+* Bump github.com/mackerelio/go-check-plugins from 0.39.2 to 0.39.3 #711 (dependabot[bot])
+* Bump github.com/mattn/goveralls from 0.0.8 to 0.0.9 #709 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.64.0 to 0.64.2 #714 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.45.0 to 0.45.1 #712 (dependabot[bot])
+
+
 ## 0.72.0 (2021-06-17)
 
 * fix http_proxy option in v0.71.2 #715 (yseto)
