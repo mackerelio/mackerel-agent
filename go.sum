@@ -528,8 +528,8 @@ github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e/go.mod h1:7rIyQ
 github.com/mackerelio/checkers v0.0.0-20190411030116-60cbd7b55456 h1:TN6fEPX3sQRkg4nvztTBYD0UTNEY5x52XMmBwT9HqLU=
 github.com/mackerelio/checkers v0.0.0-20190411030116-60cbd7b55456/go.mod h1:diyNFS/RRid22TaIOKvNf0GfzpJ2Yo91JuKxg9Q8gGI=
 github.com/mackerelio/go-check-plugins v0.39.2/go.mod h1:GN7LdM9DaFjoiCPm4p6rzuvOwR/gorpRmFz32X+l4yw=
-github.com/mackerelio/go-check-plugins v0.39.3 h1:lzzCj4/TsgvkyNHlti9oje3EqD0V1zQN4xDep9rlbUM=
-github.com/mackerelio/go-check-plugins v0.39.3/go.mod h1:iermQ+H5Z1khj8sluBTImU/XWO/Zw1/WXbzxO6Ooun4=
+github.com/mackerelio/go-check-plugins v0.39.4 h1:GjzJJ5aWVFhVPo09XKsPjT50qXlPLurZ33SZ58tEouI=
+github.com/mackerelio/go-check-plugins v0.39.4/go.mod h1:HhMvl9dtwo9XoYy8qPpUeZGLL5shvvqbfYoDwWYBA4E=
 github.com/mackerelio/go-mackerel-plugin v0.0.0-20200416053722-b68096c191d0/go.mod h1:hV+0M18+q787IEDQhLficGPJoEfx0JbPuhqmU1z7l/M=
 github.com/mackerelio/go-mackerel-plugin v0.1.1 h1:zAtt51mp2yCsskyiD9zqxPJHJfnmFFbgQHUeTU4vamM=
 github.com/mackerelio/go-mackerel-plugin v0.1.1/go.mod h1:NnKukHcC4C8yTElL+4vdEjTA1zFA42hLCn1s2K+2UNU=
@@ -775,6 +775,7 @@ github.com/ryancurrah/gomodguard v1.2.2/go.mod h1:tpI+C/nzvfUR3bF28b5QHpTn/jM/zl
 github.com/ryanrolds/sqlclosecheck v0.3.0 h1:AZx+Bixh8zdUBxUA1NxbxVAS78vTPq4rCb8OUZI9xFw=
 github.com/ryanrolds/sqlclosecheck v0.3.0/go.mod h1:1gREqxyTGR3lVtpngyFo3hZAgk0KCtEdgEkHwDbigdA=
 github.com/ryanuber/columnize v0.0.0-20160712163229-9b3edd62028f/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
+github.com/sanposhiho/wastedassign v0.2.0 h1:0vycy8D/Ky55U5ub8oJFqyDv9M4ICM/wte9sAp2/7Mc=
 github.com/sanposhiho/wastedassign v0.2.0/go.mod h1:LGpq5Hsv74QaqM47WtIsRSF/ik9kqk07kchgv66tLVE=
 github.com/sanposhiho/wastedassign/v2 v2.0.6 h1:+6/hQIHKNJAUixEj6EmOngGIisyeI+T3335lYTyxRoA=
 github.com/sanposhiho/wastedassign/v2 v2.0.6/go.mod h1:KyZ0MWTwxxBmfwn33zh3k1dmsbF2ud9pAAGfoLfjhtI=
@@ -789,6 +790,7 @@ github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c/go.mod h1:/PevMnwAx
 github.com/shirou/gopsutil v2.20.9+incompatible h1:msXs2frUV+O/JLva9EDLpuJ84PrFsdCTCQex8PUdtkQ=
 github.com/shirou/gopsutil v2.20.9+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shirou/gopsutil/v3 v3.21.2/go.mod h1:ghfMypLDrFSWN2c9cDYFLHyynQ+QUht0cv/18ZqVczw=
+github.com/shirou/gopsutil/v3 v3.21.5 h1:YUBf0w/KPLk7w1803AYBnH7BmA+1Z/Q5MEZxpREUaB4=
 github.com/shirou/gopsutil/v3 v3.21.5/go.mod h1:ghfMypLDrFSWN2c9cDYFLHyynQ+QUht0cv/18ZqVczw=
 github.com/shurcooL/go v0.0.0-20180423040247-9e1955d9fb6e/go.mod h1:TDJrrUr11Vxrven61rcy3hJMUqaf/CLWYhHNPmT14Lk=
 github.com/shurcooL/go-goon v0.0.0-20170922171312-37c2f522c041/go.mod h1:N5mDOmsrJOB+vfqUK+7DmDyjhSLIIBnXo9lvZJj3MWQ=
