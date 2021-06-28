@@ -15,7 +15,7 @@ require (
 	github.com/mackerelio/golib v1.2.0
 	github.com/mackerelio/mackerel-agent-plugins v0.64.2
 	github.com/mackerelio/mackerel-client-go v0.17.0
-	github.com/mackerelio/mkr v0.45.1
+	github.com/mackerelio/mkr v0.45.2
 	github.com/mattn/go-encoding v0.0.2
 	github.com/mattn/goveralls v0.0.9
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
