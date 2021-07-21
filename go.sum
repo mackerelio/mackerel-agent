@@ -104,8 +104,8 @@ github.com/aws/aws-sdk-go v1.25.37/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpi
 github.com/aws/aws-sdk-go v1.36.30/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.37.1/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.38.1/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
-github.com/aws/aws-sdk-go v1.38.40/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/aws/aws-sdk-go v1.38.68/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
+github.com/aws/aws-sdk-go v1.38.70/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/beevik/ntp v0.3.0/go.mod h1:hIHWr+l3+/clUnF44zdK+CWW7fO8dR5cIylAQ76NRpg=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
@@ -341,6 +341,7 @@ github.com/golangplus/testing v1.0.0 h1:+ZeeiKZENNOMkTTELoSySazi+XaEhVO0mb+eanrS
 github.com/golangplus/testing v1.0.0/go.mod h1:ZDreixUV3YzhoVraIDyOzHrr76p6NUh6k/pPg/Q3gYA=
 github.com/gomodule/redigo v1.7.0/go.mod h1:B4C85qUVwatsJoIUNIfCRsp7qO0iAmpGFZ4EELWSbC4=
 github.com/gomodule/redigo v1.8.4/go.mod h1:P9dn9mFrCBvWhGE1wpxx6fgq7BAeLBk+UUUzlpkBYO0=
+github.com/gomodule/redigo v1.8.5/go.mod h1:P9dn9mFrCBvWhGE1wpxx6fgq7BAeLBk+UUUzlpkBYO0=
 github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ5JPQ=
 github.com/google/btree v1.0.0/go.mod h1:lNA+9X1NB3Zf8V7Ke586lFgjr2dZNuvo3lPJSGZ5JPQ=
 github.com/google/certificate-transparency-go v1.0.21/go.mod h1:QeJfpSbVSfYc7RgB3gJFj9cbuQMMchQxrWXz8Ruopmg=
@@ -535,11 +536,11 @@ github.com/mackerelio/go-check-plugins v0.39.2/go.mod h1:GN7LdM9DaFjoiCPm4p6rzuv
 github.com/mackerelio/go-check-plugins v0.39.5 h1:74FP6MR7l/NJTn/LqN+00nOm/StuVLwhjJeDDerK4K0=
 github.com/mackerelio/go-check-plugins v0.39.5/go.mod h1:Vvv6743QvlYbIndnVnTmOPTlY2hrIhK8jd2Y6LybY9k=
 github.com/mackerelio/go-mackerel-plugin v0.0.0-20200416053722-b68096c191d0/go.mod h1:hV+0M18+q787IEDQhLficGPJoEfx0JbPuhqmU1z7l/M=
-github.com/mackerelio/go-mackerel-plugin v0.1.1 h1:zAtt51mp2yCsskyiD9zqxPJHJfnmFFbgQHUeTU4vamM=
-github.com/mackerelio/go-mackerel-plugin v0.1.1/go.mod h1:NnKukHcC4C8yTElL+4vdEjTA1zFA42hLCn1s2K+2UNU=
+github.com/mackerelio/go-mackerel-plugin v0.1.2 h1:bbxd2aBCYfrxOdBnvTUyyx8ckeVW2hhb41ewhXJheDA=
+github.com/mackerelio/go-mackerel-plugin v0.1.2/go.mod h1:NnKukHcC4C8yTElL+4vdEjTA1zFA42hLCn1s2K+2UNU=
 github.com/mackerelio/go-mackerel-plugin-helper v0.0.0-20200416053706-9aba6664c25d/go.mod h1:48LMM2vGACCD2ADEUAT+Ya5jnKh71lNoCNSdGmeUKf8=
-github.com/mackerelio/go-mackerel-plugin-helper v0.1.0 h1:KHH4COznloj6od6U+N9MLN+sNjXqVUEfsQvQDlvPN5s=
-github.com/mackerelio/go-mackerel-plugin-helper v0.1.0/go.mod h1:B/n10G3NUumraiwSxLqyfoNuBNAwsOJ8coc12+pcO8E=
+github.com/mackerelio/go-mackerel-plugin-helper v0.1.1 h1:OU/Gbr7sVA2tZxgjurQLXWed8DOU9Pf3ZnTvqeT/mEI=
+github.com/mackerelio/go-mackerel-plugin-helper v0.1.1/go.mod h1:B/n10G3NUumraiwSxLqyfoNuBNAwsOJ8coc12+pcO8E=
 github.com/mackerelio/go-osstat v0.1.0/go.mod h1:1K3NeYLhMHPvzUu+ePYXtoB58wkaRpxZsGClZBJyIFw=
 github.com/mackerelio/go-osstat v0.2.0 h1:UVn9Am/OOj2Ig0LNNHLqiHeXsZWmMNcMPZ3h+z/8+h8=
 github.com/mackerelio/go-osstat v0.2.0/go.mod h1:UzRL8dMCCTqG5WdRtsxbuljMpZt9PCAGXqxPst5QtaY=
@@ -552,8 +553,8 @@ github.com/mackerelio/golib v1.2.0/go.mod h1:jSdKpwSkTVLi0wyk3YZ6enh6H19p02wUE8S
 github.com/mackerelio/mackerel-agent v0.71.1/go.mod h1:MnsBsZhOWVcI9as4xEij67tMN7F/AQRaueN1RLY8R+U=
 github.com/mackerelio/mackerel-agent v0.72.0/go.mod h1:kkjO5CWl5GZ1arDYn9RVl1Xj+NPeQ8TPzI3t1mbtxbU=
 github.com/mackerelio/mackerel-agent-plugins v0.64.0/go.mod h1:VHc+I08wBoYtQ/xbY74nu/BQirKS4WpT9MP/vrF9tXY=
-github.com/mackerelio/mackerel-agent-plugins v0.64.2 h1:GA0Au7F3RUhsZ1wNZ19+qrCZEbrla7HygWXD6teesGw=
-github.com/mackerelio/mackerel-agent-plugins v0.64.2/go.mod h1:8tAjjRYmdYaQr86vIOGN1qZbZnomzNmDTIeZGx6HXcA=
+github.com/mackerelio/mackerel-agent-plugins v0.65.0 h1:t7N8cGmHnZGXoSrO1Y1Oo+o7ESNLKohYU8fsLv4cGsY=
+github.com/mackerelio/mackerel-agent-plugins v0.65.0/go.mod h1:wy/l68EHX7z3ioc4eJmaJm8tdHUuyln1vcb1q2EarW0=
 github.com/mackerelio/mackerel-client-go v0.13.0/go.mod h1:/GNOj+y1eFsd3CK8c6IQ/uS38/GT0+NWImk5YGJs5Lk=
 github.com/mackerelio/mackerel-client-go v0.17.0 h1:OpxUMGQuH6y9NjLnV1ZI4trm3qNKzvilP1Pjxp9e+eA=
 github.com/mackerelio/mackerel-client-go v0.17.0/go.mod h1:/GNOj+y1eFsd3CK8c6IQ/uS38/GT0+NWImk5YGJs5Lk=
