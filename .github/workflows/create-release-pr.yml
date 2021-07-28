@@ -32,6 +32,4 @@ jobs:
           next_version: ${{ steps.start.outputs.nextVersion }}
           branch_name: ${{ steps.start.outputs.branchName }}
           pull_request_infos: ${{ steps.start.outputs.pullRequestInfos }}
-        # TODO: remove below lines. when completed test.
-        env:
-          RUNNER_DEBUG: 1
+
