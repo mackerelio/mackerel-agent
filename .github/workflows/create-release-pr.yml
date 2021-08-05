@@ -20,13 +20,13 @@ jobs:
       - uses: mackerelio/mackerel-create-release-pull-request-action@main
         id: start
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
           next_version: ${{ github.event.inputs.release_version }}
           package_name: mackerel-agent
 
       - uses: mackerelio/mackerel-create-release-pull-request-action@main
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
           finished: "true"
           package_name: mackerel-agent
           next_version: ${{ steps.start.outputs.nextVersion }}
