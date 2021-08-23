@@ -253,22 +253,6 @@ tgz: credits
 	cp build/$(MACKEREL_AGENT_NAME) LICENSE CREDITS $(tgz_dir)/
 	tar cvfz build/$(MACKEREL_AGENT_NAME)-latest.tar.gz -C build/tgz $(MACKEREL_AGENT_NAME)
 
-.PHONY: check-release-deps
-check-release-deps:
-	@have_error=0; \
-	for command in cpanm hub ghch gobump; do \
-	  if ! command -v $$command > /dev/null; then \
-	    have_error=1; \
-	    echo "\`$$command\` command is required for releasing"; \
-	  fi; \
-	done; \
-	test $$have_error = 0
-
-.PHONY: release
-release: check-release-deps
-	(cd _tools && cpanm -qn --installdeps .)
-	perl _tools/create-release-pullrequest
-
 .PHONY: clean
 clean:
 	rm -f build/$(MACKEREL_AGENT_NAME) build-linux-{386,amd64,arm64,mips,armhf}/$(MACKEREL_AGENT_NAME) CREDITS
