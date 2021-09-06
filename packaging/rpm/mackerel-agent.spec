@@ -61,6 +61,12 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Mon Sep 6 2021 <mackerel-developers@hatena.ne.jp> - 0.72.2
+- Update Code Signing Certificates (by Krout0n)
+- Bump github.com/mackerelio/go-check-plugins from 0.39.3 to 0.39.5 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.64.2 to 0.65.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.45.1 to 0.45.2 (by dependabot[bot])
+
 * Wed Jun 23 2021 <mackerel-developers@hatena.ne.jp> - 0.72.1
 - Bump github.com/mackerelio/go-check-plugins from 0.39.2 to 0.39.3 (by dependabot[bot])
 - Bump github.com/mattn/goveralls from 0.0.8 to 0.0.9 (by dependabot[bot])

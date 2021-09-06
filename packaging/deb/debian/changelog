@@ -1,3 +1,16 @@
+mackerel-agent (0.72.2-1) stable; urgency=low
+
+  * Update Code Signing Certificates (by Krout0n)
+    <https://github.com/mackerelio/mackerel-agent/pull/727>
+  * Bump github.com/mackerelio/go-check-plugins from 0.39.3 to 0.39.5 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/722>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.64.2 to 0.65.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/721>
+  * Bump github.com/mackerelio/mkr from 0.45.1 to 0.45.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/718>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 6 Sep 2021 05:55:13 +0000
+
 mackerel-agent (0.72.1-1) stable; urgency=low
 
   * Bump github.com/mackerelio/go-check-plugins from 0.39.2 to 0.39.3 (by dependabot[bot])
