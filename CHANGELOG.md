@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.72.2 (2021-09-06)
+
+* Update Code Signing Certificates #727 (Krout0n)
+* Bump github.com/mackerelio/go-check-plugins from 0.39.3 to 0.39.5 #722 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.64.2 to 0.65.0 #721 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.45.1 to 0.45.2 #718 (dependabot[bot])
+
+
 ## 0.72.1 (2021-06-23)
 
 * Bump github.com/mackerelio/go-check-plugins from 0.39.2 to 0.39.3 #711 (dependabot[bot])
