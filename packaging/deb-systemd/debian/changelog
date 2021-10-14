@@ -1,3 +1,8 @@
+mackerel-agent (0.72.3-1.systemd) stable; urgency=low
+
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 14 Oct 2021 07:42:20 +0000
+
 mackerel-agent (0.72.2-1.systemd) stable; urgency=low
 
   * Update Code Signing Certificates (by Krout0n)

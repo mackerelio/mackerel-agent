@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.72.3 (2021-10-14)
+
+
+
 ## 0.72.2 (2021-09-06)
 
 * Update Code Signing Certificates #727 (Krout0n)

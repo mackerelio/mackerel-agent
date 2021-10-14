@@ -54,6 +54,8 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Oct 14 2021 <mackerel-developers@hatena.ne.jp> - 0.72.3
+
 * Mon Sep 6 2021 <mackerel-developers@hatena.ne.jp> - 0.72.2
 - Update Code Signing Certificates (by Krout0n)
 - Bump github.com/mackerelio/go-check-plugins from 0.39.3 to 0.39.5 (by dependabot[bot])
