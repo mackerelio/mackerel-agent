@@ -1,3 +1,12 @@
+mackerel-agent (0.72.3-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mackerel-agent-plugins from v0.65.0 to v0.69.1 (by susisu)
+    <https://github.com/mackerelio/mackerel-agent/pull/731>
+  * Bump github.com/mackerelio/go-check-plugins from v0.39.5 to v0.41.1 (by ne-sachirou)
+    <https://github.com/mackerelio/mackerel-agent/pull/730>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 20 Oct 2021 01:46:32 +0000
+
 mackerel-agent (0.72.2-1.systemd) stable; urgency=low
 
   * Update Code Signing Certificates (by Krout0n)

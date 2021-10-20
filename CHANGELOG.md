@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.72.3 (2021-10-20)
+
+* Bump github.com/mackerelio/mackerel-agent-plugins from v0.65.0 to v0.69.1 #731 (susisu)
+* Bump github.com/mackerelio/go-check-plugins from v0.39.5 to v0.41.1 #730 (ne-sachirou)
+
+
 ## 0.72.2 (2021-09-06)
 
 * Update Code Signing Certificates #727 (Krout0n)
