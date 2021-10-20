@@ -54,6 +54,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Oct 20 2021 <mackerel-developers@hatena.ne.jp> - 0.72.3
+- Bump github.com/mackerelio/mackerel-agent-plugins from v0.65.0 to v0.69.1 (by susisu)
+- Bump github.com/mackerelio/go-check-plugins from v0.39.5 to v0.41.1 (by ne-sachirou)
+
 * Mon Sep 6 2021 <mackerel-developers@hatena.ne.jp> - 0.72.2
 - Update Code Signing Certificates (by Krout0n)
 - Bump github.com/mackerelio/go-check-plugins from 0.39.3 to 0.39.5 (by dependabot[bot])
