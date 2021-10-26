@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -183,6 +184,7 @@ func (g *EC2Generator) hasMetadataService(ctx context.Context) (bool, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
+		io.Copy(io.Discard, resp.Body)
 		return false, nil
 	}
 
@@ -223,6 +225,8 @@ func (g *EC2Generator) refreshToken(ctx context.Context) string {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
+		io.Copy(io.Discard, resp.Body)
+
 		// IMDSv2 may be disabled? fallback to IMDSv1
 		g.token = ""
 		g.deadline = now.Add(30 * time.Minute)
@@ -286,6 +290,7 @@ func (g *EC2Generator) getMetadata(cl *http.Client, key string) (string, error) 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
+		io.Copy(io.Discard, resp.Body)
 		cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
 		return "", nil
 	}
@@ -317,6 +322,7 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
+			io.Copy(io.Discard, resp.Body)
 			return fmt.Errorf("failed to request instance-id. response code: %d", resp.StatusCode)
 		}
 		body, err := ioutil.ReadAll(resp.Body)
@@ -354,6 +360,7 @@ func requestGCEMeta(ctx context.Context) ([]byte, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
+		io.Copy(io.Discard, resp.Body)
 		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
 	}
 	return ioutil.ReadAll(resp.Body)
@@ -463,8 +470,9 @@ func (g *AzureVMGenerator) IsAzureVM(ctx context.Context) bool {
 		if err != nil {
 			return err
 		}
-		defer resp.Body.Close()
 		isAzureVM = resp.StatusCode == 200
+		io.Copy(io.Discard, resp.Body)
+		resp.Body.Close()
 		return nil
 	})
 	return err == nil && isAzureVM
@@ -522,6 +530,7 @@ func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlS
 			metadataMap[value] = string(body)
 			cloudLogger.Debugf("results %s:%s", key, string(body))
 		} else {
+			io.Copy(io.Discard, resp.Body)
 			cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
 		}
 	}
@@ -546,6 +555,7 @@ func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
 		defer resp.Body.Close()
 
 		if resp.StatusCode != 200 {
+			io.Copy(io.Discard, resp.Body)
 			return fmt.Errorf("failed to request vmId. response code: %d", resp.StatusCode)
 		}
 		body, err := ioutil.ReadAll(resp.Body)
