@@ -7,3 +7,10 @@ updates:
     time: "01:00"
     timezone: Asia/Tokyo
   open-pull-requests-limit: 10
+- package-ecosystem: gomod
+  directory: "/wix"
+  schedule:
+    interval: weekly
+    time: "01:00"
+    timezone: Asia/Tokyo
+  open-pull-requests-limit: 10
