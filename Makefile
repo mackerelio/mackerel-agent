@@ -67,7 +67,11 @@ crossbuild: deps credits
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
 	goxz -build-ldflags=$(BUILD_LDFLAGS) \
-		-os=linux -arch=arm64,mips -d ./snapshot \
+		-os=linux,darwin -arch=arm64 -d ./snapshot \
+		-include=mackerel-agent.conf \
+		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
+	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+		-os=linux -arch=mips -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
 
