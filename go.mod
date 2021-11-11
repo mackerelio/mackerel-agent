@@ -14,7 +14,7 @@ require (
 	github.com/frankban/quicktest v1.11.3 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/mackerelio/go-osstat v0.2.0
+	github.com/mackerelio/go-osstat v0.2.1
 	github.com/mackerelio/golib v1.2.1
 	github.com/mackerelio/mackerel-client-go v0.17.0
 	github.com/mattn/goveralls v0.0.11
