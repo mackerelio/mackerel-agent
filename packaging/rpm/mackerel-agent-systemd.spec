@@ -54,6 +54,14 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Nov 18 2021 <mackerel-developers@hatena.ne.jp> - 0.72.4
+- spec: reuse http.Client (by lufia)
+- Bump github.com/mackerelio/go-osstat from 0.2.0 to 0.2.1 (by dependabot[bot])
+- Bump github.com/mattn/goveralls from 0.0.9 to 0.0.11 (by dependabot[bot])
+- make wix/ a submodule (by susisu)
+- Add arm64/darwin build to GitHub release (by astj)
+- read a response body even if status is not good (by lufia)
+
 * Wed Oct 20 2021 <mackerel-developers@hatena.ne.jp> - 0.72.3
 - Bump github.com/mackerelio/mackerel-agent-plugins from v0.65.0 to v0.69.1 (by susisu)
 - Bump github.com/mackerelio/go-check-plugins from v0.39.5 to v0.41.1 (by ne-sachirou)

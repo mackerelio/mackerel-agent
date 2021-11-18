@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.72.4 (2021-11-18)
+
+* spec: reuse http.Client #740 (lufia)
+* Bump github.com/mackerelio/go-osstat from 0.2.0 to 0.2.1 #737 (dependabot[bot])
+* Bump github.com/mattn/goveralls from 0.0.9 to 0.0.11 #736 (dependabot[bot])
+* make wix/ a submodule #735 (susisu)
+* Add arm64/darwin build to GitHub release #734 (astj)
+* read a response body even if status is not good #733 (lufia)
+
+
 ## 0.72.3 (2021-10-20)
 
 * Bump github.com/mackerelio/mackerel-agent-plugins from v0.65.0 to v0.69.1 #731 (susisu)
