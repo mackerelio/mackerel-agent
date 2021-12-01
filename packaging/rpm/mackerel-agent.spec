@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Dec 1 2021 <mackerel-developers@hatena.ne.jp> - 0.72.5
+- Bump github.com/mackerelio/mackerel-client-go from 0.17.0 to 0.19.0 (by dependabot[bot])
+
 * Thu Nov 18 2021 <mackerel-developers@hatena.ne.jp> - 0.72.4
 - spec: reuse http.Client (by lufia)
 - Bump github.com/mackerelio/go-osstat from 0.2.0 to 0.2.1 (by dependabot[bot])

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.72.5 (2021-12-01)
+
+* Bump github.com/mackerelio/mackerel-client-go from 0.17.0 to 0.19.0 #738 (dependabot[bot])
+
+
 ## 0.72.4 (2021-11-18)
 
 * spec: reuse http.Client #740 (lufia)
