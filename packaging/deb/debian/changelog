@@ -1,3 +1,10 @@
+mackerel-agent (0.72.5-1) stable; urgency=low
+
+  * Bump github.com/mackerelio/mackerel-client-go from 0.17.0 to 0.19.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/738>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 1 Dec 2021 05:24:43 +0000
+
 mackerel-agent (0.72.4-1) stable; urgency=low
 
   * spec: reuse http.Client (by lufia)
