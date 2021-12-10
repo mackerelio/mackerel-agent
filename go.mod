@@ -20,10 +20,11 @@ require (
 	github.com/mattn/goveralls v0.0.11
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
-	github.com/shirou/gopsutil v2.20.9+incompatible
+	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/tklauser/go-sysconf v0.3.9 // indirect
+	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
-	golang.org/x/sys v0.0.0-20210816074244-15123e1e1f71 // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
 	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.3 // indirect
