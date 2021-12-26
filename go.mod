@@ -5,15 +5,12 @@ go 1.16
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Songmu/gocredits v0.2.0
-	github.com/Songmu/goxz v0.7.0
+	github.com/Songmu/goxz v0.8.1
 	github.com/Songmu/prompter v0.5.0
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
 	github.com/StackExchange/wmi v1.2.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/frankban/quicktest v1.11.3 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/mackerelio/go-osstat v0.2.1
 	github.com/mackerelio/golib v1.2.1
 	github.com/mackerelio/mackerel-client-go v0.19.0
