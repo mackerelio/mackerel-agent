@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jan 12 2022 <mackerel-developers@hatena.ne.jp> - 0.72.6
+- Bump github.com/mackerelio/mkr from v0.45.3 to 0.46.0 (by susisu)
+
 * Wed Dec 1 2021 <mackerel-developers@hatena.ne.jp> - 0.72.5
 - Bump github.com/mackerelio/mackerel-client-go from 0.17.0 to 0.19.0 (by dependabot[bot])
 

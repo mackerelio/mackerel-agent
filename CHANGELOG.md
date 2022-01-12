@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.72.6 (2022-01-12)
+
+* Bump github.com/mackerelio/mkr from v0.45.3 to 0.46.0 #746 (susisu)
+
+
 ## 0.72.5 (2021-12-01)
 
 * Bump github.com/mackerelio/mackerel-client-go from 0.17.0 to 0.19.0 #738 (dependabot[bot])
