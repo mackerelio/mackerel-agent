@@ -801,8 +801,8 @@ github.com/mackerelio/mackerel-plugin-aws-waf v1.1.0/go.mod h1:Ko+wdaCwY1TS6HFPz
 github.com/mackerelio/mackerel-plugin-gcp-compute-engine v1.0.2/go.mod h1:PkCIfJScVSZXKCjkNaVYVEKl8TtdHJymZBnycODPUW8=
 github.com/mackerelio/mackerel-plugin-gearmand v1.0.1/go.mod h1:TtI8u3rNYiqotv7/uH/LErRMULbKl6iK4fFYou7JoV0=
 github.com/mackerelio/mackerel-plugin-json v1.2.2/go.mod h1:n/gmonrBkMOUHXjd871XDMZBtAqBGUyd+BkdZckwd88=
-github.com/mackerelio/mkr v0.46.0 h1:DKF8PpcGxA5xr7f2CDv9//XgyeoD9AjXp87UROCqgW8=
-github.com/mackerelio/mkr v0.46.0/go.mod h1:pB/62/abFvPdGW01rQxkwLVFe+c+v5Ffeoi1DL/Dm98=
+github.com/mackerelio/mkr v0.46.1 h1:nh03SAUTaNVyD7g9n2ML6WWJbyVwIbD8toK7Z8VwRks=
+github.com/mackerelio/mkr v0.46.1/go.mod h1:pB/62/abFvPdGW01rQxkwLVFe+c+v5Ffeoi1DL/Dm98=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.5 h1:b6kJs+EmPFMYGkow9GiUyCyOvIwYetYJ3fSaWak/Gls=
 github.com/magiconair/properties v1.8.5/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
