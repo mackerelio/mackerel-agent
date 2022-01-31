@@ -3,7 +3,7 @@ module github.com/mackerelio/mackerel-agent
 go 1.16
 
 require (
-	github.com/BurntSushi/toml v0.3.1
+	github.com/BurntSushi/toml v1.0.0
 	github.com/Songmu/gocredits v0.2.0
 	github.com/Songmu/goxz v0.8.1
 	github.com/Songmu/prompter v0.5.0
