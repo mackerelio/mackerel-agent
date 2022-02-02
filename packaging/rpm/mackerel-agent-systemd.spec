@@ -54,6 +54,14 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Feb 2 2022 <mackerel-developers@hatena.ne.jp> - 0.72.7
+- Bump github.com/mackerelio/mkr from 0.46.0 to 0.46.1 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.69.1 to 0.70.2 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.41.1 to 0.41.4 in /wix (by dependabot[bot])
+- Bump github.com/BurntSushi/toml from 0.3.1 to 1.0.0 (by dependabot[bot])
+- Bump github.com/Songmu/goxz from 0.7.0 to 0.8.1 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.19.0 to 0.21.0 (by dependabot[bot])
+
 * Wed Jan 12 2022 <mackerel-developers@hatena.ne.jp> - 0.72.6
 - Bump github.com/mackerelio/mkr from v0.45.3 to 0.46.0 (by susisu)
 

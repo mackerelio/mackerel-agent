@@ -1,3 +1,20 @@
+mackerel-agent (0.72.7-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mkr from 0.46.0 to 0.46.1 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/756>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.69.1 to 0.70.2 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/755>
+  * Bump github.com/mackerelio/go-check-plugins from 0.41.1 to 0.41.4 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/754>
+  * Bump github.com/BurntSushi/toml from 0.3.1 to 1.0.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/753>
+  * Bump github.com/Songmu/goxz from 0.7.0 to 0.8.1 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/749>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.19.0 to 0.21.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/748>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 2 Feb 2022 02:09:39 +0000
+
 mackerel-agent (0.72.6-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/mkr from v0.45.3 to 0.46.0 (by susisu)
