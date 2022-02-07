@@ -1,3 +1,4 @@
+//go:build plugins && windows
 // +build plugins,windows
 
 package main
