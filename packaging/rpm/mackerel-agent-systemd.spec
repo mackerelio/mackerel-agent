@@ -54,6 +54,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Feb 16 2022 <mackerel-developers@hatena.ne.jp> - 0.72.8
+- upgrade Go 1.16 -> 1.17 (by lufia)
+- Bump github.com/mackerelio/mkr from 0.46.1 to 0.46.2 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.41.4 to 0.41.5 in /wix (by dependabot[bot])
+
 * Wed Feb 2 2022 <mackerel-developers@hatena.ne.jp> - 0.72.7
 - Bump github.com/mackerelio/mkr from 0.46.0 to 0.46.1 in /wix (by dependabot[bot])
 - Bump github.com/mackerelio/mackerel-agent-plugins from 0.69.1 to 0.70.2 in /wix (by dependabot[bot])

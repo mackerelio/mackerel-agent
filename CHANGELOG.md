@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.72.8 (2022-02-16)
+
+* upgrade Go 1.16 -> 1.17 #760 (lufia)
+* Bump github.com/mackerelio/mkr from 0.46.1 to 0.46.2 in /wix #759 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.41.4 to 0.41.5 in /wix #758 (dependabot[bot])
+
+
 ## 0.72.7 (2022-02-02)
 
 * Bump github.com/mackerelio/mkr from 0.46.0 to 0.46.1 in /wix #756 (dependabot[bot])

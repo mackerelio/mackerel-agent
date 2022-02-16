@@ -1,5 +1,5 @@
 package main
 
-const version = "0.72.7"
+const version = "0.72.8"
 
 var gitcommit string
