@@ -61,6 +61,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Mar 15 2022 <mackerel-developers@hatena.ne.jp> - 0.72.9
+- Bump github.com/mackerelio/go-check-plugins from 0.41.5 to 0.41.6 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.46.2 to 0.46.3 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.2 to 0.70.3 in /wix (by dependabot[bot])
+
 * Wed Feb 16 2022 <mackerel-developers@hatena.ne.jp> - 0.72.8
 - upgrade Go 1.16 -> 1.17 (by lufia)
 - Bump github.com/mackerelio/mkr from 0.46.1 to 0.46.2 in /wix (by dependabot[bot])

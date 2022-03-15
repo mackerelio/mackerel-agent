@@ -1,3 +1,14 @@
+mackerel-agent (0.72.9-1) stable; urgency=low
+
+  * Bump github.com/mackerelio/go-check-plugins from 0.41.5 to 0.41.6 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/765>
+  * Bump github.com/mackerelio/mkr from 0.46.2 to 0.46.3 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/764>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.2 to 0.70.3 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/763>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 15 Mar 2022 03:41:16 +0000
+
 mackerel-agent (0.72.8-1) stable; urgency=low
 
   * upgrade Go 1.16 -> 1.17 (by lufia)
