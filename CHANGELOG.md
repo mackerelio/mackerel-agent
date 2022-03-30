@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.72.10 (2022-03-30)
+
+* Bump github.com/mackerelio/go-osstat from 0.2.1 to 0.2.2 #770 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.41.6 to 0.41.7 in /wix #769 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.3 to 0.70.4 in /wix #768 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.46.3 to 0.46.4 in /wix #767 (dependabot[bot])
+
+
 ## 0.72.9 (2022-03-15)
 
 * Bump github.com/mackerelio/go-check-plugins from 0.41.5 to 0.41.6 in /wix #765 (dependabot[bot])
