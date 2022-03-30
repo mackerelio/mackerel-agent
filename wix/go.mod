@@ -3,7 +3,7 @@ module github.com/mackerelio/mackerel-agent/wix
 go 1.17
 
 require (
-	github.com/mackerelio/go-check-plugins v0.41.6
+	github.com/mackerelio/go-check-plugins v0.41.7
 	github.com/mackerelio/mackerel-agent-plugins v0.70.4
 	github.com/mackerelio/mkr v0.46.3
 	github.com/mattn/go-encoding v0.0.2
@@ -155,7 +155,7 @@ require (
 	github.com/securego/gosec/v2 v2.9.6 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shazow/go-diff v0.0.0-20160112020656-b6b7b6733b8c // indirect
-	github.com/shirou/gopsutil/v3 v3.22.1 // indirect
+	github.com/shirou/gopsutil/v3 v3.22.2 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/sivchari/containedctx v1.0.1 // indirect
 	github.com/sivchari/tenv v1.4.7 // indirect
