@@ -5,9 +5,9 @@ go 1.17
 require (
 	github.com/mackerelio/go-check-plugins v0.41.7
 	github.com/mackerelio/mackerel-agent-plugins v0.70.4
-	github.com/mackerelio/mkr v0.46.3
+	github.com/mackerelio/mkr v0.46.4
 	github.com/mattn/go-encoding v0.0.2
-	golang.org/x/sys v0.0.0-20220111092808-5a964db01320
+	golang.org/x/sys v0.0.0-20220204135822-1c1b9b1eba6a
 )
 
 require (
@@ -30,16 +30,16 @@ require (
 	github.com/ashanbrown/makezero v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bkielbasa/cyclop v1.2.0 // indirect
-	github.com/blizzy78/varnamelen v0.5.0 // indirect
+	github.com/blizzy78/varnamelen v0.6.0 // indirect
 	github.com/bombsimon/wsl/v3 v3.3.0 // indirect
-	github.com/breml/bidichk v0.2.1 // indirect
-	github.com/breml/errchkjson v0.2.1 // indirect
+	github.com/breml/bidichk v0.2.2 // indirect
+	github.com/breml/errchkjson v0.2.3 // indirect
 	github.com/butuzov/ireturn v0.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/charithe/durationcheck v0.0.9 // indirect
 	github.com/chavacava/garif v0.0.0-20210405164556-e8a0a408d6af // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
-	github.com/daixiang0/gci v0.2.9 // indirect
+	github.com/daixiang0/gci v0.3.1-0.20220208004058-76d765e3ab48 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/daviddengcn/go-colortext v1.0.0 // indirect
 	github.com/denis-tingajkin/go-header v0.4.2 // indirect
@@ -68,7 +68,7 @@ require (
 	github.com/golangci/dupl v0.0.0-20180902072040-3e9179ac440a // indirect
 	github.com/golangci/go-misc v0.0.0-20180628070357-927a3d87b613 // indirect
 	github.com/golangci/gofmt v0.0.0-20190930125516-244bba706f1a // indirect
-	github.com/golangci/golangci-lint v1.44.0 // indirect
+	github.com/golangci/golangci-lint v1.44.2 // indirect
 	github.com/golangci/lint-1 v0.0.0-20191013205115-297bf364a8e0 // indirect
 	github.com/golangci/maligned v0.0.0-20180506175553-b1d89398deca // indirect
 	github.com/golangci/misspell v0.3.5 // indirect
@@ -85,6 +85,7 @@ require (
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jessevdk/go-flags v1.5.0 // indirect
 	github.com/jgautheron/goconst v1.5.1 // indirect
@@ -94,20 +95,20 @@ require (
 	github.com/julz/importas v0.1.0 // indirect
 	github.com/kisielk/errcheck v1.6.0 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
-	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/klauspost/compress v1.14.2 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
-	github.com/kulti/thelper v0.5.0 // indirect
+	github.com/kulti/thelper v0.5.1 // indirect
 	github.com/kunwardeep/paralleltest v1.0.3 // indirect
 	github.com/kyoh86/exportloopref v0.1.8 // indirect
 	github.com/ldez/gomoddirectives v0.2.2 // indirect
-	github.com/ldez/tagliatelle v0.3.0 // indirect
+	github.com/ldez/tagliatelle v0.3.1 // indirect
 	github.com/leonklingele/grouper v1.1.0 // indirect
 	github.com/mackerelio/checkers v0.0.2 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.2 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.1 // indirect
 	github.com/mackerelio/go-osstat v0.2.1 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
-	github.com/mackerelio/mackerel-agent v0.72.7 // indirect
+	github.com/mackerelio/mackerel-agent v0.72.8 // indirect
 	github.com/mackerelio/mackerel-client-go v0.21.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
 	github.com/maratori/testpackage v1.0.1 // indirect
@@ -119,7 +120,7 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/mbilski/exhaustivestruct v1.2.0 // indirect
 	github.com/mgechev/dots v0.0.0-20210922191527-e955255bf517 // indirect
-	github.com/mgechev/revive v1.1.3 // indirect
+	github.com/mgechev/revive v1.1.4 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/mholt/archiver/v3 v3.5.1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -136,7 +137,7 @@ require (
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/phayes/checkstyle v0.0.0-20170904204023-bfd46e6a821d // indirect
 	github.com/pierrec/lz4 v2.4.0+incompatible // indirect
-	github.com/pierrec/lz4/v4 v4.1.12 // indirect
+	github.com/pierrec/lz4/v4 v4.1.13 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polyfloyd/go-errorlint v0.0.0-20211125173453-6d6d39c5bb8b // indirect
@@ -180,7 +181,7 @@ require (
 	github.com/tommy-muehle/go-mnd/v2 v2.5.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/ultraware/funlen v0.0.3 // indirect
-	github.com/ultraware/whitespace v0.0.4 // indirect
+	github.com/ultraware/whitespace v0.0.5 // indirect
 	github.com/urfave/cli v1.22.5 // indirect
 	github.com/uudashr/gocognit v1.0.5 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
@@ -197,7 +198,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/tools v0.1.9-0.20211228192929-ee1ca4ffc4da // indirect
+	golang.org/x/tools v0.1.9 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
