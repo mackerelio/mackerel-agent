@@ -1,3 +1,16 @@
+mackerel-agent (0.72.11-1) stable; urgency=low
+
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.4 to 0.70.6 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/776>
+  * Bump github.com/mackerelio/go-check-plugins from 0.41.7 to 0.42.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/775>
+  * Bump github.com/mackerelio/mkr from 0.46.4 to 0.46.5 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/774>
+  * Bump github.com/BurntSushi/toml from 1.0.0 to 1.1.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/772>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 14 Apr 2022 07:02:06 +0000
+
 mackerel-agent (0.72.10-1) stable; urgency=low
 
   * Bump github.com/mackerelio/go-osstat from 0.2.1 to 0.2.2 (by dependabot[bot])

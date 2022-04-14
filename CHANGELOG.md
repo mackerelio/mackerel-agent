@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.72.11 (2022-04-14)
+
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.4 to 0.70.6 in /wix #776 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.41.7 to 0.42.0 in /wix #775 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.46.4 to 0.46.5 in /wix #774 (dependabot[bot])
+* Bump github.com/BurntSushi/toml from 1.0.0 to 1.1.0 #772 (dependabot[bot])
+
+
 ## 0.72.10 (2022-03-30)
 
 * Bump github.com/mackerelio/go-osstat from 0.2.1 to 0.2.2 #770 (dependabot[bot])
