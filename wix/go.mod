@@ -3,7 +3,7 @@ module github.com/mackerelio/mackerel-agent/wix
 go 1.17
 
 require (
-	github.com/mackerelio/go-check-plugins v0.41.7
+	github.com/mackerelio/go-check-plugins v0.42.0
 	github.com/mackerelio/mackerel-agent-plugins v0.70.6
 	github.com/mackerelio/mkr v0.46.5
 	github.com/mattn/go-encoding v0.0.2
@@ -104,7 +104,7 @@ require (
 	github.com/ldez/gomoddirectives v0.2.2 // indirect
 	github.com/ldez/tagliatelle v0.3.1 // indirect
 	github.com/leonklingele/grouper v1.1.0 // indirect
-	github.com/mackerelio/checkers v0.0.2 // indirect
+	github.com/mackerelio/checkers v0.0.3 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.2 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.1 // indirect
 	github.com/mackerelio/go-osstat v0.2.2 // indirect
