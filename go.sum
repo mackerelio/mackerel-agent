@@ -2,8 +2,8 @@ github.com/BurntSushi/toml v1.1.0 h1:ksErzDEI1khOiGPgpwuI7x2ebx/uXQNw7xJpn9Eq1+I
 github.com/BurntSushi/toml v1.1.0/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
 github.com/Songmu/gocredits v0.2.0 h1:AbvFKEbwP5/0qisF0cTlUwVuCtzbJG+ynsXuEUC98vI=
 github.com/Songmu/gocredits v0.2.0/go.mod h1:JBywHzwOmBMF9uidu1EgS3mwVNqZCKOPLPrFd1h7qQo=
-github.com/Songmu/goxz v0.8.1 h1:fAm7S8cc2AzJR8XQewvGf7iX6BC5IfCoWsJVvRtD0R0=
-github.com/Songmu/goxz v0.8.1/go.mod h1:DGBZ5oQ8EE1I1jI6P8NpkvyuZiSFP3Yq61f/YdmL4lA=
+github.com/Songmu/goxz v0.8.2 h1:ih8T0NvRMbfXjptIy5FdlPDMOsxdqJnrCcYEFchfwAA=
+github.com/Songmu/goxz v0.8.2/go.mod h1:DGBZ5oQ8EE1I1jI6P8NpkvyuZiSFP3Yq61f/YdmL4lA=
 github.com/Songmu/prompter v0.5.0 h1:uf60xlFItY5nW+rlLJ2XIUfaUReo4gUEeftuUeHpio8=
 github.com/Songmu/prompter v0.5.0/go.mod h1:S4Eg25l60kPlnfB2ttFVpvBKYw7RKJexzB3gzpAansY=
 github.com/Songmu/retry v0.1.0 h1:hPA5xybQsksLR/ry/+t/7cFajPW+dqjmjhzZhioBILA=

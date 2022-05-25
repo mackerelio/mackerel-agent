@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/BurntSushi/toml v1.1.0
 	github.com/Songmu/gocredits v0.2.0
-	github.com/Songmu/goxz v0.8.1
+	github.com/Songmu/goxz v0.8.2
 	github.com/Songmu/prompter v0.5.0
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
