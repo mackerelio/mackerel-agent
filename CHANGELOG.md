@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.72.12 (2022-05-26)
+
+* Bump github.com/Songmu/goxz from 0.8.1 to 0.8.2 #779 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.6 to 0.71.0 in /wix #778 (dependabot[bot])
+
+
 ## 0.72.11 (2022-04-14)
 
 * Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.4 to 0.70.6 in /wix #776 (dependabot[bot])
