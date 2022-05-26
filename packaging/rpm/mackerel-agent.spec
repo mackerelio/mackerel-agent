@@ -61,6 +61,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Thu May 26 2022 <mackerel-developers@hatena.ne.jp> - 0.72.12
+- Bump github.com/Songmu/goxz from 0.8.1 to 0.8.2 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.6 to 0.71.0 in /wix (by dependabot[bot])
+
 * Thu Apr 14 2022 <mackerel-developers@hatena.ne.jp> - 0.72.11
 - Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.4 to 0.70.6 in /wix (by dependabot[bot])
 - Bump github.com/mackerelio/go-check-plugins from 0.41.7 to 0.42.0 in /wix (by dependabot[bot])
