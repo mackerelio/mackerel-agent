@@ -54,6 +54,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Jun 8 2022 <mackerel-developers@hatena.ne.jp> - 0.72.13
+- Bump github.com/mackerelio/mkr from 0.46.5 to 0.46.6 in /wix (by dependabot[bot])
+- Bump github.com/Songmu/prompter from 0.5.0 to 0.5.1 (by dependabot[bot])
+
 * Thu May 26 2022 <mackerel-developers@hatena.ne.jp> - 0.72.12
 - Bump github.com/Songmu/goxz from 0.8.1 to 0.8.2 (by dependabot[bot])
 - Bump github.com/mackerelio/mackerel-agent-plugins from 0.70.6 to 0.71.0 in /wix (by dependabot[bot])

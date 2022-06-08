@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.72.13 (2022-06-08)
+
+* Bump github.com/mackerelio/mkr from 0.46.5 to 0.46.6 in /wix #782 (dependabot[bot])
+* Bump github.com/Songmu/prompter from 0.5.0 to 0.5.1 #781 (dependabot[bot])
+
+
 ## 0.72.12 (2022-05-26)
 
 * Bump github.com/Songmu/goxz from 0.8.1 to 0.8.2 #779 (dependabot[bot])
