@@ -95,7 +95,7 @@ var pluginMetaHeadlineReg = regexp.MustCompile(`^#\s*mackerel-agent-plugin\b(.*)
 // 	  }
 // 	}
 //
-// Valid UNIT_TYPEs are: "float", "integer", "percentage", "bytes", "bytes/sec", "iops"
+// Valid UNIT_TYPEs are: "float", "integer", "percentage", "seconds", "milliseconds", "bytes", "bytes/sec", "bits/sec", "iops"
 //
 // The output should start with a line beginning with '#', which contains
 // meta-info of the configuration. (eg. plugin schema version)
