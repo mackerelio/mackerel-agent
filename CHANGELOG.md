@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.72.14 (2022-06-22)
+
+* add s, ms, bps to metric units #786 (Arthur1)
+* Bump github.com/mackerelio/mkr from 0.46.6 to 0.46.7 in /wix #784 (dependabot[bot])
+
+
 ## 0.72.13 (2022-06-08)
 
 * Bump github.com/mackerelio/mkr from 0.46.5 to 0.46.6 in /wix #782 (dependabot[bot])
