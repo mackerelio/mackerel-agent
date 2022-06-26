@@ -12,7 +12,7 @@ require (
 	github.com/StackExchange/wmi v1.2.1
 	github.com/mackerelio/go-osstat v0.2.2
 	github.com/mackerelio/golib v1.2.1
-	github.com/mackerelio/mackerel-client-go v0.21.0
+	github.com/mackerelio/mackerel-client-go v0.21.1
 	github.com/mattn/goveralls v0.0.11
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
