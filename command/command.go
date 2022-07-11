@@ -532,17 +532,19 @@ func runCheckersLoop(ctx context.Context, app *App, termCheckerCh <-chan struct{
 		// Do not report too many reports at once.
 		const checkReportMaxSize = 10
 
-		// Do not report many times in a short time.
-		// Extend the delay when there are lots of reports
-		if len(reports) > len(app.Agent.Checkers)*2 {
-			// e.g. reportCheckDelay: 1 -> 2 -> 4 -> 8 -> 16 -> 30
-			reportCheckDelay = reportCheckDelay * 2
-			if reportCheckDelay > reportCheckDelaySecondsMax {
-				reportCheckDelay = reportCheckDelaySecondsMax
+		if len(reports) > checkReportMaxSize {
+			// Do not report many times in a short time.
+			// Extend the delay when there are lots of reports
+			if len(reports) > len(app.Agent.Checkers)*2 {
+				// e.g. reportCheckDelay: 1 -> 2 -> 4 -> 8 -> 16 -> 30
+				reportCheckDelay = reportCheckDelay * 2
+				if reportCheckDelay > reportCheckDelaySecondsMax {
+					reportCheckDelay = reportCheckDelaySecondsMax
+				}
+				logger.Warningf("RunCheckerLoop: Extend the delay to %d seconds for every %d reports. There are %d reports.", reportCheckDelay, checkReportMaxSize, len(reports))
+			} else {
+				reportCheckDelay = reportCheckDelaySecondsMin
 			}
-			logger.Warningf("RunCheckerLoop: Extend the delay to %d seconds for every %d reports. There are %d reports.", reportCheckDelay, checkReportMaxSize, len(reports))
-		} else {
-			reportCheckDelay = reportCheckDelaySecondsMin
 		}
 
 		// "" means no CustomIdentifier, which means the host running this agent itself.
