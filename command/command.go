@@ -33,9 +33,8 @@ var (
 	postMetricsRetryMax            = 60     // Retry up to 60 times (30s * 60 = 30min)
 	postMetricsBufferSize          = 6 * 60 // Keep metric values of 6 hours in the queue
 
-	reportCheckDelay             = 1      // Current values of waiting for a few seconds before reporting.
-	reportCheckDelaySecondsMin   = 1      // Minimum values of reportCheckDelay.
-	reportCheckDelaySecondsMax   = 30     // Maximam values of reportCheckDelay.
+	reportCheckDelaySeconds      = 1      // Wait for a second before reporting the next check
+	reportCheckDelaySecondsMax   = 30     // Wait 30 seconds before reporting the next check when many reports in queue
 	reportCheckRetryDelaySeconds = 30     // Wait 30 seconds before retrying report the next check
 	reportCheckBufferSize        = 6 * 60 // Keep check reports of 6 hours in the queue
 )
@@ -532,19 +531,12 @@ func runCheckersLoop(ctx context.Context, app *App, termCheckerCh <-chan struct{
 		// Do not report too many reports at once.
 		const checkReportMaxSize = 10
 
-		if len(reports) > checkReportMaxSize {
-			// Do not report many times in a short time.
-			// Extend the delay when there are lots of reports
-			if len(reports) > len(app.Agent.Checkers)*2 {
-				// e.g. reportCheckDelay: 1 -> 2 -> 4 -> 8 -> 16 -> 30
-				reportCheckDelay = reportCheckDelay * 2
-				if reportCheckDelay > reportCheckDelaySecondsMax {
-					reportCheckDelay = reportCheckDelaySecondsMax
-				}
-				logger.Warningf("RunCheckerLoop: Extend the delay to %d seconds for every %d reports. There are %d reports.", reportCheckDelay, checkReportMaxSize, len(reports))
-			} else {
-				reportCheckDelay = reportCheckDelaySecondsMin
-			}
+		// Do not report many times in a short time.
+		reportCheckDelay := reportCheckDelaySeconds
+		// Extend the delay when there are lots of reports
+		if len(reports) > len(app.Agent.Checkers) {
+			reportCheckDelay = reportCheckDelaySecondsMax
+			logger.Warningf("RunCheckerLoop: Extend the delay to %d seconds for every %d reports. There are %d reports.", reportCheckDelay, checkReportMaxSize, len(reports))
 		}
 
 		// "" means no CustomIdentifier, which means the host running this agent itself.
