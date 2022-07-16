@@ -462,6 +462,10 @@ func runChecker(ctx context.Context, checker *checks.Checker, checkReportCh chan
 				}()
 			}
 
+			if checker.Config.OmittedSuccessMessage && report.Status == checks.StatusOK {
+				report.Message = "(Omitted by mackerel-agent.)"
+			}
+
 			if report.Status == checks.StatusOK && report.Status == lastStatus && report.Message == lastMessage {
 				// Do not report if nothing has changed
 				continue
