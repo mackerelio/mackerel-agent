@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.72.15 (2022-07-20)
+
+* Bump github.com/mackerelio/mkr from 0.46.7 to 0.46.8 in /wix #791 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.42.0 to 0.42.1 in /wix #790 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.21.0 to 0.21.1 #788 (dependabot[bot])
+
+
 ## 0.72.14 (2022-06-22)
 
 * add s, ms, bps to metric units #786 (Arthur1)

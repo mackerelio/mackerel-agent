@@ -54,6 +54,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Jul 20 2022 <mackerel-developers@hatena.ne.jp> - 0.72.15
+- Bump github.com/mackerelio/mkr from 0.46.7 to 0.46.8 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.42.0 to 0.42.1 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.21.0 to 0.21.1 (by dependabot[bot])
+
 * Wed Jun 22 2022 <mackerel-developers@hatena.ne.jp> - 0.72.14
 - add s, ms, bps to metric units (by Arthur1)
 - Bump github.com/mackerelio/mkr from 0.46.6 to 0.46.7 in /wix (by dependabot[bot])
