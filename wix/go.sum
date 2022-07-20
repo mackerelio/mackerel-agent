@@ -185,8 +185,8 @@ github.com/aws/aws-sdk-go v1.15.11/go.mod h1:mFuSZ37Z9YOHbQEwBWztmVzqXrEkub65tZo
 github.com/aws/aws-sdk-go v1.23.20/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.25.37/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go v1.36.30/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
-github.com/aws/aws-sdk-go v1.43.26/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/aws/aws-sdk-go v1.43.36/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
+github.com/aws/aws-sdk-go v1.44.37/go.mod h1:y4AeaBuwd2Lk+GepC1E9v0qOiTws0MIWAX4oIKwKHZo=
 github.com/beevik/ntp v0.3.0/go.mod h1:hIHWr+l3+/clUnF44zdK+CWW7fO8dR5cIylAQ76NRpg=
 github.com/benbjohnson/clock v1.0.3/go.mod h1:bGMdMPoPVvcYyt1gHDf4J2KE153Yf9BuiUKYMaxlTDM=
 github.com/beorn7/perks v0.0.0-20160804104726-4c0e84591b9a/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
@@ -935,8 +935,8 @@ github.com/lyft/protoc-gen-star v0.5.3/go.mod h1:V0xaHgaf5oCCqmcxYcWiDfTiKsZsRc8
 github.com/mackerelio/checkers v0.0.0-20190411030116-60cbd7b55456/go.mod h1:diyNFS/RRid22TaIOKvNf0GfzpJ2Yo91JuKxg9Q8gGI=
 github.com/mackerelio/checkers v0.0.3 h1:NVr0vKozHU5qMDdxeTZNNK7MEULCcZWMSeoizXlMjxM=
 github.com/mackerelio/checkers v0.0.3/go.mod h1:EJacKJbW8NAsolEo4YIcL9h1n4s+RUI9cYZXSnMJ8OY=
-github.com/mackerelio/go-check-plugins v0.42.0 h1:klH6DzNlAUKr6dOB5Qkoag0OMqoaj3GR7MIqZV/Xiuw=
-github.com/mackerelio/go-check-plugins v0.42.0/go.mod h1:xJL2wJHj8GyUCl+duyj/8SiBe+US8pyw4Wd6hE6lClk=
+github.com/mackerelio/go-check-plugins v0.42.1 h1:yAb8xE60hjcCQymN40jibQFBD0h7KjWuMxygYAGv4aw=
+github.com/mackerelio/go-check-plugins v0.42.1/go.mod h1:2kkUn/Pah/HlmKVXZuwqClX6FX+6uyybWmtxHPTxZv4=
 github.com/mackerelio/go-mackerel-plugin v0.1.2 h1:bbxd2aBCYfrxOdBnvTUyyx8ckeVW2hhb41ewhXJheDA=
 github.com/mackerelio/go-mackerel-plugin v0.1.2/go.mod h1:NnKukHcC4C8yTElL+4vdEjTA1zFA42hLCn1s2K+2UNU=
 github.com/mackerelio/go-mackerel-plugin-helper v0.1.1 h1:OU/Gbr7sVA2tZxgjurQLXWed8DOU9Pf3ZnTvqeT/mEI=
