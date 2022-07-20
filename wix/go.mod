@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/mackerelio/go-check-plugins v0.42.0
 	github.com/mackerelio/mackerel-agent-plugins v0.71.0
-	github.com/mackerelio/mkr v0.46.7
+	github.com/mackerelio/mkr v0.46.8
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
 )
@@ -112,7 +112,7 @@ require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.1 // indirect
 	github.com/mackerelio/go-osstat v0.2.2 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
-	github.com/mackerelio/mackerel-agent v0.72.12 // indirect
+	github.com/mackerelio/mackerel-agent v0.72.13 // indirect
 	github.com/mackerelio/mackerel-client-go v0.21.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/maratori/testpackage v1.0.1 // indirect
