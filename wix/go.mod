@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/mackerelio/go-check-plugins v0.42.1
-	github.com/mackerelio/mackerel-agent-plugins v0.71.0
+	github.com/mackerelio/mackerel-agent-plugins v0.72.0
 	github.com/mackerelio/mkr v0.46.8
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
@@ -76,7 +76,7 @@ require (
 	github.com/golangci/misspell v0.3.5 // indirect
 	github.com/golangci/revgrep v0.0.0-20210930125155-c22e5001d4f2 // indirect
 	github.com/golangci/unconvert v0.0.0-20180507085042-28b1c447d1f4 // indirect
-	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/go-github v17.0.0+incompatible // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gordonklaus/ineffassign v0.0.0-20210914165742-4cc7213b9bc8 // indirect
