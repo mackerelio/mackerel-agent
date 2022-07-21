@@ -34,7 +34,7 @@ var (
 	postMetricsBufferSize          = 6 * 60 // Keep metric values of 6 hours in the queue
 
 	reportCheckDelaySeconds      = 1      // Wait for a second before reporting the next check
-	reportCheckDelaySecondsMax   = 30     // Wait 30 seconds before reporting the next check when many reports in queue
+	reportCheckDelaySecondsMax   = 15     // Wait 15 seconds before reporting the next check when many reports in queue
 	reportCheckRetryDelaySeconds = 30     // Wait 30 seconds before retrying report the next check
 	reportCheckBufferSize        = 6 * 60 // Keep check reports of 6 hours in the queue
 )
@@ -529,14 +529,16 @@ func runCheckersLoop(ctx context.Context, app *App, termCheckerCh <-chan struct{
 		}
 
 		// Do not report too many reports at once.
-		const checkReportMaxSize = 10
+		const checkReportMaxSize = 20
 
 		// Do not report many times in a short time.
 		reportCheckDelay := reportCheckDelaySeconds
 		// Extend the delay when there are lots of reports
-		if len(reports) > len(app.Agent.Checkers) {
+		if len(reports) > len(app.Agent.Checkers)*2 {
 			reportCheckDelay = reportCheckDelaySecondsMax
-			logger.Debugf("RunCheckerLoop: Extend the delay to %d seconds. There are %d reports.", reportCheckDelay, len(reports))
+			if len(reports) > checkReportMaxSize {
+				logger.Warningf("RunCheckerLoop: Extend the delay to %d seconds for every %d reports. There are %d reports.", reportCheckDelay, checkReportMaxSize, len(reports))
+			}
 		}
 
 		// "" means no CustomIdentifier, which means the host running this agent itself.
