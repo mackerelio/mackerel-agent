@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.73.0 (2022-07-27)
+
+* Bump github.com/mackerelio/mkr from 0.46.8 to 0.46.9 in /wix #797 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.71.0 to 0.72.1 in /wix #796 (dependabot[bot])
+* Loosen the conditions of delaying report of check monitering. #792 (sugy)
+
+
 ## 0.72.15 (2022-07-20)
 
 * Bump github.com/mackerelio/mkr from 0.46.7 to 0.46.8 in /wix #791 (dependabot[bot])

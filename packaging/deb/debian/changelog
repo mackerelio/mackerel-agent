@@ -1,3 +1,14 @@
+mackerel-agent (0.73.0-1) stable; urgency=low
+
+  * Bump github.com/mackerelio/mkr from 0.46.8 to 0.46.9 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/797>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.71.0 to 0.72.1 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/796>
+  * Loosen the conditions of delaying report of check monitering. (by sugy)
+    <https://github.com/mackerelio/mackerel-agent/pull/792>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 27 Jul 2022 06:23:12 +0000
+
 mackerel-agent (0.72.15-1) stable; urgency=low
 
   * Bump github.com/mackerelio/mkr from 0.46.7 to 0.46.8 in /wix (by dependabot[bot])
