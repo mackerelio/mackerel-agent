@@ -54,6 +54,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Jul 27 2022 <mackerel-developers@hatena.ne.jp> - 0.73.0
+- Bump github.com/mackerelio/mkr from 0.46.8 to 0.46.9 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.71.0 to 0.72.1 in /wix (by dependabot[bot])
+- Loosen the conditions of delaying report of check monitering. (by sugy)
+
 * Wed Jul 20 2022 <mackerel-developers@hatena.ne.jp> - 0.72.15
 - Bump github.com/mackerelio/mkr from 0.46.7 to 0.46.8 in /wix (by dependabot[bot])
 - Bump github.com/mackerelio/go-check-plugins from 0.42.0 to 0.42.1 in /wix (by dependabot[bot])
