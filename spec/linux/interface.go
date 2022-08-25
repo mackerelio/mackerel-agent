@@ -24,17 +24,24 @@ var interfaceLogger = logging.GetLogger("spec.interface")
 // Generate XXX
 func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
 	var interfaces spec.Interfaces
-	_, err := exec.LookPath("ip")
-	// has ip command
+	interfaces, err := g.generateByNetLink()
 	if err == nil {
-		interfaces, err = g.generateByIPCommand()
-		if err != nil {
-			return nil, err
-		}
+		interfaceLogger.Infof("generateByNetLink")
 	} else {
-		interfaces, err = g.generateByIfconfigCommand()
-		if err != nil {
-			return nil, err
+		_, err := exec.LookPath("ip")
+		// has ip command
+		if err == nil {
+			interfaceLogger.Infof("generateByIPCommand")
+			interfaces, err = g.generateByIPCommand()
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			interfaceLogger.Infof("generateByIfconfigCommand")
+			interfaces, err = g.generateByIfconfigCommand()
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 	var results []mkr.Interface
