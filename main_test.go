@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"math"
 	"os"
 	"os/signal"
@@ -18,7 +17,7 @@ import (
 
 func TestParseFlags(t *testing.T) {
 	// prepare dummy config
-	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	confFile, err := os.CreateTemp("", "mackerel-config-test")
 
 	if err != nil {
 		t.Fatalf("Could not create temporary config file for test")
@@ -60,7 +59,7 @@ diagnostic=false
 
 func TestDetectForce(t *testing.T) {
 	// prepare dummy config
-	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	confFile, err := os.CreateTemp("", "mackerel-config-test")
 	if err != nil {
 		t.Fatalf("Could not create temporary config file for test")
 	}
@@ -90,7 +89,7 @@ func TestDetectForce(t *testing.T) {
 }
 
 func TestResolveConfigForRetire(t *testing.T) {
-	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	confFile, err := os.CreateTemp("", "mackerel-config-test")
 	if err != nil {
 		t.Fatalf("Could not create temporary config file for test")
 	}
@@ -123,7 +122,7 @@ func TestResolveConfigForRetire(t *testing.T) {
 }
 
 func TestCreateAndRemovePidFile(t *testing.T) {
-	file, err := ioutil.TempFile("", "")
+	file, err := os.CreateTemp("", "")
 	if err != nil {
 		t.Errorf("failed to create tmpfile, %s", err)
 	}
@@ -141,7 +140,7 @@ func TestCreateAndRemovePidFile(t *testing.T) {
 	}
 
 	pidfile.Remove(fpath)
-	ioutil.WriteFile(fpath, []byte(fmt.Sprint(math.MaxInt32)), 0644)
+	os.WriteFile(fpath, []byte(fmt.Sprint(math.MaxInt32)), 0644)
 	if err := pidfile.Create(fpath); err != nil {
 		t.Errorf("old pid file should be ignored and new pid file should be created but, %s", err)
 	}
@@ -204,7 +203,7 @@ func TestNotifyUpdateFileDelete(t *testing.T) {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGHUP)
 	go signalHandler(c, app, termCh)
 
-	f, err := ioutil.TempFile("", "mackerel-agent.test.*")
+	f, err := os.CreateTemp("", "mackerel-agent.test.*")
 	if err != nil {
 		t.Fatalf("can't create a temporary file: %v", err)
 	}
@@ -266,7 +265,7 @@ func TestConfigProxy(t *testing.T) {
 
 func TestConfigTestOK(t *testing.T) {
 	// prepare dummy config
-	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	confFile, err := os.CreateTemp("", "mackerel-config-test")
 	if err != nil {
 		t.Fatalf("Could not create temporary config file for test")
 	}
@@ -286,7 +285,7 @@ func TestConfigTestOK(t *testing.T) {
 
 func TestConfigTestNotFound(t *testing.T) {
 	// prepare dummy config
-	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	confFile, err := os.CreateTemp("", "mackerel-config-test")
 	if err != nil {
 		t.Fatalf("Could not create temporary config file for test")
 	}
@@ -306,7 +305,7 @@ func TestConfigTestNotFound(t *testing.T) {
 
 func TestConfigTestInvalidFormat(t *testing.T) {
 	// prepare dummy config
-	confFile, err := ioutil.TempFile("", "mackerel-config-test")
+	confFile, err := os.CreateTemp("", "mackerel-config-test")
 	if err != nil {
 		t.Fatalf("Could not create temporary config file for test")
 	}

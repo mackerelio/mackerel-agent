@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -582,7 +581,7 @@ var tomlQuotedReplacer = strings.NewReplacer(
 )
 
 func TestLoadConfigFileInclude(t *testing.T) {
-	configDir, err := ioutil.TempDir("", "mackerel-config-test")
+	configDir, err := os.MkdirTemp("", "mackerel-config-test")
 	assertNoError(t, err)
 	defer os.RemoveAll(configDir)
 
@@ -639,7 +638,7 @@ command = "bar"
 }
 
 func TestLoadConfigFileIncludeOverwritten(t *testing.T) {
-	configDir, err := ioutil.TempDir("", "mackerel-config-test")
+	configDir, err := os.MkdirTemp("", "mackerel-config-test")
 	assertNoError(t, err)
 	defer os.RemoveAll(configDir)
 
@@ -680,7 +679,7 @@ verbose = true
 }
 
 func TestFileSystemHostIDStorage(t *testing.T) {
-	root, err := ioutil.TempDir("", "mackerel-agent-test")
+	root, err := os.MkdirTemp("", "mackerel-agent-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -880,7 +879,7 @@ env = { "SAMPLE_KEY1" = " foo bar ", "SAMPLE_KEY2" = " baz qux " }
 }
 
 func newTempFileWithContent(content string) (*os.File, error) {
-	tmpf, err := ioutil.TempFile("", "mackerel-config-test")
+	tmpf, err := os.CreateTemp("", "mackerel-config-test")
 	if err != nil {
 		return nil, err
 	}

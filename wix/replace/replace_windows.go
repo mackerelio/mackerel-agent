@@ -21,7 +21,6 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -65,7 +64,7 @@ func main() {
 	}
 
 out:
-	content, err := ioutil.ReadFile(inFile)
+	content, err := os.ReadFile(inFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -73,7 +72,7 @@ out:
 	_, err = os.Stat(outFile)
 	outFileIsExists := err == nil
 	if !(outFileIsExists) {
-		err = ioutil.WriteFile(outFile, []byte(strings.Replace(string(content), oldStr, newStr, -1)), 0644)
+		err = os.WriteFile(outFile, []byte(strings.Replace(string(content), oldStr, newStr, -1)), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}

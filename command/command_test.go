@@ -3,7 +3,6 @@ package command
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -90,7 +89,7 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 		fmt.Fprint(w, string(respJSON))
 	}))
 
-	root, err := ioutil.TempDir("", "mackerel-agent-test")
+	root, err := os.MkdirTemp("", "mackerel-agent-test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -176,7 +175,7 @@ func TestPrepareWithCreateWithFail(t *testing.T) {
 func TestPrepareWithUpdate(t *testing.T) {
 	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
-	tempDir, _ := ioutil.TempDir("", "")
+	tempDir, _ := os.MkdirTemp("", "")
 	conf.Root = tempDir
 	conf.SaveHostID("xxx12345678901")
 

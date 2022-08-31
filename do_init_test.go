@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,7 +16,7 @@ func TestDoInitialize(t *testing.T) {
 		}
 	}
 
-	root, err := ioutil.TempDir("", "mackerel-config-test")
+	root, err := os.MkdirTemp("", "mackerel-config-test")
 	if err != nil {
 		t.Fatalf("Could not create temporary dir for test")
 	}
@@ -41,7 +40,7 @@ func TestDoInitialize(t *testing.T) {
 		if err != nil {
 			t.Errorf("err should be nil but: %s", err)
 		}
-		content, _ := ioutil.ReadFile(conffile)
+		content, _ := os.ReadFile(conffile)
 		if string(content) != `apikey = "hoge"`+"\n" {
 			t.Errorf("somthing went wrong: %s", string(content))
 		}
