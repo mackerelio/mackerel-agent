@@ -42,7 +42,7 @@ func generateValues(generators []metrics.Generator) []*metrics.ValuesCustomIdent
 
 				startedAt := time.Now()
 				values, err := g.Generate()
-				if seconds := (time.Now().Sub(startedAt) / time.Second); seconds > 120 {
+				if seconds := (time.Since(startedAt) / time.Second); seconds > 120 {
 					logger.Warningf("%T.Generate() take a long time (%d seconds)", g, seconds)
 				}
 				if err != nil {
