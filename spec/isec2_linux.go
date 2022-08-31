@@ -6,7 +6,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 	"time"
 
@@ -27,7 +27,7 @@ func (g *EC2Generator) isEC2(ctx context.Context) bool {
 func (g *EC2Generator) isEC2WithSpecifiedUUIDFiles(ctx context.Context, uuidFiles []string) bool {
 	looksLikeEC2 := false
 	for _, u := range uuidFiles {
-		data, err := ioutil.ReadFile(u)
+		data, err := os.ReadFile(u)
 		if err != nil {
 			continue
 		}

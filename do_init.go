@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -47,13 +46,13 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 	}
 	contents := []byte(fmt.Sprintf("apikey = %q\n", *apikey))
 	if confExists {
-		cBytes, err := ioutil.ReadFile(*conffile)
+		cBytes, err := os.ReadFile(*conffile)
 		if err != nil {
 			return err
 		}
 		contents = append(contents, cBytes...)
 	}
-	return ioutil.WriteFile(*conffile, contents, 0644)
+	return os.WriteFile(*conffile, contents, 0644)
 }
 
 type apikeyAlreadySetError string

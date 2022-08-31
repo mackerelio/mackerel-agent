@@ -4,7 +4,6 @@
 package linux
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -21,7 +20,7 @@ var blockDeviceLogger = logging.GetLogger("spec.block_device")
 
 // Generate generate metric values
 func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
-	fileInfos, err := ioutil.ReadDir("/sys/block")
+	fileInfos, err := os.ReadDir("/sys/block")
 	if err != nil {
 		// /sys/block is unavailable on some PaaS (Heroku, for example)
 		if os.IsNotExist(err) {
@@ -41,7 +40,7 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 		for _, key := range []string{"size", "removable"} {
 			filename := path.Join("/sys/block", deviceName, key)
 			if _, err := os.Stat(filename); err == nil {
-				bytes, err := ioutil.ReadFile(filename)
+				bytes, err := os.ReadFile(filename)
 				if err != nil {
 					blockDeviceLogger.Errorf("Failed (skip this spec): %s", err)
 					return nil, err
@@ -53,7 +52,7 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 		for _, key := range []string{"model", "rev", "state", "timeout", "vendor"} {
 			filename := path.Join("/sys/block", deviceName, "device", key)
 			if _, err := os.Stat(filename); err == nil {
-				bytes, err := ioutil.ReadFile(filename)
+				bytes, err := os.ReadFile(filename)
 				if err != nil {
 					blockDeviceLogger.Errorf("Failed (skip this spec): %s", err)
 					return nil, err
