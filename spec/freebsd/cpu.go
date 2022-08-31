@@ -16,8 +16,6 @@ type CPUGenerator struct {
 
 var cpuLogger = logging.GetLogger("spec.cpu")
 
-type cpuSpec map[string]interface{}
-
 // MEMO: sysctl -a machdep.cpu.brand_string
 
 // Generate collects CPU specs.
