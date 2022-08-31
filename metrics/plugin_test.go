@@ -148,12 +148,12 @@ func TestPluginMakeGraphDefsParam(t *testing.T) {
 
 	if payloadOne == nil {
 		t.Errorf("Payload with name custom.one not found: %+v", payloads)
-	}
-
-	if payloadOne.DisplayName != "My Graph One" ||
-		len(payloadOne.Metrics) != 2 ||
-		payloadOne.Unit != "integer" {
-		t.Errorf("Bad payload created: %+v", payloadOne)
+	} else {
+		if payloadOne.DisplayName != "My Graph One" ||
+			len(payloadOne.Metrics) != 2 ||
+			payloadOne.Unit != "integer" {
+			t.Errorf("Bad payload created: %+v", payloadOne)
+		}
 	}
 
 	var metricOneFoo1 *mkr.GraphDefsMetric
@@ -165,11 +165,10 @@ func TestPluginMakeGraphDefsParam(t *testing.T) {
 	}
 	if metricOneFoo1 == nil {
 		t.Errorf("Metric payload with name custom.one.foo1 not fonud: %+v", payloadOne)
-	}
-
-	if metricOneFoo1.DisplayName != "Foo(1)" ||
-		metricOneFoo1.IsStacked != true {
-
-		t.Errorf("Bat metric payload created: %+v", metricOneFoo1)
+	} else {
+		if metricOneFoo1.DisplayName != "Foo(1)" ||
+			metricOneFoo1.IsStacked != true {
+			t.Errorf("Bat metric payload created: %+v", metricOneFoo1)
+		}
 	}
 }
