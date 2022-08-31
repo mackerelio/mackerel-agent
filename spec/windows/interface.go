@@ -6,7 +6,6 @@ package windows
 import (
 	"net"
 
-	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/util/windows"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
@@ -14,8 +13,6 @@ import (
 // InterfaceGenerator XXX
 type InterfaceGenerator struct {
 }
-
-var interfaceLogger = logging.GetLogger("spec.interface")
 
 // Generate XXX
 func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
