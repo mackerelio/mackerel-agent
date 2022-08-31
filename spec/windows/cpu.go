@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-client-go"
 
 	"github.com/mackerelio/mackerel-agent/util/windows"
@@ -16,8 +15,6 @@ import (
 // CPUGenerator collects CPU specs
 type CPUGenerator struct {
 }
-
-var cpuLogger = logging.GetLogger("spec.cpu")
 
 // Generate collects CPU specs.
 func (g *CPUGenerator) Generate() (interface{}, error) {

@@ -39,18 +39,6 @@ func TestCPUGenerate(t *testing.T) {
 	if _, ok := cpu1["stepping"]; !ok {
 		t.Error("cpu should have stepping")
 	}
-	if _, ok := cpu1["physical_id"]; !ok {
-		// fails on some environments
-		// t.Error("cpu should have physical_id")
-	}
-	if _, ok := cpu1["core_id"]; !ok {
-		// fails on some environments
-		// t.Error("cpu should have core_id")
-	}
-	if _, ok := cpu1["cores"]; !ok {
-		// fails on some environments
-		// t.Error("cpu should have cores")
-	}
 	if _, ok := cpu1["model_name"]; !ok {
 		t.Error("cpu should have model_name")
 	}

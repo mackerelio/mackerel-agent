@@ -9,15 +9,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-client-go"
 )
 
 // MemoryGenerator collects the host's memory specs.
 type MemoryGenerator struct {
 }
-
-var memoryLogger = logging.GetLogger("spec.memory")
 
 const bytesInKibibytes = 1024
 

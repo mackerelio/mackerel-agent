@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-client-go"
 
 	"github.com/mackerelio/mackerel-agent/util/windows"
@@ -16,8 +15,6 @@ import (
 // MemoryGenerator collects the host's memory specs.
 type MemoryGenerator struct {
 }
-
-var memoryLogger = logging.GetLogger("spec.memory")
 
 // Generate XXX
 func (g *MemoryGenerator) Generate() (interface{}, error) {

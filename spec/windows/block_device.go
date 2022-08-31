@@ -7,7 +7,6 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-client-go"
 
 	"github.com/mackerelio/mackerel-agent/util/windows"
@@ -16,8 +15,6 @@ import (
 // BlockDeviceGenerator XXX
 type BlockDeviceGenerator struct {
 }
-
-var blockDeviceLogger = logging.GetLogger("spec.block_device")
 
 // Generate XXX
 func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
