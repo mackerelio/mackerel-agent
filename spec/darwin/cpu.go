@@ -88,6 +88,10 @@ func (g *CPUGenerator) getCPUCount() (*int, error) {
 // - flags
 func (g *CPUGenerator) Generate() (interface{}, error) {
 	cpuInfoBytes, err := exec.Command("sysctl", "machdep.cpu").Output()
+	if err != nil {
+		cpuLogger.Errorf("Failed: %s", err)
+		return nil, err
+	}
 	cpuInfo, err := g.parseSysCtlBytes(cpuInfoBytes)
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)
