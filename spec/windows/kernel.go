@@ -43,7 +43,7 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		return nil, err
 	}
 
-	if edition != "" && strings.Index(osname, edition) == -1 {
+	if edition != "" && !strings.Contains(osname, edition) {
 		osname += " (" + edition + ")"
 	}
 
