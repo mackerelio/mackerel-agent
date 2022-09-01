@@ -43,7 +43,11 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 	for _, v := range drivebuf {
 		if v >= 65 && v <= 90 {
 			drive := string(v)
-			r, _, _ = GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
+			d, err := syscall.UTF16PtrFromString(drive + `:\`)
+			if err != nil {
+				return nil, err
+			}
+			r, _, _ = GetDriveType.Call(uintptr(unsafe.Pointer(d)))
 			if r != DRIVE_FIXED {
 				continue
 			}
@@ -53,8 +57,12 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 
 	for _, drive := range drives {
 		drivebuf := make([]uint16, 256)
+		d, err := syscall.UTF16PtrFromString(drive)
+		if err != nil {
+			return nil, err
+		}
 		r, _, err := QueryDosDevice.Call(
-			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
+			uintptr(unsafe.Pointer(d)),
 			uintptr(unsafe.Pointer(&drivebuf[0])),
 			uintptr(len(drivebuf)))
 		if r == 0 {
@@ -63,8 +71,13 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 		}
 		volumebuf := make([]uint16, 256)
 		fsnamebuf := make([]uint16, 256)
+
+		d, err = syscall.UTF16PtrFromString(drive + `\`)
+		if err != nil {
+			return nil, err
+		}
 		r, _, err = GetVolumeInformationW.Call(
-			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive+`\`))),
+			uintptr(unsafe.Pointer(d)),
 			uintptr(unsafe.Pointer(&volumebuf[0])),
 			uintptr(len(volumebuf)),
 			0,
@@ -78,8 +91,12 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 		}
 		freeBytesAvailable := int64(0)
 		totalNumberOfBytes := int64(0)
+		d, err = syscall.UTF16PtrFromString(drive)
+		if err != nil {
+			return nil, err
+		}
 		r, _, _ = GetDiskFreeSpaceEx.Call(
-			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
+			uintptr(unsafe.Pointer(d)),
 			uintptr(unsafe.Pointer(&freeBytesAvailable)),
 			uintptr(unsafe.Pointer(&totalNumberOfBytes)),
 			0)

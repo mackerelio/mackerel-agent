@@ -32,7 +32,11 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 		if v >= 65 && v <= 90 {
 			drive := string(v)
 			removable := false
-			r, _, err = windows.GetDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive + `:\`))))
+			d, err := syscall.UTF16PtrFromString(drive + `:\`)
+			if err != nil {
+				return nil, err
+			}
+			r, _, err = windows.GetDriveType.Call(uintptr(unsafe.Pointer(d)))
 			if err != nil {
 				return nil, err
 			}
@@ -42,8 +46,12 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 			freeBytesAvailable := int64(0)
 			totalNumberOfBytes := int64(0)
 			totalNumberOfFreeBytes := int64(0)
+			d, err = syscall.UTF16PtrFromString(drive)
+			if err != nil {
+				return nil, err
+			}
 			r, _, _ = windows.GetDiskFreeSpaceEx.Call(
-				uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))),
+				uintptr(unsafe.Pointer(d)),
 				uintptr(unsafe.Pointer(&freeBytesAvailable)),
 				uintptr(unsafe.Pointer(&totalNumberOfBytes)),
 				uintptr(unsafe.Pointer(&totalNumberOfFreeBytes)))
