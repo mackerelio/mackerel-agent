@@ -70,7 +70,7 @@ func (g *DiskGenerator) queryWmiWithTimeout() ([]win32PerfFormattedDataPerfDiskP
 	}()
 	select {
 	case <-time.After(queryWmiTimeout):
-		return nil, errors.New("Timeouted while retrieving disk metrics")
+		return nil, errors.New("timeouted while retrieving disk metrics")
 	case err := <-errCh:
 		return nil, err
 	case records := <-recordsCh:
