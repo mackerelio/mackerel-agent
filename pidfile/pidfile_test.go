@@ -16,11 +16,7 @@ func TestCreate(t *testing.T) {
 		t.Errorf("err should be nil but: %v", err)
 	}
 
-	dir, err := os.MkdirTemp("", "mackerel-agent-test-pidfile")
-	if err != nil {
-		t.Fatalf("failed to create tempdir")
-	}
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 	pidfile := filepath.Join(dir, "pidfile")
 	err = Create(pidfile)
 	if err != nil {
@@ -43,11 +39,7 @@ func TestRemove(t *testing.T) {
 	if err != nil {
 		t.Errorf("err should be nil but: %v", err)
 	}
-	dir, err := os.MkdirTemp("", "mackerel-agent-test-pidfile")
-	if err != nil {
-		t.Fatalf("failed to create tempdir")
-	}
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 	pidfile := filepath.Join(dir, "pidfile")
 	err = Create(pidfile)
 	if err != nil {

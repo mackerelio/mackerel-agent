@@ -16,11 +16,7 @@ func TestDoInitialize(t *testing.T) {
 		}
 	}
 
-	root, err := os.MkdirTemp("", "mackerel-config-test")
-	if err != nil {
-		t.Fatalf("Could not create temporary dir for test")
-	}
-	defer os.RemoveAll(root)
+	root := t.TempDir()
 
 	{
 		// not exist config file directory

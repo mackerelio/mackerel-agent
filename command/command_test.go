@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"sort"
 	"sync"
 	"testing"
@@ -89,11 +88,7 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 		fmt.Fprint(w, string(respJSON))
 	}))
 
-	root, err := os.MkdirTemp("", "mackerel-agent-test")
-	if err != nil {
-		t.Fatal(err)
-	}
-
+	root := t.TempDir()
 	conf := config.Config{
 		Apibase: ts.URL,
 		Root:    root,
@@ -101,7 +96,6 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 
 	return conf, mockHandlers, ts, func() {
 		ts.Close()
-		os.RemoveAll(root)
 	}
 }
 
@@ -175,8 +169,7 @@ func TestPrepareWithCreateWithFail(t *testing.T) {
 func TestPrepareWithUpdate(t *testing.T) {
 	conf, mockHandlers, ts, deferFunc := newMockAPIServer(t)
 	defer deferFunc()
-	tempDir, _ := os.MkdirTemp("", "")
-	conf.Root = tempDir
+	conf.Root = t.TempDir()
 	conf.SaveHostID("xxx12345678901")
 
 	mockHandlers["PUT /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {

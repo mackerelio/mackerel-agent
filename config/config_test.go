@@ -581,9 +581,7 @@ var tomlQuotedReplacer = strings.NewReplacer(
 )
 
 func TestLoadConfigFileInclude(t *testing.T) {
-	configDir, err := os.MkdirTemp("", "mackerel-config-test")
-	assertNoError(t, err)
-	defer os.RemoveAll(configDir)
+	configDir := t.TempDir()
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub1.conf"))
 	assertNoError(t, err)
@@ -638,9 +636,7 @@ command = "bar"
 }
 
 func TestLoadConfigFileIncludeOverwritten(t *testing.T) {
-	configDir, err := os.MkdirTemp("", "mackerel-config-test")
-	assertNoError(t, err)
-	defer os.RemoveAll(configDir)
+	configDir := t.TempDir()
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub2.conf"))
 	assertNoError(t, err)
@@ -679,14 +675,10 @@ verbose = true
 }
 
 func TestFileSystemHostIDStorage(t *testing.T) {
-	root, err := os.MkdirTemp("", "mackerel-agent-test")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(root)
+	root := t.TempDir()
 
 	s := FileSystemHostIDStorage{Root: root}
-	err = s.SaveHostID("test-host-id")
+	err := s.SaveHostID("test-host-id")
 	assertNoError(t, err)
 
 	hostID, err := s.LoadHostID()
