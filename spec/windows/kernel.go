@@ -7,7 +7,6 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-client-go"
 
 	"github.com/mackerelio/mackerel-agent/util/windows"
@@ -18,8 +17,6 @@ const registryKey = `Software\Microsoft\Windows NT\CurrentVersion`
 // KernelGenerator XXX
 type KernelGenerator struct {
 }
-
-var kernelLogger = logging.GetLogger("spec.kernel")
 
 // Generate XXX
 func (g *KernelGenerator) Generate() (interface{}, error) {
