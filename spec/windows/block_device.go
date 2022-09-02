@@ -36,10 +36,7 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 			if err != nil {
 				return nil, err
 			}
-			r, _, err = windows.GetDriveType.Call(uintptr(unsafe.Pointer(d)))
-			if err != nil {
-				return nil, err
-			}
+			r, _, _ = windows.GetDriveType.Call(uintptr(unsafe.Pointer(d)))
 			if r == windows.DRIVE_REMOVABLE {
 				removable = true
 			}
