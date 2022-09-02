@@ -428,7 +428,7 @@ func TestCloudGeneratorSuggester(t *testing.T) {
 		}
 		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
-			t.Errorf("cGen should not be nil.")
+			t.Fatal("cGen should not be nil.")
 		}
 
 		_, ok := cGen.CloudMetaGenerator.(ec2Generator)
@@ -446,7 +446,7 @@ func TestCloudGeneratorSuggester(t *testing.T) {
 		}
 		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
-			t.Errorf("cGen should not be nil.")
+			t.Fatal("cGen should not be nil.")
 		}
 
 		_, ok := cGen.CloudMetaGenerator.(gceGenerator)
@@ -464,7 +464,7 @@ func TestCloudGeneratorSuggester(t *testing.T) {
 		}
 		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
-			t.Errorf("cGen should not be nil.")
+			t.Fatal("cGen should not be nil.")
 		}
 
 		_, ok := cGen.CloudMetaGenerator.(azureVMGenerator)
@@ -482,7 +482,7 @@ func TestCloudGeneratorSuggester(t *testing.T) {
 		}
 		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
-			t.Errorf("cGen should not be nil.")
+			t.Fatal("cGen should not be nil.")
 		}
 
 		_, ok := cGen.CloudMetaGenerator.(azureVMGenerator)
@@ -516,7 +516,7 @@ func TestCloudGeneratorSuggester_CloudPlatformSpecified(t *testing.T) {
 
 		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
-			t.Errorf("cGen should not be nil.")
+			t.Fatal("cGen should not be nil.")
 		}
 
 		_, ok := cGen.CloudMetaGenerator.(ec2Generator)
@@ -532,7 +532,7 @@ func TestCloudGeneratorSuggester_CloudPlatformSpecified(t *testing.T) {
 
 		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
-			t.Errorf("cGen should not be nil.")
+			t.Fatal("cGen should not be nil.")
 		}
 
 		_, ok := cGen.CloudMetaGenerator.(gceGenerator)
@@ -548,7 +548,7 @@ func TestCloudGeneratorSuggester_CloudPlatformSpecified(t *testing.T) {
 
 		cGen := suggester.Suggest(&conf)
 		if cGen == nil {
-			t.Errorf("cGen should not be nil.")
+			t.Fatal("cGen should not be nil.")
 		}
 
 		_, ok := cGen.CloudMetaGenerator.(azureVMGenerator)

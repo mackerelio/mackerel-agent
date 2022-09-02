@@ -68,6 +68,9 @@ func TestDoInitialize(t *testing.T) {
 	{
 		f := filepath.Join(root, "mackerel-agent-invalid.conf")
 		conffile, err := os.Create(f)
+		if err != nil {
+			t.Errorf("err should be nil but: %s", err)
+		}
 		conffile.WriteString(`dummy = "`)
 		conffile.Sync()
 		conffile.Close()
