@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -582,7 +581,7 @@ func (s FileSystemHostIDStorage) HostIDFile() string {
 
 // LoadHostID loads the current host ID from the mackerel-agent's id file.
 func (s FileSystemHostIDStorage) LoadHostID() (string, error) {
-	content, err := ioutil.ReadFile(s.HostIDFile())
+	content, err := os.ReadFile(s.HostIDFile())
 	if err != nil {
 		return "", err
 	}

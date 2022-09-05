@@ -5,7 +5,6 @@ package pidfile
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,7 +16,7 @@ func existsPid(pid int) bool {
 }
 
 func getCmdName(pid int) string {
-	cnt, err := ioutil.ReadFile(fmt.Sprintf("/proc/%d/cmdline", pid))
+	cnt, err := os.ReadFile(fmt.Sprintf("/proc/%d/cmdline", pid))
 	if err != nil {
 		return ""
 	}

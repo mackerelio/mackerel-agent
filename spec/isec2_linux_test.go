@@ -2,7 +2,6 @@ package spec
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -97,7 +96,7 @@ func TestIsEC2(t *testing.T) {
 
 			uuidFiles := make([]string, 0, 2)
 			for _, exist := range tc.existsUUIDFiles {
-				tf, err := ioutil.TempFile("", "")
+				tf, err := os.CreateTemp("", "")
 				if err != nil {
 					t.Errorf("should not raise error: %s", err)
 				}

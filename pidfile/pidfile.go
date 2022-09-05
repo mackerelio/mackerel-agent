@@ -2,7 +2,6 @@ package pidfile
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -17,7 +16,7 @@ func Create(pidfile string) error {
 	if pidfile == "" {
 		return nil
 	}
-	if pidString, err := ioutil.ReadFile(pidfile); err == nil {
+	if pidString, err := os.ReadFile(pidfile); err == nil {
 		if pid, err := strconv.Atoi(string(pidString)); err == nil {
 			if pid == os.Getpid() {
 				return nil

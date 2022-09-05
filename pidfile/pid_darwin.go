@@ -3,7 +3,7 @@ package pidfile
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -11,8 +11,8 @@ import (
 
 func existsPid(pid int) bool {
 	cmd := exec.Command("/usr/sbin/lsof", "-p", fmt.Sprint(pid))
-	cmd.Stdout = ioutil.Discard
-	cmd.Stderr = ioutil.Discard
+	cmd.Stdout = io.Discard
+	cmd.Stderr = io.Discard
 
 	err := cmd.Run()
 	return err == nil
@@ -23,7 +23,7 @@ func getCmdName(pid int) string {
 
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
-	cmd.Stderr = ioutil.Discard
+	cmd.Stderr = io.Discard
 
 	err := cmd.Run()
 	if err != nil {

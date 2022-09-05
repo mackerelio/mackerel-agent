@@ -4,7 +4,6 @@
 package pidfile
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -17,17 +16,13 @@ func TestCreate(t *testing.T) {
 		t.Errorf("err should be nil but: %v", err)
 	}
 
-	dir, err := ioutil.TempDir("", "mackerel-agent-test-pidfile")
-	if err != nil {
-		t.Fatalf("failed to create tempdir")
-	}
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 	pidfile := filepath.Join(dir, "pidfile")
 	err = Create(pidfile)
 	if err != nil {
 		t.Errorf("err should be nil but: %v", err)
 	}
-	pidString, _ := ioutil.ReadFile(pidfile)
+	pidString, _ := os.ReadFile(pidfile)
 	pid, _ := strconv.Atoi(string(pidString))
 	if pid != os.Getpid() {
 		t.Errorf("contents of pidfile does not match pid. content: %d, pid: %d", pid, os.Getpid())
@@ -44,11 +39,7 @@ func TestRemove(t *testing.T) {
 	if err != nil {
 		t.Errorf("err should be nil but: %v", err)
 	}
-	dir, err := ioutil.TempDir("", "mackerel-agent-test-pidfile")
-	if err != nil {
-		t.Fatalf("failed to create tempdir")
-	}
-	defer os.RemoveAll(dir)
+	dir := t.TempDir()
 	pidfile := filepath.Join(dir, "pidfile")
 	err = Create(pidfile)
 	if err != nil {

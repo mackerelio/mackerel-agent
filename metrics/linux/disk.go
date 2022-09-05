@@ -7,7 +7,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -87,7 +87,7 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 }
 
 func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
-	out, err := ioutil.ReadFile("/proc/diskstats")
+	out, err := os.ReadFile("/proc/diskstats")
 	if err != nil {
 		diskLogger.Errorf("Failed (skip these metrics): %s", err)
 		return nil, err
