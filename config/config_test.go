@@ -186,6 +186,26 @@ func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
 	}
 }
 
+var sampleConfigWithInvalidToml = `
+apikey = "abcde"
+
+[plugin.metrics.mysql
+command = "ruby /path/to/your/plugin/mysql.rb"
+`
+
+func TestLoadConfigWithInvalidToml(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithInvalidToml)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: %v", err)
+	}
+}
+
 var sampleConfigWithInvalidMetricsCommand = `
 apikey = "abcde"
 
