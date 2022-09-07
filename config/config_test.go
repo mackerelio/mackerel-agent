@@ -74,7 +74,7 @@ func TestLoadConfig(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -116,7 +116,7 @@ func TestLoadConfigWithHostStatus(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -153,7 +153,7 @@ func TestLoadConfigWithMountPoint(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -178,7 +178,7 @@ func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
@@ -198,7 +198,7 @@ func TestLoadConfigWithInvalidToml(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
@@ -219,7 +219,7 @@ func TestLoadConfigWithInvalidMetricsCommand(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
@@ -244,7 +244,7 @@ func TestLoadConfigWithInvalidCheckCommand(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
@@ -279,7 +279,7 @@ func TestLoadConfigWithTooLargeCheckMemo(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := LoadConfig(tmpFile.Name())
 
@@ -315,7 +315,7 @@ func TestLoadConfigWithInvalidMetadataCommand(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
@@ -353,7 +353,7 @@ func TestLoadConfigWithCloudPlatform(t *testing.T) {
 		if err != nil {
 			t.Errorf("should not raise error: %v", err)
 		}
-		defer os.Remove(tmpFile.Name())
+		t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 		config, err := LoadConfig(tmpFile.Name())
 		if err != nil {
@@ -376,7 +376,7 @@ func TestLoadConfigWithInvalidCloudPlatform(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
@@ -389,7 +389,7 @@ func TestLoadConfigFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := loadConfigFile(tmpFile.Name())
 	if err != nil {
@@ -604,7 +604,7 @@ var tomlQuotedReplacer = strings.NewReplacer(
 func TestLoadConfigFileInclude(t *testing.T) {
 	configDir, err := ioutil.TempDir("", "mackerel-config-test")
 	assertNoError(t, err)
-	defer os.RemoveAll(configDir)
+	t.Cleanup(func() { os.RemoveAll(configDir) })
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub1.conf"))
 	assertNoError(t, err)
@@ -628,7 +628,7 @@ command = "this will be overwritten"
 
 	configFile, err := newTempFileWithContent(configContent)
 	assertNoError(t, err)
-	defer os.Remove(configFile.Name())
+	t.Cleanup(func() { os.Remove(configFile.Name()) })
 
 	includedContent := `
 roles = [ "Service:role" ]
@@ -661,7 +661,7 @@ command = "bar"
 func TestLoadConfigFileIncludeOverwritten(t *testing.T) {
 	configDir, err := ioutil.TempDir("", "mackerel-config-test")
 	assertNoError(t, err)
-	defer os.RemoveAll(configDir)
+	t.Cleanup(func() { os.RemoveAll(configDir) })
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub2.conf"))
 	assertNoError(t, err)
@@ -677,7 +677,7 @@ include = "%s/*.conf"
 
 	configFile, err := newTempFileWithContent(configContent)
 	assertNoError(t, err)
-	defer os.Remove(configFile.Name())
+	t.Cleanup(func() { os.Remove(configFile.Name()) })
 
 	includedContent := `
 apikey = "new-api-key"
@@ -704,7 +704,7 @@ func TestFileSystemHostIDStorage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.RemoveAll(root)
+	t.Cleanup(func() { os.RemoveAll(root) })
 
 	s := FileSystemHostIDStorage{Root: root}
 	err = s.SaveHostID("test-host-id")
@@ -746,7 +746,7 @@ silent = true
 	if err != nil {
 		t.Fatalf("should not raise error: %s", err)
 	}
-	defer os.Remove(conff.Name())
+	t.Cleanup(func() { os.Remove(conff.Name()) })
 
 	config, err := loadConfigFile(conff.Name())
 	assertNoError(t, err)
@@ -765,7 +765,7 @@ command = ["perl", "-E", "say 'Hello'"]
 	if err != nil {
 		t.Fatalf("should not raise error: %s", err)
 	}
-	defer os.Remove(conff.Name())
+	t.Cleanup(func() { os.Remove(conff.Name()) })
 
 	config, err := loadConfigFile(conff.Name())
 	assertNoError(t, err)
@@ -840,7 +840,7 @@ func main() {
 		os.Remove(tmpf.Name())
 		t.Fatalf("should not raise error: %s", err)
 	}
-	defer os.Remove(gof)
+	t.Cleanup(func() { os.Remove(gof) })
 
 	conf := fmt.Sprintf(`
 apikey = "abcde"
@@ -868,7 +868,7 @@ env = { "SAMPLE_KEY1" = " foo bar ", "SAMPLE_KEY2" = " baz qux " }
 		if err != nil {
 			t.Fatalf("should not raise error: %s", err)
 		}
-		defer os.Remove(conff.Name())
+		t.Cleanup(func() { os.Remove(conff.Name()) })
 
 		config, err := loadConfigFile(conff.Name())
 		assertNoError(t, err)
