@@ -202,7 +202,7 @@ func TestLoadConfigWithInvalidToml(t *testing.T) {
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid toml case.")
 	}
 }
 
@@ -223,7 +223,7 @@ func TestLoadConfigWithInvalidMetricsCommand(t *testing.T) {
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid metrics command case.")
 	}
 	if !strings.Contains(err.Error(), "should be string or string slice, but int64") {
 		t.Errorf("should raise error containing type information: %v", err)
@@ -248,7 +248,7 @@ func TestLoadConfigWithInvalidCheckCommand(t *testing.T) {
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid check command case.")
 	}
 	if !strings.Contains(err.Error(), "should be string or string slice, but <nil>") {
 		t.Errorf("should raise error containing type information: %v", err)
@@ -319,7 +319,7 @@ func TestLoadConfigWithInvalidMetadataCommand(t *testing.T) {
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid metadata command case.")
 	}
 	if !strings.Contains(err.Error(), "should be string or string slice, but []interface {}") {
 		t.Errorf("should raise error containing type information: %v", err)
@@ -380,7 +380,7 @@ func TestLoadConfigWithInvalidCloudPlatform(t *testing.T) {
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid cloud platform case.")
 	}
 }
 
