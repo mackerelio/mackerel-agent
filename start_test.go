@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -61,12 +60,7 @@ func TestStart(t *testing.T) {
 	ts := httptest.NewServer(mux)
 	defer ts.Close()
 
-	root, err := ioutil.TempDir("", "mackerel-config-test")
-	if err != nil {
-		t.Fatalf("Could not create temporary dir for test")
-	}
-	defer os.RemoveAll(root)
-
+	root := t.TempDir()
 	confFile, err := os.Create(filepath.Join(root, "mackerel-agent.conf"))
 	if err != nil {
 		t.Fatalf("Could not create temporary file for test")

@@ -43,10 +43,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 			for i := 1; i < len(fields); i += 2 {
 				v, err := getValue(fields[i])
 				if err == nil {
-					k := fields[i+1]
-					if strings.HasSuffix(k, ",") {
-						k = k[0 : len(k)-1]
-					}
+					k := strings.TrimSuffix(fields[i+1], ",")
 					switch k {
 					case "Act":
 						ret["memory.act"] = v

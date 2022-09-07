@@ -3,7 +3,6 @@ package metadata
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -59,7 +58,7 @@ func (g *Generator) IsChanged(metadata interface{}) bool {
 
 // LoadFromFile loads the previous metadata from file
 func (g *Generator) LoadFromFile() {
-	data, err := ioutil.ReadFile(g.Cachefile)
+	data, err := os.ReadFile(g.Cachefile)
 	if err != nil { // maybe initial state
 		return
 	}
@@ -100,7 +99,7 @@ func (g *Generator) Clear() error {
 // writeFileAtomically writes contents to the file atomically
 func writeFileAtomically(f string, contents []byte) error {
 	// MUST be located on same disk partition
-	tmpf, err := ioutil.TempFile(filepath.Dir(f), "tmp")
+	tmpf, err := os.CreateTemp(filepath.Dir(f), "tmp")
 	if err != nil {
 		return err
 	}

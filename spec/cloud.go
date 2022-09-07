@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -184,7 +183,7 @@ func (g *EC2Generator) hasMetadataService(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return false, err
 	}
@@ -228,7 +227,7 @@ func (g *EC2Generator) refreshToken(ctx context.Context) string {
 		return ""
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return ""
 	}
@@ -288,7 +287,7 @@ func (g *EC2Generator) getMetadata(cl *http.Client, key string) (string, error) 
 		return "", nil
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
 		return "", err
@@ -317,7 +316,7 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 			io.Copy(io.Discard, resp.Body)
 			return fmt.Errorf("failed to request instance-id. response code: %d", resp.StatusCode)
 		}
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("results of requesting instance-id cannot be read: '%s'", err)
 		}
@@ -354,7 +353,7 @@ func requestGCEMeta(ctx context.Context) ([]byte, error) {
 		io.Copy(io.Discard, resp.Body)
 		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
 	}
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
 
 // IsGCE checks current environment is GCE or not
@@ -510,7 +509,7 @@ func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlS
 		defer resp.Body.Close()
 
 		if resp.StatusCode == 200 {
-			body, err := ioutil.ReadAll(resp.Body)
+			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
 				break
@@ -545,7 +544,7 @@ func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
 			io.Copy(io.Discard, resp.Body)
 			return fmt.Errorf("failed to request vmId. response code: %d", resp.StatusCode)
 		}
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("results of requesting vmId cannot be read: '%s'", err)
 		}

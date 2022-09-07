@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -436,10 +435,10 @@ func LoadConfig(conffile string) (*Config, error) {
 	if config.Pidfile == "" {
 		config.Pidfile = DefaultConfig.Pidfile
 	}
-	if config.Verbose == false {
+	if !config.Verbose {
 		config.Verbose = DefaultConfig.Verbose
 	}
-	if config.Diagnostic == false {
+	if !config.Diagnostic {
 		config.Diagnostic = DefaultConfig.Diagnostic
 	}
 
@@ -522,7 +521,7 @@ func includeConfigFile(config *Config, include string) error {
 
 		// If included config does not have "roles" key,
 		// use the previous roles configuration value.
-		if meta.IsDefined("roles") == false {
+		if !meta.IsDefined("roles") {
 			config.Roles = rolesSaved
 		}
 
@@ -582,7 +581,7 @@ func (s FileSystemHostIDStorage) HostIDFile() string {
 
 // LoadHostID loads the current host ID from the mackerel-agent's id file.
 func (s FileSystemHostIDStorage) LoadHostID() (string, error) {
-	content, err := ioutil.ReadFile(s.HostIDFile())
+	content, err := os.ReadFile(s.HostIDFile())
 	if err != nil {
 		return "", err
 	}

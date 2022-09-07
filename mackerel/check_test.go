@@ -3,7 +3,7 @@ package mackerel
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -22,7 +22,7 @@ func TestReportCheckMonitors(t *testing.T) {
 			t.Error("request method should be POST but :", req.Method)
 		}
 
-		body, _ := ioutil.ReadAll(req.Body)
+		body, _ := io.ReadAll(req.Body)
 		content := string(body)
 		type testrepo struct {
 			Source     map[string]string `json:"source"`
