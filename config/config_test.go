@@ -73,7 +73,7 @@ func TestLoadConfig(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -115,7 +115,7 @@ func TestLoadConfigWithHostStatus(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -152,7 +152,7 @@ func TestLoadConfigWithMountPoint(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := LoadConfig(tmpFile.Name())
 	if err != nil {
@@ -177,11 +177,31 @@ func TestLoadConfigWithInvalidIgnoreRegexp(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
 		t.Errorf("should raise error: invalid ignore case.")
+	}
+}
+
+var sampleConfigWithInvalidToml = `
+apikey = "abcde"
+
+[plugin.metrics.mysql
+command = "ruby /path/to/your/plugin/mysql.rb"
+`
+
+func TestLoadConfigWithInvalidToml(t *testing.T) {
+	tmpFile, err := newTempFileWithContent(sampleConfigWithInvalidToml)
+	if err != nil {
+		t.Errorf("should not raise error: %v", err)
+	}
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
+
+	_, err = LoadConfig(tmpFile.Name())
+	if err == nil {
+		t.Errorf("should raise error: invalid toml case.")
 	}
 }
 
@@ -198,11 +218,11 @@ func TestLoadConfigWithInvalidMetricsCommand(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid metrics command case.")
 	}
 	if !strings.Contains(err.Error(), "should be string or string slice, but int64") {
 		t.Errorf("should raise error containing type information: %v", err)
@@ -223,11 +243,11 @@ func TestLoadConfigWithInvalidCheckCommand(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid check command case.")
 	}
 	if !strings.Contains(err.Error(), "should be string or string slice, but <nil>") {
 		t.Errorf("should raise error containing type information: %v", err)
@@ -258,7 +278,7 @@ func TestLoadConfigWithTooLargeCheckMemo(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := LoadConfig(tmpFile.Name())
 
@@ -294,11 +314,11 @@ func TestLoadConfigWithInvalidMetadataCommand(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid metadata command case.")
 	}
 	if !strings.Contains(err.Error(), "should be string or string slice, but []interface {}") {
 		t.Errorf("should raise error containing type information: %v", err)
@@ -332,7 +352,7 @@ func TestLoadConfigWithCloudPlatform(t *testing.T) {
 		if err != nil {
 			t.Errorf("should not raise error: %v", err)
 		}
-		defer os.Remove(tmpFile.Name())
+		t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 		config, err := LoadConfig(tmpFile.Name())
 		if err != nil {
@@ -355,11 +375,11 @@ func TestLoadConfigWithInvalidCloudPlatform(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	_, err = LoadConfig(tmpFile.Name())
 	if err == nil {
-		t.Errorf("should raise error: %v", err)
+		t.Errorf("should raise error: invalid cloud platform case.")
 	}
 }
 
@@ -368,7 +388,7 @@ func TestLoadConfigFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}
-	defer os.Remove(tmpFile.Name())
+	t.Cleanup(func() { os.Remove(tmpFile.Name()) })
 
 	config, err := loadConfigFile(tmpFile.Name())
 	if err != nil {
@@ -605,7 +625,7 @@ command = "this will be overwritten"
 
 	configFile, err := newTempFileWithContent(configContent)
 	assertNoError(t, err)
-	defer os.Remove(configFile.Name())
+	t.Cleanup(func() { os.Remove(configFile.Name()) })
 
 	includedContent := `
 roles = [ "Service:role" ]
@@ -652,7 +672,7 @@ include = "%s/*.conf"
 
 	configFile, err := newTempFileWithContent(configContent)
 	assertNoError(t, err)
-	defer os.Remove(configFile.Name())
+	t.Cleanup(func() { os.Remove(configFile.Name()) })
 
 	includedContent := `
 apikey = "new-api-key"
@@ -717,7 +737,7 @@ silent = true
 	if err != nil {
 		t.Fatalf("should not raise error: %s", err)
 	}
-	defer os.Remove(conff.Name())
+	t.Cleanup(func() { os.Remove(conff.Name()) })
 
 	config, err := loadConfigFile(conff.Name())
 	assertNoError(t, err)
@@ -736,7 +756,7 @@ command = ["perl", "-E", "say 'Hello'"]
 	if err != nil {
 		t.Fatalf("should not raise error: %s", err)
 	}
-	defer os.Remove(conff.Name())
+	t.Cleanup(func() { os.Remove(conff.Name()) })
 
 	config, err := loadConfigFile(conff.Name())
 	assertNoError(t, err)
@@ -811,7 +831,7 @@ func main() {
 		os.Remove(tmpf.Name())
 		t.Fatalf("should not raise error: %s", err)
 	}
-	defer os.Remove(gof)
+	t.Cleanup(func() { os.Remove(gof) })
 
 	conf := fmt.Sprintf(`
 apikey = "abcde"
@@ -839,7 +859,7 @@ env = { "SAMPLE_KEY1" = " foo bar ", "SAMPLE_KEY2" = " baz qux " }
 		if err != nil {
 			t.Fatalf("should not raise error: %s", err)
 		}
-		defer os.Remove(conff.Name())
+		t.Cleanup(func() { os.Remove(conff.Name()) })
 
 		config, err := loadConfigFile(conff.Name())
 		assertNoError(t, err)
