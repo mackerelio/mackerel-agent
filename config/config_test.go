@@ -602,7 +602,6 @@ var tomlQuotedReplacer = strings.NewReplacer(
 
 func TestLoadConfigFileInclude(t *testing.T) {
 	configDir := t.TempDir()
-	t.Cleanup(func() { os.RemoveAll(configDir) })
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub1.conf"))
 	assertNoError(t, err)
@@ -658,7 +657,6 @@ command = "bar"
 
 func TestLoadConfigFileIncludeOverwritten(t *testing.T) {
 	configDir := t.TempDir()
-	t.Cleanup(func() { os.RemoveAll(configDir) })
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub2.conf"))
 	assertNoError(t, err)
@@ -698,7 +696,6 @@ verbose = true
 
 func TestFileSystemHostIDStorage(t *testing.T) {
 	root := t.TempDir()
-	t.Cleanup(func() { os.RemoveAll(root) })
 
 	s := FileSystemHostIDStorage{Root: root}
 	err := s.SaveHostID("test-host-id")
