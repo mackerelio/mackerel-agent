@@ -601,7 +601,7 @@ var tomlQuotedReplacer = strings.NewReplacer(
 )
 
 func TestLoadConfigFileInclude(t *testing.T) {
-  configDir := t.TempDir()
+	configDir := t.TempDir()
 	t.Cleanup(func() { os.RemoveAll(configDir) })
 
 	includedFile, err := os.Create(filepath.Join(configDir, "sub1.conf"))
@@ -697,7 +697,7 @@ verbose = true
 }
 
 func TestFileSystemHostIDStorage(t *testing.T) {
-  root := t.TempDir()
+	root := t.TempDir()
 	t.Cleanup(func() { os.RemoveAll(root) })
 
 	s := FileSystemHostIDStorage{Root: root}
