@@ -102,9 +102,21 @@ do configtest
 func doConfigtest(fs *flag.FlagSet, argv []string) error {
 	conf, err := resolveConfig(fs, argv)
 	if err != nil {
-		return fmt.Errorf("failed to test config: %s", err)
+		return fmt.Errorf("\x1b[31m[CRITICAL] failed to test config: %s \x1b[0m", err)
 	}
-	fmt.Fprintf(os.Stderr, "%s Syntax OK\n", conf.Conffile)
+	validResult, err := config.ValidateConfigFile(conf.Conffile)
+	if err != nil {
+		return fmt.Errorf("\x1b[31m[CRITICAL] failed to test config: %s \x1b[0m", err)
+	}
+	if len(validResult) > 0 {
+		var messages string
+		for _, key := range validResult {
+			messages += fmt.Sprintf("\x1b[33m[WARNING] %s is not used key \x1b[0m \n", key)
+		}
+		return fmt.Errorf(messages)
+	}
+	
+	fmt.Fprintf(os.Stderr, "SUCCESS (%s)\n", conf.Conffile)
 	return nil
 }
 
