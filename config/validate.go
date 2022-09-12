@@ -5,6 +5,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+// detect unexpected key in configfile
 func ValidateConfigFile(file string) ([]string, error) {
 	config := &Config{}
 	md, err := toml.DecodeFile(file, config)
