@@ -3,7 +3,7 @@ module github.com/mackerelio/mackerel-agent/wix
 go 1.17
 
 require (
-	github.com/mackerelio/go-check-plugins v0.42.1
+	github.com/mackerelio/go-check-plugins v0.42.2
 	github.com/mackerelio/mackerel-agent-plugins v0.72.1
 	github.com/mackerelio/mkr v0.47.0
 	github.com/mattn/go-encoding v0.0.2
