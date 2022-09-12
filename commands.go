@@ -17,9 +17,10 @@ import (
 	"github.com/mackerelio/mackerel-agent/supervisor"
 )
 
-/* +main - mackerel-agent
+/*
+	 +main - mackerel-agent
 
-	mackerel-agent [options]
+		mackerel-agent [options]
 
 main process of mackerel-agent
 */
@@ -31,19 +32,20 @@ func doMain(fs *flag.FlagSet, argv []string) error {
 	return start(conf, make(chan struct{}))
 }
 
-/* +command init - initialize mackerel-agent.conf with apikey
+/*
+	 +command init - initialize mackerel-agent.conf with apikey
 
-	init -apikey=xxxxxxxxxxx [-conf=mackerel-agent.conf]
+		init -apikey=xxxxxxxxxxx [-conf=mackerel-agent.conf]
 
 Initialize mackerel-agent.conf with api key.
 
-- The conf file doesn't exist:
+  - The conf file doesn't exist:
     create new file and set the apikey.
-- The conf file exists and apikey is unset:
+  - The conf file exists and apikey is unset:
     set the apikey.
-- The conf file exists and apikey already set:
+  - The conf file exists and apikey already set:
     skip initializing. Don't overwrite apikey and exit normally.
-- The conf file exists, but the contents of it is invalid toml:
+  - The conf file exists, but the contents of it is invalid toml:
     exit with error.
 */
 func doInit(fs *flag.FlagSet, argv []string) error {
@@ -55,9 +57,10 @@ func doInit(fs *flag.FlagSet, argv []string) error {
 	return err
 }
 
-/* +command supervise - supervisor mode
+/*
+	 +command supervise - supervisor mode
 
-	supervise -conf mackerel-agent.conf ...
+		supervise -conf mackerel-agent.conf ...
 
 run as supervisor mode enabling configuration reloading and crash recovery
 */
@@ -81,9 +84,10 @@ func doSupervise(fs *flag.FlagSet, argv []string) error {
 	return supervisor.Supervise(os.Args[0], copiedArgv, nil)
 }
 
-/* +command version - display version of mackerel-agent
+/*
+	 +command version - display version of mackerel-agent
 
-	version
+		version
 
 display the version of mackerel-agent
 */
@@ -93,9 +97,10 @@ func doVersion(_ *flag.FlagSet, _ []string) error {
 	return nil
 }
 
-/* +command configtest - configtest
+/*
+	 +command configtest - configtest
 
-	configtest
+		configtest
 
 do configtest
 */
@@ -115,14 +120,15 @@ func doConfigtest(fs *flag.FlagSet, argv []string) error {
 		}
 		return fmt.Errorf(messages)
 	}
-	
+
 	fmt.Fprintf(os.Stderr, "SUCCESS (%s)\n", conf.Conffile)
 	return nil
 }
 
-/* +command retire - retire the host
+/*
+	 +command retire - retire the host
 
-	retire [-force]
+		retire [-force]
 
 retire the host
 */
@@ -161,9 +167,10 @@ func doRetire(fs *flag.FlagSet, argv []string) error {
 	return nil
 }
 
-/* +command once - output onetime
+/*
+	 +command once - output onetime
 
-	once
+		once
 
 output metrics and meta data of the host one time.
 These data are only displayed and not posted to Mackerel.

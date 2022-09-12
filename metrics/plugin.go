@@ -77,23 +77,23 @@ var pluginMetaHeadlineReg = regexp.MustCompile(`^#\s*mackerel-agent-plugin\b(.*)
 // mackerel-agent runs the command with MACKEREL_AGENT_PLUGIN_META
 // environment variable set.  The command is supposed to output like below:
 //
-// 	# mackerel-agent-plugin
-// 	{
-// 	  "graphs": {
-// 	    GRAPH_NAME: {
-// 	      "label": GRAPH_LABEL,
-// 	      "unit": UNIT_TYPE
-// 	      "metrics": [
-// 	        {
-// 	          "name": METRIC_NAME,
-// 	          "label": METRIC_LABEL
-// 	        },
-// 	        ...
-// 	      ]
-// 	    },
-// 	    GRAPH_NAME: ...
-// 	  }
-// 	}
+//	# mackerel-agent-plugin
+//	{
+//	  "graphs": {
+//	    GRAPH_NAME: {
+//	      "label": GRAPH_LABEL,
+//	      "unit": UNIT_TYPE
+//	      "metrics": [
+//	        {
+//	          "name": METRIC_NAME,
+//	          "label": METRIC_LABEL
+//	        },
+//	        ...
+//	      ]
+//	    },
+//	    GRAPH_NAME: ...
+//	  }
+//	}
 //
 // Valid UNIT_TYPEs are: "float", "integer", "percentage", "seconds", "milliseconds", "bytes", "bytes/sec", "bits/sec", "iops"
 //
@@ -102,24 +102,24 @@ var pluginMetaHeadlineReg = regexp.MustCompile(`^#\s*mackerel-agent-plugin\b(.*)
 //
 // Below is a working example where the plugin emits metrics named "dice.d6" and "dice.d20":
 //
-// 	{
-// 	  "graphs": {
-// 	    "dice": {
-// 	      "metrics": [
-// 	        {
-// 	          "name": "d6",
-// 	          "label": "Die (d6)"
-// 	        },
-// 	        {
-// 	          "name": "d20",
-// 	          "label": "Die (d20)"
-// 	        }
-// 	      ],
-// 	      "unit": "integer",
-// 	      "label": "My Dice"
-// 	    }
-// 	  }
-// 	}
+//	{
+//	  "graphs": {
+//	    "dice": {
+//	      "metrics": [
+//	        {
+//	          "name": "d6",
+//	          "label": "Die (d6)"
+//	        },
+//	        {
+//	          "name": "d20",
+//	          "label": "Die (d20)"
+//	        }
+//	      ],
+//	      "unit": "integer",
+//	      "label": "My Dice"
+//	    }
+//	  }
+//	}
 func (g *pluginGenerator) loadPluginMeta() error {
 	// Set environment variable to make the plugin command generate its configuration
 	pluginMetaEnv := pluginConfigurationEnvName + "=1"
