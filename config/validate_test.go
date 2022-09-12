@@ -11,16 +11,28 @@ podfile = "/path/to/pidfile"
 
 [foobar]
 command = "test command"
+env = { FOO = "BAR" }
 
-# TODO: detect warning
-[plugin.check.hoge]
+[plugin.foo.bar]
+command = "test command"
+env = { FOO = "BAR" }
+
+[plugin.metric.first]
 command = "test command"
 
-[plugins.check.hoge]
+[plugin.check.first]
 command = "test command"
 
-# this is correct
-[plugin.checks.hoge]
+[plugin.check.second]
+command = "test command"
+
+[plugins.check.first]
+command = "test command"
+
+[plugin.metrics.correct]
+command = "test command"
+
+[plugin.checks.correct]
 command = "test command"
 `
 
@@ -36,21 +48,31 @@ func TestValidateConfig(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	want := []string{
+	wantUnexpectedKey := []string{
 		"podfile",
 		"foobar",
 		"foobar.command",
-		"plugins.check.hoge",
-		"plugins.check.hoge.command",
+		"foobar.env",
+		"foobar.env.FOO",
+		"plugin.foo.bar",
+		// don't detect child of plugin.<unexpected>.<unexpected>
+		// "plugin.foo.bar.command",
+		// "plugin.foo.bar.env",
+		// "plugin.foo.bar.env.FOO",
+		"plugin.metric.first",
+		"plugin.check.first",
+		"plugin.check.second",
+		"plugins.check.first",
+		"plugins.check.first.command",
 	}
 
-	if len(want) != len(validResult) {
-		t.Errorf("should be more undecoded keys: want %v, validResult: %v", len(want), len(validResult))
+	if len(wantUnexpectedKey) != len(validResult) {
+		t.Errorf("should be more undecoded keys: want %v, validResult: %v", len(wantUnexpectedKey), len(validResult))
 	}
 
 	for _, v := range validResult {
-		if !contains(want, v.String()) {
-			t.Errorf("should be Undecoded: %v", v.String())
+		if !contains(wantUnexpectedKey, v) {
+			t.Errorf("should be Undecoded: %v", v)
 		}
 	}
 }
