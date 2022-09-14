@@ -1,3 +1,22 @@
+mackerel-agent (0.73.1-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mkr from 0.46.9 to 0.47.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/812>
+  * config_test: Add the case of LoadConfigWithInvalidToml (by wafuwafu13)
+    <https://github.com/mackerelio/mackerel-agent/pull/811>
+  * In the test, if the Fatal if the result is nil. (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/807>
+  * remove unused codes (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/806>
+  * replace io/ioutil (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/805>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.21.1 to 0.21.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/803>
+  * get interface information via netlink on linux. (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/801>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 14 Sep 2022 06:44:52 +0000
+
 mackerel-agent (0.73.0-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/mkr from 0.46.8 to 0.46.9 in /wix (by dependabot[bot])
