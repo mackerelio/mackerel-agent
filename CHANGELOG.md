@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.73.1 (2022-09-14)
+
+* Bump github.com/mackerelio/mkr from 0.46.9 to 0.47.0 in /wix #812 (dependabot[bot])
+* config_test: Add the case of LoadConfigWithInvalidToml #811 (wafuwafu13)
+* In the test, if the Fatal if the result is nil. #807 (yseto)
+* remove unused codes #806 (yseto)
+* replace io/ioutil #805 (yseto)
+* Bump github.com/mackerelio/mackerel-client-go from 0.21.1 to 0.21.2 #803 (dependabot[bot])
+* get interface information via netlink on linux. #801 (yseto)
+
+
 ## 0.73.0 (2022-07-27)
 
 * Bump github.com/mackerelio/mkr from 0.46.8 to 0.46.9 in /wix #797 (dependabot[bot])
