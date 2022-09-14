@@ -6,7 +6,6 @@ package linux
 import (
 	"github.com/vishvananda/netlink"
 
-	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/spec"
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
@@ -14,8 +13,6 @@ import (
 // InterfaceGenerator XXX
 type InterfaceGenerator struct {
 }
-
-var interfaceLogger = logging.GetLogger("spec.interface")
 
 // Generate XXX
 func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
