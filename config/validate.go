@@ -13,9 +13,9 @@ func ValidateConfigFile(file string) ([]string, error) {
 		return nil, fmt.Errorf("failed to test config: %s", err)
 	}
 
-	var unexpectedKey []string = make([]string, 0)
+	var unexpectedKeys []string
 	for _, v := range md.Undecoded() {
-		unexpectedKey = append(unexpectedKey, v.String())
+		unexpectedKeys = append(unexpectedKeys, v.String())
 	}
 
 	for k1, v := range config.Plugin {
@@ -34,10 +34,10 @@ func ValidateConfigFile(file string) ([]string, error) {
 		*/
 		if k1 != "metrics" && k1 != "checks" && k1 != "metadata" {
 			for k2 := range v {
-				unexpectedKey = append(unexpectedKey, fmt.Sprintf("plugin.%s.%s", k1, k2))
+				unexpectedKeys = append(unexpectedKeys, fmt.Sprintf("plugin.%s.%s", k1, k2))
 			}
 		}
 	}
 
-	return unexpectedKey, nil
+	return unexpectedKeys, nil
 }
