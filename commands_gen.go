@@ -19,7 +19,7 @@ func init() {
 			Name:   "init",
 			Action: doInit,
 			Short:  "initialize mackerel-agent.conf with apikey",
-			Long:   "init -apikey=xxxxxxxxxxx [-conf=mackerel-agent.conf]\n\nInitialize mackerel-agent.conf with api key.\n\n- The conf file doesn't exist:\n    create new file and set the apikey.\n- The conf file exists and apikey is unset:\n    set the apikey.\n- The conf file exists and apikey already set:\n    skip initializing. Don't overwrite apikey and exit normally.\n- The conf file exists, but the contents of it is invalid toml:\n    exit with error.",
+			Long:   "init -apikey=xxxxxxxxxxx [-conf=mackerel-agent.conf]\n\nInitialize mackerel-agent.conf with api key.\n\n  - The conf file doesn't exist:\n    create new file and set the apikey.\n  - The conf file exists and apikey is unset:\n    set the apikey.\n  - The conf file exists and apikey already set:\n    skip initializing. Don't overwrite apikey and exit normally.\n  - The conf file exists, but the contents of it is invalid toml:\n    exit with error.",
 		},
 	)
 

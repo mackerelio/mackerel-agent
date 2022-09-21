@@ -324,6 +324,28 @@ invalid!!!
 	}
 }
 
+func TestConfigTestUnexpectedKey(t *testing.T) {
+	// prepare dummy config
+	confFile, err := os.CreateTemp("", "mackerel-config-test")
+	if err != nil {
+		t.Fatalf("Could not create temporary config file for test")
+	}
+	confFile.WriteString(`
+	apikey="DUMMYAPIKEY"
+	unexpected="value"
+`)
+	confFile.Sync()
+	confFile.Close()
+	defer os.Remove(confFile.Name())
+
+	argv := []string{"-conf=" + confFile.Name()}
+	err = doConfigtest(&flag.FlagSet{}, argv)
+
+	if err == nil {
+		t.Errorf("configtest(failed) must be return error")
+	}
+}
+
 func TestDoOnce(t *testing.T) {
 	err := doOnce(&flag.FlagSet{}, []string{})
 	if err != nil {
