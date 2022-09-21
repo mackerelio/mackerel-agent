@@ -54,6 +54,15 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Sep 14 2022 <mackerel-developers@hatena.ne.jp> - 0.73.1
+- Bump github.com/mackerelio/mkr from 0.46.9 to 0.47.0 in /wix (by dependabot[bot])
+- config_test: Add the case of LoadConfigWithInvalidToml (by wafuwafu13)
+- In the test, if the Fatal if the result is nil. (by yseto)
+- remove unused codes (by yseto)
+- replace io/ioutil (by yseto)
+- Bump github.com/mackerelio/mackerel-client-go from 0.21.1 to 0.21.2 (by dependabot[bot])
+- get interface information via netlink on linux. (by yseto)
+
 * Wed Jul 27 2022 <mackerel-developers@hatena.ne.jp> - 0.73.0
 - Bump github.com/mackerelio/mkr from 0.46.8 to 0.46.9 in /wix (by dependabot[bot])
 - Bump github.com/mackerelio/mackerel-agent-plugins from 0.71.0 to 0.72.1 in /wix (by dependabot[bot])
