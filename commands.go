@@ -15,6 +15,7 @@ import (
 	"github.com/mackerelio/mackerel-agent/config"
 	"github.com/mackerelio/mackerel-agent/pidfile"
 	"github.com/mackerelio/mackerel-agent/supervisor"
+	"github.com/fatih/color"
 )
 
 /*
@@ -106,17 +107,19 @@ do configtest
 */
 func doConfigtest(fs *flag.FlagSet, argv []string) error {
 	conf, err := resolveConfig(fs, argv)
+	red := color.New(color.FgRed)
+	yellow := color.New(color.FgYellow)
 	if err != nil {
-		return fmt.Errorf("\x1b[31m[CRITICAL] failed to test config: %s \x1b[0m", err)
+		return fmt.Errorf(red.Sprintf("[CRITICAL] failed to test config: %s", err))
 	}
 	validResult, err := config.ValidateConfigFile(conf.Conffile)
 	if err != nil {
-		return fmt.Errorf("\x1b[31m[CRITICAL] failed to test config: %s \x1b[0m", err)
+		return fmt.Errorf(red.Sprintf("[CRITICAL] failed to test config: %s", err))
 	}
 	if len(validResult) > 0 {
 		var messages string
 		for _, key := range validResult {
-			messages += fmt.Sprintf("\x1b[33m[WARNING] %s is unexpected key \x1b[0m \n", key)
+			messages += fmt.Sprintf(yellow.Sprintf("[WARNING] %s is unexpected key\n", key))
 		}
 		return fmt.Errorf(messages)
 	}
