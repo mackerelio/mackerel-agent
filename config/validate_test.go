@@ -6,27 +6,31 @@ import (
 )
 
 var configFile = `
-apikey = "hoge"
+apikey = "123456abcde"
 podfile = "/path/to/pidfile"
 
 [foobar]
 command = "test command"
 env = { FOO = "BAR" }
 
+[filesystems]
+ignore = "/path/to/ignore"
+use_mntpoint = true
+
 [plugin.foo.bar]
 command = "test command"
 env = { FOO = "BAR" }
 
-[plugin.metric.first]
+[plugin.metric.1]
 command = "test command"
 
-[plugin.check.first]
+[plugin.check.1]
 command = "test command"
 
-[plugin.check.second]
+[plugin.check.2]
 command = "test command"
 
-[plugins.check.first]
+[plugins.check.1]
 command = "test command"
 
 [plugin.metrics.correct]
@@ -34,6 +38,18 @@ command = "test command"
 
 [plugin.checks.correct]
 command = "test command"
+
+[plugin.metrics.1]
+command = "test command"
+action = { command = "test command", use = "test user", env = { TEST_KEY = "VALUE_1" } }
+
+[plugin.metrics.2]
+command = "test command"
+action = { command = "test command", xxx = "yyy" }
+
+[plugin.checks.1]
+command = "test command"
+action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" } }
 `
 
 func TestValidateConfig(t *testing.T) {
@@ -49,22 +65,31 @@ func TestValidateConfig(t *testing.T) {
 	}
 
 	wantUnexpectedKey := []UnexpectedKey{
-		{Name: "podfile"},
-		{Name: "foobar"},
-		{Name: "plugin.foo.bar"},
-		{Name: "plugin.metric.first"},
-		{Name: "plugin.check.first"},
-		{Name: "plugin.check.second"},
-		{Name: "plugins"},
+		{"filesystems.use_mntpoint", "filesystems.use_mountpoint"},
+		{"foobar", ""},
+		{"plugin.check.1", "plugin.checks.1"},
+		{"plugin.check.2", "plugin.checks.2"},
+		{"plugin.checks.1.action.en", "plugin.checks.1.action.env"},
+		{"plugin.checks.1.action.en.TEST_KEY", ""},
+		{"plugin.foo.bar", "plugin.metrics.bar"},
+		{"plugin.metric.1", "plugin.metrics.1"},
+		{"plugin.metrics.1.action.use", "plugin.metrics.1.action.user"},
+		{"plugin.metrics.2.action.xxx", ""},
+		{"plugins", "plugin"},
+		{"podfile", "pidfile"},
 	}
 
 	if len(wantUnexpectedKey) != len(validResult) {
 		t.Errorf("should be more undecoded keys: want %v, validResult: %v", len(wantUnexpectedKey), len(validResult))
 	}
 
-	for _, v := range validResult {
-		if !containKey(wantUnexpectedKey, v.Name) {
-			t.Errorf("should be Undecoded: %v", v)
+	for i, v := range validResult {
+		if wantUnexpectedKey[i].Name != v.Name {
+			t.Errorf("expect Name: %v, actual Name: %v", wantUnexpectedKey[i].Name, v.Name)
+		}
+
+		if wantUnexpectedKey[i].SuggestName != v.SuggestName {
+			t.Errorf("expect SuggestName: %v, actual SuggestName: %v", wantUnexpectedKey[i].SuggestName, v.SuggestName)
 		}
 	}
 }
