@@ -51,19 +51,11 @@ func TestValidateConfig(t *testing.T) {
 	wantUnexpectedKey := []string{
 		"podfile",
 		"foobar",
-		"foobar.command",
-		"foobar.env",
-		"foobar.env.FOO",
 		"plugin.foo.bar",
-		// don't detect child of plugin.<unexpected>.<unexpected>
-		// "plugin.foo.bar.command",
-		// "plugin.foo.bar.env",
-		// "plugin.foo.bar.env.FOO",
 		"plugin.metric.first",
 		"plugin.check.first",
 		"plugin.check.second",
-		"plugins.check.first",
-		"plugins.check.first.command",
+		"plugins",
 	}
 
 	if len(wantUnexpectedKey) != len(validResult) {
@@ -75,13 +67,4 @@ func TestValidateConfig(t *testing.T) {
 			t.Errorf("should be Undecoded: %v", v)
 		}
 	}
-}
-
-func contains(target []string, want string) bool {
-	for _, v := range target {
-		if v == want {
-			return true
-		}
-	}
-	return false
 }

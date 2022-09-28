@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"strings"
 )
 
 // ValidateConfigFile detect unexpected key in configfile
@@ -15,7 +16,10 @@ func ValidateConfigFile(file string) ([]string, error) {
 
 	var unexpectedKeys []string
 	for _, v := range md.Undecoded() {
-		unexpectedKeys = append(unexpectedKeys, v.String())
+		key := strings.Split(v.String(), ".")[0]
+		if !contains(unexpectedKeys, key) {
+			unexpectedKeys = append(unexpectedKeys, key)
+		}
 	}
 
 	for k1, v := range config.Plugin {
@@ -40,4 +44,13 @@ func ValidateConfigFile(file string) ([]string, error) {
 	}
 
 	return unexpectedKeys, nil
+}
+
+func contains(target []string, want string) bool {
+	for _, v := range target {
+		if v == want {
+			return true
+		}
+	}
+	return false
 }
