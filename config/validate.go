@@ -6,19 +6,23 @@ import (
 	"strings"
 )
 
+type UnexpectedKey struct {
+	Name string
+}
+
 // ValidateConfigFile detect unexpected key in configfile
-func ValidateConfigFile(file string) ([]string, error) {
+func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 	config := &Config{}
 	md, err := toml.DecodeFile(file, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to test config: %s", err)
 	}
 
-	var unexpectedKeys []string
+	var unexpectedKeys []UnexpectedKey
 	for _, v := range md.Undecoded() {
 		key := strings.Split(v.String(), ".")[0]
-		if !contains(unexpectedKeys, key) {
-			unexpectedKeys = append(unexpectedKeys, key)
+		if !containKey(unexpectedKeys, key) {
+			unexpectedKeys = append(unexpectedKeys, UnexpectedKey{Name: key})
 		}
 	}
 
@@ -38,7 +42,7 @@ func ValidateConfigFile(file string) ([]string, error) {
 		*/
 		if k1 != "metrics" && k1 != "checks" && k1 != "metadata" {
 			for k2 := range v {
-				unexpectedKeys = append(unexpectedKeys, fmt.Sprintf("plugin.%s.%s", k1, k2))
+				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{Name: fmt.Sprintf("plugin.%s.%s", k1, k2)})
 			}
 		}
 	}
@@ -46,9 +50,9 @@ func ValidateConfigFile(file string) ([]string, error) {
 	return unexpectedKeys, nil
 }
 
-func contains(target []string, want string) bool {
+func containKey(target []UnexpectedKey, want string) bool {
 	for _, v := range target {
-		if v == want {
+		if v.Name == want {
 			return true
 		}
 	}

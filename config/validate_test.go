@@ -48,14 +48,14 @@ func TestValidateConfig(t *testing.T) {
 		t.Errorf("should not raise error: %v", err)
 	}
 
-	wantUnexpectedKey := []string{
-		"podfile",
-		"foobar",
-		"plugin.foo.bar",
-		"plugin.metric.first",
-		"plugin.check.first",
-		"plugin.check.second",
-		"plugins",
+	wantUnexpectedKey := []UnexpectedKey{
+		{Name: "podfile"},
+		{Name: "foobar"},
+		{Name: "plugin.foo.bar"},
+		{Name: "plugin.metric.first"},
+		{Name: "plugin.check.first"},
+		{Name: "plugin.check.second"},
+		{Name: "plugins"},
 	}
 
 	if len(wantUnexpectedKey) != len(validResult) {
@@ -63,7 +63,7 @@ func TestValidateConfig(t *testing.T) {
 	}
 
 	for _, v := range validResult {
-		if !contains(wantUnexpectedKey, v) {
+		if !containKey(wantUnexpectedKey, v.Name) {
 			t.Errorf("should be Undecoded: %v", v)
 		}
 	}
