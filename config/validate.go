@@ -24,7 +24,7 @@ func normalizeKeyname(f reflect.StructField) string {
 	return name
 }
 
-func addKeynametoCandidates(f reflect.StructField, candidates *[]string) *[]string {
+func addKeynameToCandidates(f reflect.StructField, candidates *[]string) *[]string {
 	name := normalizeKeyname(f)
 	*candidates = append(*candidates, name)
 	return candidates
@@ -41,12 +41,12 @@ func makeCandidates(t reflect.Type) []string {
 			continue
 		}
 		if s := f.Tag.Get("conf"); s == "parent" {
-			addKeynametoCandidates(f, &candidates)
+			addKeynameToCandidates(f, &candidates)
 			childCandidates := makeCandidates(f.Type)
 			candidates = append(candidates, childCandidates...)
 			continue
 		}
-		addKeynametoCandidates(f, &candidates)
+		addKeynameToCandidates(f, &candidates)
 	}
 
 	return candidates
