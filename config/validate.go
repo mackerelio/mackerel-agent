@@ -4,14 +4,52 @@ import (
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/agext/levenshtein"
+	"reflect"
 	"sort"
 	"strings"
+	"unicode"
 )
 
 // UnexpectedKey represents result of validation
 type UnexpectedKey struct {
 	Name        string
 	SuggestName string
+}
+
+func normalizeKeyname(f reflect.StructField) string {
+	name := string(unicode.ToLower([]rune(f.Name)[0])) + f.Name[1:]
+	if s := f.Tag.Get("toml"); s != "" {
+		name = s
+	}
+	return name
+}
+
+func addKeynametoSuggestions(f reflect.StructField, suggestions *[]string) *[]string {
+	name := normalizeKeyname(f)
+	*suggestions = append(*suggestions, name)
+	return suggestions
+}
+
+func makeSuggestions(t reflect.Type) []string {
+	if t.Kind() == reflect.Map || t.Kind() == reflect.Ptr {
+		return makeSuggestions(t.Elem())
+	}
+	var suggestions []string
+	fields := reflect.VisibleFields(t)
+	for _, f := range fields {
+		if s := f.Tag.Get("conf"); s == "ignore" {
+			continue
+		}
+		if s := f.Tag.Get("conf"); s == "parent" {
+			addKeynametoSuggestions(f, &suggestions)
+			childSuggestions := makeSuggestions(f.Type)
+			suggestions = append(suggestions, childSuggestions...)
+			continue
+		}
+		addKeynametoSuggestions(f, &suggestions)
+	}
+
+	return suggestions
 }
 
 func nameSuggestion(given string, suggestions []string) string {
@@ -32,53 +70,22 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		return nil, fmt.Errorf("failed to test config: %s", err)
 	}
 
-	var suggestions = []string{
-		// from type Config
-		"apikey",
-		"pidfile",
-		"root",
-		"pidfile",
-		"conffile",
-		"roles",
-		"verbose",
-		"silent",
-		"diagnostic",
-		"display_name",
-		"host_status",
-		"on_start",
-		"on_stop",
-		"filesystems",
-		"ignore",
-		"use_mountpoint",
-		"interfaces",
-		"http_proxy",
-		"https_proxy",
-		"cloud_platform",
-		"plugin",
-		"include",
-		// from type PluginConfig
-		"notification_interval",
-		"check_interval",
-		"execution_interval",
-		"max_check_attempts",
-		"custom_identifier",
-		"prevent_alert_auto_close",
-		"include_pattern",
-		"exclude_pattern",
-		"action",
-		"memo",
-		// from type CommandConfig
-		"command",
-		"user",
-		"env",
-		"timeout_seconds",
+	var c Config
+	suggestions := makeSuggestions(reflect.TypeOf(c))
+
+	var parentKeys []string
+	configFields := reflect.VisibleFields(reflect.TypeOf(c))
+	for _, f := range configFields {
+		if s := f.Tag.Get("conf"); s == "parent" {
+			parentKeys = append(parentKeys, normalizeKeyname(f))
+		}
 	}
 
 	var unexpectedKeys []UnexpectedKey
 	for _, v := range md.Undecoded() {
 		splitedKey := strings.Split(v.String(), ".")
 		key := splitedKey[0]
-		if key == "host_status" || key == "filesystems" || key == "interfaces" || key == "plugin" {
+		if containKeyName(parentKeys, key) {
 			/*
 					if conffile is following, UnexpectedKey.SuggestName should be `filesystems.use_mountpoint`, not `filesystems`
 					```
@@ -152,6 +159,15 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 func containKey(target []UnexpectedKey, want string) bool {
 	for _, v := range target {
 		if v.Name == want {
+			return true
+		}
+	}
+	return false
+}
+
+func containKeyName(target []string, want string) bool {
+	for _, v := range target {
+		if v == want {
 			return true
 		}
 	}
