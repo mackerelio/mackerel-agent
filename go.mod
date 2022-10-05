@@ -4,12 +4,13 @@ go 1.17
 
 require (
 	github.com/BurntSushi/toml v1.1.0
-	github.com/Songmu/gocredits v0.2.0
+	github.com/Songmu/gocredits v0.3.0
 	github.com/Songmu/goxz v0.8.2
 	github.com/Songmu/prompter v0.5.1
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
 	github.com/StackExchange/wmi v1.2.1
+	github.com/fatih/color v1.13.0
 	github.com/mackerelio/go-osstat v0.2.2
 	github.com/mackerelio/golib v1.2.1
 	github.com/mackerelio/mackerel-client-go v0.21.2
@@ -27,7 +28,6 @@ require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
-	github.com/fatih/color v1.13.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.14.2 // indirect
