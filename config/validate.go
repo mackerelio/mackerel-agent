@@ -24,39 +24,39 @@ func normalizeKeyname(f reflect.StructField) string {
 	return name
 }
 
-func addKeynametoSuggestions(f reflect.StructField, suggestions *[]string) *[]string {
+func addKeynametoCandidates(f reflect.StructField, candidates *[]string) *[]string {
 	name := normalizeKeyname(f)
-	*suggestions = append(*suggestions, name)
-	return suggestions
+	*candidates = append(*candidates, name)
+	return candidates
 }
 
-func makeSuggestions(t reflect.Type) []string {
+func makeCandidates(t reflect.Type) []string {
 	if t.Kind() == reflect.Map || t.Kind() == reflect.Ptr {
-		return makeSuggestions(t.Elem())
+		return makeCandidates(t.Elem())
 	}
-	var suggestions []string
+	var candidates []string
 	fields := reflect.VisibleFields(t)
 	for _, f := range fields {
 		if s := f.Tag.Get("conf"); s == "ignore" {
 			continue
 		}
 		if s := f.Tag.Get("conf"); s == "parent" {
-			addKeynametoSuggestions(f, &suggestions)
-			childSuggestions := makeSuggestions(f.Type)
-			suggestions = append(suggestions, childSuggestions...)
+			addKeynametoCandidates(f, &candidates)
+			childCandidates := makeCandidates(f.Type)
+			candidates = append(candidates, childCandidates...)
 			continue
 		}
-		addKeynametoSuggestions(f, &suggestions)
+		addKeynametoCandidates(f, &candidates)
 	}
 
-	return suggestions
+	return candidates
 }
 
-func nameSuggestion(given string, suggestions []string) string {
-	for _, suggestion := range suggestions {
-		dist := levenshtein.Distance(given, suggestion, nil)
+func nameSuggestion(given string, candidates []string) string {
+	for _, candidate := range candidates {
+		dist := levenshtein.Distance(given, candidate, nil)
 		if dist < 3 {
-			return suggestion
+			return candidate
 		}
 	}
 	return ""
@@ -71,7 +71,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 	}
 
 	var c Config
-	suggestions := makeSuggestions(reflect.TypeOf(c))
+	candidates := makeCandidates(reflect.TypeOf(c))
 
 	var parentKeys []string
 	configFields := reflect.VisibleFields(reflect.TypeOf(c))
@@ -93,7 +93,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 				  use_mntpoint = true
 					```
 			*/
-			suggestName := nameSuggestion(splitedKey[len(splitedKey)-1], suggestions)
+			suggestName := nameSuggestion(splitedKey[len(splitedKey)-1], candidates)
 			if suggestName == "" {
 				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
 					v.String(),
@@ -110,7 +110,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 			if !containKey(unexpectedKeys, key) {
 				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
 					key,
-					nameSuggestion(key, suggestions),
+					nameSuggestion(key, candidates),
 				})
 			}
 		}
