@@ -103,9 +103,9 @@ type Config struct {
 	Silent        bool
 	Diagnostic    bool          `toml:"diagnostic"`
 	DisplayName   string        `toml:"display_name"`
-	HostStatus    HostStatus    `toml:"host_status"`
-	Filesystems   Filesystems   `toml:"filesystems"`
-	Interfaces    Interfaces    `toml:"interfaces"`
+	HostStatus    HostStatus    `toml:"host_status" conf:"parent"`
+	Filesystems   Filesystems   `toml:"filesystems" conf:"parent"`
+	Interfaces    Interfaces    `toml:"interfaces"  conf:"parent"`
 	HTTPProxy     string        `toml:"http_proxy"`
 	HTTPSProxy    string        `toml:"https_proxy"`
 	CloudPlatform CloudPlatform `toml:"cloud_platform"`
@@ -113,16 +113,16 @@ type Config struct {
 	// This Plugin field is used to decode the toml file. After reading the
 	// configuration from file, this field is set to nil.
 	// Please consider using MetricPlugins and CheckPlugins.
-	Plugin map[string]map[string]*PluginConfig
+	Plugin map[string]map[string]*PluginConfig `conf:"parent"`
 
 	Include string
 
 	// Cannot exist in configuration files
-	HostIDStorage   HostIDStorage
-	MetricPlugins   map[string]*MetricPlugin
-	CheckPlugins    map[string]*CheckPlugin
-	MetadataPlugins map[string]*MetadataPlugin
-	AutoShutdown    bool
+	HostIDStorage   HostIDStorage              `conf:"ignore"`
+	MetricPlugins   map[string]*MetricPlugin   `conf:"ignore"`
+	CheckPlugins    map[string]*CheckPlugin    `conf:"ignore"`
+	MetadataPlugins map[string]*MetadataPlugin `conf:"ignore"`
+	AutoShutdown    bool                       `conf:"ignore"`
 }
 
 // PluginConfig represents a plugin configuration.
@@ -136,7 +136,7 @@ type PluginConfig struct {
 	PreventAlertAutoClose bool          `toml:"prevent_alert_auto_close"`
 	IncludePattern        *string       `toml:"include_pattern"`
 	ExcludePattern        *string       `toml:"exclude_pattern"`
-	Action                CommandConfig `toml:"action"`
+	Action                CommandConfig `toml:"action" conf:"parent"`
 	Memo                  string        `toml:"memo"`
 }
 
