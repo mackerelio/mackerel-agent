@@ -11,7 +11,7 @@ require (
 	github.com/Songmu/timeout v0.4.0
 	github.com/StackExchange/wmi v1.2.1
 	github.com/fatih/color v1.13.0
-	github.com/mackerelio/go-osstat v0.2.2
+	github.com/mackerelio/go-osstat v0.2.3
 	github.com/mackerelio/golib v1.2.1
 	github.com/mackerelio/mackerel-client-go v0.21.2
 	github.com/mattn/goveralls v0.0.11
