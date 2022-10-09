@@ -10,10 +10,11 @@ require (
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
 	github.com/StackExchange/wmi v1.2.1
+	github.com/agext/levenshtein v1.2.3
 	github.com/fatih/color v1.13.0
 	github.com/mackerelio/go-osstat v0.2.3
 	github.com/mackerelio/golib v1.2.1
-	github.com/mackerelio/mackerel-client-go v0.21.2
+	github.com/mackerelio/mackerel-client-go v0.22.0
 	github.com/mattn/goveralls v0.0.11
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
@@ -25,7 +26,6 @@ require (
 
 require (
 	github.com/Songmu/wrapcommander v0.1.0 // indirect
-	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
