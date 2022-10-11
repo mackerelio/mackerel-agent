@@ -19,7 +19,7 @@ jobs:
         go-version: 1.17
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
-    - run: make lint
+    - uses: golangci/golangci-lint-action@v3
     - run: make convention
     - run: make cover
     - run: test `gofmt -l . | wc -l` = 0
@@ -38,6 +38,7 @@ jobs:
       with:
         go-version: 1.17
 
+    - uses: golangci/golangci-lint-action@v3
     - uses: actions/cache@v2
       with:
         path: |
