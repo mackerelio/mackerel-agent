@@ -91,10 +91,18 @@ var (
 func RegGetInt(hKey uint32, subKey string, value string) (uint32, uintptr, error) {
 	var num, numlen uint32
 	numlen = 4
+	s, err := syscall.UTF16PtrFromString(subKey)
+	if err != nil {
+		return 0, 0, err
+	}
+	v, err := syscall.UTF16PtrFromString(value)
+	if err != nil {
+		return 0, 0, err
+	}
 	ret, _, err := RegGetValue.Call(
 		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
+		uintptr(unsafe.Pointer(s)),
+		uintptr(unsafe.Pointer(v)),
 		uintptr(RRF_RT_REG_DWORD),
 		0,
 		uintptr(unsafe.Pointer(&num)),
@@ -109,10 +117,18 @@ func RegGetInt(hKey uint32, subKey string, value string) (uint32, uintptr, error
 // RegGetString XXX
 func RegGetString(hKey uint32, subKey string, value string) (string, uintptr, error) {
 	var bufLen uint32
+	s, err := syscall.UTF16PtrFromString(subKey)
+	if err != nil {
+		return "", 0, err
+	}
+	v, err := syscall.UTF16PtrFromString(value)
+	if err != nil {
+		return "", 0, err
+	}
 	ret, _, err := RegGetValue.Call(
 		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
+		uintptr(unsafe.Pointer(s)),
+		uintptr(unsafe.Pointer(v)),
 		uintptr(RRF_RT_REG_SZ),
 		0,
 		0,
@@ -125,10 +141,18 @@ func RegGetString(hKey uint32, subKey string, value string) (string, uintptr, er
 	}
 
 	buf := make([]uint16, bufLen)
+	s, err = syscall.UTF16PtrFromString(subKey)
+	if err != nil {
+		return "", 0, err
+	}
+	v, err = syscall.UTF16PtrFromString(value)
+	if err != nil {
+		return "", 0, err
+	}
 	ret, _, err = RegGetValue.Call(
 		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
+		uintptr(unsafe.Pointer(s)),
+		uintptr(unsafe.Pointer(v)),
 		uintptr(RRF_RT_REG_SZ),
 		0,
 		uintptr(unsafe.Pointer(&buf[0])),
@@ -160,9 +184,14 @@ func CreateQuery() (syscall.Handle, error) {
 // CreateCounter XXX
 func CreateCounter(query syscall.Handle, k, v string) (*CounterInfo, error) {
 	var counter syscall.Handle
+
+	v2, err := syscall.UTF16PtrFromString(v)
+	if err != nil {
+		return nil, err
+	}
 	r, _, err := PdhAddCounter.Call(
 		uintptr(query),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(v))),
+		uintptr(unsafe.Pointer(v2)),
 		0,
 		uintptr(unsafe.Pointer(&counter)))
 	if r != 0 {
