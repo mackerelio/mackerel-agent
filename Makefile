@@ -16,7 +16,7 @@ BUILD_LDFLAGS := "\
 all: clean test build
 
 .PHONY: test
-test: lint
+test:
 	go test -v -short $(TESTFLAGS) ./...
 
 .PHONY: build
@@ -31,7 +31,6 @@ run: build
 .PHONY: deps
 deps:
 	go install \
-		golang.org/x/lint/golint \
 		github.com/Songmu/gocredits/cmd/gocredits \
 		github.com/Songmu/goxz/cmd/goxz \
 		github.com/mattn/goveralls \
@@ -42,9 +41,8 @@ credits: deps
 	gocredits -skip-missing -w .
 
 .PHONY: lint
-lint: deps
-	go vet -all -printfuncs=Criticalf,Infof,Warningf,Debugf,Tracef .
-	_tools/go-linter $(BUILD_OS_TARGETS)
+lint:
+	golangci-lint run
 
 .PHONY: convention
 convention:
