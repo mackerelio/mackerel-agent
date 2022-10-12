@@ -620,6 +620,7 @@ func TestReportCheckMonitors(t *testing.T) {
 	}
 }
 
+// https://github.com/mackerelio/mackerel-agent/pull/669
 func TestReportCheckMonitors_NetworkError(t *testing.T) {
 	if testing.Verbose() {
 		logging.SetLogLevel(logging.DEBUG)
@@ -634,6 +635,9 @@ func TestReportCheckMonitors_NetworkError(t *testing.T) {
 	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(w http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		mu.Lock()
 		defer mu.Unlock()
+
+		// Give a string in the Location header that url.Parse will fail with and raise an error
+		w.Header().Add("Location", ".://.")
 		postCount++
 		// returning StatusSeeOther without Location header causes url.Error
 		return http.StatusSeeOther, jsonObject{}
@@ -655,7 +659,8 @@ func TestReportCheckMonitors_NetworkError(t *testing.T) {
 	}
 
 	expectedPostCount := 0
-	checkPostCount := func() {
+	checkPostCount := func(t *testing.T) {
+		t.Helper()
 		mu.Lock()
 		defer mu.Unlock()
 		if postCount != expectedPostCount {
@@ -672,12 +677,12 @@ func TestReportCheckMonitors_NetworkError(t *testing.T) {
 	// wait 1 cycle
 	time.Sleep(1 * time.Second)
 	expectedPostCount += 2
-	checkPostCount()
+	checkPostCount(t)
 
 	// wait another cycle
 	time.Sleep(time.Duration(reportCheckRetryDelaySeconds) * time.Second)
 	expectedPostCount += 2
-	checkPostCount()
+	checkPostCount(t)
 }
 
 func TestReportCheckMonitors_NetworkErrorWithRecovery(t *testing.T) {
