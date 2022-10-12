@@ -63,8 +63,8 @@ type jsonObject map[string]interface{}
 // newMockAPIServer makes a dummy root directry, a mock API server, a conf.Config to using them
 // and returns the Config, mock handlers map, the server and cleanup function which should be called finally.
 // The mock handlers map is "<method> <path>"-to-jsonObject-generator map.
-func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Request) (int, jsonObject), *httptest.Server, func()) {
-	mockHandlers := map[string]func(*http.Request) (int, jsonObject){}
+func newMockAPIServer(t *testing.T) (config.Config, map[string]func(http.ResponseWriter, *http.Request) (int, jsonObject), *httptest.Server, func()) {
+	mockHandlers := map[string]func(http.ResponseWriter, *http.Request) (int, jsonObject){}
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		key := req.Method + " " + req.URL.Path
@@ -73,18 +73,19 @@ func newMockAPIServer(t *testing.T) (config.Config, map[string]func(*http.Reques
 			t.Fatal("Unexpected request: " + key)
 		}
 
-		statusCode, data := handler(req)
+		statusCode, data := handler(w, req)
 
 		respJSON, err := json.Marshal(data)
 		if err != nil {
 			t.Fatal("marshalling JSON failed: ", err)
 		}
 
+		w.Header().Set("Content-Type", "application/json")
+
 		if statusCode != 0 {
 			w.WriteHeader(statusCode)
 		}
 
-		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, string(respJSON))
 	}))
 
@@ -106,13 +107,13 @@ func TestPrepareWithCreate(t *testing.T) {
 	// To prevent unexpected behavior in the TravisCI environment
 	conf.CloudPlatform = config.CloudPlatformNone
 
-	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["POST /api/v0/hosts"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"id": "xxx1234567890",
 		}
 	}
 
-	mockHandlers["GET /api/v0/hosts/xxx1234567890"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["GET /api/v0/hosts/xxx1234567890"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"host": mkr.Host{
 				ID:     "xxx1234567890",
@@ -147,7 +148,7 @@ func TestPrepareWithCreateWithFail(t *testing.T) {
 	// To prevent unexpected behavior in the TravisCI environment
 	conf.CloudPlatform = config.CloudPlatformNone
 
-	mockHandlers["POST /api/v0/hosts"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["POST /api/v0/hosts"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		return 403, jsonObject{
 			"result": "error",
 		}
@@ -172,13 +173,13 @@ func TestPrepareWithUpdate(t *testing.T) {
 	conf.Root = t.TempDir()
 	conf.SaveHostID("xxx12345678901")
 
-	mockHandlers["PUT /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["PUT /api/v0/hosts/xxx12345678901"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"result": "OK",
 		}
 	}
 
-	mockHandlers["GET /api/v0/hosts/xxx12345678901"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["GET /api/v0/hosts/xxx12345678901"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"host": mkr.Host{
 				ID:     "xxx12345678901",
@@ -306,7 +307,7 @@ func TestLoop(t *testing.T) {
 	receivedDataPoints := []mkr.HostMetricValue{}
 	done := make(chan struct{})
 
-	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["POST /api/v0/tsdb"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		payload := []mkr.HostMetricValue{}
 		json.NewDecoder(req.Body).Decode(&payload)
 
@@ -332,7 +333,7 @@ func TestLoop(t *testing.T) {
 			"success": true,
 		}
 	}
-	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"result": "OK",
 		}
@@ -405,7 +406,7 @@ func TestLoop_NetworkError(t *testing.T) {
 	postCount := 0
 	done := make(chan struct{})
 
-	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["POST /api/v0/tsdb"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		payload := []mkr.HostMetricValue{}
 		json.NewDecoder(req.Body).Decode(&payload)
 
@@ -428,7 +429,7 @@ func TestLoop_NetworkError(t *testing.T) {
 			"success": true,
 		}
 	}
-	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"result": "OK",
 		}
@@ -487,7 +488,7 @@ func TestLoop_NetworkErrorWithRecovery(t *testing.T) {
 	postCount := 0
 	done := make(chan struct{})
 
-	mockHandlers["POST /api/v0/tsdb"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["POST /api/v0/tsdb"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		payload := []mkr.HostMetricValue{}
 		json.NewDecoder(req.Body).Decode(&payload)
 
@@ -510,7 +511,7 @@ func TestLoop_NetworkErrorWithRecovery(t *testing.T) {
 			"success": true,
 		}
 	}
-	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["PUT /api/v0/hosts/xyzabc12345"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		return 200, jsonObject{
 			"result": "OK",
 		}
@@ -574,7 +575,7 @@ func TestReportCheckMonitors(t *testing.T) {
 		retried := false
 		mu := &sync.Mutex{}
 
-		mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+		mockHandlers["POST /api/v0/monitoring/checks/report"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 			mu.Lock()
 			defer mu.Unlock()
 			postCount++
@@ -630,7 +631,7 @@ func TestReportCheckMonitors_NetworkError(t *testing.T) {
 	postCount := 0
 	mu := &sync.Mutex{}
 
-	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(w http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		mu.Lock()
 		defer mu.Unlock()
 		postCount++
@@ -692,7 +693,7 @@ func TestReportCheckMonitors_NetworkErrorWithRecovery(t *testing.T) {
 
 	// returning StatusSeeOther without Location header causes url.Error
 	// therefore url.Error happens on first request, and no error happens afterwards
-	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(req *http.Request) (int, jsonObject) {
+	mockHandlers["POST /api/v0/monitoring/checks/report"] = func(_ http.ResponseWriter, req *http.Request) (int, jsonObject) {
 		mu.Lock()
 		defer mu.Unlock()
 		postCount++
