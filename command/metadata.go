@@ -106,14 +106,16 @@ func runMetadataLoop(ctx context.Context, app *App, termMetadataCh <-chan struct
 				continue
 			}
 		}
-		results = nil
 	}
 }
 
 func clearMetadataCache(generators []*metadata.Generator, namespace string) {
 	for _, g := range generators {
 		if g.Name == namespace {
-			g.Clear()
+			err := g.Clear()
+			if err != nil {
+				logger.Warningf("clearMetadataCache error : %s", err.Error())
+			}
 			return
 		}
 	}

@@ -80,7 +80,12 @@ func doSupervise(fs *flag.FlagSet, argv []string) error {
 	if err != nil {
 		return err
 	}
-	defer pidfile.Remove(conf.Pidfile)
+	defer func() {
+		err = pidfile.Remove(conf.Pidfile)
+		if err != nil {
+			logger.Warningf("pidfile cant remove. : %s", err.Error())
+		}
+	}()
 
 	return supervisor.Supervise(os.Args[0], copiedArgv, nil)
 }
