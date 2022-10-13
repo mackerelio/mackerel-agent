@@ -1,4 +1,5 @@
-linters:
-  disable:
-  - errcheck
-  - ineffassign
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
