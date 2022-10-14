@@ -80,7 +80,12 @@ func doSupervise(fs *flag.FlagSet, argv []string) error {
 	if err != nil {
 		return err
 	}
-	defer pidfile.Remove(conf.Pidfile)
+	defer func() {
+		err = pidfile.Remove(conf.Pidfile)
+		if err != nil {
+			logger.Warningf("pidfile cant remove. : %s", err.Error())
+		}
+	}()
 
 	return supervisor.Supervise(os.Args[0], copiedArgv, nil)
 }
@@ -120,9 +125,9 @@ func doConfigtest(fs *flag.FlagSet, argv []string) error {
 		var messages string
 		for _, key := range validResult {
 			if key.SuggestName == "" {
-				messages += fmt.Sprintf(yellow.Sprintf("[WARNING] %s is unexpected key.\n", key.Name))
+				messages += yellow.Sprintf("[WARNING] %s is unexpected key.\n", key.Name)
 			} else {
-				messages += fmt.Sprintf(yellow.Sprintf("[WARNING] %s is unexpected key. did you mean %s ?\n", key.Name, key.SuggestName))
+				messages += yellow.Sprintf("[WARNING] %s is unexpected key. did you mean %s ?\n", key.Name, key.SuggestName)
 			}
 		}
 		return fmt.Errorf(messages)

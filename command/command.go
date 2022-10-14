@@ -49,7 +49,7 @@ type AgentMeta struct {
 // A unique host-id is returned by the server if one is not specified.
 func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mkr.Host, error) {
 	doRetry := func(f func() error) {
-		retry.Retry(retryNum, retryInterval, f)
+		retry.Retry(retryNum, retryInterval, f) // nolint
 	}
 
 	filterErrorForRetry := func(err error) error {
@@ -79,10 +79,13 @@ func prepareHost(conf *config.Config, ameta *AgentMeta, api *mackerel.API) (*mkr
 	if hostID, err := conf.LoadHostID(); err != nil { // create
 
 		if hostParam.CustomIdentifier != "" {
-			retry.Retry(3, 2*time.Second, func() error {
+			err = retry.Retry(3, 2*time.Second, func() error {
 				result, lastErr = api.FindHostByCustomIdentifier(hostParam.CustomIdentifier)
 				return filterErrorForRetry(lastErr)
 			})
+			if err != nil {
+				logger.Debugf("FindHostByCustomIdentifier error : %s", err.Error())
+			}
 			if result != nil {
 				hostID = result.ID
 			}

@@ -89,7 +89,10 @@ func isEC2UUID(uuid string) bool {
 	decoded, _ := hex.DecodeString(fields[0]) // fields[0]: UUID time_low(uint32)
 	r := bytes.NewReader(decoded)
 	var data uint32
-	binary.Read(r, binary.LittleEndian, &data)
+	err := binary.Read(r, binary.LittleEndian, &data)
+	if err != nil {
+		return false
+	}
 
 	return conds(fmt.Sprintf("%x", data))
 }

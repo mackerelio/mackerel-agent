@@ -102,7 +102,10 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 	// but we call it "role" here for ease.
 	fs.Var(&roleFullnames, "role", "Set this host's roles (format: <service>:<role>)")
 
-	fs.Parse(argv)
+	err := fs.Parse(argv)
+	if err != nil {
+		return nil, err
+	}
 
 	conf, confErr := config.LoadConfig(*conffile)
 	if confErr != nil {
@@ -200,7 +203,12 @@ func start(conf *config.Config, termCh chan struct{}) error {
 	if err := pidfile.Create(conf.Pidfile); err != nil {
 		return fmt.Errorf("pidfile.Create(%q) failed: %s", conf.Pidfile, err)
 	}
-	defer pidfile.Remove(conf.Pidfile)
+	defer func() {
+		err := pidfile.Remove(conf.Pidfile)
+		if err != nil {
+			logger.Warningf("pidfile cant remove. : %s", err.Error())
+		}
+	}()
 
 	app, err := command.Prepare(conf, &command.AgentMeta{
 		Version:  version,

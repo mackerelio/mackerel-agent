@@ -152,7 +152,10 @@ func (sv *supervisor) handleSignal(ch <-chan os.Signal) {
 				logger.Warningf("failed to reload: %s", err.Error())
 			}
 		} else {
-			sv.stop(sig)
+			err := sv.stop(sig)
+			if err != nil {
+				logger.Warningf("failed to stop: %s", err.Error())
+			}
 		}
 	}
 }

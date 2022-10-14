@@ -14,7 +14,10 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path")
 		apikey   = fs.String("apikey", "", "API key from mackerel.io web site (Required)")
 	)
-	fs.Parse(argv)
+	err := fs.Parse(argv)
+	if err != nil {
+		return err
+	}
 
 	if *apikey == "" {
 		// Setting apikey via environment variable should be supported or not?
@@ -33,7 +36,7 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 		}
 	}
 
-	_, err := os.Stat(*conffile)
+	_, err = os.Stat(*conffile)
 	confExists := err == nil
 	if confExists {
 		conf, err := config.LoadConfig(*conffile)

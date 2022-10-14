@@ -179,7 +179,10 @@ func (g *EC2Generator) hasMetadataService(ctx context.Context) (bool, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		io.Copy(io.Discard, resp.Body)
+		_, err = io.Copy(io.Discard, resp.Body)
+		if err != nil {
+			return false, err
+		}
 		return false, nil
 	}
 
@@ -219,7 +222,10 @@ func (g *EC2Generator) refreshToken(ctx context.Context) string {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		io.Copy(io.Discard, resp.Body)
+		_, err = io.Copy(io.Discard, resp.Body)
+		if err != nil {
+			return ""
+		}
 
 		// IMDSv2 may be disabled? fallback to IMDSv1
 		g.token = ""
@@ -282,7 +288,10 @@ func (g *EC2Generator) getMetadata(cl *http.Client, key string) (string, error) 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		io.Copy(io.Discard, resp.Body)
+		_, err = io.Copy(io.Discard, resp.Body)
+		if err != nil {
+			return "", err
+		}
 		cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
 		return "", nil
 	}
@@ -313,7 +322,10 @@ func (g *EC2Generator) SuggestCustomIdentifier() (string, error) {
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != 200 {
-			io.Copy(io.Discard, resp.Body)
+			_, err = io.Copy(io.Discard, resp.Body)
+			if err != nil {
+				return fmt.Errorf("error while retrieving instance-id: %s", err.Error())
+			}
 			return fmt.Errorf("failed to request instance-id. response code: %d", resp.StatusCode)
 		}
 		body, err := io.ReadAll(resp.Body)
@@ -350,7 +362,10 @@ func requestGCEMeta(ctx context.Context) ([]byte, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		io.Copy(io.Discard, resp.Body)
+		_, err = io.Copy(io.Discard, resp.Body)
+		if err != nil {
+			return nil, err
+		}
 		return nil, fmt.Errorf("failed to request gce meta. response code: %d", resp.StatusCode)
 	}
 	return io.ReadAll(resp.Body)
@@ -460,7 +475,10 @@ func (g *AzureVMGenerator) IsAzureVM(ctx context.Context) bool {
 			return err
 		}
 		isAzureVM = resp.StatusCode == 200
-		io.Copy(io.Discard, resp.Body)
+		_, err = io.Copy(io.Discard, resp.Body)
+		if err != nil {
+			return err
+		}
 		resp.Body.Close()
 		return nil
 	})
@@ -517,7 +535,11 @@ func retrieveAzureVMMetadata(metadataMap map[string]string, baseURL string, urlS
 			metadataMap[value] = string(body)
 			cloudLogger.Debugf("results %s:%s", key, string(body))
 		} else {
-			io.Copy(io.Discard, resp.Body)
+			_, err = io.Copy(io.Discard, resp.Body)
+			if err != nil {
+				cloudLogger.Errorf("Results of requesting metadata cannot be read: '%s'", err)
+				break
+			}
 			cloudLogger.Debugf("Status code of the result of requesting metadata '%s' is '%d'", key, resp.StatusCode)
 		}
 	}
@@ -541,7 +563,10 @@ func (g *AzureVMGenerator) SuggestCustomIdentifier() (string, error) {
 		defer resp.Body.Close()
 
 		if resp.StatusCode != 200 {
-			io.Copy(io.Discard, resp.Body)
+			_, err = io.Copy(io.Discard, resp.Body)
+			if err != nil {
+				return fmt.Errorf("error while retrieving vmId: %s", err)
+			}
 			return fmt.Errorf("failed to request vmId. response code: %d", resp.StatusCode)
 		}
 		body, err := io.ReadAll(resp.Body)
