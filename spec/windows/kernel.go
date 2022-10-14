@@ -53,7 +53,10 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 	results["release"] = release
 
 	var systemInfo windows.SYSTEM_INFO
-	windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
+	_, _, err = windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
+	if err != nil {
+		return nil, err
+	}
 	switch systemInfo.ProcessorArchitecture {
 	case 0:
 		results["machine"] = "x86"
