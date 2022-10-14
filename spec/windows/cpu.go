@@ -21,10 +21,7 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 	var results mackerel.CPU
 
 	var systemInfo windows.SYSTEM_INFO
-	_, _, err := windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
-	if err != nil {
-		return nil, err
-	}
+	_, _, _ = windows.GetSystemInfo.Call(uintptr(unsafe.Pointer(&systemInfo)))
 
 	for i := uint32(0); i < systemInfo.NumberOfProcessors; i++ {
 		processorName, _, err := windows.RegGetString(
