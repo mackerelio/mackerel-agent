@@ -976,8 +976,8 @@ github.com/mackerelio/mackerel-agent v0.72.14/go.mod h1:4yajwbSgB3LmnYlKZcTNcI21
 github.com/mackerelio/mackerel-agent-plugins v0.72.1 h1:kEY2ENPRuoEvod6VJ/UuFyXO/2KpDh24aliiRt9iJN0=
 github.com/mackerelio/mackerel-agent-plugins v0.72.1/go.mod h1:ptOCLUi0C5QOpGUZz6D4G9pFkLIdLcmns+fhNgpQIcI=
 github.com/mackerelio/mackerel-client-go v0.21.0/go.mod h1:/GNOj+y1eFsd3CK8c6IQ/uS38/GT0+NWImk5YGJs5Lk=
-github.com/mackerelio/mackerel-client-go v0.21.1 h1:VeWwvXEvFSABD68HxCZYKE3f+yOVpXWp6imUe5IjNBo=
-github.com/mackerelio/mackerel-client-go v0.21.1/go.mod h1:/GNOj+y1eFsd3CK8c6IQ/uS38/GT0+NWImk5YGJs5Lk=
+github.com/mackerelio/mackerel-client-go v0.21.2 h1:m/Pe2onBkry7qKCimutEJ/TRSWpSOQ1rrO5iSwgUNFc=
+github.com/mackerelio/mackerel-client-go v0.21.2/go.mod h1:VM9KAjzs7wkROQ9WdZRvkY8K/bIUllN82dxyK36ZU3s=
 github.com/mackerelio/mackerel-plugin-aws-ec2 v1.0.1/go.mod h1:Hw/mRzxK6cW2gCXZd6Cg+GlpB59ik8b4ir7sVDCz160=
 github.com/mackerelio/mackerel-plugin-aws-kinesis-firehose v1.0.1/go.mod h1:LaTl9MFn1bUH1A15/0ymqdf0+uAVdkE0Fm16aODdZOU=
 github.com/mackerelio/mackerel-plugin-aws-rekognition v1.0.1/go.mod h1:AAh31HDCFyLcne6QqKrFzkJR6bXPa052BmkiQLcWgfU=
@@ -985,8 +985,8 @@ github.com/mackerelio/mackerel-plugin-aws-waf v1.1.0/go.mod h1:Ko+wdaCwY1TS6HFPz
 github.com/mackerelio/mackerel-plugin-gcp-compute-engine v1.0.2/go.mod h1:PkCIfJScVSZXKCjkNaVYVEKl8TtdHJymZBnycODPUW8=
 github.com/mackerelio/mackerel-plugin-gearmand v1.0.1/go.mod h1:TtI8u3rNYiqotv7/uH/LErRMULbKl6iK4fFYou7JoV0=
 github.com/mackerelio/mackerel-plugin-json v1.2.2/go.mod h1:n/gmonrBkMOUHXjd871XDMZBtAqBGUyd+BkdZckwd88=
-github.com/mackerelio/mkr v0.47.0 h1:7lEVegbVG4GimD/ydzbEhUefMOXgEnrhAYK7IMJ7ymk=
-github.com/mackerelio/mkr v0.47.0/go.mod h1:9RV5V7/lyjPzxneXzrvA6zsFjTTzy7XsdiJFsorc6tA=
+github.com/mackerelio/mkr v0.47.1 h1:upRbHWmAC7I6GBkn9lLrIlik4SoHWFvX6hn+hmyYgb0=
+github.com/mackerelio/mkr v0.47.1/go.mod h1:ADHkAbWmmEGs1McDHciwhrIpMppC/O1JcthlPZkutVE=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.5/go.mod h1:y3VJvCyxH9uVvJTWEGAELF3aiYNyPKd5NZ3oSwXrF60=
