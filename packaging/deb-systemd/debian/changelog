@@ -1,3 +1,30 @@
+mackerel-agent (0.73.2-1.systemd) stable; urgency=low
+
+  * Replace linter (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/821>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.21.2 to 0.22.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/819>
+  * Improve `mackerel-agent configtest`: Add suggestion to unexpected keys (by wafuwafu13)
+    <https://github.com/mackerelio/mackerel-agent/pull/818>
+  * Bump github.com/Songmu/gocredits from 0.2.0 to 0.3.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/817>
+  * Bump github.com/mackerelio/mkr from 0.47.0 to 0.47.1 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/816>
+  * go.mod 1.17 -> 1.18 (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/814>
+  * Improve `mackerel-agent configtest`: detect unexpected key (by wafuwafu13)
+    <https://github.com/mackerelio/mackerel-agent/pull/813>
+  * fix deprecated function. (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/808>
+  * Bump github.com/mackerelio/go-osstat from 0.2.2 to 0.2.3 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/802>
+  * Bump github.com/Songmu/goxz from 0.8.2 to 0.9.1 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/800>
+  * Bump github.com/BurntSushi/toml from 1.1.0 to 1.2.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/795>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 2 Nov 2022 04:52:57 +0000
+
 mackerel-agent (0.73.1-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/mkr from 0.46.9 to 0.47.0 in /wix (by dependabot[bot])

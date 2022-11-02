@@ -61,6 +61,19 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Nov 2 2022 <mackerel-developers@hatena.ne.jp> - 0.73.2
+- Replace linter (by yseto)
+- Bump github.com/mackerelio/mackerel-client-go from 0.21.2 to 0.22.0 (by dependabot[bot])
+- Improve `mackerel-agent configtest`: Add suggestion to unexpected keys (by wafuwafu13)
+- Bump github.com/Songmu/gocredits from 0.2.0 to 0.3.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.47.0 to 0.47.1 in /wix (by dependabot[bot])
+- go.mod 1.17 -> 1.18 (by yseto)
+- Improve `mackerel-agent configtest`: detect unexpected key (by wafuwafu13)
+- fix deprecated function. (by yseto)
+- Bump github.com/mackerelio/go-osstat from 0.2.2 to 0.2.3 (by dependabot[bot])
+- Bump github.com/Songmu/goxz from 0.8.2 to 0.9.1 (by dependabot[bot])
+- Bump github.com/BurntSushi/toml from 1.1.0 to 1.2.0 (by dependabot[bot])
+
 * Wed Sep 14 2022 <mackerel-developers@hatena.ne.jp> - 0.73.1
 - Bump github.com/mackerelio/mkr from 0.46.9 to 0.47.0 in /wix (by dependabot[bot])
 - config_test: Add the case of LoadConfigWithInvalidToml (by wafuwafu13)
