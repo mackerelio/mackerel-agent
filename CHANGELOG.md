@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.73.2 (2022-11-04)
+
+* Replace linter #821 (yseto)
+* Bump github.com/mackerelio/mackerel-client-go from 0.21.2 to 0.22.0 #819 (dependabot[bot])
+* Improve `mackerel-agent configtest`: Add suggestion to unexpected keys #818 (wafuwafu13)
+* Bump github.com/Songmu/gocredits from 0.2.0 to 0.3.0 #817 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.47.0 to 0.47.1 in /wix #816 (dependabot[bot])
+* go.mod 1.17 -> 1.18 #814 (yseto)
+* Improve `mackerel-agent configtest`: detect unexpected key #813 (wafuwafu13)
+* fix deprecated function. #808 (yseto)
+* Bump github.com/mackerelio/go-osstat from 0.2.2 to 0.2.3 #802 (dependabot[bot])
+* Bump github.com/Songmu/goxz from 0.8.2 to 0.9.1 #800 (dependabot[bot])
+* Bump github.com/BurntSushi/toml from 1.1.0 to 1.2.0 #795 (dependabot[bot])
+
+
 ## 0.73.1 (2022-09-14)
 
 * Bump github.com/mackerelio/mkr from 0.46.9 to 0.47.0 in /wix #812 (dependabot[bot])
