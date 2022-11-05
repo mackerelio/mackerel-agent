@@ -2,12 +2,13 @@ package config
 
 import (
 	"fmt"
-	"github.com/BurntSushi/toml"
-	"github.com/agext/levenshtein"
 	"reflect"
 	"sort"
 	"strings"
 	"unicode"
+
+	"github.com/BurntSushi/toml"
+	"github.com/agext/levenshtein"
 )
 
 // UnexpectedKey represents result of validation
@@ -55,7 +56,9 @@ func nameSuggestion(given string, candidates []string) string {
 	for _, candidate := range candidates {
 		dist := levenshtein.Distance(given, candidate, nil)
 		if dist < 3 {
-			return candidate
+			if candidate != given {
+				return candidate
+			}
 		}
 	}
 	return ""
