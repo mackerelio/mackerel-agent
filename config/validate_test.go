@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
@@ -50,6 +51,12 @@ action = { command = "test command", xxx = "yyy" }
 [plugin.checks.1]
 command = "test command"
 action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" } }
+
+[plugin.metrics.aaa]
+command = ["exit 1"]
+[plugin.metrics.aaa.action]
+command = ["exit 2"]
+max_check_attempts = 3
 `
 
 func TestValidateConfig(t *testing.T) {
@@ -75,6 +82,7 @@ func TestValidateConfig(t *testing.T) {
 		{"plugin.metric.1", "plugin.metrics.1"},
 		{"plugin.metrics.1.action.use", "plugin.metrics.1.action.user"},
 		{"plugin.metrics.2.action.xxx", ""},
+		{"plugin.metrics.aaa.action.max_check_attempts", ""},
 		{"plugins", "plugin"},
 		{"podfile", "pidfile"},
 	}
@@ -84,6 +92,7 @@ func TestValidateConfig(t *testing.T) {
 	}
 
 	for i, v := range validResult {
+		fmt.Println(i, v)
 		if wantUnexpectedKey[i].Name != v.Name {
 			t.Errorf("expect Name: %v, actual Name: %v", wantUnexpectedKey[i].Name, v.Name)
 		}
