@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"testing"
 )
@@ -92,7 +91,6 @@ func TestValidateConfig(t *testing.T) {
 	}
 
 	for i, v := range validResult {
-		fmt.Println(i, v)
 		if wantUnexpectedKey[i].Name != v.Name {
 			t.Errorf("expect Name: %v, actual Name: %v", wantUnexpectedKey[i].Name, v.Name)
 		}
