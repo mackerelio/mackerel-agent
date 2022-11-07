@@ -81,10 +81,21 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 	}
 
 	var unexpectedKeys []UnexpectedKey
-	for _, v := range md.Undecoded() {
+	var unexpectedKeyNames []string
+
+	undecodedKeys := md.Undecoded()
+	sort.Slice(undecodedKeys, func(i, j int) bool {
+		return undecodedKeys[i].String() < undecodedKeys[j].String()
+	})
+
+	for _, v := range undecodedKeys {
 		splitedKey := strings.Split(v.String(), ".")
 		key := splitedKey[0]
 		if containKeyName(parentKeys, key) {
+			// if parent is already exists in unexpectedKeyNames, child isn't detected.
+			if containKeyName(unexpectedKeyNames, strings.Join(splitedKey[:len(splitedKey)-1], ".")) {
+				continue
+			}
 			/*
 					if conffile is following, UnexpectedKey.SuggestName should be `filesystems.use_mountpoint`, not `filesystems`
 					```
@@ -104,6 +115,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 					strings.Join(splitedKey[:len(splitedKey)-1], ".") + "." + suggestName,
 				})
 			}
+			unexpectedKeyNames = append(unexpectedKeyNames, v.String())
 		} else {
 			// don't accept duplicate unexpectedKey
 			if !containKey(unexpectedKeys, key) {
@@ -111,6 +123,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 					key,
 					nameSuggestion(key, candidates),
 				})
+				unexpectedKeyNames = append(unexpectedKeyNames, key)
 			}
 		}
 	}
@@ -144,6 +157,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 						fmt.Sprintf("plugin.%s.%s", suggestName, k2),
 					})
 				}
+				unexpectedKeyNames = append(unexpectedKeyNames, fmt.Sprintf("plugin.%s.%s", k1, k2))
 			}
 		}
 	}

@@ -47,6 +47,9 @@ action = { command = "test command", use = "test user", env = { TEST_KEY = "VALU
 command = "test command"
 action = { command = "test command", xxx = "yyy" }
 
+[plugin.metrics.3.4]
+command = "test command"
+
 [plugin.checks.1]
 command = "test command"
 action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" } }
@@ -70,11 +73,11 @@ func TestValidateConfig(t *testing.T) {
 		{"plugin.check.1", "plugin.checks.1"},
 		{"plugin.check.2", "plugin.checks.2"},
 		{"plugin.checks.1.action.en", "plugin.checks.1.action.env"},
-		{"plugin.checks.1.action.en.TEST_KEY", ""},
 		{"plugin.foo.bar", "plugin.metrics.bar"},
 		{"plugin.metric.1", "plugin.metrics.1"},
 		{"plugin.metrics.1.action.use", "plugin.metrics.1.action.user"},
 		{"plugin.metrics.2.action.xxx", ""},
+		{"plugin.metrics.3.4", ""},
 		{"plugins", "plugin"},
 		{"podfile", "pidfile"},
 	}
