@@ -91,9 +91,10 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 	for _, v := range undecodedKeys {
 		splitedKey := strings.Split(v.String(), ".")
 		key := splitedKey[0]
+		parentKey := strings.Join(splitedKey[:len(splitedKey)-1], ".")
 		if containKeyName(parentKeys, key) {
 			// if parent is already exists in unexpectedKeyNames, child isn't detected.
-			if containKeyName(unexpectedKeyNames, strings.Join(splitedKey[:len(splitedKey)-1], ".")) {
+			if containKeyName(unexpectedKeyNames, parentKey) {
 				continue
 			}
 			/*
@@ -112,7 +113,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 			} else {
 				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
 					v.String(),
-					strings.Join(splitedKey[:len(splitedKey)-1], ".") + "." + suggestName,
+					parentKey + "." + suggestName,
 				})
 			}
 			unexpectedKeyNames = append(unexpectedKeyNames, v.String())
