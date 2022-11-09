@@ -61,6 +61,9 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Nov 9 2022 <mackerel-developers@hatena.ne.jp> - 0.73.3
+- Fix config test (by ryuichi1208)
+
 * Fri Nov 4 2022 <mackerel-developers@hatena.ne.jp> - 0.73.2
 - Replace linter (by yseto)
 - Bump github.com/mackerelio/mackerel-client-go from 0.21.2 to 0.22.0 (by dependabot[bot])
