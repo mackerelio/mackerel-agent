@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.73.3 (2022-11-09)
+
+* Fix config test #830 (ryuichi1208)
+
+
 ## 0.73.2 (2022-11-04)
 
 * Replace linter #821 (yseto)
