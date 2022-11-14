@@ -2,12 +2,13 @@ package config
 
 import (
 	"fmt"
-	"github.com/BurntSushi/toml"
-	"github.com/agext/levenshtein"
 	"reflect"
 	"sort"
 	"strings"
 	"unicode"
+
+	"github.com/BurntSushi/toml"
+	"github.com/agext/levenshtein"
 )
 
 // UnexpectedKey represents result of validation

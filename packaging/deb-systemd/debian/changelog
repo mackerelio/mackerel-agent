@@ -1,3 +1,10 @@
+mackerel-agent (0.73.3-1.systemd) stable; urgency=low
+
+  * Fix config test (by ryuichi1208)
+    <https://github.com/mackerelio/mackerel-agent/pull/830>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 9 Nov 2022 06:34:45 +0000
+
 mackerel-agent (0.73.2-1.systemd) stable; urgency=low
 
   * Replace linter (by yseto)
