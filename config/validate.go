@@ -101,23 +101,23 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 			```
 
 			undecodedKeys -> [
-				plugin.checks.incorrect9.action.en,
-				plugin.checks.incorrect9.action.en.TEST_KEY,
+				plugin.checks.incorrect.action.en,
+				plugin.checks.incorrect.action.en.TEST_KEY,
 				plugins.check.incorrect,
 				plugins.check.incorrect.command,
 			]
 
-			v: plugin.checks.incorrect9.action.en
+			v: plugin.checks.incorrect.action.en
 			splitedKey -> [plugin, checks, incorrect, action, en]
 			topKey -> plugin
 			lastKey -> en
-			parentKey -> plugin.checks.incorrect9.action
+			parentKey -> plugin.checks.incorrect.action
 
-			v: plugin.checks.incorrect9.action.en.TEST_KEY
+			v: plugin.checks.incorrect.action.en.TEST_KEY
 			splitedKey -> [plugin, checks, incorrect, action, en, TEST_KEY]
 			topKey -> plugin
 			lastKey -> TEST_KEY
-			parentKey -> plugin.checks.incorrect9.action.en
+			parentKey -> plugin.checks.incorrect.action.en
 
 			v: plugins.check.incorrect
 			splitedKey -> [plugins, check, incorrect]
@@ -135,8 +135,8 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		topKey := splitedKey[0]
 		lastKey := splitedKey[len(splitedKey)-1]
 		parentKey := strings.Join(splitedKey[:len(splitedKey)-1], ".")
-		// when parentKey ex) plugin.checks.incorrect9.action.en or topKey ex) plugins is already exists in detectedKeys,
-		// childKey ex) plugin.checks.incorrect9.action.en.TEST_KEY, plugins.check.incorrect.command isn't detected.
+		// when parentKey ex) plugin.checks.incorrect.action.en or topKey ex) plugins is already exists in detectedKeys,
+		// childKey ex) plugin.checks.incorrect.action.en.TEST_KEY, plugins.check.incorrect.command isn't detected.
 		if containKey(detectedKeys, parentKey) || containKey(detectedKeys, topKey) {
 			continue
 		}
