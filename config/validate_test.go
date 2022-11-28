@@ -10,7 +10,7 @@ apikey = "123456abcde"
 podfile = "/path/to/pidfile"
 
 [foobar]
-command = "test command"
+command = ["test command"]
 env = { FOO = "BAR" }
 
 [filesystems]
@@ -18,40 +18,40 @@ ignore = "/path/to/ignore"
 use_mntpoint = true
 
 [plugin.foo.bar]
-command = "test command"
+command = ["test command"]
 env = { FOO = "BAR" }
 
 [plugin.metric.incorrect1]
-command = "test command"
+command = ["test command"]
 
 [plugin.check.incorrect2]
-command = "test command"
+command = ["test command"]
 
 [plugin.check.incorrect3]
-command = "test command"
+command = ["test command"]
 
 [plugins.check.incorrect4]
-command = "test command"
+command = ["test command"]
 
 [plugin.metrics.correct]
-command = "test command"
+command = ["test command"]
 
 [plugin.checks.correct]
-command = "test command"
+command = ["test command"]
 
 [plugin.metrics.incorrect5]
-command = "test command"
+command = ["test command"]
 action = { command = "test command", use = "test user", env = { TEST_KEY = "VALUE_1" } }
 
 [plugin.metrics.incorrect6]
-command = "test command"
+command = ["test command"]
 action = { command = "test command", xxx = "yyy" }
 
 [plugin.metrics.incorrect7.incorrect8]
-command = "test command"
+command = ["test command"]
 
 [plugin.checks.incorrect9]
-command = "test command"
+command = ["test command"]
 action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" } }
 `
 
@@ -87,12 +87,12 @@ func TestValidateConfig(t *testing.T) {
 	}
 
 	for i, v := range validResult {
-		if wantUnexpectedKey[i].Name != v.Name {
-			t.Errorf("expect Name: %v, actual Name: %v", wantUnexpectedKey[i].Name, v.Name)
+		if wantUnexpectedKey[i].Key != v.Key {
+			t.Errorf("expect Key: %v, actual Key: %v", wantUnexpectedKey[i].Key, v.Key)
 		}
 
-		if wantUnexpectedKey[i].SuggestName != v.SuggestName {
-			t.Errorf("expect SuggestName: %v, actual SuggestName: %v", wantUnexpectedKey[i].SuggestName, v.SuggestName)
+		if wantUnexpectedKey[i].SuggestKey != v.SuggestKey {
+			t.Errorf("expect SuggestKey: %v, actual SuggestKey: %v", wantUnexpectedKey[i].SuggestKey, v.SuggestKey)
 		}
 	}
 }
