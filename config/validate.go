@@ -144,7 +144,6 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		var key string
 		var suggestKey string
 
-		// plugin is contained in parentConfKeys, plugins isn't
 		if containKey(parentConfKeys, topKey) {
 			key = v.String() // same as parantKey + "." + lastKey
 			suggestResult := keySuggestion(lastKey, candidates)
@@ -162,6 +161,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 			key,
 			suggestKey,
 		})
+
 		detectedKeys = append(detectedKeys, key)
 	}
 
@@ -189,11 +189,13 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 			for k2 := range v {
 				var key string = fmt.Sprintf("plugin.%s.%s", k1, k2)
 				var suggestKey string
+
 				if suggestResult == "" {
 					suggestKey = fmt.Sprintf("plugin.metrics.%s", k2)
 				} else {
 					suggestKey = fmt.Sprintf("plugin.%s.%s", suggestResult, k2)
 				}
+
 				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
 					key,
 					suggestKey,

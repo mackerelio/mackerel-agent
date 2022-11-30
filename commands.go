@@ -123,11 +123,11 @@ func doConfigtest(fs *flag.FlagSet, argv []string) error {
 	}
 	if len(validResult) > 0 {
 		var messages string
-		for _, key := range validResult {
-			if key.SuggestName == "" {
-				messages += yellow.Sprintf("[WARNING] %s is unexpected key.\n", key.Name)
+		for _, v := range validResult {
+			if v.SuggestKey == "" {
+				messages += yellow.Sprintf("[WARNING] %s is unexpected key.\n", v.Key)
 			} else {
-				messages += yellow.Sprintf("[WARNING] %s is unexpected key. did you mean %s ?\n", key.Name, key.SuggestName)
+				messages += yellow.Sprintf("[WARNING] %s is unexpected key. Did you mean %s ?\n", v.Key, v.SuggestKey)
 			}
 		}
 		return fmt.Errorf(messages)
