@@ -89,24 +89,26 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		return undecodedKeys[i].String() < undecodedKeys[j].String()
 	})
 
+	/**
+		```
+		[plugin.checks.incorrect]
+		command = "test command"
+		action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" }
+
+		[plugins.check.incorrect]
+		command = "test command"
+		```
+
+		undecodedKeys -> [
+			plugin.checks.incorrect.action.en,
+			plugin.checks.incorrect.action.en.TEST_KEY,
+			plugins.check.incorrect,
+			plugins.check.incorrect.command,
+		]
+	**/
+
 	for _, v := range undecodedKeys {
 		/*
-			```
-			[plugin.checks.incorrect]
-			command = "test command"
-			action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" }
-
-			[plugins.check.incorrect]
-			command = "test command"
-			```
-
-			undecodedKeys -> [
-				plugin.checks.incorrect.action.en,
-				plugin.checks.incorrect.action.en.TEST_KEY,
-				plugins.check.incorrect,
-				plugins.check.incorrect.command,
-			]
-
 			v: plugin.checks.incorrect.action.en
 			splitedKey -> [plugin, checks, incorrect, action, en]
 			topKey -> plugin
