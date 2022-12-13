@@ -10,7 +10,7 @@ apikey = "123456abcde"
 podfile = "/path/to/pidfile"
 
 [foobar]
-command = "test command"
+command = ["test command"]
 env = { FOO = "BAR" }
 
 [filesystems]
@@ -18,44 +18,41 @@ ignore = "/path/to/ignore"
 use_mntpoint = true
 
 [plugin.foo.bar]
-command = "test command"
+command = ["test command"]
 env = { FOO = "BAR" }
 
-[plugin.metric.1]
-command = "test command"
+[plugin.metric.incorrect1]
+command = ["test command"]
 
-[plugin.check.1]
-command = "test command"
+[plugin.check.incorrect2]
+command = ["test command"]
 
-[plugin.check.2]
-command = "test command"
+[plugin.check.incorrect3]
+command = ["test command"]
 
-[plugins.check.1]
-command = "test command"
+[plugins.check.incorrect4]
+command = ["test command"]
 
 [plugin.metrics.correct]
-command = "test command"
+command = ["test command"]
 
 [plugin.checks.correct]
-command = "test command"
+command = ["test command"]
 
-[plugin.metrics.1]
-command = "test command"
+[plugin.metrics.incorrect5]
+command = ["test command"]
 action = { command = "test command", use = "test user", env = { TEST_KEY = "VALUE_1" } }
 
-[plugin.metrics.2]
-command = "test command"
+[plugin.metrics.incorrect6]
+command = ["test command"]
 action = { command = "test command", xxx = "yyy" }
 
-[plugin.checks.1]
-command = "test command"
-action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" } }
+[plugin.metrics.incorrect7.incorrect8]
+command = ["test command"]
 
-[plugin.metrics.aaa]
-command = ["exit 1"]
-[plugin.metrics.aaa.action]
-command = ["exit 2"]
-max_check_attempts = 3
+[plugin.checks.incorrect9]
+command = ["test command"]
+action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" } }
 `
 
 func TestValidateConfig(t *testing.T) {
@@ -73,15 +70,14 @@ func TestValidateConfig(t *testing.T) {
 	wantUnexpectedKey := []UnexpectedKey{
 		{"filesystems.use_mntpoint", "filesystems.use_mountpoint"},
 		{"foobar", ""},
-		{"plugin.check.1", "plugin.checks.1"},
-		{"plugin.check.2", "plugin.checks.2"},
-		{"plugin.checks.1.action.en", "plugin.checks.1.action.env"},
-		{"plugin.checks.1.action.en.TEST_KEY", ""},
+		{"plugin.check.incorrect2", "plugin.checks.incorrect2"},
+		{"plugin.check.incorrect3", "plugin.checks.incorrect3"},
+		{"plugin.checks.incorrect9.action.en", "plugin.checks.incorrect9.action.env"},
 		{"plugin.foo.bar", "plugin.metrics.bar"},
-		{"plugin.metric.1", "plugin.metrics.1"},
-		{"plugin.metrics.1.action.use", "plugin.metrics.1.action.user"},
-		{"plugin.metrics.2.action.xxx", ""},
-		{"plugin.metrics.aaa.action.max_check_attempts", ""},
+		{"plugin.metric.incorrect1", "plugin.metrics.incorrect1"},
+		{"plugin.metrics.incorrect5.action.use", "plugin.metrics.incorrect5.action.user"},
+		{"plugin.metrics.incorrect6.action.xxx", ""},
+		{"plugin.metrics.incorrect7.incorrect8", ""},
 		{"plugins", "plugin"},
 		{"podfile", "pidfile"},
 	}
@@ -91,12 +87,12 @@ func TestValidateConfig(t *testing.T) {
 	}
 
 	for i, v := range validResult {
-		if wantUnexpectedKey[i].Name != v.Name {
-			t.Errorf("expect Name: %v, actual Name: %v", wantUnexpectedKey[i].Name, v.Name)
+		if wantUnexpectedKey[i].Key != v.Key {
+			t.Errorf("expect Key: %v, actual Key: %v", wantUnexpectedKey[i].Key, v.Key)
 		}
 
-		if wantUnexpectedKey[i].SuggestName != v.SuggestName {
-			t.Errorf("expect SuggestName: %v, actual SuggestName: %v", wantUnexpectedKey[i].SuggestName, v.SuggestName)
+		if wantUnexpectedKey[i].SuggestKey != v.SuggestKey {
+			t.Errorf("expect SuggestKey: %v, actual SuggestKey: %v", wantUnexpectedKey[i].SuggestKey, v.SuggestKey)
 		}
 	}
 }

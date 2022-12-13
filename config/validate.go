@@ -13,21 +13,21 @@ import (
 
 // UnexpectedKey represents result of validation
 type UnexpectedKey struct {
-	Name        string
-	SuggestName string
+	Key        string
+	SuggestKey string
 }
 
-func normalizeKeyname(f reflect.StructField) string {
-	name := string(unicode.ToLower([]rune(f.Name)[0])) + f.Name[1:]
+func normalizeKey(f reflect.StructField) string {
+	key := string(unicode.ToLower([]rune(f.Name)[0])) + f.Name[1:]
 	if s := f.Tag.Get("toml"); s != "" {
-		name = s
+		key = s
 	}
-	return name
+	return key
 }
 
-func addKeynameToCandidates(f reflect.StructField, candidates []string) []string {
-	name := normalizeKeyname(f)
-	return append(candidates, name)
+func addKeyToCandidates(f reflect.StructField, candidates []string) []string {
+	key := normalizeKey(f)
+	return append(candidates, key)
 }
 
 func makeCandidates(t reflect.Type) []string {
@@ -41,24 +41,22 @@ func makeCandidates(t reflect.Type) []string {
 			continue
 		}
 		if s := f.Tag.Get("conf"); s == "parent" {
-			candidates = addKeynameToCandidates(f, candidates)
+			candidates = addKeyToCandidates(f, candidates)
 			childCandidates := makeCandidates(f.Type)
 			candidates = append(candidates, childCandidates...)
 			continue
 		}
-		candidates = addKeynameToCandidates(f, candidates)
+		candidates = addKeyToCandidates(f, candidates)
 	}
 
 	return candidates
 }
 
-func nameSuggestion(given string, candidates []string) string {
+func keySuggestion(given string, candidates []string) string {
 	for _, candidate := range candidates {
 		dist := levenshtein.Distance(given, candidate, nil)
 		if dist < 3 {
-			if candidate != given {
-				return candidate
-			}
+			return candidate
 		}
 	}
 	return ""
@@ -75,58 +73,95 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 	var c Config
 	candidates := makeCandidates(reflect.TypeOf(c))
 
-	var parentKeys []string
+	var parentConfKeys []string
 	configFields := reflect.VisibleFields(reflect.TypeOf(c))
 	for _, f := range configFields {
 		if s := f.Tag.Get("conf"); s == "parent" {
-			parentKeys = append(parentKeys, normalizeKeyname(f))
+			parentConfKeys = append(parentConfKeys, normalizeKey(f))
 		}
 	}
 
 	var unexpectedKeys []UnexpectedKey
-	for _, v := range md.Undecoded() {
+	var detectedKeys []string
+
+	undecodedKeys := md.Undecoded()
+	sort.Slice(undecodedKeys, func(i, j int) bool {
+		return undecodedKeys[i].String() < undecodedKeys[j].String()
+	})
+
+	/**
+		```
+		[plugin.checks.incorrect]
+		command = "test command"
+		action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" }
+
+		[plugins.check.incorrect]
+		command = "test command"
+		```
+
+		undecodedKeys -> [
+			plugin.checks.incorrect.action.en,
+			plugin.checks.incorrect.action.en.TEST_KEY,
+			plugins.check.incorrect,
+			plugins.check.incorrect.command,
+		]
+	**/
+
+	for _, v := range undecodedKeys {
+		/*
+			v: plugin.checks.incorrect.action.en
+			splitedKey -> [plugin, checks, incorrect, action, en]
+			topKey -> plugin
+			lastKey -> en
+			parentKey -> plugin.checks.incorrect.action
+		*/
 		splitedKey := strings.Split(v.String(), ".")
-		key := splitedKey[0]
-		if containKeyName(parentKeys, key) {
-			/*
-					if conffile is following, UnexpectedKey.SuggestName should be `filesystems.use_mountpoint`, not `filesystems`
-					```
-					[filesystems]
-				  use_mntpoint = true
-					```
-			*/
-			suggestName := nameSuggestion(splitedKey[len(splitedKey)-1], candidates)
-			if suggestName == "" {
-				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
-					v.String(),
-					"",
-				})
+		topKey := splitedKey[0]
+		lastKey := splitedKey[len(splitedKey)-1]
+		parentKey := strings.Join(splitedKey[:len(splitedKey)-1], ".")
+		// When parentKey (e.g., plugin.checks.incorrect.action.en) or topKey (e.g., plugins) already exists in detected keys,
+		// childKey (e.g., plugin.checks.incorrect.action.en.TEST_KEY, plugins.check.incorrect.command) isn't detected.
+		if containKey(detectedKeys, parentKey) || containKey(detectedKeys, topKey) {
+			continue
+		}
+
+		var key string
+		var suggestKey string
+
+		if containKey(parentConfKeys, topKey) {
+			key = v.String() // same as parantKey + "." + lastKey
+			suggestResult := keySuggestion(lastKey, candidates)
+			if suggestResult == "" {
+				suggestKey = ""
 			} else {
-				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
-					v.String(),
-					strings.Join(splitedKey[:len(splitedKey)-1], ".") + "." + suggestName,
-				})
+				suggestKey = parentKey + "." + suggestResult
 			}
 		} else {
-			// don't accept duplicate unexpectedKey
-			if !containKey(unexpectedKeys, key) {
-				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
-					key,
-					nameSuggestion(key, candidates),
-				})
-			}
+			key = topKey
+			suggestKey = keySuggestion(topKey, candidates)
 		}
+
+		unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
+			key,
+			suggestKey,
+		})
+
+		detectedKeys = append(detectedKeys, key)
 	}
 
 	for k1, v := range config.Plugin {
 		/*
 			detect [plugin.<unexpected>.<???>]
+			<unexpected> should be "metrics" or "checks" or "metadata"
 			default suggestion of [plugin.<unexpected>.<???>] is plugin.metrics.<???>
-			don't have to detect critical syntax error about plugin here because error should have occured while loading config
+
+			don't have to detect critical syntax error about plugin here because error should have occured while loading config in config.go
+
 			```
 			[plugin.metrics.correct]
 			```
 			-> A configuration value of `command` should be string or string slice, but <nil>
+
 			```
 			[plugin.metrics]
 			command = "test command"
@@ -134,40 +169,33 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 			-> type mismatch for config.PluginConfig: expected table but found string
 		*/
 		if k1 != "metrics" && k1 != "checks" && k1 != "metadata" {
-			suggestName := nameSuggestion(k1, []string{"metrics", "checks", "metadata"})
+			suggestResult := keySuggestion(k1, []string{"metrics", "checks", "metadata"})
 			for k2 := range v {
-				if suggestName == "" {
-					unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
-						fmt.Sprintf("plugin.%s.%s", k1, k2),
-						fmt.Sprintf("plugin.metrics.%s", k2),
-					})
+				var key string = fmt.Sprintf("plugin.%s.%s", k1, k2)
+				var suggestKey string
+
+				if suggestResult == "" {
+					suggestKey = fmt.Sprintf("plugin.metrics.%s", k2)
 				} else {
-					unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
-						fmt.Sprintf("plugin.%s.%s", k1, k2),
-						fmt.Sprintf("plugin.%s.%s", suggestName, k2),
-					})
+					suggestKey = fmt.Sprintf("plugin.%s.%s", suggestResult, k2)
 				}
+
+				unexpectedKeys = append(unexpectedKeys, UnexpectedKey{
+					key,
+					suggestKey,
+				})
 			}
 		}
 	}
 
 	sort.Slice(unexpectedKeys, func(i, j int) bool {
-		return unexpectedKeys[i].Name < unexpectedKeys[j].Name
+		return unexpectedKeys[i].Key < unexpectedKeys[j].Key
 	})
 
 	return unexpectedKeys, nil
 }
 
-func containKey(target []UnexpectedKey, want string) bool {
-	for _, v := range target {
-		if v.Name == want {
-			return true
-		}
-	}
-	return false
-}
-
-func containKeyName(target []string, want string) bool {
+func containKey(target []string, want string) bool {
 	for _, v := range target {
 		if v == want {
 			return true
