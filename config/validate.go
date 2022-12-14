@@ -73,14 +73,6 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 	var c Config
 	candidates := makeCandidates(reflect.TypeOf(c))
 
-	var parentConfKeys []string
-	configFields := reflect.VisibleFields(reflect.TypeOf(c))
-	for _, f := range configFields {
-		if s := f.Tag.Get("conf"); s == "parent" {
-			parentConfKeys = append(parentConfKeys, normalizeKey(f))
-		}
-	}
-
 	var unexpectedKeys []UnexpectedKey
 	var detectedKeys []string
 
@@ -93,7 +85,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		```
 		[plugin.checks.incorrect]
 		command = "test command"
-		action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" }
+		action = { command = "test command", user = "test user", en = { TEST_KEY = "VALUE_1" } }
 
 		[plugins.check.incorrect]
 		command = "test command"
@@ -128,7 +120,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		var key string
 		var suggestKey string
 
-		if containKey(parentConfKeys, topKey) {
+		if containKey(candidates, topKey) {
 			key = v.String() // same as parantKey + "." + lastKey
 			suggestResult := keySuggestion(lastKey, candidates)
 			if suggestResult == "" {
@@ -149,25 +141,12 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		detectedKeys = append(detectedKeys, key)
 	}
 
+	/*
+		detect [plugin.<unexpected>.<???>]
+		<unexpected> should be "metrics" or "checks" or "metadata"
+		default suggestion of [plugin.<unexpected>.<???>] is plugin.metrics.<???>
+	*/
 	for k1, v := range config.Plugin {
-		/*
-			detect [plugin.<unexpected>.<???>]
-			<unexpected> should be "metrics" or "checks" or "metadata"
-			default suggestion of [plugin.<unexpected>.<???>] is plugin.metrics.<???>
-
-			don't have to detect critical syntax error about plugin here because error should have occured while loading config in config.go
-
-			```
-			[plugin.metrics.correct]
-			```
-			-> A configuration value of `command` should be string or string slice, but <nil>
-
-			```
-			[plugin.metrics]
-			command = "test command"
-			```
-			-> type mismatch for config.PluginConfig: expected table but found string
-		*/
 		if k1 != "metrics" && k1 != "checks" && k1 != "metadata" {
 			suggestResult := keySuggestion(k1, []string{"metrics", "checks", "metadata"})
 			for k2 := range v {
