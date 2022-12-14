@@ -1,2 +1,3 @@
 usr/bin
 etc/mackerel-agent
+var/lib/mackerel-agent
