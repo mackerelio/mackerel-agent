@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.74.0 (2022-12-14)
+
+* refactor(config/validate): use `candidates` instead of `parentConfKeys` #839 (wafuwafu13)
+* improve purge stage of Debian package to remove id file and keep custom files #837 (kmuto)
+* fix(configtest): don't detect child key if parent key has already detected #832 (wafuwafu13)
+
+
 ## 0.73.3 (2022-11-09)
 
 * Fix config test #830 (ryuichi1208)
