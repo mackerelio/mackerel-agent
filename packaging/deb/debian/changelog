@@ -1,3 +1,14 @@
+mackerel-agent (0.74.0-1) stable; urgency=low
+
+  * refactor(config/validate): use `candidates` instead of `parentConfKeys` (by wafuwafu13)
+    <https://github.com/mackerelio/mackerel-agent/pull/839>
+  * improve purge stage of Debian package to remove id file and keep custom files (by kmuto)
+    <https://github.com/mackerelio/mackerel-agent/pull/837>
+  * fix(configtest): don't detect child key if parent key has already detected (by wafuwafu13)
+    <https://github.com/mackerelio/mackerel-agent/pull/832>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 14 Dec 2022 11:04:13 +0000
+
 mackerel-agent (0.73.3-1) stable; urgency=low
 
   * Fix config test (by ryuichi1208)
