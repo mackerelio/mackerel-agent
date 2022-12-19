@@ -40,7 +40,7 @@ jobs:
 
     - uses: golangci/golangci-lint-action@v3
       with:
-        args: --timeout 2m
+        args: --timeout 5m
     - uses: actions/cache@v2
       with:
         path: |
