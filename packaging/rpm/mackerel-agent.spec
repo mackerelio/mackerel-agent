@@ -61,6 +61,13 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Tue Dec 20 2022 <mackerel-developers@hatena.ne.jp> - 0.74.0
+- [ci]fix timeout (by yseto)
+- use ubuntu-20.04 (by yseto)
+- refactor(config/validate): use `candidates` instead of `parentConfKeys` (by wafuwafu13)
+- improve purge stage of Debian package to remove id file and keep custom files (by kmuto)
+- fix(configtest): don't detect child key if parent key has already detected (by wafuwafu13)
+
 * Wed Nov 9 2022 <mackerel-developers@hatena.ne.jp> - 0.73.3
 - Fix config test (by ryuichi1208)
 
