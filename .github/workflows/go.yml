@@ -69,8 +69,9 @@ jobs:
         go-version: 1.19.x
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
+    - name: Install debian packaging utils, binutils
+      run: sudo apt-get install -y devscripts debhelper fakeroot binutils-mips-linux-gnu binutils-aarch64-linux-gnu binutils-arm-linux-gnueabihf
     - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
-    - run: docker pull mackerel/docker-mackerel-deb-builder
     - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
     - run: make crossbuild
     - uses: actions/upload-artifact@v2
