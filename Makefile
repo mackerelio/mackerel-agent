@@ -21,7 +21,7 @@ test:
 
 .PHONY: build
 build: deps
-	go build -ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go build -ldflags=$(BUILD_LDFLAGS) \
 	  -o build/$(MACKEREL_AGENT_NAME)
 
 .PHONY: run
