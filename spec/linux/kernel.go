@@ -9,7 +9,7 @@ import (
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-client-go"
-	"github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/v3/host"
 )
 
 // KernelGenerator XXX
