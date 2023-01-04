@@ -33,7 +33,6 @@ deps:
 	go install \
 		github.com/Songmu/gocredits/cmd/gocredits \
 		github.com/Songmu/goxz/cmd/goxz \
-		github.com/mattn/goveralls \
 
 .PHONY: credits
 credits: deps
