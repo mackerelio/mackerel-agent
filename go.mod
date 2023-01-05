@@ -14,7 +14,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/mackerelio/go-osstat v0.2.3
 	github.com/mackerelio/golib v1.2.1
-	github.com/mackerelio/mackerel-client-go v0.22.0
+	github.com/mackerelio/mackerel-client-go v0.23.0
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
 	github.com/shirou/gopsutil/v3 v3.22.12
