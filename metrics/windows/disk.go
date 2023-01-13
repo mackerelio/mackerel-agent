@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/StackExchange/wmi"
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/yusufpapurcu/wmi"
 )
 
 // DiskGenerator XXX
