@@ -9,7 +9,6 @@ require (
 	github.com/Songmu/prompter v0.5.1
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
-	github.com/StackExchange/wmi v1.2.1
 	github.com/agext/levenshtein v1.2.3
 	github.com/fatih/color v1.13.0
 	github.com/mackerelio/go-osstat v0.2.3
@@ -19,6 +18,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/shirou/gopsutil/v3 v3.22.12
 	github.com/vishvananda/netlink v1.1.0
+	github.com/yusufpapurcu/wmi v1.2.2
 	golang.org/x/text v0.3.7
 )
 
@@ -42,7 +42,6 @@ require (
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.3.0 // indirect

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/Songmu/retry"
-	"github.com/StackExchange/wmi"
+	"github.com/yusufpapurcu/wmi"
 )
 
 // Win32ComputerSystemProduct is struct for WMI. SKUNumber is nil-able.
