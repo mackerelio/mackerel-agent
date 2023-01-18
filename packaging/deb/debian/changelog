@@ -1,3 +1,14 @@
+mackerel-agent (0.74.1-1) stable; urgency=low
+
+  * Replace WMI library (by Arthur1)
+    <https://github.com/mackerelio/mackerel-agent/pull/851>
+  * Update some libraries (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/847>
+  * Remove deb builder (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/845>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 18 Jan 2023 06:20:14 +0000
+
 mackerel-agent (0.74.0-1) stable; urgency=low
 
   * [ci]fix timeout (by yseto)
