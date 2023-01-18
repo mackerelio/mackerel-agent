@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.74.1 (2023-01-18)
+
+* Replace WMI library #851 (Arthur1)
+* Update some libraries #847 (yseto)
+* Remove deb builder #845 (yseto)
+
+
 ## 0.74.0 (2022-12-20)
 
 * [ci]fix timeout #843 (yseto)

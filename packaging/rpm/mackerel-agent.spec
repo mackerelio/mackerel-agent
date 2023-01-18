@@ -61,6 +61,11 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jan 18 2023 <mackerel-developers@hatena.ne.jp> - 0.74.1
+- Replace WMI library (by Arthur1)
+- Update some libraries (by yseto)
+- Remove deb builder (by yseto)
+
 * Tue Dec 20 2022 <mackerel-developers@hatena.ne.jp> - 0.74.0
 - [ci]fix timeout (by yseto)
 - use ubuntu-20.04 (by yseto)
