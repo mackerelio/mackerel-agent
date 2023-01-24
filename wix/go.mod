@@ -3,7 +3,7 @@ module github.com/mackerelio/mackerel-agent/wix
 go 1.17
 
 require (
-	github.com/mackerelio/go-check-plugins v0.42.1
+	github.com/mackerelio/go-check-plugins v0.42.4
 	github.com/mackerelio/mackerel-agent-plugins v0.72.1
 	github.com/mackerelio/mkr v0.48.0
 	github.com/mattn/go-encoding v0.0.2
@@ -38,16 +38,16 @@ require (
 	github.com/mackerelio/checkers v0.0.4 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.3 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.1 // indirect
-	github.com/mackerelio/go-osstat v0.2.2 // indirect
+	github.com/mackerelio/go-osstat v0.2.3 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
 	github.com/mackerelio/mackerel-agent v0.73.1 // indirect
 	github.com/mackerelio/mackerel-client-go v0.23.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
-	github.com/mattn/go-zglob v0.0.3 // indirect
+	github.com/mattn/go-zglob v0.0.4 // indirect
 	github.com/mholt/archiver/v3 v3.5.1 // indirect
 	github.com/motemen/go-colorine v0.0.0-20180816141035-45d19169413a // indirect
-	github.com/natefinch/atomic v0.0.0-20150920032501-a62ce929ffcc // indirect
+	github.com/natefinch/atomic v1.0.1 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -55,7 +55,7 @@ require (
 	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.22.6 // indirect
+	github.com/shirou/gopsutil/v3 v3.22.11 // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/urfave/cli v1.22.10 // indirect
@@ -63,7 +63,7 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
+	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/oauth2 v0.3.0 // indirect
