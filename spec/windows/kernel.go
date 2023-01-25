@@ -12,8 +12,6 @@ import (
 	"github.com/yusufpapurcu/wmi"
 )
 
-const registryKey = `Software\Microsoft\Windows NT\CurrentVersion`
-
 type Win32_OperatingSystem struct {
 	Caption    string
 	Version    string
