@@ -4,7 +4,6 @@
 package windows
 
 import (
-	"strings"
 	"unsafe"
 
 	"github.com/mackerelio/mackerel-client-go"
@@ -40,16 +39,6 @@ func (g *KernelGenerator) Generate() (interface{}, error) {
 		version = v.Version
 		release = v.CSDVersion
 		break //nolint
-	}
-
-	edition, _, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE, registryKey, `EditionID`)
-	if err != nil {
-		return nil, err
-	}
-
-	if edition != "" && !strings.Contains(osname, edition) {
-		osname += " (" + edition + ")"
 	}
 
 	results["name"] = "Microsoft Windows"
