@@ -148,15 +148,7 @@ rpm-v2-arm: crossbuild-package
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 
 .PHONY: deb
-deb: deb-v1 deb-v2
-
-.PHONY: deb-v1
-deb-v1: crossbuild-package
-	BUILD_DIRECTORY=build-linux-386 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
-	cd packaging/deb-build && debuild --no-tgz-check -rfakeroot -uc -us
-
-.PHONY: deb-v2
-deb-v2: crossbuild-package
+deb: crossbuild-package
 	BUILD_DIRECTORY=build-linux-amd64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -rfakeroot -uc -us
 	BUILD_DIRECTORY=build-linux-arm64 BUILD_SYSTEMD=1 MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-deb-build.sh
@@ -191,15 +183,7 @@ rpm-kcps-v2: crossbuild-package-kcps
 	-bb packaging/rpm-build/mackerel-agent-kcps.spec
 
 .PHONY: deb-kcps
-deb-kcps: deb-kcps-v1 deb-kcps-v2
-
-.PHONY: deb-kcps-v1
-deb-kcps-v1: crossbuild-package-kcps
-	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
-	cd packaging/deb-build && debuild --no-tgz-check -rfakeroot -uc -us
-
-.PHONY: deb-kcps-v2
-deb-kcps-v2: crossbuild-package-kcps
+deb-kcps: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps BUILD_SYSTEMD=1 BUILD_DIRECTORY=build-linux-amd64 _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -rfakeroot -uc -us
 
@@ -223,15 +207,7 @@ rpm-stage-v2: crossbuild-package-stage
 	-bb packaging/rpm-build/mackerel-agent-stage.spec
 
 .PHONY: deb-stage
-deb-stage: deb-stage-v1 deb-stage-v2
-
-.PHONY: deb-stage-v1
-deb-stage-v1: crossbuild-package-stage
-	MACKEREL_AGENT_NAME=mackerel-agent-stage BUILD_DIRECTORY=build-linux-386 _tools/packaging/prepare-deb-build.sh
-	cd packaging/deb-build && debuild --no-tgz-check -rfakeroot -uc -us
-
-.PHONY: deb-stage-v2
-deb-stage-v2: crossbuild-package-stage
+deb-stage: crossbuild-package-stage
 	MACKEREL_AGENT_NAME=mackerel-agent-stage BUILD_SYSTEMD=1 BUILD_DIRECTORY=build-linux-amd64 _tools/packaging/prepare-deb-build.sh
 	cd packaging/deb-build && debuild --no-tgz-check -rfakeroot -uc -us
 
