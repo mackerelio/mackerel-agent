@@ -22,7 +22,7 @@ jobs:
     - uses: golangci/golangci-lint-action@v3
     - run: make convention
     - run: make cover
-    - run: test `gofmt -l . | wc -l` = 0
+    - run: test "$(gofmt -l . | wc -l)" = 0
     - uses: shogo82148/actions-goveralls@v1
       with:
         path-to-profile: .profile.cov
