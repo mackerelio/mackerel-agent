@@ -186,7 +186,11 @@ jobs:
         name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
         path: build/
 
-    - run: node _tools/parse_version.js
+    - uses: action/github-script@v6
+      with:
+        script: |
+          const script = require('./_tools/parse_version.js')
+          await script({github, context, core})
       id: parse_version
 
     - name: Build Installer
