@@ -74,7 +74,7 @@ jobs:
     - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
     - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
     - run: make crossbuild
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: linux-build-artifacts
         path: |
