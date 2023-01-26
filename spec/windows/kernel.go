@@ -4,15 +4,19 @@
 package windows
 
 import (
-	"strings"
 	"unsafe"
 
 	"github.com/mackerelio/mackerel-client-go"
 
 	"github.com/mackerelio/mackerel-agent/util/windows"
+	"github.com/yusufpapurcu/wmi"
 )
 
-const registryKey = `Software\Microsoft\Windows NT\CurrentVersion`
+type Win32_OperatingSystem struct {
+	Caption    string
+	Version    string
+	CSDVersion string
+}
 
 // KernelGenerator XXX
 type KernelGenerator struct {
@@ -22,29 +26,17 @@ type KernelGenerator struct {
 func (g *KernelGenerator) Generate() (interface{}, error) {
 	results := make(mackerel.Kernel)
 
-	osname, _, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE, registryKey, `ProductName`)
-	if err != nil {
+	var dst []Win32_OperatingSystem
+	var osname, version, release string
+	q := wmi.CreateQuery(&dst, "")
+	if err := wmi.Query(q, &dst); err != nil {
 		return nil, err
 	}
-	edition, _, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE, registryKey, `EditionID`)
-	if err != nil {
-		return nil, err
-	}
-	version, _, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE, registryKey, `CurrentVersion`)
-	if err != nil {
-		return nil, err
-	}
-	release, errno, err := windows.RegGetString(
-		windows.HKEY_LOCAL_MACHINE, registryKey, `CSDVersion`)
-	if err != nil && errno != windows.ERROR_FILE_NOT_FOUND { // CSDVersion is nullable
-		return nil, err
-	}
-
-	if edition != "" && !strings.Contains(osname, edition) {
-		osname += " (" + edition + ")"
+	for _, v := range dst {
+		osname = v.Caption
+		version = v.Version
+		release = v.CSDVersion
+		break //nolint
 	}
 
 	results["name"] = "Microsoft Windows"
