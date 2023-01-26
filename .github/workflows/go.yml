@@ -186,7 +186,7 @@ jobs:
         name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
         path: build/
 
-    - uses: action/github-script@v6
+    - uses: actions/github-script@v6
       with:
         script: |
           const script = require('./_tools/parse_version.js')
