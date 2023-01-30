@@ -1,9 +1,9 @@
-name: 'Create Release PR'
+name: "Create Release PR"
 on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'next release version'
+        description: "next release version"
         required: true
 env:
   GIT_AUTHOR_NAME: mackerelbot
@@ -32,4 +32,3 @@ jobs:
           next_version: ${{ steps.start.outputs.nextVersion }}
           branch_name: ${{ steps.start.outputs.branchName }}
           pull_request_infos: ${{ steps.start.outputs.pullRequestInfos }}
-
