@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/mackerelio/go-check-plugins v0.42.4
-	github.com/mackerelio/mackerel-agent-plugins v0.72.1
+	github.com/mackerelio/mackerel-agent-plugins v0.75.0
 	github.com/mackerelio/mkr v0.48.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.4.0
@@ -34,10 +34,9 @@ require (
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.14 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
-	github.com/kr/pretty v0.3.0 // indirect
 	github.com/mackerelio/checkers v0.0.4 // indirect
-	github.com/mackerelio/go-mackerel-plugin v0.1.3 // indirect
-	github.com/mackerelio/go-mackerel-plugin-helper v0.1.1 // indirect
+	github.com/mackerelio/go-mackerel-plugin v0.1.4 // indirect
+	github.com/mackerelio/go-mackerel-plugin-helper v0.1.2 // indirect
 	github.com/mackerelio/go-osstat v0.2.3 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
 	github.com/mackerelio/mackerel-agent v0.73.1 // indirect
@@ -49,10 +48,10 @@ require (
 	github.com/motemen/go-colorine v0.0.0-20180816141035-45d19169413a // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
 	github.com/nwaples/rardecode v1.1.3 // indirect
+	github.com/nxadm/tail v1.4.4 // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
-	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shirou/gopsutil/v3 v3.22.11 // indirect
