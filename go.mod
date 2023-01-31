@@ -19,7 +19,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.22.12
 	github.com/vishvananda/netlink v1.1.0
 	github.com/yusufpapurcu/wmi v1.2.2
-	golang.org/x/text v0.3.7
+	golang.org/x/text v0.6.0
 )
 
 require (
