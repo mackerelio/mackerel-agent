@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.75.0 (2023-02-01)
+
+* Bump peter-evans/repository-dispatch from 1 to 2 #863 (dependabot[bot])
+* Bump golang.org/x/sys from 0.3.0 to 0.4.0 in /wix #862 (dependabot[bot])
+* Bump github.com/fatih/color from 1.13.0 to 1.14.1 #861 (dependabot[bot])
+* Enables Dependabot version updates for GitHub Actions #860 (Arthur1)
+* Upgrade reusable actions 2 #859 (Arthur1)
+* Upgrade reusable actions #858 (Arthur1)
+* Remove build command for apt v1 #857 (Arthur1)
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.72.1 to 0.75.0 in /wix #856 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.47.1 to 0.48.0 in /wix #855 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.42.1 to 0.42.4 in /wix #854 (dependabot[bot])
+* Get osname, version, and release by WMI #852 (Arthur1)
+* Bump github.com/mackerelio/mackerel-client-go from 0.22.0 to 0.24.0 #849 (dependabot[bot])
+* Bump golang.org/x/text from 0.3.7 to 0.6.0 #848 (dependabot[bot])
+* Bump github.com/BurntSushi/toml from 1.2.0 to 1.2.1 #825 (dependabot[bot])
+
+
 ## 0.74.1 (2023-01-18)
 
 * Replace WMI library #851 (Arthur1)

@@ -54,6 +54,22 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Feb 1 2023 <mackerel-developers@hatena.ne.jp> - 0.75.0
+- Bump peter-evans/repository-dispatch from 1 to 2 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.3.0 to 0.4.0 in /wix (by dependabot[bot])
+- Bump github.com/fatih/color from 1.13.0 to 1.14.1 (by dependabot[bot])
+- Enables Dependabot version updates for GitHub Actions (by Arthur1)
+- Upgrade reusable actions 2 (by Arthur1)
+- Upgrade reusable actions (by Arthur1)
+- Remove build command for apt v1 (by Arthur1)
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.72.1 to 0.75.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.47.1 to 0.48.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.42.1 to 0.42.4 in /wix (by dependabot[bot])
+- Get osname, version, and release by WMI (by Arthur1)
+- Bump github.com/mackerelio/mackerel-client-go from 0.22.0 to 0.24.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.3.7 to 0.6.0 (by dependabot[bot])
+- Bump github.com/BurntSushi/toml from 1.2.0 to 1.2.1 (by dependabot[bot])
+
 * Wed Jan 18 2023 <mackerel-developers@hatena.ne.jp> - 0.74.1
 - Replace WMI library (by Arthur1)
 - Update some libraries (by yseto)
