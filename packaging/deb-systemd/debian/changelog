@@ -1,3 +1,22 @@
+mackerel-agent (0.75.1-1.systemd) stable; urgency=low
+
+  * Bump golang.org/x/sys from 0.4.0 to 0.5.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/871>
+  * Bump golang.org/x/text from 0.6.0 to 0.7.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/870>
+  * fix msi package installscope. (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/869>
+  * Bump github.com/mackerelio/mkr from 0.48.0 to 0.49.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/868>
+  * Bump github.com/mackerelio/go-check-plugins from 0.42.4 to 0.43.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/867>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.75.0 to 0.76.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/866>
+  * Bump github.com/shirou/gopsutil/v3 from 3.22.12 to 3.23.1 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/865>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 15 Feb 2023 03:42:23 +0000
+
 mackerel-agent (0.75.0-1.systemd) stable; urgency=low
 
   * Bump peter-evans/repository-dispatch from 1 to 2 (by dependabot[bot])
