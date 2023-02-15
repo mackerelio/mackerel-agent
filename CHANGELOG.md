@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.75.1 (2023-02-15)
+
+* Bump golang.org/x/sys from 0.4.0 to 0.5.0 in /wix #871 (dependabot[bot])
+* Bump golang.org/x/text from 0.6.0 to 0.7.0 #870 (dependabot[bot])
+* fix msi package installscope. #869 (yseto)
+* Bump github.com/mackerelio/mkr from 0.48.0 to 0.49.0 in /wix #868 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.42.4 to 0.43.0 in /wix #867 (dependabot[bot])
+* Bump github.com/shirou/gopsutil/v3 from 3.22.12 to 3.23.1 #865 (dependabot[bot])
+
+
 ## 0.75.0 (2023-02-01)
 
 * Bump peter-evans/repository-dispatch from 1 to 2 #863 (dependabot[bot])
