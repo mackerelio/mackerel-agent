@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/mackerelio/go-check-plugins v0.43.0
 	github.com/mackerelio/mackerel-agent-plugins v0.75.0
-	github.com/mackerelio/mkr v0.49.0
+	github.com/mackerelio/mkr v0.49.1
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.5.0
 )
@@ -40,7 +40,7 @@ require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.2 // indirect
 	github.com/mackerelio/go-osstat v0.2.3 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
-	github.com/mackerelio/mackerel-agent v0.74.1 // indirect
+	github.com/mackerelio/mackerel-agent v0.75.0 // indirect
 	github.com/mackerelio/mackerel-client-go v0.24.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
@@ -65,11 +65,11 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/net v0.5.0 // indirect
-	golang.org/x/oauth2 v0.4.0 // indirect
+	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/oauth2 v0.5.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/term v0.4.0 // indirect
-	golang.org/x/text v0.6.0 // indirect
+	golang.org/x/term v0.5.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 	golang.org/x/tools v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
