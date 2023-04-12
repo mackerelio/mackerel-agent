@@ -54,6 +54,16 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Apr 12 2023 <mackerel-developers@hatena.ne.jp> - 0.75.2
+- Bump golang.org/x/sys from 0.5.0 to 0.7.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/text from 0.7.0 to 0.9.0 (by dependabot[bot])
+- Bump github.com/shirou/gopsutil/v3 from 3.23.1 to 3.23.3 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.75.0 to 0.78.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-osstat from 0.2.3 to 0.2.4 (by dependabot[bot])
+- Bump github.com/fatih/color from 1.14.1 to 1.15.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.49.0 to 0.49.2 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.43.0 to 0.44.0 in /wix (by dependabot[bot])
+
 * Wed Feb 15 2023 <mackerel-developers@hatena.ne.jp> - 0.75.1
 - Bump golang.org/x/sys from 0.4.0 to 0.5.0 in /wix (by dependabot[bot])
 - Bump golang.org/x/text from 0.6.0 to 0.7.0 (by dependabot[bot])
