@@ -10,7 +10,7 @@ require (
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
 	github.com/agext/levenshtein v1.2.3
-	github.com/fatih/color v1.14.1
+	github.com/fatih/color v1.15.0
 	github.com/mackerelio/go-osstat v0.2.4
 	github.com/mackerelio/golib v1.2.1
 	github.com/mackerelio/mackerel-client-go v0.24.0
