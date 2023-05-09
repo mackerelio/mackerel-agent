@@ -36,13 +36,14 @@ func TestDiskGenerator(t *testing.T) {
 }
 
 func TestParseDiskStats(t *testing.T) {
+	g := &DiskGenerator{Interval: 1 * time.Second}
 	// insert empty line intentionally
 	out := []byte(`202       1 xvda1 750193 3037 28116978 368712 16600606 7233846 424712632 23987908 0 2355636 24345740
 
 202       2 xvda2 1641 9310 87552 1252 6365 3717 80664 24192 0 15040 25428`)
 
 	var emptyMapping map[string]string
-	result, err := parseDiskStats(out, emptyMapping)
+	result, err := g.parseDiskStats(out, emptyMapping)
 	if err != nil {
 		t.Errorf("error should be nil but: %s", err)
 	}
