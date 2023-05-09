@@ -104,6 +104,7 @@ type Config struct {
 	Diagnostic    bool          `toml:"diagnostic"`
 	DisplayName   string        `toml:"display_name"`
 	HostStatus    HostStatus    `toml:"host_status" conf:"parent"`
+	Disks         Disks         `toml:"disks" conf:"parent"`
 	Filesystems   Filesystems   `toml:"filesystems" conf:"parent"`
 	Interfaces    Interfaces    `toml:"interfaces"  conf:"parent"`
 	HTTPProxy     string        `toml:"http_proxy"`
@@ -368,6 +369,11 @@ var PostMetricsInterval = 1 * time.Minute
 type HostStatus struct {
 	OnStart string `toml:"on_start"`
 	OnStop  string `toml:"on_stop"`
+}
+
+// Disks configure disks related settings
+type Disks struct {
+	Ignore Regexpwrapper `toml:"ignore"`
 }
 
 // Filesystems configure filesystem related settings
