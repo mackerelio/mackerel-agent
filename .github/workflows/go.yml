@@ -28,7 +28,9 @@ jobs:
 
   test-windows:
     name: Test (Windows)
-    runs-on: windows-2019
+    # Please do not specify `windows-latest`
+    # Build process is complex then need to check operation.
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v3
 
@@ -92,7 +94,7 @@ jobs:
   # Therefore we installs msys2 on each 32bit and 64bit platforms.
   build-windows:
     name: Build (Windows)
-    runs-on: windows-2019
+    runs-on: windows-2022
     needs: test-windows
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
@@ -167,7 +169,7 @@ jobs:
 
   windows-installer:
     name: Make Installer (Windows)
-    runs-on: windows-2019
+    runs-on: windows-2022
     needs: build-windows
     if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
