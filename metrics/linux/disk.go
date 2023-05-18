@@ -43,6 +43,7 @@ Note that there are more columns in Linux 4.18+, see https://github.com/torvalds
 
 // DiskGenerator XXX
 type DiskGenerator struct {
+	IgnoreRegexp  *regexp.Regexp
 	Interval      time.Duration
 	UseMountpoint bool
 }
@@ -102,10 +103,10 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 			diskLogger.Warningf("Failed to prepare device name mapping: %s", err)
 		}
 	}
-	return parseDiskStats(out, nameMapping)
+	return g.parseDiskStats(out, nameMapping)
 }
 
-func parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, error) {
+func (g *DiskGenerator) parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, error) {
 	lineScanner := bufio.NewScanner(bytes.NewReader(out))
 	results := make(map[string]float64)
 	for lineScanner.Scan() {
@@ -127,6 +128,10 @@ func parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, erro
 		if strings.HasPrefix(deviceLabel, "dm-") {
 			continue
 		}
+		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(deviceLabel) {
+			continue
+		}
+
 		mountpoint, exists := mapping[device]
 		if exists {
 			deviceLabel = util.SanitizeMetricKey(mountpoint)

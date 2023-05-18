@@ -9,7 +9,7 @@ import (
 )
 
 func TestDiskGenerator(t *testing.T) {
-	g, err := NewDiskGenerator(1 * time.Second)
+	g, err := NewDiskGenerator(nil, 1*time.Second)
 	if err != nil {
 		t.Errorf("should not raise error: %v", err)
 	}

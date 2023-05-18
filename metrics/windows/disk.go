@@ -6,6 +6,7 @@ package windows
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/mackerelio/golib/logging"
@@ -15,14 +16,15 @@ import (
 
 // DiskGenerator XXX
 type DiskGenerator struct {
-	Interval time.Duration
+	IgnoreRegexp *regexp.Regexp
+	Interval     time.Duration
 }
 
 var diskLogger = logging.GetLogger("metrics.disk")
 
 // NewDiskGenerator XXX
-func NewDiskGenerator(interval time.Duration) (*DiskGenerator, error) {
-	return &DiskGenerator{interval}, nil
+func NewDiskGenerator(ignoreReg *regexp.Regexp, interval time.Duration) (*DiskGenerator, error) {
+	return &DiskGenerator{ignoreReg, interval}, nil
 }
 
 type win32PerfFormattedDataPerfDiskPhysicalDisk struct {
@@ -43,6 +45,9 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 	results := make(map[string]float64)
 	for _, record := range records {
 		name := record.Name
+		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
+			continue
+		}
 		// Collect metrics for only drives
 		if len(name) != 2 || name[1] != ':' {
 			continue
