@@ -5,6 +5,7 @@ package main
 
 import (
 	_ "github.com/mackerelio/go-check-plugins/check-disk"
+	_ "github.com/mackerelio/go-check-plugins/check-file-age"
 	_ "github.com/mackerelio/go-check-plugins/check-log"
 	_ "github.com/mackerelio/go-check-plugins/check-ntservice"
 	_ "github.com/mackerelio/go-check-plugins/check-procs"
