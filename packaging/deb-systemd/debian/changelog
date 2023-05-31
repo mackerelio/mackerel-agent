@@ -1,3 +1,14 @@
+mackerel-agent (0.76.0-1.systemd) stable; urgency=low
+
+  * added check-file-age on windows (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/903>
+  * update Actions Runner Image of windows. (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/899>
+  * add feature to ignore disk labels by regexp in 'disk' of system metrics (by kmuto)
+    <https://github.com/mackerelio/mackerel-agent/pull/898>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 31 May 2023 02:45:03 +0000
+
 mackerel-agent (0.75.2-1.systemd) stable; urgency=low
 
   * Bump golang.org/x/sys from 0.5.0 to 0.7.0 in /wix (by dependabot[bot])

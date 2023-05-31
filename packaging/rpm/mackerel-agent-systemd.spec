@@ -54,6 +54,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed May 31 2023 <mackerel-developers@hatena.ne.jp> - 0.76.0
+- added check-file-age on windows (by yseto)
+- update Actions Runner Image of windows. (by yseto)
+- add feature to ignore disk labels by regexp in 'disk' of system metrics (by kmuto)
+
 * Wed Apr 12 2023 <mackerel-developers@hatena.ne.jp> - 0.75.2
 - Bump golang.org/x/sys from 0.5.0 to 0.7.0 in /wix (by dependabot[bot])
 - Bump golang.org/x/text from 0.7.0 to 0.9.0 (by dependabot[bot])

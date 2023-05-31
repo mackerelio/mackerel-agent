@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.76.0 (2023-05-31)
+
+* added check-file-age on windows #903 (yseto)
+* update Actions Runner Image of windows. #899 (yseto)
+* add feature to ignore disk labels by regexp in 'disk' of system metrics #898 (kmuto)
+
+
 ## 0.75.2 (2023-04-12)
 
 * Bump golang.org/x/sys from 0.5.0 to 0.7.0 in /wix #891 (dependabot[bot])
