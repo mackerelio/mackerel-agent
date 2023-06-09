@@ -246,7 +246,7 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 
 		value, err := strconv.ParseFloat(items[1], 64)
 		if err != nil {
-			pluginLogger.Warningf("Failed to parse values: %s", err)
+			pluginLogger.Warningf("Failed to parse values (key=%s): %s", key, err)
 			continue
 		}
 
