@@ -61,6 +61,10 @@ fi
 /usr/local/bin/%{name}
 
 %changelog
+* Wed Jun 14 2023 <mackerel-developers@hatena.ne.jp> - 0.77.0
+- fixed to log the key when metric parsing fails (by tukaelu)
+- Bump github.com/BurntSushi/toml from 1.2.1 to 1.3.0 (by dependabot[bot])
+
 * Wed May 31 2023 <mackerel-developers@hatena.ne.jp> - 0.76.0
 - added check-file-age on windows (by yseto)
 - update Actions Runner Image of windows. (by yseto)

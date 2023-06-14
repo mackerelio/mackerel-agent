@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.77.0 (2023-06-14)
+
+* fixed to log the key when metric parsing fails #909 (tukaelu)
+* Bump github.com/BurntSushi/toml from 1.2.1 to 1.3.0 #907 (dependabot[bot])
+
+
 ## 0.76.0 (2023-05-31)
 
 * added check-file-age on windows #903 (yseto)
