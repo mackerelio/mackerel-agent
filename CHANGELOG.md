@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.77.1 (2023-07-13)
+
+* Bump github.com/shirou/gopsutil/v3 from 3.23.3 to 3.23.6 #915 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.49.2 to 0.51.0 in /wix #908 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.24.0 to 0.26.0 #900 (dependabot[bot])
+
+
 ## 0.77.0 (2023-06-14)
 
 * fixed to log the key when metric parsing fails #909 (tukaelu)
