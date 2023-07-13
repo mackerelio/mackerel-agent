@@ -54,6 +54,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Jul 13 2023 <mackerel-developers@hatena.ne.jp> - 0.77.1
+- Bump github.com/shirou/gopsutil/v3 from 3.23.3 to 3.23.6 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.49.2 to 0.51.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.24.0 to 0.26.0 (by dependabot[bot])
+
 * Wed Jun 14 2023 <mackerel-developers@hatena.ne.jp> - 0.77.0
 - fixed to log the key when metric parsing fails (by tukaelu)
 - Bump github.com/BurntSushi/toml from 1.2.1 to 1.3.0 (by dependabot[bot])

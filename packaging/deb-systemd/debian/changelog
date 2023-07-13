@@ -1,3 +1,14 @@
+mackerel-agent (0.77.1-1.systemd) stable; urgency=low
+
+  * Bump github.com/shirou/gopsutil/v3 from 3.23.3 to 3.23.6 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/915>
+  * Bump github.com/mackerelio/mkr from 0.49.2 to 0.51.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/908>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.24.0 to 0.26.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/900>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 13 Jul 2023 06:29:34 +0000
+
 mackerel-agent (0.77.0-1.systemd) stable; urgency=low
 
   * fixed to log the key when metric parsing fails (by tukaelu)
