@@ -5,13 +5,13 @@ go 1.17
 require (
 	github.com/mackerelio/go-check-plugins v0.44.0
 	github.com/mackerelio/mackerel-agent-plugins v0.78.0
-	github.com/mackerelio/mkr v0.51.0
+	github.com/mackerelio/mkr v0.51.1
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.7.0
 )
 
 require (
-	github.com/BurntSushi/toml v1.2.1 // indirect
+	github.com/BurntSushi/toml v1.3.0 // indirect
 	github.com/Songmu/goxz v0.9.1 // indirect
 	github.com/Songmu/prompter v0.5.1 // indirect
 	github.com/Songmu/retry v0.1.0 // indirect
@@ -38,9 +38,9 @@ require (
 	github.com/mackerelio/checkers v0.0.4 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.4 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.2 // indirect
-	github.com/mackerelio/go-osstat v0.2.3 // indirect
+	github.com/mackerelio/go-osstat v0.2.4 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
-	github.com/mackerelio/mackerel-agent v0.75.1 // indirect
+	github.com/mackerelio/mackerel-agent v0.77.0 // indirect
 	github.com/mackerelio/mackerel-client-go v0.26.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
@@ -55,7 +55,7 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.23.1 // indirect
+	github.com/shirou/gopsutil/v3 v3.23.3 // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/urfave/cli v1.22.12 // indirect
