@@ -664,8 +664,8 @@ github.com/linuxkit/virtsock v0.0.0-20201010232012-f8cee7dfc7a3/go.mod h1:3r6x7q
 github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0/go.mod h1:zJYVVT2jmtg6P3p1VtQj7WsuWi/y4VnjVBn7F8KPB3I=
 github.com/mackerelio/checkers v0.0.4 h1:dLxl3szIA1uW/+pFefamBPaFT9MCKkdH3uQND7c64bk=
 github.com/mackerelio/checkers v0.0.4/go.mod h1:VEf9gFHvpvH7Zvcwjuj7x3ozQg5w3En6ww9UcWoWHeE=
-github.com/mackerelio/go-check-plugins v0.44.0 h1:Ilg44RIvIxJVnfDWvCsqHlVx+Vkcrp5ugEhBn6CI4d8=
-github.com/mackerelio/go-check-plugins v0.44.0/go.mod h1:MwX/rJwOA/6kZUBdRY7eLQgiYcEMvGFchkKZikQzxaM=
+github.com/mackerelio/go-check-plugins v0.44.1 h1:vpacoM3QjaK0l9MEQNqM3CLRajx5YkA4HgqG888qvPA=
+github.com/mackerelio/go-check-plugins v0.44.1/go.mod h1:MwX/rJwOA/6kZUBdRY7eLQgiYcEMvGFchkKZikQzxaM=
 github.com/mackerelio/go-mackerel-plugin v0.1.4 h1:+kyatPMFSoghKd7o9oge1FnDrVknFbiwz5VWdFIgsqY=
 github.com/mackerelio/go-mackerel-plugin v0.1.4/go.mod h1:bau0bZbR1JXiCwDIg880djjttZ/0j885v5k0n+jAS/I=
 github.com/mackerelio/go-mackerel-plugin-helper v0.1.2 h1:p/KTlMK/mocWAIjNuYzpCybYvkfAEroDZBDAiOuz2QQ=
