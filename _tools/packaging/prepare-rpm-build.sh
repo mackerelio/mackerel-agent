@@ -6,11 +6,7 @@ pwd=`dirname $0`
 . "$pwd/common.sh"
 
 MACKEREL_AGENT_NAME=${MACKEREL_AGENT_NAME:-mackerel-agent}
-spec_filename="mackerel-agent.spec"
-if [ "$BUILD_SYSTEMD" != "" ]; then
-    spec_filename="mackerel-agent-systemd.spec"
-fi
-
+spec_filename="mackerel-agent-systemd.spec"
 orig_dir="packaging/rpm"
 build_dir="packaging/rpm-build"
 
