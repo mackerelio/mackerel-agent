@@ -8,12 +8,8 @@ pwd=`dirname $0`
 MACKEREL_AGENT_NAME=${MACKEREL_AGENT_NAME:-mackerel-agent}
 BUILD_DIRECTORY=${BUILD_DIRECTORY:-build}
 
-orig_dir="packaging/deb"
+orig_dir="packaging/deb-systemd"
 build_dir="packaging/deb-build"
-
-if [ "$BUILD_SYSTEMD" != "" ]; then
-    orig_dir="packaging/deb-systemd"
-fi
 
 MACKEREL_AGENT_VERSION=$(grep -o -e "[0-9]\+.[0-9]\+.[0-9]\+-[0-9]" "$orig_dir/debian/changelog" | head -1 | sed 's/-.*$//')
 
