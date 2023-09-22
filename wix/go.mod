@@ -3,7 +3,7 @@ module github.com/mackerelio/mackerel-agent/wix
 go 1.17
 
 require (
-	github.com/mackerelio/go-check-plugins v0.44.0
+	github.com/mackerelio/go-check-plugins v0.45.0
 	github.com/mackerelio/mackerel-agent-plugins v0.78.0
 	github.com/mackerelio/mkr v0.51.0
 	github.com/mattn/go-encoding v0.0.2
@@ -38,7 +38,7 @@ require (
 	github.com/mackerelio/checkers v0.0.4 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.4 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.2 // indirect
-	github.com/mackerelio/go-osstat v0.2.3 // indirect
+	github.com/mackerelio/go-osstat v0.2.4 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
 	github.com/mackerelio/mackerel-agent v0.75.1 // indirect
 	github.com/mackerelio/mackerel-client-go v0.26.0 // indirect
@@ -55,21 +55,21 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.23.1 // indirect
+	github.com/shirou/gopsutil/v3 v3.23.8 // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/urfave/cli v1.22.12 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
-	github.com/yusufpapurcu/wmi v1.2.2 // indirect
-	golang.org/x/crypto v0.6.0 // indirect
+	github.com/yusufpapurcu/wmi v1.2.3 // indirect
+	golang.org/x/crypto v0.13.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/term v0.7.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/term v0.12.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
