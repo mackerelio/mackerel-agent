@@ -54,6 +54,20 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Sep 22 2023 <mackerel-developers@hatena.ne.jp> - 0.78.0
+- Bump github.com/mackerelio/mkr from 0.51.0 to 0.53.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.78.0 to 0.79.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.44.0 to 0.45.0 in /wix (by dependabot[bot])
+- update go version 1.19.x -> 1.20.x on GitHub Action (by rmatsuoka)
+- Bump actions/checkout from 3 to 4 (by dependabot[bot])
+- Bump github.com/shirou/gopsutil/v3 from 3.23.6 to 3.23.8 (by dependabot[bot])
+- Bump golang.org/x/text from 0.9.0 to 0.13.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.7.0 to 0.12.0 in /wix (by dependabot[bot])
+- remove comment that differ from current plugin implementation (by kga)
+- Remove old rpm packaging (by yseto)
+- Bump github.com/BurntSushi/toml from 1.3.0 to 1.3.2 (by dependabot[bot])
+- Bump actions/setup-go from 3 to 4 (by dependabot[bot])
+
 * Thu Jul 13 2023 <mackerel-developers@hatena.ne.jp> - 0.77.1
 - Bump github.com/shirou/gopsutil/v3 from 3.23.3 to 3.23.6 (by dependabot[bot])
 - Bump github.com/mackerelio/mkr from 0.49.2 to 0.51.0 in /wix (by dependabot[bot])

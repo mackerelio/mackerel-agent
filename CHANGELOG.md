@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.78.0 (2023-09-22)
+
+* Bump github.com/mackerelio/mkr from 0.51.0 to 0.53.0 in /wix #936 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.78.0 to 0.79.0 in /wix #935 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.44.0 to 0.45.0 in /wix #934 (dependabot[bot])
+* update go version 1.19.x -> 1.20.x on GitHub Action #933 (rmatsuoka)
+* Bump actions/checkout from 3 to 4 #932 (dependabot[bot])
+* Bump github.com/shirou/gopsutil/v3 from 3.23.6 to 3.23.8 #930 (dependabot[bot])
+* Bump golang.org/x/text from 0.9.0 to 0.13.0 #929 (dependabot[bot])
+* Bump golang.org/x/sys from 0.7.0 to 0.12.0 in /wix #928 (dependabot[bot])
+* remove comment that differ from current plugin implementation #927 (kga)
+* Remove old rpm packaging #926 (yseto)
+* Bump github.com/BurntSushi/toml from 1.3.0 to 1.3.2 #910 (dependabot[bot])
+* Bump actions/setup-go from 3 to 4 #887 (dependabot[bot])
+
+
 ## 0.77.1 (2023-07-13)
 
 * Bump github.com/shirou/gopsutil/v3 from 3.23.3 to 3.23.6 #915 (dependabot[bot])
