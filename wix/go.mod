@@ -3,11 +3,11 @@ module github.com/mackerelio/mackerel-agent/wix
 go 1.17
 
 require (
-	github.com/mackerelio/go-check-plugins v0.45.0
+	github.com/mackerelio/go-check-plugins v0.46.1
 	github.com/mackerelio/mackerel-agent-plugins v0.79.0
 	github.com/mackerelio/mkr v0.53.0
 	github.com/mattn/go-encoding v0.0.2
-	golang.org/x/sys v0.12.0
+	golang.org/x/sys v0.13.0
 )
 
 require (
@@ -35,7 +35,7 @@ require (
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.14 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
-	github.com/mackerelio/checkers v0.0.4 // indirect
+	github.com/mackerelio/checkers v0.2.0 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.4 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.2 // indirect
 	github.com/mackerelio/go-osstat v0.2.4 // indirect
@@ -55,7 +55,7 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.23.8 // indirect
+	github.com/shirou/gopsutil/v3 v3.23.10 // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/urfave/cli v1.22.14 // indirect
@@ -63,12 +63,12 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
-	golang.org/x/crypto v0.13.0 // indirect
+	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
-	golang.org/x/net v0.15.0 // indirect
+	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.12.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/term v0.12.0 // indirect
+	golang.org/x/term v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.6.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
