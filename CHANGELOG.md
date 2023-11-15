@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.78.1 (2023-11-15)
+
+* Bump github.com/mackerelio/go-check-plugins from 0.45.0 to 0.46.1 in /wix #945 (dependabot[bot])
+* Bump golang.org/x/sys from 0.12.0 to 0.14.0 in /wix #941 (dependabot[bot])
+* Bump golang.org/x/net from 0.15.0 to 0.17.0 in /wix #940 (dependabot[bot])
+
+
 ## 0.78.0 (2023-09-22)
 
 * Bump github.com/mackerelio/mkr from 0.51.0 to 0.53.0 in /wix #936 (dependabot[bot])
