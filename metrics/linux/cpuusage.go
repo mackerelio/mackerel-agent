@@ -9,6 +9,7 @@ import (
 	"github.com/mackerelio/go-osstat/cpu"
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"github.com/mackerelio/mackerel-agent/util"
 )
 
 /*
@@ -55,7 +56,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 		"cpu.idle.percentage":   float64(current.Idle-previous.Idle) * cpuCount * 100.0 / totalDiff,
 	}
 	if current.StatCount >= 5 {
-		ret["cpu.iowait.percentage"] = float64(current.Iowait-previous.Iowait) * cpuCount * 100.0 / totalDiff
+		ret["cpu.iowait.percentage"] = float64(util.DiffResettableCounter(current.Iowait, previous.Iowait)) * cpuCount * 100.0 / totalDiff
 	}
 	if current.StatCount >= 6 {
 		ret["cpu.irq.percentage"] = float64(current.Irq-previous.Irq) * cpuCount * 100.0 / totalDiff
