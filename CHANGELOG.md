@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.78.2 (2023-12-01)
+
+* Avoid iowait percentage's overflow when counter is reset #947 (Arthur1)
+
+
 ## 0.78.1 (2023-11-15)
 
 * Bump github.com/mackerelio/go-check-plugins from 0.45.0 to 0.46.1 in /wix #945 (dependabot[bot])
