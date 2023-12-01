@@ -1,3 +1,10 @@
+mackerel-agent (0.78.2-1.systemd) stable; urgency=low
+
+  * Avoid iowait percentage's overflow when counter is reset (by Arthur1)
+    <https://github.com/mackerelio/mackerel-agent/pull/947>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Fri, 1 Dec 2023 03:10:29 +0000
+
 mackerel-agent (0.78.1-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/go-check-plugins from 0.45.0 to 0.46.1 in /wix (by dependabot[bot])

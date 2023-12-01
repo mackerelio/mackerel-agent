@@ -54,6 +54,9 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Dec 1 2023 <mackerel-developers@hatena.ne.jp> - 0.78.2
+- Avoid iowait percentage's overflow when counter is reset (by Arthur1)
+
 * Wed Nov 15 2023 <mackerel-developers@hatena.ne.jp> - 0.78.1
 - Bump github.com/mackerelio/go-check-plugins from 0.45.0 to 0.46.1 in /wix (by dependabot[bot])
 - Bump golang.org/x/sys from 0.12.0 to 0.14.0 in /wix (by dependabot[bot])
