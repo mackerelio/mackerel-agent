@@ -75,7 +75,7 @@ jobs:
       - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
       - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
       - run: make crossbuild
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: linux-build-artifacts
           path: |
@@ -161,7 +161,7 @@ jobs:
         shell: msys2 {0}
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
           path: |
@@ -209,7 +209,7 @@ jobs:
           & "$SIGNTOOL" sign /fd sha256 /t "http://timestamp.sectigo.com" /f "$env:RUNNER_TEMP/sign/cert.p12" /p "${{ secrets.WINDOWS_CERT_PFX_PASS }}" /v "build/mackerel-agent-k${{ matrix.MSI_SUFFIX }}.msi"
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-packages-${{ matrix.PLATFORM_ID }}
           path: |
