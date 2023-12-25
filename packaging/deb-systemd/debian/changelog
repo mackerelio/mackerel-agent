@@ -1,3 +1,20 @@
+mackerel-agent (0.78.3-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mkr from 0.53.0 to 0.54.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/959>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.26.0 to 0.29.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/958>
+  * Bump actions/setup-go from 4 to 5 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/954>
+  * Bump actions/github-script from 6 to 7 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/948>
+  * Bump github.com/fatih/color from 1.15.0 to 1.16.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/944>
+  * Bump golang.org/x/text from 0.13.0 to 0.14.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/943>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 25 Dec 2023 00:56:40 +0000
+
 mackerel-agent (0.78.2-1.systemd) stable; urgency=low
 
   * Avoid iowait percentage's overflow when counter is reset (by Arthur1)

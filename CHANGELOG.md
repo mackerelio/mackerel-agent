@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.78.3 (2023-12-25)
+
+* Bump github.com/mackerelio/mkr from 0.53.0 to 0.54.0 in /wix #959 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.26.0 to 0.29.0 #958 (dependabot[bot])
+* Bump actions/setup-go from 4 to 5 #954 (dependabot[bot])
+* Bump actions/github-script from 6 to 7 #948 (dependabot[bot])
+* Bump github.com/fatih/color from 1.15.0 to 1.16.0 #944 (dependabot[bot])
+* Bump golang.org/x/text from 0.13.0 to 0.14.0 #943 (dependabot[bot])
+
+
 ## 0.78.2 (2023-12-01)
 
 * Avoid iowait percentage's overflow when counter is reset #947 (Arthur1)
