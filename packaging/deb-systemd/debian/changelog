@@ -1,3 +1,67 @@
+mackerel-agent (0.78.3-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mkr from 0.53.0 to 0.54.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/959>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.26.0 to 0.29.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/958>
+  * Bump actions/setup-go from 4 to 5 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/954>
+  * Bump actions/github-script from 6 to 7 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/948>
+  * Bump github.com/fatih/color from 1.15.0 to 1.16.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/944>
+  * Bump golang.org/x/text from 0.13.0 to 0.14.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/943>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 25 Dec 2023 00:56:40 +0000
+
+mackerel-agent (0.78.2-1.systemd) stable; urgency=low
+
+  * Avoid iowait percentage's overflow when counter is reset (by Arthur1)
+    <https://github.com/mackerelio/mackerel-agent/pull/947>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Fri, 1 Dec 2023 03:10:29 +0000
+
+mackerel-agent (0.78.1-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/go-check-plugins from 0.45.0 to 0.46.1 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/945>
+  * Bump golang.org/x/sys from 0.12.0 to 0.14.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/941>
+  * Bump golang.org/x/net from 0.15.0 to 0.17.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/940>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 15 Nov 2023 06:06:23 +0000
+
+mackerel-agent (0.78.0-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mkr from 0.51.0 to 0.53.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/936>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.78.0 to 0.79.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/935>
+  * Bump github.com/mackerelio/go-check-plugins from 0.44.0 to 0.45.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/934>
+  * update go version 1.19.x -> 1.20.x on GitHub Action (by rmatsuoka)
+    <https://github.com/mackerelio/mackerel-agent/pull/933>
+  * Bump actions/checkout from 3 to 4 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/932>
+  * Bump github.com/shirou/gopsutil/v3 from 3.23.6 to 3.23.8 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/930>
+  * Bump golang.org/x/text from 0.9.0 to 0.13.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/929>
+  * Bump golang.org/x/sys from 0.7.0 to 0.12.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/928>
+  * remove comment that differ from current plugin implementation (by kga)
+    <https://github.com/mackerelio/mackerel-agent/pull/927>
+  * Remove old rpm packaging (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/926>
+  * Bump github.com/BurntSushi/toml from 1.3.0 to 1.3.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/910>
+  * Bump actions/setup-go from 3 to 4 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/887>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Fri, 22 Sep 2023 08:24:49 +0000
+
 mackerel-agent (0.77.1-1.systemd) stable; urgency=low
 
   * Bump github.com/shirou/gopsutil/v3 from 3.23.3 to 3.23.6 (by dependabot[bot])

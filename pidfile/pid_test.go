@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"testing"
+	"time"
 )
 
 func TestExistsPid(t *testing.T) {
@@ -29,6 +30,9 @@ func TestGetCmdName(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// hack: wait for launching process
+	time.Sleep(time.Millisecond)
 	pid := cmd.Process.Pid
 
 	expected := "sleep"

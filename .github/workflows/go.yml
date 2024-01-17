@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Go 1.x
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.19.x
+          go-version: 1.20.x
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: golangci/golangci-lint-action@v3
       - run: make convention
       - run: make cover
@@ -32,12 +32,12 @@ jobs:
     # Build process is complex then need to check operation.
     runs-on: windows-2022
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.19.x
+          go-version: 1.20.x
 
       - uses: golangci/golangci-lint-action@v3
         with:
@@ -65,11 +65,11 @@ jobs:
     steps:
       # before-deploy
       - name: Set up Go 1.x
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.19.x
+          go-version: 1.20.x
       - name: Check out code into the Go module directory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install debian packaging utils, binutils
         run: sudo apt-get update && sudo apt-get install -y devscripts debhelper fakeroot binutils-mips-linux-gnu binutils-aarch64-linux-gnu binutils-arm-linux-gnueabihf
       - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
@@ -112,7 +112,7 @@ jobs:
       CGO_ENABLED: 1
       CC_FOR_windows_386: i686-w64-mingw32-gcc
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup MINGW
         uses: msys2/setup-msys2@v2
@@ -122,9 +122,9 @@ jobs:
           install: mingw-w64-i686-gcc
 
       - name: Setup Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v5
         with:
-          go-version: 1.19.x
+          go-version: 1.20.x
 
       - uses: actions/cache@v3
         with:
@@ -180,14 +180,14 @@ jobs:
             MSI_SUFFIX: -x64
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
         with:
           name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
           path: build/
 
-      - uses: actions/github-script@v6
+      - uses: actions/github-script@v7
         with:
           script: |
             const script = require('./_tools/parse_version.js')
