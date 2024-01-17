@@ -212,7 +212,7 @@ func loop(app *App, termCh chan struct{}) error {
 	go enqueueLoop(ctx, app, postQueue)
 
 	postDelaySeconds := delayByHost(app.Host)
-	initialDelay := postDelaySeconds / 2
+	initialDelay := postDelaySeconds/2 + int(app.Config.MonitorDelaySeconds)
 	logger.Debugf("wait %d seconds before initial posting.", initialDelay)
 	select {
 	case <-termCh:
