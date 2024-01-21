@@ -42,7 +42,7 @@ jobs:
       - uses: golangci/golangci-lint-action@v3
         with:
           args: --timeout 5m
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ~/go/pkg/mod
@@ -126,7 +126,7 @@ jobs:
         with:
           go-version: 1.20.x
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: |
             ~/go/pkg/mod
