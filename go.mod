@@ -18,7 +18,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/shirou/gopsutil/v3 v3.23.8
 	github.com/vishvananda/netlink v1.1.0
-	github.com/yusufpapurcu/wmi v1.2.3
+	github.com/yusufpapurcu/wmi v1.2.4
 	golang.org/x/text v0.14.0
 )
 
