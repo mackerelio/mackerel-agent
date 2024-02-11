@@ -18,7 +18,7 @@ jobs:
           go-version: 1.20.x
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4
-      - uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v4
       - run: make convention
       - run: make cover
       - run: test "$(gofmt -l . | wc -l)" = 0
@@ -39,7 +39,7 @@ jobs:
         with:
           go-version: 1.20.x
 
-      - uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v4
         with:
           args: --timeout 5m
       - uses: actions/cache@v3
