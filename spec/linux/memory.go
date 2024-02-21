@@ -51,7 +51,7 @@ type MemoryGenerator struct {
 var memoryLogger = logging.GetLogger("spec.memory")
 
 // Generate XXX
-func (g *MemoryGenerator) Generate() (interface{}, error) {
+func (g *MemoryGenerator) Generate() (any, error) {
 	file, err := os.Open("/proc/meminfo")
 	if err != nil {
 		memoryLogger.Errorf("Failed (skip this spec): %s", err)

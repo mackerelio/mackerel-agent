@@ -47,12 +47,12 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 			t.Error("request method should be GET but :", req.Method)
 		}
 
-		var hosts []map[string]interface{}
+		var hosts []map[string]any
 
 		customIdentifier := req.URL.Query().Get("customIdentifier")
 
 		if customIdentifier == "foo-bar" {
-			hosts = []map[string]interface{}{
+			hosts = []map[string]any{
 				{
 					"id":               "9rxGOHfVF8F",
 					"CustomIdentifier": "foo-bar",
@@ -65,7 +65,7 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 			}
 		}
 
-		respJSON, _ := json.Marshal(map[string]interface{}{"hosts": hosts})
+		respJSON, _ := json.Marshal(map[string]any{"hosts": hosts})
 
 		res.Header()["Content-Type"] = []string{"application/json"}
 		fmt.Fprint(res, string(respJSON))

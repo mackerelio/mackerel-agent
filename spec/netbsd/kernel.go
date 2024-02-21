@@ -24,7 +24,7 @@ type KernelGenerator struct {
 var kernelLogger = logging.GetLogger("spec.kernel")
 
 // Generate XXX
-func (g *KernelGenerator) Generate() (interface{}, error) {
+func (g *KernelGenerator) Generate() (any, error) {
 	unameArgs := map[string][]string{
 		"release": {"-r"},
 		"version": {"-v"},

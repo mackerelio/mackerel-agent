@@ -52,7 +52,7 @@ func getCacheFileName(name, defaultWorkDir string, plugin *config.MetadataPlugin
 
 type metadataResult struct {
 	namespace string
-	metadata  interface{}
+	metadata  any
 	createdAt time.Time
 }
 

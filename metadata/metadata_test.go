@@ -119,14 +119,14 @@ func TestMetadataGeneratorSaveIsChanged(t *testing.T) {
 	}
 	for i, test := range tests {
 		g := Generator{Cachefile: filepath.Join("testdata", ".mackerel-metadata-test-"+strconv.Itoa(i))}
-		var prevmetadata interface{}
+		var prevmetadata any
 		_ = json.Unmarshal([]byte(test.prevmetadata), &prevmetadata)
 
 		if err := g.Save(prevmetadata); err != nil {
 			t.Errorf("Error should not occur in Save() but got: %s", err.Error())
 		}
 
-		var metadata interface{}
+		var metadata any
 		_ = json.Unmarshal([]byte(test.metadata), &metadata)
 
 		got := g.IsChanged(metadata)

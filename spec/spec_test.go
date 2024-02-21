@@ -9,19 +9,19 @@ import (
 
 type testCPUGenerator struct{}
 
-func (g *testCPUGenerator) Generate() (interface{}, error) {
+func (g *testCPUGenerator) Generate() (any, error) {
 	return mackerel.CPU{{"cores": "2"}}, nil
 }
 
 type testKernelGenerator struct{}
 
-func (g *testKernelGenerator) Generate() (interface{}, error) {
+func (g *testKernelGenerator) Generate() (any, error) {
 	return mackerel.Kernel{"name": "Linux"}, nil
 }
 
 type testErrorGenerator struct{}
 
-func (g *testErrorGenerator) Generate() (interface{}, error) {
+func (g *testErrorGenerator) Generate() (any, error) {
 	return nil, fmt.Errorf("error")
 }
 

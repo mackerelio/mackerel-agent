@@ -9,7 +9,7 @@ var logger = logging.GetLogger("spec")
 
 // Generator interface for generating spec values
 type Generator interface {
-	Generate() (interface{}, error)
+	Generate() (any, error)
 }
 
 // Collect spec values

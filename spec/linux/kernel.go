@@ -19,7 +19,7 @@ type KernelGenerator struct {
 var kernelLogger = logging.GetLogger("spec.kernel")
 
 // Generate XXX
-func (g *KernelGenerator) Generate() (interface{}, error) {
+func (g *KernelGenerator) Generate() (any, error) {
 	commands := map[string][]string{
 		"name":    {"uname", "-s"},
 		"release": {"uname", "-r"},

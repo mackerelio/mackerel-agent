@@ -14,7 +14,7 @@ import (
 	mkr "github.com/mackerelio/mackerel-client-go"
 )
 
-func respJSON(w http.ResponseWriter, data map[string]interface{}) {
+func respJSON(w http.ResponseWriter, data map[string]any) {
 	respJSON, _ := json.Marshal(data)
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, string(respJSON))
@@ -26,7 +26,7 @@ func TestStart(t *testing.T) {
 	mux.HandleFunc("/api/v0/hosts/"+hostID, func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			respJSON(w, map[string]interface{}{
+			respJSON(w, map[string]any{
 				"host": mkr.Host{
 					ID:     hostID,
 					Name:   "host.example.com",
@@ -34,7 +34,7 @@ func TestStart(t *testing.T) {
 				},
 			})
 		case "PUT":
-			respJSON(w, map[string]interface{}{
+			respJSON(w, map[string]any{
 				"result": "OK",
 			})
 		default:
@@ -50,7 +50,7 @@ func TestStart(t *testing.T) {
 				t.Errorf("decode failed: %s", err)
 			}
 
-			respJSON(w, map[string]interface{}{
+			respJSON(w, map[string]any{
 				"success": true,
 			})
 		default:

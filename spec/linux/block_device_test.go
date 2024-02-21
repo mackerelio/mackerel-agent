@@ -10,7 +10,7 @@ import (
 	"github.com/mackerelio/mackerel-client-go"
 )
 
-func hasValidBlockDeviceValueForKey(t *testing.T, deviceInfo map[string]interface{}, key string) {
+func hasValidBlockDeviceValueForKey(t *testing.T, deviceInfo map[string]any, key string) {
 	if value, ok := deviceInfo[key]; !ok {
 		t.Errorf("value of %s should be retrieved but none", key)
 	} else if regexp.MustCompile(`\n$`).MatchString(value.(string)) {

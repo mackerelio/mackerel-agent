@@ -17,7 +17,7 @@ type MemoryGenerator struct {
 }
 
 // Generate XXX
-func (g *MemoryGenerator) Generate() (interface{}, error) {
+func (g *MemoryGenerator) Generate() (any, error) {
 	result := make(mackerel.Memory)
 
 	var memoryStatusEx windows.MEMORY_STATUS_EX

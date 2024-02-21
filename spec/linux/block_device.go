@@ -19,7 +19,7 @@ type BlockDeviceGenerator struct {
 var blockDeviceLogger = logging.GetLogger("spec.block_device")
 
 // Generate generate metric values
-func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
+func (g *BlockDeviceGenerator) Generate() (any, error) {
 	fileInfos, err := os.ReadDir("/sys/block")
 	if err != nil {
 		// /sys/block is unavailable on some PaaS (Heroku, for example)
@@ -35,7 +35,7 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 
 	for _, fileInfo := range fileInfos {
 		deviceName := fileInfo.Name()
-		result := map[string]interface{}{}
+		result := map[string]any{}
 
 		for _, key := range []string{"size", "removable"} {
 			filename := path.Join("/sys/block", deviceName, key)

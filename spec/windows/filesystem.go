@@ -14,13 +14,13 @@ type FilesystemGenerator struct {
 }
 
 // Generate specs of filesystems.
-func (g *FilesystemGenerator) Generate() (interface{}, error) {
+func (g *FilesystemGenerator) Generate() (any, error) {
 
 	ret := make(mackerel.FileSystem)
 
 	fileSystems, err := windows.CollectFilesystemValues()
 	for drive, f := range fileSystems {
-		ret[drive] = map[string]interface{}{
+		ret[drive] = map[string]any{
 			"percent_used": f.PercentUsed,
 			"kb_used":      f.KbUsed,
 			"kb_size":      f.KbSize,
