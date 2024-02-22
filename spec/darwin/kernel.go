@@ -18,7 +18,7 @@ type KernelGenerator struct {
 var kernelLogger = logging.GetLogger("spec.kernel")
 
 // Generate collects specs from `uname` command and `sw_vers` command
-func (g *KernelGenerator) Generate() (interface{}, error) {
+func (g *KernelGenerator) Generate() (any, error) {
 	unameCommand := "/usr/bin/uname"
 	swVersCommand := "/usr/bin/sw_vers"
 

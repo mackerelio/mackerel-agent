@@ -21,7 +21,7 @@ const bytesInKibibytes = 1024
 // Generate returns memory specs.
 // The returned spec must have below:
 // - total (in "###kB" format, Kibibytes)
-func (g *MemoryGenerator) Generate() (interface{}, error) {
+func (g *MemoryGenerator) Generate() (any, error) {
 	spec := make(mackerel.Memory)
 
 	cmd := exec.Command("sysctl", "-n", "hw.memsize")

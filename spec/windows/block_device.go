@@ -17,7 +17,7 @@ type BlockDeviceGenerator struct {
 }
 
 // Generate XXX
-func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
+func (g *BlockDeviceGenerator) Generate() (any, error) {
 	results := make(mackerel.BlockDevice)
 
 	drivebuf := make([]byte, 256)
@@ -55,7 +55,7 @@ func (g *BlockDeviceGenerator) Generate() (interface{}, error) {
 			if r == 0 {
 				continue
 			}
-			results[drive] = map[string]interface{}{
+			results[drive] = map[string]any{
 				"size":      totalNumberOfFreeBytes,
 				"removable": removable,
 			}

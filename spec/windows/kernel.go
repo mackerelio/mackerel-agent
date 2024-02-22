@@ -23,7 +23,7 @@ type KernelGenerator struct {
 }
 
 // Generate XXX
-func (g *KernelGenerator) Generate() (interface{}, error) {
+func (g *KernelGenerator) Generate() (any, error) {
 	results := make(mackerel.Kernel)
 
 	var dst []Win32_OperatingSystem

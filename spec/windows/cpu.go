@@ -17,7 +17,7 @@ type CPUGenerator struct {
 }
 
 // Generate collects CPU specs.
-func (g *CPUGenerator) Generate() (interface{}, error) {
+func (g *CPUGenerator) Generate() (any, error) {
 	var results mackerel.CPU
 
 	var systemInfo windows.SYSTEM_INFO
@@ -45,7 +45,7 @@ func (g *CPUGenerator) Generate() (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		results = append(results, map[string]interface{}{
+		results = append(results, map[string]any{
 			"model_name": processorName,
 			"mhz":        processorMHz,
 			"model":      systemInfo.ProcessorArchitecture,

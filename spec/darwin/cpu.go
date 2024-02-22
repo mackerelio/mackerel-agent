@@ -20,7 +20,7 @@ type CPUGenerator struct {
 
 var cpuLogger = logging.GetLogger("spec.cpu")
 
-type cpuSpec map[string]interface{}
+type cpuSpec map[string]any
 
 var sysCtlKeyMap = map[string]string{
 	"core_count":   "cores",
@@ -86,7 +86,7 @@ func (g *CPUGenerator) getCPUCount() (*int, error) {
 // - mhz
 // - cache_size
 // - flags
-func (g *CPUGenerator) Generate() (interface{}, error) {
+func (g *CPUGenerator) Generate() (any, error) {
 	cpuInfoBytes, err := exec.Command("sysctl", "machdep.cpu").Output()
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)

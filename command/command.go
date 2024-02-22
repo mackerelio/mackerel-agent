@@ -735,7 +735,7 @@ func RunOnce(conf *config.Config, ameta *AgentMeta) error {
 		return err
 	}
 
-	json, err := json.Marshal(map[string]interface{}{
+	json, err := json.Marshal(map[string]any{
 		"host":    hostSpec,
 		"metrics": metrics,
 	})

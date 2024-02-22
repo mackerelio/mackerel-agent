@@ -143,10 +143,10 @@ type PluginConfig struct {
 
 // CommandConfig represents an executable command configuration.
 type CommandConfig struct {
-	Raw            interface{} `toml:"command"`
-	User           string      `toml:"user"`
-	Env            Env         `toml:"env"`
-	TimeoutSeconds int64       `toml:"timeout_seconds"`
+	Raw            any    `toml:"command"`
+	User           string `toml:"user"`
+	Env            Env    `toml:"env"`
+	TimeoutSeconds int64  `toml:"timeout_seconds"`
 }
 
 // Env represents environments.
@@ -332,7 +332,7 @@ func (cc CommandConfig) parse() (cmd *Command, err error) {
 	switch t := cc.Raw.(type) {
 	case string:
 		cmd = &Command{Cmd: t}
-	case []interface{}:
+	case []any:
 		if len(t) > 0 {
 			args := []string{}
 			for _, vv := range t {

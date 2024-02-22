@@ -19,11 +19,11 @@ type Generator struct {
 	Name         string
 	Config       *config.MetadataPlugin
 	Cachefile    string
-	PrevMetadata interface{}
+	PrevMetadata any
 }
 
 // Fetch invokes the command and returns the result
-func (g *Generator) Fetch() (interface{}, error) {
+func (g *Generator) Fetch() (any, error) {
 	message, stderr, exitCode, err := g.Config.Command.Run()
 
 	if err != nil {
@@ -40,7 +40,7 @@ func (g *Generator) Fetch() (interface{}, error) {
 		return nil, fmt.Errorf("exits with: %d", exitCode)
 	}
 
-	var metadata interface{}
+	var metadata any
 	if err := json.Unmarshal([]byte(message), &metadata); err != nil {
 		return nil, fmt.Errorf("outputs invalid JSON: %v", message)
 	}
@@ -49,7 +49,7 @@ func (g *Generator) Fetch() (interface{}, error) {
 }
 
 // IsChanged returns whether the metadata has been changed or not
-func (g *Generator) IsChanged(metadata interface{}) bool {
+func (g *Generator) IsChanged(metadata any) bool {
 	if g.PrevMetadata == nil {
 		g.LoadFromFile()
 	}
@@ -62,7 +62,7 @@ func (g *Generator) LoadFromFile() {
 	if err != nil { // maybe initial state
 		return
 	}
-	var metadata interface{}
+	var metadata any
 	if err := json.Unmarshal(data, &metadata); err != nil {
 		logger.Warningf("metadata plugin %q detected a invalid json in the cache file: %s", g.Name, string(data))
 		// ignore errors, the file will be overwritten by Save()
@@ -72,7 +72,7 @@ func (g *Generator) LoadFromFile() {
 }
 
 // Save stores the metadata locally
-func (g *Generator) Save(metadata interface{}) error {
+func (g *Generator) Save(metadata any) error {
 	g.PrevMetadata = metadata
 	data, err := json.Marshal(metadata)
 	if err != nil {

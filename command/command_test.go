@@ -58,7 +58,7 @@ func TestDelayByHost(t *testing.T) {
 	}
 }
 
-type jsonObject map[string]interface{}
+type jsonObject map[string]any
 
 // newMockAPIServer makes a dummy root directry, a mock API server, a conf.Config to using them
 // and returns the Config, mock handlers map, the server and cleanup function which should be called finally.

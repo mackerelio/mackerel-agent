@@ -19,7 +19,7 @@ var cpuLogger = logging.GetLogger("spec.cpu")
 // MEMO: sysctl -a machdep.cpu.brand_string
 
 // Generate collects CPU specs.
-func (g *CPUGenerator) Generate() (interface{}, error) {
+func (g *CPUGenerator) Generate() (any, error) {
 	brandBytes, err := exec.Command("sysctl", "-n", "hw.model").Output()
 	if err != nil {
 		cpuLogger.Errorf("Failed: %s", err)

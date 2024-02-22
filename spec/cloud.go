@@ -31,7 +31,7 @@ type CloudGenerator struct {
 }
 
 // Generate generates metadata
-func (c *CloudGenerator) Generate() (interface{}, error) {
+func (c *CloudGenerator) Generate() (any, error) {
 	return c.CloudMetaGenerator.Generate()
 }
 

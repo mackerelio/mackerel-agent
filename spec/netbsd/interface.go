@@ -14,5 +14,5 @@ type InterfaceGenerator struct {
 // Generate XXX
 func (g *InterfaceGenerator) Generate() ([]mkr.Interface, error) {
 	// TODO
-	return []mkr.Interface{}, nil
+	return []mkr.any, nil
 }

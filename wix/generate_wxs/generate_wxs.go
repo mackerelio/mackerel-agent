@@ -20,7 +20,7 @@ import (
 type Node struct {
 	Name      xml.Name
 	Attr      []xml.Attr
-	Children  []interface{}
+	Children  []any
 	RootSpace map[string]string
 }
 
