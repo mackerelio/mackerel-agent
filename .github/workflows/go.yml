@@ -15,7 +15,8 @@ jobs:
     with:
       run: |
         make convention
-        test "$(gofmt -l . | wc -l)" = 0 # TODO: use gofmt linter
+        # TODO: use gofmt linter
+        test "$(gofmt -l . | wc -l)" -eq 0
   test:
     uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.1.0
     with:
