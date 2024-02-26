@@ -6,7 +6,6 @@ package command
 import (
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
 	mkr "github.com/mackerelio/mackerel-client-go"
@@ -15,14 +14,6 @@ import (
 var diceCommand = "go run ../_example/metrics-plugins/dice-with-meta.go"
 
 func TestRunOnce(t *testing.T) {
-	if testing.Short() {
-		origMetricsInterval := metricsInterval
-		metricsInterval = 1 * time.Second
-		defer func() {
-			metricsInterval = origMetricsInterval
-		}()
-	}
-
 	conf := &config.Config{
 		MetricPlugins: map[string]*config.MetricPlugin{
 			"metric1": {
@@ -42,14 +33,6 @@ func TestRunOnce(t *testing.T) {
 }
 
 func TestRunOncePayload(t *testing.T) {
-	if testing.Short() {
-		origMetricsInterval := metricsInterval
-		metricsInterval = 1 * time.Second
-		defer func() {
-			metricsInterval = origMetricsInterval
-		}()
-	}
-
 	conf := &config.Config{
 		MetricPlugins: map[string]*config.MetricPlugin{
 			"metric1": {
