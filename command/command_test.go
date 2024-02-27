@@ -240,10 +240,10 @@ func TestCollectHostParamWithChecks(t *testing.T) {
 	customIdentifier := "app.example.com"
 	conf := config.Config{
 		CheckPlugins: map[string]*config.CheckPlugin{
-			"chk1": &config.CheckPlugin{
+			"chk1": {
 				CustomIdentifier: nil,
 			},
-			"chk2": &config.CheckPlugin{
+			"chk2": {
 				CustomIdentifier: &customIdentifier,
 			},
 		},

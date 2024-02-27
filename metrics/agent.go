@@ -37,7 +37,7 @@ func (g *AgentGenerator) CustomIdentifier() *string {
 func (g *AgentGenerator) PrepareGraphDefs() ([]*mkr.GraphDefsParam, error) {
 	meta := &pluginMeta{
 		Graphs: map[string]customGraphDef{
-			"agent.memory": customGraphDef{
+			"agent.memory": {
 				Label: "Agent Memory",
 				Unit:  "bytes",
 				Metrics: []customGraphMetricDef{
@@ -47,7 +47,7 @@ func (g *AgentGenerator) PrepareGraphDefs() ([]*mkr.GraphDefsParam, error) {
 					{Name: "heapSys", Label: "Heap Sys"},
 				},
 			},
-			"agent.runtime": customGraphDef{
+			"agent.runtime": {
 				Label: "Agent Runtime",
 				Unit:  "integer",
 				Metrics: []customGraphMetricDef{

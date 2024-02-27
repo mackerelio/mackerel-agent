@@ -13,10 +13,7 @@ jobs:
   convention:
     uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.1.0
     with:
-      run: |
-        make convention
-        # TODO: use gofmt linter
-        test "$(gofmt -l . | wc -l)" -eq 0
+      run: make convention
   test:
     uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.1.0
     with:
