@@ -4,16 +4,14 @@ on:
   push:
     branches:
       - master
+      - refactor-b # temp
     tags:
       - v*
   pull_request:
 
-
 jobs:
   build-linux:
     name: Build (Unix-like OSes)
-    env:
-      DEBIAN_FRONTEND: noninteractive
     uses: ./.github/workflows/go-build.yml
     with:
       os-version: ubuntu-latest
@@ -75,5 +73,5 @@ jobs:
         go build -o ../build/wrapper.exe wrapper/wrapper_windows.go wrapper/install.go
         go build -o ../build/replace.exe replace/replace_windows.go replace/shell_windows.go
         go build -o ../build/generate_wxs.exe generate_wxs/generate_wxs.go
-      upload-artifact-name: windows-build-artifacts-x64
+      upload-artifact-name: windows-build-artifacts-x86
       upload-artifact-path: build/

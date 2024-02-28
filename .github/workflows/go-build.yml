@@ -46,40 +46,52 @@ on:
         required: false
         type: string
 
+env:
+  DEBIAN_FRONTEND: noninteractive
 jobs:
   run:
     runs-on: ${{ inputs.os-version }}
     env:
-      CGO_ENABLED: ${{ inputs.with-cgo - 0 }} # {false|true} -> {0|1}
+      CGO_ENABLED: ${{ inputs.with-cgo && 1 || 0 }}
     steps:
+    - uses: actions/checkout@v4
     - uses: actions/setup-go@v5
       with:
         go-version: ${{ inputs.go-version }}
         cache: true
     - name: Setup environment variables
+      id: spec
       run: |
         GOHOSTARCH="$(go env GOHOSTARCH)"
-        echo "GOARCH=${INPUT_ARCHITECTURE:-$GOHOSTARCH}" >>"$GITHUB_ENV"
+        GOARCH="${INPUT_ARCHITECTURE:-$GOHOSTARCH}"
+        echo "GOARCH=$GOARCH" >>"$GITHUB_ENV"
 
         GOHOSTOS="$(go env GOHOSTOS)"
-        echo "GOOS=${INPUT_PLATFORM:-$GOHOSTOS}" >>"$GITHUB_ENV"
+        GOOS="${INPUT_PLATFORM:-$GOHOSTOS}"
+        echo "GOOS=$GOOS" >>"$GITHUB_ENV"
 
-        shell=bash
         if [[ $GOHOSTOS = windows && $CGO_ENABLED = 1 ]]
         then
-          shell='msys2 {0}'
-          case $GOARCH in
+          case "$GOARCH" in
           *64)
-            echo 'MSYS=MINGW64' >>"$GITHUB_ENV"
+            echo 'MSYS=MINGW64' >>"$GITHUB_ENV" ;;
           *)
-            echo 'MSYS=MINGW32' >>"$GITHUB_ENV"
+            echo 'MSYS=MINGW32' >>"$GITHUB_ENV" ;;
           esac
         fi
-        echo "shell=$shell" >>"$GITHUB_STATE"
       shell: bash
-    - uses: actions/checkout@v4
-    - run: ${{ inputs.run }}
-      shell: ${{ state.shell }}
+    - if: env.MSYS != ''
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ env.MSYS }}
+        path-type: inherit
+        install: mingw-w64-i686-gcc
+    - if: env.MSYS == ''
+      run: ${{ inputs.run }}
+      shell: bash
+    - if: env.MSYS != ''
+      run: ${{ inputs.run }}
+      shell: msys2 {0}
     - if: inputs.upload-artifact-path != ''
       uses: actions/upload-artifact@v4
       with:
