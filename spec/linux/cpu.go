@@ -4,13 +4,12 @@
 package linux
 
 import (
-	"bufio"
-	"io"
-	"os"
-	"strings"
+	"fmt"
+	"strconv"
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-client-go"
+	"github.com/shirou/gopsutil/v3/cpu"
 )
 
 // CPUGenerator collects CPU specs
@@ -19,63 +18,29 @@ type CPUGenerator struct {
 
 var cpuLogger = logging.GetLogger("spec.cpu")
 
-func (g *CPUGenerator) generate(file io.Reader) (any, error) {
-	scanner := bufio.NewScanner(file)
-
-	var results mackerel.CPU
-	var cur map[string]any
-	var modelName string
-
-	for scanner.Scan() {
-		line := scanner.Text()
-		kv := strings.SplitN(line, ":", 2)
-		if len(kv) < 2 {
-			continue
-		}
-		key := strings.TrimSpace(kv[0])
-		val := strings.TrimSpace(kv[1])
-		switch key {
-		case "processor":
-			cur = make(map[string]any)
-			if modelName != "" {
-				cur["model_name"] = modelName
-			}
-			results = append(results, cur)
-		case "Processor", "system type":
-			modelName = val
-		case "vendor_id", "model", "stepping", "physical id", "core id", "model name", "cache size":
-			cur[strings.Replace(key, " ", "_", -1)] = val
-		case "cpu family":
-			cur["family"] = val
-		case "cpu cores":
-			cur["cores"] = val
-		case "cpu MHz":
-			cur["mhz"] = val
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		cpuLogger.Errorf("Failed (skip this spec): %s", err)
-		return nil, err
-	}
-
-	// Old kernels with CONFIG_SMP disabled has no "processor: " line
-	if len(results) == 0 && modelName != "" {
-		cur = make(map[string]any)
-		cur["model_name"] = modelName
-		results = append(results, cur)
-	}
-
-	return results, nil
-}
-
 // Generate cpu specs
-func (g *CPUGenerator) Generate() (any, error) {
-	file, err := os.Open("/proc/cpuinfo")
+func (g *CPUGenerator) Generate() (interface{}, error) {
+	infoStats, err := cpu.Info()
 	if err != nil {
 		cpuLogger.Errorf("Failed (skip this spec): %s", err)
 		return nil, err
 	}
-	defer file.Close()
+	results := make(mackerel.CPU, 0, len(infoStats))
+	for _, infoStat := range infoStats {
+		result := map[string]any{
+			"vendor_id":   infoStat.VendorID,
+			"model":       infoStat.Model,
+			"stepping":    strconv.Itoa(int(infoStat.Stepping)),
+			"physical_id": infoStat.PhysicalID,
+			"core_id":     infoStat.CoreID,
+			"cache_size":  fmt.Sprintf("%d KB", infoStat.CacheSize),
+			"model_name":  infoStat.ModelName,
+			"family":      infoStat.Family,
+			"cores":       strconv.Itoa(int(infoStat.Cores)),
+			"mhz":         strconv.FormatFloat(infoStat.Mhz, 'f', -1, 64),
+		}
+		results = append(results, result)
+	}
 
-	return g.generate(file)
+	return results, nil
 }
