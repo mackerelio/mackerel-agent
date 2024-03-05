@@ -1314,8 +1314,8 @@ github.com/lyft/protoc-gen-star v0.6.1/go.mod h1:TGAoBVkt8w7MPG72TrKIu85MIdXwDuz
 github.com/lyft/protoc-gen-star/v2 v2.0.1/go.mod h1:RcCdONR2ScXaYnQC5tUzxzlpA3WVYF7/opLeUgcQs/o=
 github.com/mackerelio/checkers v0.2.0 h1:YBOQjpU2Qno66eUrUEH6DjWn+Wna5BXCKMdekz50XWs=
 github.com/mackerelio/checkers v0.2.0/go.mod h1:CW3k/5bvHhxDrfKgWvMvNH0R51zco141ZVxlI7o/KAc=
-github.com/mackerelio/go-check-plugins v0.46.1 h1:d8xk7wbBMRouz2AZSKTjI4/yIR8seGzS2b57IzHufJ4=
-github.com/mackerelio/go-check-plugins v0.46.1/go.mod h1:8Xh2BlxEfSBCqsO0PzRp+JEFBYOnUfrbX82QHzPSesU=
+github.com/mackerelio/go-check-plugins v0.46.2 h1:zkHcX+gVx42vhXBFEXxOAvPK4VE+D83tcQ1qqGSZAYg=
+github.com/mackerelio/go-check-plugins v0.46.2/go.mod h1:b2u9rf6VAdTILzB5og/4w/drEOFGP6Iv8FjB5Lz5whA=
 github.com/mackerelio/go-mackerel-plugin v0.1.4 h1:+kyatPMFSoghKd7o9oge1FnDrVknFbiwz5VWdFIgsqY=
 github.com/mackerelio/go-mackerel-plugin v0.1.4/go.mod h1:bau0bZbR1JXiCwDIg880djjttZ/0j885v5k0n+jAS/I=
 github.com/mackerelio/go-mackerel-plugin-helper v0.1.2 h1:p/KTlMK/mocWAIjNuYzpCybYvkfAEroDZBDAiOuz2QQ=
