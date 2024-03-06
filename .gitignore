@@ -2,6 +2,7 @@
 !.circleci
 !.dependabot
 !.github
+!.gitattributes
 !.gitignore
 !.goxc.json
 !.travis.yml

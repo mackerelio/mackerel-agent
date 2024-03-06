@@ -1,3 +1,9 @@
+linters:
+  enable:
+    - gofmt
+linters-settings:
+  gofmt:
+    simplify: true
 issues:
   exclude-rules:
     - path: _test\.go
