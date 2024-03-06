@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.79.0 (2024-03-06)
+
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.79.0 to 0.81.0 in /wix #981 (dependabot[bot])
+* Bump github.com/shirou/gopsutil/v3 from 3.23.8 to 3.24.2 #979 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.46.1 to 0.46.2 in /wix #978 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.54.0 to 0.55.0 in /wix #977 (dependabot[bot])
+* fix build errors on *BSD platforms #975 (lufia)
+* command: drop `go test -short` mode #972 (lufia)
+* replace interface{} to any #971 (Arthur1)
+* Use shirou/gopsutil for getting CPU info on Linux #970 (Arthur1)
+
+
 ## 0.78.3 (2023-12-25)
 
 * Bump github.com/mackerelio/mkr from 0.53.0 to 0.54.0 in /wix #959 (dependabot[bot])

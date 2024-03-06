@@ -54,6 +54,16 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Mar 6 2024 <mackerel-developers@hatena.ne.jp> - 0.79.0
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.79.0 to 0.81.0 in /wix (by dependabot[bot])
+- Bump github.com/shirou/gopsutil/v3 from 3.23.8 to 3.24.2 (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.46.1 to 0.46.2 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.54.0 to 0.55.0 in /wix (by dependabot[bot])
+- fix build errors on *BSD platforms (by lufia)
+- command: drop `go test -short` mode (by lufia)
+- replace interface{} to any (by Arthur1)
+- Use shirou/gopsutil for getting CPU info on Linux (by Arthur1)
+
 * Mon Dec 25 2023 <mackerel-developers@hatena.ne.jp> - 0.78.3
 - Bump github.com/mackerelio/mkr from 0.53.0 to 0.54.0 in /wix (by dependabot[bot])
 - Bump github.com/mackerelio/mackerel-client-go from 0.26.0 to 0.29.0 (by dependabot[bot])
