@@ -1,3 +1,24 @@
+mackerel-agent (0.79.0-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.79.0 to 0.81.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/981>
+  * Bump github.com/shirou/gopsutil/v3 from 3.23.8 to 3.24.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/979>
+  * Bump github.com/mackerelio/go-check-plugins from 0.46.1 to 0.46.2 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/978>
+  * Bump github.com/mackerelio/mkr from 0.54.0 to 0.55.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/977>
+  * fix build errors on *BSD platforms (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/975>
+  * command: drop `go test -short` mode (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/972>
+  * replace interface{} to any (by Arthur1)
+    <https://github.com/mackerelio/mackerel-agent/pull/971>
+  * Use shirou/gopsutil for getting CPU info on Linux (by Arthur1)
+    <https://github.com/mackerelio/mackerel-agent/pull/970>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Wed, 6 Mar 2024 01:38:17 +0000
+
 mackerel-agent (0.78.3-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/mkr from 0.53.0 to 0.54.0 in /wix (by dependabot[bot])
