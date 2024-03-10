@@ -1333,8 +1333,8 @@ github.com/mackerelio/mackerel-client-go v0.29.0 h1:GGLQZ4oco7tdIV6BZGVMxNLyU95L
 github.com/mackerelio/mackerel-client-go v0.29.0/go.mod h1:b4qVMQi+w4rxtKQIFycLWXNBtIi9d0r571RzYmg/aXo=
 github.com/mackerelio/mackerel-plugin-mongodb v1.1.1/go.mod h1:A5rpmvlCJujZNVxPtJFz6jJEXRTnZ3bSkbiBDgt+ILs=
 github.com/mackerelio/mackerel-plugin-mysql v1.2.2/go.mod h1:qOSQPnPXnZyJVBsUDjML1wG1kVrcmbYLzjZ1Tcsq1kk=
-github.com/mackerelio/mkr v0.55.0 h1:Kqr/DZstEzpqHx6x3s9ZEwoPZLxrCZTUq4ETEXhrSUo=
-github.com/mackerelio/mkr v0.55.0/go.mod h1:dzmoN/bINI7uk4Qly8vvMG6fni43H+R0ZsZdDDZRiOs=
+github.com/mackerelio/mkr v0.56.0 h1:iF4Ye5uP8sjZjcw717oeGvT1Yb6+TSZ3yhK5kusV83c=
+github.com/mackerelio/mkr v0.56.0/go.mod h1:dzmoN/bINI7uk4Qly8vvMG6fni43H+R0ZsZdDDZRiOs=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/mailru/easyjson v0.0.0-20160728113105-d5b7844b561a/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=
