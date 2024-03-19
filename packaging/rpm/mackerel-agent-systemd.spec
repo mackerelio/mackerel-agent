@@ -54,6 +54,12 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Mar 19 2024 <mackerel-developers@hatena.ne.jp> - 0.80.0
+- Bump github.com/mackerelio/mkr from 0.55.0 to 0.57.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.29.0 to 0.30.0 (by dependabot[bot])
+- Bump google.golang.org/protobuf from 1.31.0 to 1.33.0 in /wix (by dependabot[bot])
+- refactor: lint and test workflows (by lufia)
+
 * Wed Mar 6 2024 <mackerel-developers@hatena.ne.jp> - 0.79.0
 - Bump github.com/mackerelio/mackerel-agent-plugins from 0.79.0 to 0.81.0 in /wix (by dependabot[bot])
 - Bump github.com/shirou/gopsutil/v3 from 3.23.8 to 3.24.2 (by dependabot[bot])

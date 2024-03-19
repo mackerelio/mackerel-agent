@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.80.0 (2024-03-19)
+
+* Bump github.com/mackerelio/mkr from 0.55.0 to 0.57.0 in /wix #987 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.29.0 to 0.30.0 #986 (dependabot[bot])
+* Bump google.golang.org/protobuf from 1.31.0 to 1.33.0 in /wix #985 (dependabot[bot])
+* refactor: lint and test workflows #973 (lufia)
+
+
 ## 0.79.0 (2024-03-06)
 
 * Bump github.com/mackerelio/mackerel-agent-plugins from 0.79.0 to 0.81.0 in /wix #981 (dependabot[bot])
