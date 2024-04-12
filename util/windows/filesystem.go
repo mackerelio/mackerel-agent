@@ -66,8 +66,8 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 			uintptr(unsafe.Pointer(&drivebuf[0])),
 			uintptr(len(drivebuf)))
 		if r == 0 {
-			windowsLogger.Debugf("do not get DosDevice [%q]", drivebuf)
-			return nil, err
+			windowsLogger.Warningf("do not get DosDevice [%q]: %v", drivebuf, err)
+			continue
 		}
 		volumebuf := make([]uint16, 256)
 		fsnamebuf := make([]uint16, 256)
@@ -86,8 +86,8 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 			uintptr(unsafe.Pointer(&fsnamebuf[0])),
 			uintptr(len(fsnamebuf)))
 		if r == 0 {
-			windowsLogger.Debugf("do not get volume [%q] or fsname [%q]", volumebuf, fsnamebuf)
-			return nil, err
+			windowsLogger.Warningf("do not get volume [%q] or fsname [%q]: %v", volumebuf, fsnamebuf, err)
+			continue
 		}
 		freeBytesAvailable := int64(0)
 		totalNumberOfBytes := int64(0)
@@ -95,12 +95,13 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 		if err != nil {
 			return nil, err
 		}
-		r, _, _ = GetDiskFreeSpaceEx.Call(
+		r, _, err = GetDiskFreeSpaceEx.Call(
 			uintptr(unsafe.Pointer(d)),
 			uintptr(unsafe.Pointer(&freeBytesAvailable)),
 			uintptr(unsafe.Pointer(&totalNumberOfBytes)),
 			0)
 		if r == 0 {
+			windowsLogger.Warningf("do not get disk free space [%q]: %v", volumebuf, fsnamebuf, err)
 			continue
 		}
 		filesystems[drive] = FilesystemInfo{
