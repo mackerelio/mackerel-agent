@@ -54,6 +54,19 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Apr 25 2024 <mackerel-developers@hatena.ne.jp> - 0.81.0
+- Update wix go-check-plugins v0.46.3, mackerel-agent-plugins v0.82.1 (by ne-sachirou)
+- Bump golang.org/x/net from 0.22.0 to 0.23.0 in /wix (by dependabot[bot])
+- Ignore errors of getting information of a disk on Windows (by Arthur1)
+- Bump github.com/mackerelio/mackerel-client-go from 0.30.0 to 0.31.0 (by dependabot[bot])
+- Bump github.com/shirou/gopsutil/v3 from 3.24.2 to 3.24.3 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.81.0 to 0.82.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/sys from 0.18.0 to 0.19.0 in /wix (by dependabot[bot])
+- Bump peter-evans/repository-dispatch from 2 to 3 (by dependabot[bot])
+- Bump actions/cache from 3 to 4 (by dependabot[bot])
+- Bump actions/download-artifact from 3 to 4 (by dependabot[bot])
+- Bump actions/upload-artifact from 3 to 4 (by dependabot[bot])
+
 * Tue Mar 19 2024 <mackerel-developers@hatena.ne.jp> - 0.80.0
 - Bump github.com/mackerelio/mkr from 0.55.0 to 0.57.0 in /wix (by dependabot[bot])
 - Bump github.com/mackerelio/mackerel-client-go from 0.29.0 to 0.30.0 (by dependabot[bot])

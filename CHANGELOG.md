@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.81.0 (2024-04-25)
+
+* Update wix go-check-plugins v0.46.3, mackerel-agent-plugins v0.82.1 #996 (ne-sachirou)
+* Bump golang.org/x/net from 0.22.0 to 0.23.0 in /wix #995 (dependabot[bot])
+* Ignore errors of getting information of a disk on Windows #994 (Arthur1)
+* Bump github.com/mackerelio/mackerel-client-go from 0.30.0 to 0.31.0 #993 (dependabot[bot])
+* Bump github.com/shirou/gopsutil/v3 from 3.24.2 to 3.24.3 #992 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.81.0 to 0.82.0 in /wix #991 (dependabot[bot])
+* Bump golang.org/x/sys from 0.18.0 to 0.19.0 in /wix #990 (dependabot[bot])
+* Bump peter-evans/repository-dispatch from 2 to 3 #965 (dependabot[bot])
+* Bump actions/cache from 3 to 4 #964 (dependabot[bot])
+* Bump actions/download-artifact from 3 to 4 #956 (dependabot[bot])
+* Bump actions/upload-artifact from 3 to 4 #955 (dependabot[bot])
+
+
 ## 0.80.0 (2024-03-19)
 
 * Bump github.com/mackerelio/mkr from 0.55.0 to 0.57.0 in /wix #987 (dependabot[bot])

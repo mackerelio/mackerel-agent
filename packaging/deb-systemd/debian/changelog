@@ -1,3 +1,30 @@
+mackerel-agent (0.81.0-1.systemd) stable; urgency=low
+
+  * Update wix go-check-plugins v0.46.3, mackerel-agent-plugins v0.82.1 (by ne-sachirou)
+    <https://github.com/mackerelio/mackerel-agent/pull/996>
+  * Bump golang.org/x/net from 0.22.0 to 0.23.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/995>
+  * Ignore errors of getting information of a disk on Windows (by Arthur1)
+    <https://github.com/mackerelio/mackerel-agent/pull/994>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.30.0 to 0.31.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/993>
+  * Bump github.com/shirou/gopsutil/v3 from 3.24.2 to 3.24.3 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/992>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.81.0 to 0.82.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/991>
+  * Bump golang.org/x/sys from 0.18.0 to 0.19.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/990>
+  * Bump peter-evans/repository-dispatch from 2 to 3 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/965>
+  * Bump actions/cache from 3 to 4 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/964>
+  * Bump actions/download-artifact from 3 to 4 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/956>
+  * Bump actions/upload-artifact from 3 to 4 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/955>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 25 Apr 2024 02:05:25 +0000
+
 mackerel-agent (0.80.0-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/mkr from 0.55.0 to 0.57.0 in /wix (by dependabot[bot])
