@@ -340,6 +340,11 @@ func main() {
 		{Name: xml.Name{Local: "Id", Space: ""}, Value: "Plugins"},
 		{Name: xml.Name{Local: "Guid", Space: ""}, Value: fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])},
 	}
+	component.Children = append(component.Children, xml.CharData("\n              "))
+
+	createFolder := new(Node)
+	createFolder.Name = xml.Name{Local: "CreateFolder"}
+	component.Children = append(component.Children, createFolder)
 	component.Children = append(component.Children, xml.CharData("\n            "))
 	installDir.Children = append(installDir.Children, xml.CharData("\n          "))
 
