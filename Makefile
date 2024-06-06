@@ -111,12 +111,12 @@ rpm-v2: rpm-v2-x86 rpm-v2-arm
 .PHONY: rpm-v2-x86
 rpm-v2-x86: crossbuild-package
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:u8 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
 	--define "_version ${VERSION}" --define "buildarch x86_64" --target x86_64  --define "dist .el7.centos" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:u8 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
 	--define "_version ${VERSION}" --define "buildarch x86_64" --target x86_64 --define "dist .amzn2" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
@@ -124,12 +124,12 @@ rpm-v2-x86: crossbuild-package
 .PHONY: rpm-v2-arm
 rpm-v2-arm: crossbuild-package
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:u8 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-arm64" \
 	--define "_version ${VERSION}" --define "buildarch aarch64" --target aarch64  --define "dist .el7.centos" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
 	MACKEREL_AGENT_NAME=$(MACKEREL_AGENT_NAME) _tools/packaging/prepare-rpm-build.sh
-	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:u8 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-arm64" \
 	--define "_version ${VERSION}" --define "buildarch aarch64" --target aarch64 --define "dist .amzn2" \
 	-bb packaging/rpm-build/$(MACKEREL_AGENT_NAME).spec
@@ -151,7 +151,7 @@ rpm-kcps: rpm-kcps-v2
 .PHONY: rpm-kcps-v2
 rpm-kcps-v2: crossbuild-package-kcps
 	MACKEREL_AGENT_NAME=mackerel-agent-kcps _tools/packaging/prepare-rpm-build.sh
-	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:u8 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
 	--define "_version ${VERSION}" --define "buildarch x86_64" --target x86_64 --define "dist .el7.centos" \
 	-bb packaging/rpm-build/mackerel-agent-kcps.spec
@@ -167,7 +167,7 @@ rpm-stage: rpm-stage-v2
 .PHONY: rpm-stage-v2
 rpm-stage-v2: crossbuild-package-stage
 	MACKEREL_AGENT_NAME=mackerel-agent-stage _tools/packaging/prepare-rpm-build.sh
-	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:c7 \
+	docker run --rm -v "$(PWD)":/workspace -v "$(PWD)/rpmbuild":/rpmbuild mackerel/docker-mackerel-rpm-builder:u8 \
 	--define "_sourcedir /workspace/packaging/rpm-build/src" --define "_builddir /workspace/build-linux-amd64" \
 	--define "_version ${VERSION}" --define "buildarch x86_64" --target x86_64 --define "dist .el7.centos" \
 	-bb packaging/rpm-build/mackerel-agent-stage.spec
