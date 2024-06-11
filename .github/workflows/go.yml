@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install debian packaging utils, binutils
         run: sudo apt-get update && sudo apt-get install -y devscripts debhelper fakeroot binutils-mips-linux-gnu binutils-aarch64-linux-gnu binutils-arm-linux-gnueabihf
-      - run: docker pull mackerel/docker-mackerel-rpm-builder:c7
+      - run: docker pull mackerel/docker-mackerel-rpm-builder:u8
       - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
       - run: make crossbuild
       - uses: actions/upload-artifact@v4
