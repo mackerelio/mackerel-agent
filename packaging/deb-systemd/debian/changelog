@@ -1,3 +1,14 @@
+mackerel-agent (0.82.0-1.systemd) stable; urgency=low
+
+  * go mod tidy on wix/ (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1015>
+  * go get -u github.com/mackerelio/mkr (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1014>
+  * Update mackerel/docker-mackerel-rpm-builder (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1009>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 13 Jun 2024 07:47:18 +0000
+
 mackerel-agent (0.81.0-1.systemd) stable; urgency=low
 
   * Update wix go-check-plugins v0.46.3, mackerel-agent-plugins v0.82.1 (by ne-sachirou)

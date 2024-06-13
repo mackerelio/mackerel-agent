@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.82.0 (2024-06-13)
+
+* go mod tidy on wix/ #1015 (yseto)
+* go get -u github.com/mackerelio/mkr #1014 (yseto)
+* Update mackerel/docker-mackerel-rpm-builder #1009 (yseto)
+
+
 ## 0.81.0 (2024-04-25)
 
 * Update wix go-check-plugins v0.46.3, mackerel-agent-plugins v0.82.1 #996 (ne-sachirou)
