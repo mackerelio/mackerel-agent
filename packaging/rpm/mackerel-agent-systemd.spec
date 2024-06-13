@@ -54,6 +54,11 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Jun 13 2024 <mackerel-developers@hatena.ne.jp> - 0.82.0
+- go mod tidy on wix/ (by yseto)
+- go get -u github.com/mackerelio/mkr (by yseto)
+- Update mackerel/docker-mackerel-rpm-builder (by yseto)
+
 * Thu Apr 25 2024 <mackerel-developers@hatena.ne.jp> - 0.81.0
 - Update wix go-check-plugins v0.46.3, mackerel-agent-plugins v0.82.1 (by ne-sachirou)
 - Bump golang.org/x/net from 0.22.0 to 0.23.0 in /wix (by dependabot[bot])
