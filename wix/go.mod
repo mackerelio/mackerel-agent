@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/mackerelio/go-check-plugins v0.46.3
-	github.com/mackerelio/mackerel-agent-plugins v0.82.1
+	github.com/mackerelio/mackerel-agent-plugins v0.84.0
 	github.com/mackerelio/mkr v0.58.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.21.0
