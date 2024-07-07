@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/BurntSushi/toml v1.3.2
-	github.com/Songmu/gocredits v0.3.0
+	github.com/Songmu/gocredits v0.3.1
 	github.com/Songmu/goxz v0.9.1
 	github.com/Songmu/prompter v0.5.1
 	github.com/Songmu/retry v0.1.0
