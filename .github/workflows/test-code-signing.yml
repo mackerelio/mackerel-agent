@@ -1,6 +1,9 @@
 name: Test Code Signing
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - code-signing-with-azure
 
 jobs:
   build-windows:
