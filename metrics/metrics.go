@@ -42,3 +42,18 @@ type PluginGenerator interface {
 	PrepareGraphDefs() ([]*mkr.GraphDefsParam, error)
 	CustomIdentifier() *string
 }
+
+// PluginFaultError may be returned by [PluginGenerator.PrepareGraphDefs].
+// This error indicates a bug in a plugin and should be logged for a user.
+// Note that [PluginGenerator.PrepareGraphDefs] can also return other error types.
+type PluginFaultError struct {
+	Err error
+}
+
+func (e *PluginFaultError) Error() string {
+	return e.Err.Error()
+}
+
+func (e *PluginFaultError) Unwrap() error {
+	return e.Err
+}
