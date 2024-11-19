@@ -3,6 +3,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -115,11 +116,11 @@ func doConfigtest(fs *flag.FlagSet, argv []string) error {
 	red := color.New(color.FgRed)
 	yellow := color.New(color.FgYellow)
 	if err != nil {
-		return fmt.Errorf(red.Sprintf("[CRITICAL] failed to test config: %s", err))
+		return errors.New(red.Sprintf("[CRITICAL] failed to test config: %s", err))
 	}
 	validResult, err := config.ValidateConfigFile(conf.Conffile)
 	if err != nil {
-		return fmt.Errorf(red.Sprintf("[CRITICAL] failed to test config: %s", err))
+		return errors.New(red.Sprintf("[CRITICAL] failed to test config: %s", err))
 	}
 	if len(validResult) > 0 {
 		var messages string
@@ -130,7 +131,7 @@ func doConfigtest(fs *flag.FlagSet, argv []string) error {
 				messages += yellow.Sprintf("[WARNING] %s is unexpected key. Did you mean %s ?\n", v.Key, v.SuggestKey)
 			}
 		}
-		return fmt.Errorf(messages)
+		return errors.New(messages)
 	}
 
 	fmt.Fprintf(os.Stderr, "SUCCESS (%s)\n", conf.Conffile)
