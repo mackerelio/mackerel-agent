@@ -125,7 +125,7 @@ func (g *pluginGenerator) loadPluginMeta() error {
 	pluginMetaEnv := pluginConfigurationEnvName + "=1"
 	stdout, stderr, exitCode, err := g.Config.Command.RunWithEnv([]string{pluginMetaEnv})
 	if err != nil {
-		return fmt.Errorf("running %s failed: %s, exit=%d stderr=%q", g.Config.Command.CommandString(), err, exitCode, stderr)
+		return &PluginFaultError{fmt.Errorf("running %s failed: %s, exit=%d stderr=%q", g.Config.Command.CommandString(), err, exitCode, stderr)}
 	}
 
 	outBuffer := bufio.NewReader(strings.NewReader(stdout))
@@ -170,7 +170,7 @@ func (g *pluginGenerator) loadPluginMeta() error {
 	err = json.NewDecoder(outBuffer).Decode(conf)
 
 	if err != nil {
-		return fmt.Errorf("while reading plugin configuration: %s", err)
+		return &PluginFaultError{fmt.Errorf("while reading plugin configuration: %s", err)}
 	}
 
 	g.Meta = conf
