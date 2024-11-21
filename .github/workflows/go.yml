@@ -62,7 +62,7 @@ jobs:
     name: Build (Windows)
     runs-on: windows-2022
     needs: test
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    #if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         GOARCH: ["amd64", "386"]
@@ -137,7 +137,7 @@ jobs:
     name: Make Installer (Windows)
     runs-on: windows-2022
     needs: build-windows
-    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    #if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
         include:
@@ -166,30 +166,30 @@ jobs:
           PLATFORM_ID: ${{ matrix.PLATFORM_ID }}
           MSI_SUFFIX: ${{ matrix.MSI_SUFFIX }}
 
-      - name: Signing Installer
-        uses: azure/trusted-signing-action@v0.3.20
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_ENDPOINT }}
-          trusted-signing-account-name: ${{ secrets.AZURE_TRUSTED_SIGNING_NAME }}
-          certificate-profile-name: ${{ secrets.AZURE_CERT_PROFILE_NAME }}
-          files-folder: ${{ github.workspace }}/build
-          files-folder-filter: msi
-          file-digest: SHA256
-          timestamp-rfc3161: http://timestamp.acs.microsoft.com
-          timestamp-digest: SHA256
-          exclude-environment-credential: false
-          exclude-workload-identity-credential: true
-          exclude-managed-identity-credential: true
-          exclude-shared-token-cache-credential: true
-          exclude-visual-studio-credential: true
-          exclude-visual-studio-code-credential: true
-          exclude-azure-cli-credential: true
-          exclude-azure-powershell-credential: true
-          exclude-azure-developer-cli-credential: true
-          exclude-interactive-browser-credential: true
+      #- name: Signing Installer
+      #  uses: azure/trusted-signing-action@v0.3.20
+      #  with:
+      #    azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #    azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #    azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+      #    endpoint: ${{ secrets.AZURE_ENDPOINT }}
+      #    trusted-signing-account-name: ${{ secrets.AZURE_TRUSTED_SIGNING_NAME }}
+      #    certificate-profile-name: ${{ secrets.AZURE_CERT_PROFILE_NAME }}
+      #    files-folder: ${{ github.workspace }}/build
+      #    files-folder-filter: msi
+      #    file-digest: SHA256
+      #    timestamp-rfc3161: http://timestamp.acs.microsoft.com
+      #    timestamp-digest: SHA256
+      #    exclude-environment-credential: false
+      #    exclude-workload-identity-credential: true
+      #    exclude-managed-identity-credential: true
+      #    exclude-shared-token-cache-credential: true
+      #    exclude-visual-studio-credential: true
+      #    exclude-visual-studio-code-credential: true
+      #    exclude-azure-cli-credential: true
+      #    exclude-azure-powershell-credential: true
+      #    exclude-azure-developer-cli-credential: true
+      #    exclude-interactive-browser-credential: true
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
