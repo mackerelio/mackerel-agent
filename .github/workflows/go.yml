@@ -110,6 +110,7 @@ jobs:
 
       - name: Build mackerel-agent-plugins
         run: |
+          set -x
           cd wix
           plugins=( $(./pluginlist.sh) ) || exit 1
           for p in "${plugins[@]}"
