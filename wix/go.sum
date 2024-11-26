@@ -96,8 +96,8 @@ github.com/mackerelio/mackerel-agent-plugins v0.86.0 h1:VyF2IdmtdzFxprQQW2VscqyP
 github.com/mackerelio/mackerel-agent-plugins v0.86.0/go.mod h1:ikbSZbds/1XNuZiKVdpu9k+n8QEemDE2vuBglnOkMt8=
 github.com/mackerelio/mackerel-client-go v0.33.1 h1:FKG8FGS23NFLnIOsJmRBU+dn0lzywq8SHgxDb2Gv8OM=
 github.com/mackerelio/mackerel-client-go v0.33.1/go.mod h1:YEWy40Ybr+Z75TvQw0t9/KYO0ZfPW2GrbCJhRp0UHpY=
-github.com/mackerelio/mkr v0.58.0 h1:Js4S9QfexqfpPo8IIYaUZuBU6qACjryKzmNCxWWPJFU=
-github.com/mackerelio/mkr v0.58.0/go.mod h1:AuunowGQANwa8gXJRIMqTE72/wT6LKxMpGFACx1gxOU=
+github.com/mackerelio/mkr v0.59.0 h1:6koWracPgg2YnRxOKE6AVuPdyfrvayc0MJ0EonYPllM=
+github.com/mackerelio/mkr v0.59.0/go.mod h1:AuunowGQANwa8gXJRIMqTE72/wT6LKxMpGFACx1gxOU=
 github.com/mattn/go-colorable v0.1.13 h1:fFA4WZxdEF4tXPZVKMLwD8oUnCTTo08duU7wxecdEvA=
 github.com/mattn/go-colorable v0.1.13/go.mod h1:7S9/ev0klgBDR4GtXTXX8a3vIGJpMovkB8vQcUbaXHg=
 github.com/mattn/go-encoding v0.0.2 h1:OC1L+QXLJge9n7yIE3R5Os/UNasUeFvK3Sa4NjbDi6c=
