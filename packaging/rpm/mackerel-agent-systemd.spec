@@ -54,6 +54,15 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Tue Nov 26 2024 <mackerel-developers@hatena.ne.jp> - 0.83.0
+- Bump github.com/mackerelio/mkr from 0.58.0 to 0.59.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.82.1 to 0.86.0 in /wix (by dependabot[bot])
+- add mackerel-plugin-snmp and check-ping to Windows build. (by kmuto)
+- fix lint error (by rmatsuoka)
+- Write out error message when plugin seems have a bug (by rmatsuoka)
+- Bump github.com/mackerelio/go-check-plugins from 0.46.3 to 0.47.0 in /wix (by dependabot[bot])
+- Use Azure Trusted Signing for Windows installer code signing (by yohfee)
+
 * Thu Jun 13 2024 <mackerel-developers@hatena.ne.jp> - 0.82.0
 - go mod tidy on wix/ (by yseto)
 - go get -u github.com/mackerelio/mkr (by yseto)

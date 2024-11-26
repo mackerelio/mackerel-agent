@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.83.0 (2024-11-26)
+
+* Bump github.com/mackerelio/mkr from 0.58.0 to 0.59.0 in /wix #1029 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.82.1 to 0.86.0 in /wix #1028 (dependabot[bot])
+* add mackerel-plugin-snmp and check-ping to Windows build. #1027 (kmuto)
+* fix lint error #1025 (rmatsuoka)
+* Write out error message when plugin seems have a bug #1024 (rmatsuoka)
+* Bump github.com/mackerelio/go-check-plugins from 0.46.3 to 0.47.0 in /wix #1022 (dependabot[bot])
+* Use Azure Trusted Signing for Windows installer code signing #1021 (yohfee)
+
+
 ## 0.82.0 (2024-06-13)
 
 * go mod tidy on wix/ #1015 (yseto)

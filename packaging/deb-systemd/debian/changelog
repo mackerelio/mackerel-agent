@@ -1,3 +1,22 @@
+mackerel-agent (0.83.0-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mkr from 0.58.0 to 0.59.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1029>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.82.1 to 0.86.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1028>
+  * add mackerel-plugin-snmp and check-ping to Windows build. (by kmuto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1027>
+  * fix lint error (by rmatsuoka)
+    <https://github.com/mackerelio/mackerel-agent/pull/1025>
+  * Write out error message when plugin seems have a bug (by rmatsuoka)
+    <https://github.com/mackerelio/mackerel-agent/pull/1024>
+  * Bump github.com/mackerelio/go-check-plugins from 0.46.3 to 0.47.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1022>
+  * Use Azure Trusted Signing for Windows installer code signing (by yohfee)
+    <https://github.com/mackerelio/mackerel-agent/pull/1021>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Tue, 26 Nov 2024 07:27:28 +0000
+
 mackerel-agent (0.82.0-1.systemd) stable; urgency=low
 
   * go mod tidy on wix/ (by yseto)
