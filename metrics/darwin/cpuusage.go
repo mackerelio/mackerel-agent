@@ -4,6 +4,7 @@
 package darwin
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"strconv"
@@ -11,6 +12,9 @@ import (
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/metrics"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 // CPUUsageGenerator XXX
@@ -19,7 +23,21 @@ type CPUUsageGenerator struct {
 
 var cpuUsageLogger = logging.GetLogger("metrics.cpuUsage")
 
+var systemCPUUtilGauge metric.Float64Gauge
+
 var iostatFieldToMetricName = []string{"user", "system", "idle"}
+
+func init() {
+	var err error
+	systemCPUUtilGauge, err = meter.Float64Gauge(
+		semconv.SystemCPUUtilizationName,
+		metric.WithUnit(semconv.SystemCPUUtilizationUnit),
+		metric.WithDescription(semconv.SystemCPUUtilizationDescription),
+	)
+	if err != nil {
+		panic(err)
+	}
+}
 
 // Generate returns current CPU usage of the host.
 // Keys below are expected:
@@ -43,6 +61,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 }
 
 func parseIostatOutput(output string) (metrics.Values, error) {
+	ctx := context.TODO()
 	lines := strings.Split(output, "\n")
 
 	var fields []string
@@ -70,6 +89,10 @@ func parseIostatOutput(output string) (metrics.Values, error) {
 		}
 
 		cpuUsage["cpu."+n+".percentage"] = value
+
+		systemCPUUtilGauge.Record(ctx, value/100, metric.WithAttributes(
+			attribute.Key("state").String(n),
+		))
 	}
 
 	return metrics.Values(cpuUsage), nil
