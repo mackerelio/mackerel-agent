@@ -102,6 +102,7 @@ type Config struct {
 	Verbose       bool
 	Silent        bool
 	Diagnostic    bool          `toml:"diagnostic"`
+	KeepAlive     bool          `toml:"keep_alive"`
 	DisplayName   string        `toml:"display_name"`
 	HostStatus    HostStatus    `toml:"host_status" conf:"parent"`
 	Disks         Disks         `toml:"disks" conf:"parent"`
@@ -446,6 +447,9 @@ func LoadConfig(conffile string) (*Config, error) {
 	}
 	if !config.Diagnostic {
 		config.Diagnostic = DefaultConfig.Diagnostic
+	}
+	if !config.KeepAlive {
+		config.KeepAlive = true
 	}
 
 	return config, err

@@ -33,7 +33,7 @@ func TestAPIRequestHeader(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	api, err := NewMackerelClient(ts.URL, apiKey, ver, rev, false)
+	api, err := NewMackerelClient(ts.URL, apiKey, ver, rev, false, true)
 	if err != nil {
 		t.Errorf("something went wrong while creating new mackerel client: %+v", err)
 	}
