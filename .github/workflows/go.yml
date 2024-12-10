@@ -111,10 +111,12 @@ jobs:
       - name: Build mackerel-agent-plugins
         run: |
           cd wix
-          for p in $(./pluginlist.sh)
+          plugins=( $(./pluginlist.sh) ) || exit 1
+          for p in "${plugins[@]}"
           do
             name=$(basename "$p")
             go build -o "../build/$name.exe" "$p"
+            echo go build -o "../build/$name.exe" "$p"
           done
         shell: msys2 {0}
 
