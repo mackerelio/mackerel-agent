@@ -693,8 +693,8 @@ func buildUA(ver, rev string) string {
 }
 
 // NewMackerelClient returns Mackerel API client for mackerel-agent
-func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool, keepAlive bool) (*mackerel.API, error) {
-	api, err := mackerel.NewAPI(apibase, apikey, verbose, keepAlive)
+func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool, disableKeepAlive bool) (*mackerel.API, error) {
+	api, err := mackerel.NewAPI(apibase, apikey, verbose, disableKeepAlive)
 	if err != nil {
 		return nil, err
 	}
@@ -708,7 +708,7 @@ func NewMackerelClient(apibase, apikey, ver, rev string, verbose bool, keepAlive
 // Prepare sets up API and registers the host data to the Mackerel server.
 // Use returned values to call Run().
 func Prepare(conf *config.Config, ameta *AgentMeta) (*App, error) {
-	api, err := NewMackerelClient(conf.Apibase, conf.Apikey, ameta.Version, ameta.Revision, conf.Verbose, conf.KeepAlive)
+	api, err := NewMackerelClient(conf.Apibase, conf.Apikey, ameta.Version, ameta.Revision, conf.Verbose, conf.DisableKeepAlive)
 	if err != nil {
 		return nil, fmt.Errorf("failed to prepare an api: %s", err.Error())
 	}
