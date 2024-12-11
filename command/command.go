@@ -224,6 +224,7 @@ func loop(app *App, termCh chan struct{}) error {
 	termMetricsCh := make(chan struct{})
 	var termCheckerCh chan struct{}
 	var termMetadataCh chan struct{}
+	var termOTelCh chan struct{}
 
 	hasChecks := len(app.Agent.Checkers) > 0
 	if hasChecks {
@@ -233,6 +234,11 @@ func loop(app *App, termCh chan struct{}) error {
 	hasMetadataPlugins := len(app.Agent.MetadataGenerators) > 0
 	if hasMetadataPlugins {
 		termMetadataCh = make(chan struct{})
+	}
+
+	otelEnabled := true
+	if otelEnabled {
+		termOTelCh = make(chan struct{})
 	}
 
 	// fan-out termCh
@@ -245,6 +251,9 @@ func loop(app *App, termCh chan struct{}) error {
 			if termMetadataCh != nil {
 				termMetadataCh <- struct{}{}
 			}
+			if termOTelCh != nil {
+				termOTelCh <- struct{}{}
+			}
 		}
 	}()
 
@@ -254,6 +263,10 @@ func loop(app *App, termCh chan struct{}) error {
 
 	if hasMetadataPlugins {
 		go runMetadataLoop(ctx, app, termMetadataCh)
+	}
+
+	if otelEnabled {
+		go runOTelLoop(ctx, app, termOTelCh)
 	}
 
 	lState := loopStateFirst
