@@ -18,7 +18,7 @@ func TestNewAPI(t *testing.T) {
 		"http://example.com",
 		"dummy-key",
 		true,
-		true,
+		false,
 	)
 
 	if err != nil {
@@ -73,7 +73,7 @@ func TestFindHostByCustomIdentifier(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	api, _ := NewAPI(ts.URL, "dummy-key", false, true)
+	api, _ := NewAPI(ts.URL, "dummy-key", false, false)
 
 	var tests = []struct {
 		customIdentifier string
