@@ -3,6 +3,7 @@ package mackerel
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"github.com/mackerelio/golib/logging"
@@ -56,12 +57,17 @@ func infoError(msg string) *InfoError {
 }
 
 // NewAPI creates a new instance of API.
-func NewAPI(rawurl string, apiKey string, verbose bool) (*API, error) {
+func NewAPI(rawurl string, apiKey string, verbose bool, disableKeepAlive bool) (*API, error) {
 	c, err := mkr.NewClientWithOptions(apiKey, rawurl, verbose)
 	if err != nil {
 		return nil, err
 	}
 	c.PrioritizedLogger = logger
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	print(disableKeepAlive)
+	t.DisableKeepAlives = disableKeepAlive
+	c.HTTPClient.Transport = t
+
 	return &API{Client: c}, nil
 }
 
