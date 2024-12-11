@@ -61,7 +61,7 @@ func TestReportCheckMonitors(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	api, _ := NewAPI(ts.URL, "dummy-key", false, true)
+	api, _ := NewAPI(ts.URL, "dummy-key", false, false)
 
 	err := api.ReportCheckMonitors("9rxGOHfVF8F", []*checks.Report{
 		{
@@ -153,7 +153,7 @@ func TestReportCheckMonitorsCompat(t *testing.T) {
 			maxAttemts: 0,
 		},
 	}
-	api, _ := NewAPI(ts.URL, "dummy-key", false, true)
+	api, _ := NewAPI(ts.URL, "dummy-key", false, false)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			api.ReportCheckMonitors("xxx", []*checks.Report{
