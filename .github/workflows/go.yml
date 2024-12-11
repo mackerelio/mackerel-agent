@@ -9,13 +9,13 @@ on:
 
 jobs:
   lint:
-    uses: mackerelio/workflows/.github/workflows/go-lint.yml@v1.1.0
+    uses: mackerelio/workflows/.github/workflows/go-lint.yml@v1.2.0
   convention:
-    uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.1.0
+    uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.2.0
     with:
       run: make convention
   test:
-    uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.1.0
+    uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.2.0
     with:
       # Please do not specify `windows-latest`
       # Build process is complex then need to check operation.
