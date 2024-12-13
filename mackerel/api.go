@@ -64,7 +64,6 @@ func NewAPI(rawurl string, apiKey string, verbose bool, disableKeepAlive bool) (
 	}
 	c.PrioritizedLogger = logger
 	t := http.DefaultTransport.(*http.Transport).Clone()
-	print(disableKeepAlive)
 	t.DisableKeepAlives = disableKeepAlive
 	c.HTTPClient.Transport = t
 
