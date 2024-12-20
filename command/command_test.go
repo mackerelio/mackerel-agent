@@ -346,7 +346,7 @@ func TestLoop(t *testing.T) {
 		},
 	}
 
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, true)
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -442,7 +442,7 @@ func TestLoop_NetworkError(t *testing.T) {
 		},
 	}
 
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, true)
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -524,7 +524,7 @@ func TestLoop_NetworkErrorWithRecovery(t *testing.T) {
 		},
 	}
 
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, true)
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -585,7 +585,7 @@ func TestReportCheckMonitors(t *testing.T) {
 			return tc.Status, jsonObject{}
 		}
 
-		api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, true)
+		api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, false)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -643,7 +643,7 @@ func TestReportCheckMonitors_NetworkError(t *testing.T) {
 		return http.StatusSeeOther, jsonObject{}
 	}
 
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, true)
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -708,7 +708,7 @@ func TestReportCheckMonitors_NetworkErrorWithRecovery(t *testing.T) {
 		return http.StatusOK, jsonObject{}
 	}
 
-	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, true)
+	api, err := mackerel.NewAPI(conf.Apibase, conf.Apikey, true, false)
 	if err != nil {
 		t.Fatal(err)
 	}
