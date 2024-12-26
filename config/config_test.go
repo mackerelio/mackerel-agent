@@ -100,7 +100,7 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("should be false (default value should be used)")
 	}
 
-	if config.DisableHttpKeepAlive != false {
+	if config.DisableHTTPKeepAlive != false {
 		t.Error("should be false (default value should be used)")
 	}
 }

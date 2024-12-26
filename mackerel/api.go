@@ -57,14 +57,14 @@ func infoError(msg string) *InfoError {
 }
 
 // NewAPI creates a new instance of API.
-func NewAPI(rawurl string, apiKey string, verbose bool, disableHttpKeepAlive bool) (*API, error) {
+func NewAPI(rawurl string, apiKey string, verbose bool, disableHTTPKeepAlive bool) (*API, error) {
 	c, err := mkr.NewClientWithOptions(apiKey, rawurl, verbose)
 	if err != nil {
 		return nil, err
 	}
 	c.PrioritizedLogger = logger
 	t := http.DefaultTransport.(*http.Transport).Clone()
-	t.DisableKeepAlives = disableHttpKeepAlive
+	t.DisableKeepAlives = disableHTTPKeepAlive
 	c.HTTPClient.Transport = t
 
 	return &API{Client: c}, nil

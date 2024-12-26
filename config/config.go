@@ -102,7 +102,7 @@ type Config struct {
 	Verbose              bool
 	Silent               bool
 	Diagnostic           bool          `toml:"diagnostic"`
-	DisableHttpKeepAlive bool          `toml:"disable_http_keep_alive"`
+	DisableHTTPKeepAlive bool          `toml:"disable_http_keep_alive"`
 	DisplayName          string        `toml:"display_name"`
 	HostStatus           HostStatus    `toml:"host_status" conf:"parent"`
 	Disks                Disks         `toml:"disks" conf:"parent"`
@@ -448,8 +448,8 @@ func LoadConfig(conffile string) (*Config, error) {
 	if !config.Diagnostic {
 		config.Diagnostic = DefaultConfig.Diagnostic
 	}
-	if !config.DisableHttpKeepAlive {
-		config.DisableHttpKeepAlive = DefaultConfig.DisableHttpKeepAlive
+	if !config.DisableHTTPKeepAlive {
+		config.DisableHTTPKeepAlive = DefaultConfig.DisableHTTPKeepAlive
 	}
 
 	return config, err
