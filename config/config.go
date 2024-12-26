@@ -448,10 +448,6 @@ func LoadConfig(conffile string) (*Config, error) {
 	if !config.Diagnostic {
 		config.Diagnostic = DefaultConfig.Diagnostic
 	}
-	if !config.DisableHTTPKeepAlive {
-		config.DisableHTTPKeepAlive = DefaultConfig.DisableHTTPKeepAlive
-	}
-
 	return config, err
 }
 
