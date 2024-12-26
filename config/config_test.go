@@ -99,6 +99,10 @@ func TestLoadConfig(t *testing.T) {
 	if config.Filesystems.UseMountpoint != false {
 		t.Error("should be false (default value should be used)")
 	}
+
+	if config.DisableHTTPKeepAlive != false {
+		t.Error("should be false (default value should be used)")
+	}
 }
 
 var sampleConfigWithHostStatus = `

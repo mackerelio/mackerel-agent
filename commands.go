@@ -156,7 +156,7 @@ func doRetire(fs *flag.FlagSet, argv []string) error {
 		return fmt.Errorf("hostID file is not found or empty")
 	}
 
-	api, err := command.NewMackerelClient(conf.Apibase, conf.Apikey, version, gitcommit, conf.Verbose)
+	api, err := command.NewMackerelClient(conf.Apibase, conf.Apikey, version, gitcommit, conf.Verbose, conf.DisableHTTPKeepAlive)
 	if err != nil {
 		return fmt.Errorf("faild to create api client: %s", err)
 	}
