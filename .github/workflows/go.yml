@@ -19,7 +19,7 @@ jobs:
     with:
       # Please do not specify `windows-latest`
       # Build process is complex then need to check operation.
-      os-versions: '["ubuntu-latest", "windows-2022"]'
+      os-versions: '["ubuntu-latest", "windows-2022", "windows-2025"]'
 
   build-linux:
     name: Build (Linux)
