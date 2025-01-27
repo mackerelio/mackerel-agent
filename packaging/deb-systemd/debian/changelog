@@ -1,3 +1,36 @@
+mackerel-agent (0.84.0-1.systemd) stable; urgency=low
+
+  * Bump golang.org/x/net from 0.25.0 to 0.33.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1050>
+  * Bump azure/trusted-signing-action from 0.3.20 to 0.5.1 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1047>
+  * Bump golang.org/x/sys from 0.21.0 to 0.29.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1046>
+  * Pined build actions runner version (by appare45)
+    <https://github.com/mackerelio/mackerel-agent/pull/1045>
+  * Bump golang.org/x/crypto from 0.24.0 to 0.31.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1044>
+  * use mackerelio/workflows@v1.2.0 (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1043>
+  * Bump github.com/vishvananda/netlink from 1.1.0 to 1.3.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1037>
+  * Bump github.com/fatih/color from 1.16.0 to 1.18.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1036>
+  * Add disable_http_keep_alive option (by appare45)
+    <https://github.com/mackerelio/mackerel-agent/pull/1035>
+  * check status code in go.yaml (by rmatsuoka)
+    <https://github.com/mackerelio/mackerel-agent/pull/1033>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.31.0 to 0.34.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1023>
+  * Bump github.com/Songmu/gocredits from 0.3.0 to 0.3.1 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1020>
+  * Bump github.com/mackerelio/go-osstat from 0.2.4 to 0.2.5 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1011>
+  * Bump github.com/shirou/gopsutil/v3 from 3.24.3 to 3.24.5 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1008>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 27 Jan 2025 09:59:45 +0000
+
 mackerel-agent (0.83.0-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/mkr from 0.58.0 to 0.59.0 in /wix (by dependabot[bot])

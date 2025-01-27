@@ -54,6 +54,22 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Jan 27 2025 <mackerel-developers@hatena.ne.jp> - 0.84.0
+- Bump golang.org/x/net from 0.25.0 to 0.33.0 in /wix (by dependabot[bot])
+- Bump azure/trusted-signing-action from 0.3.20 to 0.5.1 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.21.0 to 0.29.0 in /wix (by dependabot[bot])
+- Pined build actions runner version (by appare45)
+- Bump golang.org/x/crypto from 0.24.0 to 0.31.0 in /wix (by dependabot[bot])
+- use mackerelio/workflows@v1.2.0 (by yseto)
+- Bump github.com/vishvananda/netlink from 1.1.0 to 1.3.0 (by dependabot[bot])
+- Bump github.com/fatih/color from 1.16.0 to 1.18.0 (by dependabot[bot])
+- Add disable_http_keep_alive option (by appare45)
+- check status code in go.yaml (by rmatsuoka)
+- Bump github.com/mackerelio/mackerel-client-go from 0.31.0 to 0.34.0 (by dependabot[bot])
+- Bump github.com/Songmu/gocredits from 0.3.0 to 0.3.1 (by dependabot[bot])
+- Bump github.com/mackerelio/go-osstat from 0.2.4 to 0.2.5 (by dependabot[bot])
+- Bump github.com/shirou/gopsutil/v3 from 3.24.3 to 3.24.5 (by dependabot[bot])
+
 * Tue Nov 26 2024 <mackerel-developers@hatena.ne.jp> - 0.83.0
 - Bump github.com/mackerelio/mkr from 0.58.0 to 0.59.0 in /wix (by dependabot[bot])
 - Bump github.com/mackerelio/mackerel-agent-plugins from 0.82.1 to 0.86.0 in /wix (by dependabot[bot])

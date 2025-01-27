@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.84.0 (2025-01-27)
+
+* Bump golang.org/x/net from 0.25.0 to 0.33.0 in /wix #1050 (dependabot[bot])
+* Bump azure/trusted-signing-action from 0.3.20 to 0.5.1 #1047 (dependabot[bot])
+* Bump golang.org/x/sys from 0.21.0 to 0.29.0 in /wix #1046 (dependabot[bot])
+* Pined build actions runner version #1045 (appare45)
+* Bump golang.org/x/crypto from 0.24.0 to 0.31.0 in /wix #1044 (dependabot[bot])
+* use mackerelio/workflows@v1.2.0 #1043 (yseto)
+* Bump github.com/vishvananda/netlink from 1.1.0 to 1.3.0 #1037 (dependabot[bot])
+* Bump github.com/fatih/color from 1.16.0 to 1.18.0 #1036 (dependabot[bot])
+* Add disable_http_keep_alive option #1035 (appare45)
+* check status code in go.yaml #1033 (rmatsuoka)
+* Bump github.com/mackerelio/mackerel-client-go from 0.31.0 to 0.34.0 #1023 (dependabot[bot])
+* Bump github.com/Songmu/gocredits from 0.3.0 to 0.3.1 #1020 (dependabot[bot])
+* Bump github.com/mackerelio/go-osstat from 0.2.4 to 0.2.5 #1011 (dependabot[bot])
+* Bump github.com/shirou/gopsutil/v3 from 3.24.3 to 3.24.5 #1008 (dependabot[bot])
+
+
 ## 0.83.0 (2024-11-26)
 
 * Bump github.com/mackerelio/mkr from 0.58.0 to 0.59.0 in /wix #1029 (dependabot[bot])
