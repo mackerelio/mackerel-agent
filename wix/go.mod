@@ -7,7 +7,7 @@ toolchain go1.23.2
 require (
 	github.com/mackerelio/go-check-plugins v0.47.0
 	github.com/mackerelio/mackerel-agent-plugins v0.86.0
-	github.com/mackerelio/mkr v0.59.0
+	github.com/mackerelio/mkr v0.59.1
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.29.0
 )
@@ -25,7 +25,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/daviddengcn/go-colortext v1.0.0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
-	github.com/fatih/color v1.17.0 // indirect
+	github.com/fatih/color v1.18.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/go-github/v49 v49.1.0 // indirect
@@ -42,8 +42,8 @@ require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.3 // indirect
 	github.com/mackerelio/go-osstat v0.2.5 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
-	github.com/mackerelio/mackerel-agent v0.81.0 // indirect
-	github.com/mackerelio/mackerel-client-go v0.33.1 // indirect
+	github.com/mackerelio/mackerel-agent v0.84.0 // indirect
+	github.com/mackerelio/mackerel-client-go v0.34.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-zglob v0.0.4 // indirect
@@ -68,7 +68,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/oauth2 v0.21.0 // indirect
+	golang.org/x/oauth2 v0.25.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/term v0.27.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
