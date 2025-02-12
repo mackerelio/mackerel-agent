@@ -9,17 +9,17 @@ on:
 
 jobs:
   lint:
-    uses: mackerelio/workflows/.github/workflows/go-lint.yml@v1.2.0
+    uses: mackerelio/workflows/.github/workflows/go-lint.yml@v1.3.0
   convention:
-    uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.2.0
+    uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@v1.3.0
     with:
       run: make convention
   test:
-    uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.2.0
+    uses: mackerelio/workflows/.github/workflows/go-test.yml@v1.3.0
     with:
       # Please do not specify `windows-latest`
       # Build process is complex then need to check operation.
-      os-versions: '["ubuntu-latest", "windows-2022"]'
+      os-versions: '["ubuntu-latest", "windows-2022", "windows-2025"]' # When windows-2025 become stable, remove windows-2022
 
   build-linux:
     name: Build (Linux)
