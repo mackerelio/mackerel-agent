@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.84.1 (2025-03-03)
+
+* Set the default path by "mkr plugin install" to the PATH environment. #1058 (fujiwara)
+* Bump mackerelio/workflows from 1.2.0 to 1.3.0 #1052 (dependabot[bot])
+
+
 ## 0.84.0 (2025-01-27)
 
 * Bump golang.org/x/net from 0.25.0 to 0.33.0 in /wix #1050 (dependabot[bot])
