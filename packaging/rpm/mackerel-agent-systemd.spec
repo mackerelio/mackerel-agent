@@ -54,6 +54,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Mar 3 2025 <mackerel-developers@hatena.ne.jp> - 0.84.1
+- Set the default path by "mkr plugin install" to the PATH environment. (by fujiwara)
+- Bump mackerelio/workflows from 1.2.0 to 1.3.0 (by dependabot[bot])
+
 * Mon Jan 27 2025 <mackerel-developers@hatena.ne.jp> - 0.84.0
 - Bump golang.org/x/net from 0.25.0 to 0.33.0 in /wix (by dependabot[bot])
 - Bump azure/trusted-signing-action from 0.3.20 to 0.5.1 (by dependabot[bot])

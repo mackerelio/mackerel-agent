@@ -1,3 +1,12 @@
+mackerel-agent (0.84.1-1.systemd) stable; urgency=low
+
+  * Set the default path by "mkr plugin install" to the PATH environment. (by fujiwara)
+    <https://github.com/mackerelio/mackerel-agent/pull/1058>
+  * Bump mackerelio/workflows from 1.2.0 to 1.3.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1052>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 3 Mar 2025 08:15:33 +0000
+
 mackerel-agent (0.84.0-1.systemd) stable; urgency=low
 
   * Bump golang.org/x/net from 0.25.0 to 0.33.0 in /wix (by dependabot[bot])
