@@ -1,7 +1,6 @@
 module github.com/mackerelio/mackerel-agent/wix
 
 go 1.22.3
-
 toolchain go1.23.2
 
 require (
@@ -9,7 +8,7 @@ require (
 	github.com/mackerelio/mackerel-agent-plugins v0.86.0
 	github.com/mackerelio/mkr v0.59.0
 	github.com/mattn/go-encoding v0.0.2
-	golang.org/x/sys v0.29.0
+	golang.org/x/sys v0.31.0
 )
 
 require (
