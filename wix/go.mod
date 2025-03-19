@@ -1,11 +1,11 @@
 module github.com/mackerelio/mackerel-agent/wix
 
 go 1.22.3
-toolchain go1.23.2
+toolchain go1.24.1
 
 require (
 	github.com/mackerelio/go-check-plugins v0.47.0
-	github.com/mackerelio/mackerel-agent-plugins v0.86.0
+	github.com/mackerelio/mackerel-agent-plugins v0.88.0
 	github.com/mackerelio/mkr v0.59.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.31.0
@@ -21,7 +21,7 @@ require (
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
 	github.com/daviddengcn/go-colortext v1.0.0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/fatih/color v1.17.0 // indirect
@@ -29,7 +29,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/go-github/v49 v49.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/gosnmp/gosnmp v1.35.0 // indirect
+	github.com/gosnmp/gosnmp v1.38.0 // indirect
 	github.com/itchyny/gojq v0.12.16 // indirect
 	github.com/itchyny/timefmt-go v0.1.6 // indirect
 	github.com/jessevdk/go-flags v1.5.0 // indirect
@@ -60,7 +60,7 @@ require (
 	github.com/tatsushid/go-fastping v0.0.0-20160109021039-d7bb493dee3e // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/ulikunitz/xz v0.5.12 // indirect
-	github.com/urfave/cli v1.22.15 // indirect
+	github.com/urfave/cli v1.22.16 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
