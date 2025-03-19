@@ -33,7 +33,7 @@ jobs:
       - name: Set up Go 1.x
         uses: actions/setup-go@v5
         with:
-          go-version: 1.21.x
+          go-version: 1.23.x
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4
       - name: Install debian packaging utils, binutils
@@ -90,7 +90,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.21.x
+          go-version: 1.23.x
 
       - uses: actions/cache@v4
         with:
