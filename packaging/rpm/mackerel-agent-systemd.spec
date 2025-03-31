@@ -54,6 +54,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Mar 31 2025 <mackerel-developers@hatena.ne.jp> - 0.84.3
+- update github.com/mackerelio/go-check-plugins, mkr on /wix (by yseto)
+- Bump github.com/mackerelio/mackerel-client-go from 0.35.0 to 0.36.0 (by dependabot[bot])
+
 * Mon Mar 31 2025 <mackerel-developers@hatena.ne.jp> - 0.84.2
 - update Go (by yseto)
 - replace to newer runner-images (by yseto)
