@@ -54,6 +54,18 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Mar 31 2025 <mackerel-developers@hatena.ne.jp> - 0.84.2
+- update Go (by yseto)
+- replace to newer runner-images (by yseto)
+- Bump golang.org/x/net from 0.33.0 to 0.36.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/text from 0.14.0 to 0.23.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.59.0 to 0.59.2 in /wix (by dependabot[bot])
+- Bump golang.org/x/sys from 0.29.0 to 0.31.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.86.0 to 0.88.0 in /wix (by dependabot[bot])
+- use ghcr.io/mackerelio/mackerel-rpm-builder (by yseto)
+- Bump mackerelio/workflows from 1.3.0 to 1.4.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.34.0 to 0.35.0 (by dependabot[bot])
+
 * Mon Mar 3 2025 <mackerel-developers@hatena.ne.jp> - 0.84.1
 - Set the default path by "mkr plugin install" to the PATH environment. (by fujiwara)
 - Bump mackerelio/workflows from 1.2.0 to 1.3.0 (by dependabot[bot])

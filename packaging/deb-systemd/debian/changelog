@@ -1,3 +1,28 @@
+mackerel-agent (0.84.2-1.systemd) stable; urgency=low
+
+  * update Go (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1068>
+  * replace to newer runner-images (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1067>
+  * Bump golang.org/x/net from 0.33.0 to 0.36.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1066>
+  * Bump golang.org/x/text from 0.14.0 to 0.23.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1065>
+  * Bump github.com/mackerelio/mkr from 0.59.0 to 0.59.2 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1064>
+  * Bump golang.org/x/sys from 0.29.0 to 0.31.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1063>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.86.0 to 0.88.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1062>
+  * use ghcr.io/mackerelio/mackerel-rpm-builder (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1060>
+  * Bump mackerelio/workflows from 1.3.0 to 1.4.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1059>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.34.0 to 0.35.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1056>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 31 Mar 2025 06:33:59 +0000
+
 mackerel-agent (0.84.1-1.systemd) stable; urgency=low
 
   * Set the default path by "mkr plugin install" to the PATH environment. (by fujiwara)
