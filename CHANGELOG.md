@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.84.3 (2025-03-31)
+
+* update github.com/mackerelio/go-check-plugins, mkr on /wix #1072 (yseto)
+* Bump github.com/mackerelio/mackerel-client-go from 0.35.0 to 0.36.0 #1070 (dependabot[bot])
+
+
 ## 0.84.2 (2025-03-31)
 
 * update Go #1068 (yseto)
