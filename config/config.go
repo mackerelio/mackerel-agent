@@ -385,7 +385,8 @@ type Filesystems struct {
 
 // Interfaces configure intefaces related settings
 type Interfaces struct {
-	Ignore Regexpwrapper `toml:"ignore"`
+	Ignore           Regexpwrapper `toml:"ignore"`
+	UseAdapterMetric bool          `toml:"use_adapter"`
 }
 
 // Regexpwrapper is a wrapper type for marshalling string

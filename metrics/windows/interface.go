@@ -37,7 +37,7 @@ func normalizeName(s string) string {
 }
 
 // NewInterfaceGenerator XXX
-func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration) (*InterfaceGenerator, error) {
+func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration, useAdapterMetric bool) (*InterfaceGenerator, error) {
 	g := &InterfaceGenerator{ignoreReg, interval, 0, nil}
 
 	var err error
@@ -107,10 +107,14 @@ func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration) (*I
 				name = strings.Replace(name, `\`, "_", -1)
 				var counter *windows.CounterInfo
 
+				queryType := "Interface"
+				if useAdapterMetric {
+					queryType = "Adapter"
+				}
 				counter, err = windows.CreateCounter(
 					g.query,
 					fmt.Sprintf(`interface.%s.rxBytes.delta`, escaped),
-					fmt.Sprintf(`\Network Interface(%s)\Bytes Received/sec`, name))
+					fmt.Sprintf(`\Network %s(%s)\Bytes Received/sec`, queryType, name))
 				if err != nil {
 					interfaceLogger.Criticalf(err.Error())
 					return nil, err
@@ -119,7 +123,7 @@ func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration) (*I
 				counter, err = windows.CreateCounter(
 					g.query,
 					fmt.Sprintf(`interface.%s.txBytes.delta`, escaped),
-					fmt.Sprintf(`\Network Interface(%s)\Bytes Sent/sec`, name))
+					fmt.Sprintf(`\Network %s(%s)\Bytes Sent/sec`, queryType, name))
 				if err != nil {
 					interfaceLogger.Criticalf(err.Error())
 					return nil, err
