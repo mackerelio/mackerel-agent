@@ -39,7 +39,7 @@ func metricsGenerators(conf *config.Config) []metrics.Generator {
 	if g, err = metricsWindows.NewFilesystemGenerator(conf.Filesystems.Ignore.Regexp); err == nil {
 		generators = append(generators, g)
 	}
-	if g, err = metricsWindows.NewInterfaceGenerator(conf.Interfaces.Ignore.Regexp, metricsInterval); err == nil {
+	if g, err = metricsWindows.NewInterfaceGenerator(conf.Interfaces.Ignore.Regexp, metricsInterval, conf.Interfaces.UseAdapterMetric); err == nil {
 		generators = append(generators, g)
 	}
 	if g, err = metricsWindows.NewDiskGenerator(conf.Disks.Ignore.Regexp, metricsInterval); err == nil {
