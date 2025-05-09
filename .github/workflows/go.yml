@@ -160,11 +160,11 @@ jobs:
           name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
           path: build/
 
-      - uses: actions/github-script@v7
-        with:
-          script: |
-            const script = require('./_tools/parse_version.js')
-            await script({github, context, core})
+      - name: determine version
+        run: |
+          version=$(git describe --abbrev=0 --tags | sed 's/v//')
+          echo "VERSION=$version" >> $GITHUB_OUTPUT
+        shell: bash
         id: parse_version
 
       - name: Build Installer
