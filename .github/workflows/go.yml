@@ -106,10 +106,9 @@ jobs:
 
       - name: Build mackerel-agent
         run: |
-          commit=$(git rev-parse --short HEAD)
           mkdir build/
-          go build -o build/mackerel-agent.exe -ldflags="-X main.gitcommit=$commit" github.com/mackerelio/mackerel-agent
-          go build -o build/mackerel-agent-kcps.exe -ldflags="-X main.gitcommit=$commit -X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16" github.com/mackerelio/mackerel-agent
+          go build -o build/mackerel-agent.exe github.com/mackerelio/mackerel-agent
+          go build -o build/mackerel-agent-kcps.exe -ldflags="-X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16" github.com/mackerelio/mackerel-agent
         shell: msys2 {0}
 
       - name: Build mackerel-agent-plugins
