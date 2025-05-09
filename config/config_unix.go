@@ -1,5 +1,4 @@
 //go:build linux || freebsd || netbsd
-// +build linux freebsd netbsd
 
 package config
 
