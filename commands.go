@@ -99,6 +99,7 @@ func doSupervise(fs *flag.FlagSet, argv []string) error {
 display the version of mackerel-agent
 */
 func doVersion(_ *flag.FlagSet, _ []string) error {
+	version, gitcommit := fromVCS()
 	fmt.Printf("mackerel-agent version %s (rev %s) [%s %s %s] \n",
 		version, gitcommit, runtime.GOOS, runtime.GOARCH, runtime.Version())
 	return nil
@@ -146,6 +147,7 @@ func doConfigtest(fs *flag.FlagSet, argv []string) error {
 retire the host
 */
 func doRetire(fs *flag.FlagSet, argv []string) error {
+	version, gitcommit := fromVCS()
 	conf, force, err := resolveConfigForRetire(fs, argv)
 	if err != nil {
 		return fmt.Errorf("failed to load config: %s", err)
@@ -189,6 +191,7 @@ output metrics and meta data of the host one time.
 These data are only displayed and not posted to Mackerel.
 */
 func doOnce(fs *flag.FlagSet, argv []string) error {
+	version, gitcommit := fromVCS()
 	conf, err := resolveConfig(fs, argv)
 	if err != nil {
 		logger.Warningf("failed to load config (but `once` must not required conf): %s", err)
