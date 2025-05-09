@@ -23,6 +23,7 @@ jobs:
           github_token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
           next_version: ${{ github.event.inputs.release_version }}
           package_name: mackerel-agent
+          ignore_update_program_files: "true"
 
       - uses: mackerelio/mackerel-create-release-pull-request-action@main
         with:
