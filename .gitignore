@@ -23,6 +23,7 @@ packaging/*.tar.gz
 packaging/deb-build
 packaging/rpm-build
 packaging/*.deb
+packaging/*.ddeb
 packaging/*.changes
 packaging/*.dsc
 packaging/*.build*
