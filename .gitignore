@@ -6,6 +6,7 @@
 !.gitignore
 !.goxc.json
 !.travis.yml
+!.goreleaser.yml
 /build
 /build-linux-*/
 /snapshot
@@ -15,6 +16,7 @@
 /wix/mackerel-agent.wixobj
 /rpmbuild/
 /CREDITS
+/dist
 
 packaging/rpm/src/mackerel-agent.conf
 packaging/deb/debian/mackerel-agent.conf
