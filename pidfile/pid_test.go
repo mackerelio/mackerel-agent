@@ -1,5 +1,4 @@
 //go:build linux || freebsd || darwin || netbsd
-// +build linux freebsd darwin netbsd
 
 package pidfile
 
