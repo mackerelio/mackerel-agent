@@ -7,6 +7,41 @@ before:
 archives:
   - formats: 
     - "binary"
+
+  - id: archives
+    ids:
+      - normal
+      - normal-deb-only
+      - normal-archives-only-linux
+      - normal-archives-only-other
+      - normal-archives-only-darwin
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    formats:
+      - "tar.gz"
+    files:
+      - CREDITS
+      - CHANGELOG.md
+      - LICENSE
+      - LICENSE.rtf
+      - README.md
+      - mackerel-agent.conf
+    format_overrides:
+      - goos: darwin
+        formats:
+          - zip
+
+  - id: archives-latest-taball
+    # mackerel-agent-latest.tar.gz
+    ids:
+      - normal-archives-only-linux
+    name_template: "{{ .ProjectName }}-latest"
+    formats:
+      - "tar.gz"
+    files:
+      - CREDITS
+      - LICENSE
+      - mackerel-agent.conf
+
 builds:
   - id: normal
     env: &env
@@ -28,6 +63,36 @@ builds:
       - mips
     goarm:
       - "6" # specify ARMv6 for supporting Raspberry Pi 1 / Zero
+    binary: *normal-binary
+    ldflags: *ldflags
+
+  - id: normal-archives-only-linux
+    env: *env
+    goos: *goos
+    goarch:
+      - "386"
+    binary: *normal-binary
+    ldflags: *ldflags
+
+  - id: normal-archives-only-darwin
+    env: *env
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: *normal-binary
+    ldflags: *ldflags
+
+  - id: normal-archives-only-other
+    env: *env
+    goos:
+      - freebsd
+      - netbsd
+    goarch:
+      - "386"
+      - amd64
+      - arm
     binary: *normal-binary
     ldflags: *ldflags
 
