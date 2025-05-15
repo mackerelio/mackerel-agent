@@ -15,7 +15,6 @@
 /wix/mackerel-agent.wxs
 /wix/mackerel-agent.wixobj
 /rpmbuild/
-/CREDITS
 /dist
 
 packaging/rpm/src/mackerel-agent.conf

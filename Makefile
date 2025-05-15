@@ -35,7 +35,7 @@ deps:
 .PHONY: credits
 credits: deps
 	go mod tidy # not `go get` to get all the dependencies regardress of OS, architecture and build tags
-	gocredits -skip-missing -w .
+	go generate ./...
 
 .PHONY: lint
 lint:
@@ -43,6 +43,7 @@ lint:
 
 .PHONY: convention
 convention:
+	go mod tidy # not `go get` to get all the dependencies regardress of OS, architecture and build tags
 	go generate ./... && git diff --exit-code || \
 	  (echo 'please `go generate ./...` and commit them' && false)
 
