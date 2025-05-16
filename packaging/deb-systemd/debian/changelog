@@ -1,3 +1,14 @@
+mackerel-agent (0.85.0-1.systemd) stable; urgency=low
+
+  * update mackerelio/* on wix/ (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1085>
+  * Remove old build tags. (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1079>
+  * introduce interfaces/use_adapter flag to take metrics from Network Adapter (by kmuto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1077>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Fri, 16 May 2025 08:16:27 +0000
+
 mackerel-agent (0.84.3-1.systemd) stable; urgency=low
 
   * update github.com/mackerelio/go-check-plugins, mkr on /wix (by yseto)

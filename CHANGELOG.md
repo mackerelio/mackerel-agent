@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.85.0 (2025-05-16)
+
+* update mackerelio/* on wix/ #1085 (yseto)
+* Remove old build tags. #1079 (yseto)
+* introduce interfaces/use_adapter flag to take metrics from Network Adapter #1077 (kmuto)
+
+
 ## 0.84.3 (2025-03-31)
 
 * update github.com/mackerelio/go-check-plugins, mkr on /wix #1072 (yseto)
