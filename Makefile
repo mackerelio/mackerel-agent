@@ -1,14 +1,12 @@
 MACKEREL_AGENT_NAME ?= "mackerel-agent"
 MACKEREL_API_BASE ?= "https://api.mackerelio.com"
-VERSION := 0.85.0
-CURRENT_REVISION := $(shell git rev-parse --short HEAD)
+# This VERSION variable indicates the latest tag.
+VERSION = $(subst v,,$(shell git describe --abbrev=0 --tags))
 ARGS := "-conf=mackerel-agent.conf"
 BUILD_OS_TARGETS := "linux darwin freebsd windows netbsd"
 export GO111MODULE=on
 
 BUILD_LDFLAGS := "\
-	  -X main.version=$(VERSION) \
-	  -X main.gitcommit=$(CURRENT_REVISION) \
 	  -X github.com/mackerelio/mackerel-agent/config.agentName=$(MACKEREL_AGENT_NAME) \
 	  -X github.com/mackerelio/mackerel-agent/config.apibase=$(MACKEREL_API_BASE)"
 
