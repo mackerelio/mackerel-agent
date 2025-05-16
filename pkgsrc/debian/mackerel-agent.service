@@ -1,0 +1,18 @@
+[Unit]
+Description=mackerel.io agent
+Documentation=https://mackerel.io/
+After=network-online.target nss-lookup.target
+
+[Service]
+Environment=MACKEREL_PLUGIN_WORKDIR=/var/tmp/mackerel-agent
+Environment=ROOT=/var/lib/mackerel-agent
+EnvironmentFile=-/etc/default/mackerel-agent
+ExecStartPre=/bin/mkdir -m 777 -p $MACKEREL_PLUGIN_WORKDIR
+ExecStart=/usr/bin/mackerel-agent supervise --root $ROOT $OTHER_OPTS
+ExecStopPost=/bin/sh -c '[ "$AUTO_RETIREMENT" = "" ] || [ "$AUTO_RETIREMENT" = "0" ] && true || /usr/bin/mackerel-agent retire -force --root $ROOT $OTHER_OPTS'
+ExecReload=/bin/kill -HUP $MAINPID
+LimitNOFILE=65536
+LimitNPROC=65536
+
+[Install]
+WantedBy=multi-user.target

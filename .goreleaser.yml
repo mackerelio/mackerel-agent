@@ -1,0 +1,283 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/goreleaser/goreleaser/v2.9.0/www/docs/static/schema.json
+
+version: 2
+before:
+  hooks:
+    - go mod tidy
+archives:
+  - formats: 
+    - "binary"
+
+  - id: archives
+    ids:
+      - normal
+      - normal-deb-only
+      - normal-archives-only-linux
+      - normal-archives-only-other
+      - normal-archives-only-darwin
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    formats:
+      - "tar.gz"
+    files:
+      - CREDITS
+      - CHANGELOG.md
+      - LICENSE
+      - LICENSE.rtf
+      - README.md
+      - mackerel-agent.conf
+    format_overrides:
+      - goos: darwin
+        formats:
+          - zip
+
+  - id: archives-latest-taball
+    # mackerel-agent-latest.tar.gz
+    ids:
+      - normal-archives-only-linux
+    name_template: "{{ .ProjectName }}-latest"
+    formats:
+      - "tar.gz"
+    files:
+      - CREDITS
+      - LICENSE
+      - mackerel-agent.conf
+
+builds:
+  - id: normal
+    env: &env
+      - CGO_ENABLED=0
+    goos: &goos
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    binary: &normal-binary mackerel-agent
+    ldflags: &ldflags
+      - -s -w
+
+  - id: normal-deb-only
+    env: *env
+    goos: *goos
+    goarch:
+      - arm
+      - mips
+    goarm:
+      - "6" # specify ARMv6 for supporting Raspberry Pi 1 / Zero
+    binary: *normal-binary
+    ldflags: *ldflags
+
+  - id: normal-archives-only-linux
+    env: *env
+    goos: *goos
+    goarch:
+      - "386"
+    binary: *normal-binary
+    ldflags: *ldflags
+
+  - id: normal-archives-only-darwin
+    env: *env
+    goos:
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: *normal-binary
+    ldflags: *ldflags
+
+  - id: normal-archives-only-other
+    env: *env
+    goos:
+      - freebsd
+      - netbsd
+    goarch:
+      - "386"
+      - amd64
+      - arm
+    binary: *normal-binary
+    ldflags: *ldflags
+
+  - id: kcps
+    env: *env
+    goos: *goos
+    goarch:
+      - amd64
+    binary: mackerel-agent-kcps
+    ldflags:
+      - -s -w
+      - -X github.com/mackerelio/mackerel-agent/config.agentName=mackerel-agent-kcps
+      - -X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16
+
+  - id: stage
+    env: *env
+    goos: *goos
+    goarch:
+      - amd64
+    binary: mackerel-agent-stage
+    ldflags:
+      - -s -w
+      - -X github.com/mackerelio/mackerel-agent/config.agentName=mackerel-agent-stage
+      - -X github.com/mackerelio/mackerel-agent/config.apibase=http://0.0.0.0
+
+nfpms:
+  - id: normal-rpm
+    ids:
+      - normal
+    description: &description |
+      mackerel.io agent
+      Server monitoring agent for https://mackerel.io (Monitoring SaaS)
+    homepage: &homepage https://mackerel.io
+    license: &license ASL 2.0
+    file_name_template: &rpm-file_name_template >-
+      {{- .PackageName -}}-{{- .Version }}-1.el7.centos.
+      {{- if eq .Arch "amd64" -}}x86_64{{- end -}}
+      {{- if eq .Arch "arm64" -}}aarch64{{- end -}}
+      {{- .ConventionalExtension -}}
+    maintainer: &maintainer Hatena <mackerel-developers@hatena.ne.jp>
+    dependencies: &dependencies
+      - systemd
+    formats: &rpm-formats
+      - rpm
+    package_name: mackerel-agent
+    contents: &rpm-contents
+      - src: pkgsrc/rpm/{{ .PackageName }}.service
+        dst: /usr/lib/systemd/system/{{ .PackageName }}.service
+        type: config
+      - src: pkgsrc/rpm/mackerel-agent.sysconfig
+        dst: /etc/sysconfig/{{ .PackageName }}
+        type: config|noreplace
+      - src: pkgsrc/config/{{ .PackageName }}.sample.conf
+        dst: /etc/{{ .PackageName }}/{{ .PackageName }}.conf
+        type: config|noreplace
+    scripts: &rpm-scripts
+      postinstall: pkgsrc/normal/rpm/postinstall.sh
+      preremove: pkgsrc/normal/rpm/preremove.sh
+      postremove: pkgsrc/normal/rpm/postremove.sh
+
+  - id: amazon-rpm
+    ids:
+      - normal
+    description: *description
+    homepage: *homepage
+    license: *license
+    file_name_template: >-
+      {{- .PackageName -}}-{{- .Version }}-1.amzn2.
+      {{- if eq .Arch "amd64" -}}x86_64{{- end -}}
+      {{- if eq .Arch "arm64" -}}aarch64{{- end -}}
+      {{- .ConventionalExtension -}}
+    maintainer: *maintainer
+    dependencies: *dependencies
+    formats: *rpm-formats
+    package_name: mackerel-agent
+    contents: *rpm-contents
+    scripts: *rpm-scripts
+
+  - id: stage-rpm
+    ids:
+      - stage
+    description: *description
+    homepage: *homepage
+    license: *license
+    file_name_template: *rpm-file_name_template
+    maintainer: *maintainer
+    dependencies: *dependencies
+    formats: *rpm-formats
+    package_name: mackerel-agent-stage
+    contents: *rpm-contents
+    scripts:
+      postinstall: pkgsrc/stage/rpm/postinstall.sh
+      preremove: pkgsrc/stage/rpm/preremove.sh
+      postremove: pkgsrc/normal/rpm/postremove.sh
+
+  - id: kcps-rpm
+    ids:
+      - kcps
+    description: *description
+    homepage: *homepage
+    license: *license
+    file_name_template: *rpm-file_name_template
+    maintainer: *maintainer
+    dependencies: *dependencies
+    formats: *rpm-formats
+    package_name: mackerel-agent-kcps
+    contents: *rpm-contents
+    scripts:
+      postinstall: pkgsrc/kcps/rpm/postinstall.sh
+      preremove: pkgsrc/kcps/rpm/preremove.sh
+      postremove: pkgsrc/normal/rpm/postremove.sh
+
+  - id: normal-deb
+    ids:
+      - normal
+      - normal-deb-only
+    description: *description
+    homepage: *homepage
+    license: *license
+    maintainer: *maintainer
+    dependencies: *dependencies
+    file_name_template: &deb-file_name_template >-
+      {{- .PackageName -}}_{{- .Version }}-1.systemd_
+      {{- if eq .Arch "arm" -}}armhf{{ else -}}{{- .Arch -}}{{- end -}}
+      {{- .ConventionalExtension -}}
+    section: &section admin
+    priority: &priority extra
+    formats: &deb-formats
+      - deb
+    package_name: mackerel-agent
+    contents: &deb-contents
+      - src: pkgsrc/debian/{{ .PackageName }}.service
+        dst: /usr/lib/systemd/system/{{ .PackageName }}.service
+      - src: pkgsrc/debian/mackerel-agent.default
+        dst: /etc/default/{{ .PackageName }}
+        type: config
+      - src: pkgsrc/config/{{ .PackageName }}.sample.conf
+        dst: /etc/{{ .PackageName }}/{{ .PackageName }}.conf.example
+        type: config
+      - dst: /var/lib/{{ .PackageName }}/
+        type: dir
+        file_info:
+          mode: 0755
+    scripts:
+      postinstall: pkgsrc/normal/debian/postinstall.sh
+      preremove: pkgsrc/normal/debian/preremove.sh
+      postremove: pkgsrc/normal/debian/postremove.sh
+
+  - id: stage-deb
+    ids:
+      - stage
+    description: *description
+    homepage: *homepage
+    license: *license
+    maintainer: *maintainer
+    dependencies: *dependencies
+    file_name_template: *deb-file_name_template
+    section: *section
+    priority: *priority
+    formats: *deb-formats
+    package_name: mackerel-agent-stage
+    contents: *deb-contents
+    scripts:
+      postinstall: pkgsrc/stage/debian/postinstall.sh
+      preremove: pkgsrc/stage/debian/preremove.sh
+      postremove: pkgsrc/stage/debian/postremove.sh
+
+  - id: kcps-deb
+    ids:
+      - kcps
+    description: *description
+    homepage: *homepage
+    license: *license
+    maintainer: *maintainer
+    dependencies: *dependencies
+    file_name_template: *deb-file_name_template
+    section: *section
+    priority: *priority
+    formats: *deb-formats
+    package_name: mackerel-agent-kcps
+    contents: *deb-contents
+    scripts:
+      postinstall: pkgsrc/kcps/debian/postinstall.sh
+      preremove: pkgsrc/kcps/debian/preremove.sh
+      postremove: pkgsrc/kcps/debian/postremove.sh
+
+release:
+  disable: true
