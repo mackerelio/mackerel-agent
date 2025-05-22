@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"regexp"
 	"runtime"
+	"runtime/debug"
 	"strings"
 	"syscall"
 	"time"
@@ -198,6 +199,7 @@ func setLogLevel(silent, verbose bool) {
 
 func start(conf *config.Config, termCh chan struct{}) error {
 	setLogLevel(conf.Silent, conf.Verbose)
+	version, gitcommit := fromVCS()
 	logger.Infof("Starting mackerel-agent version:%s, rev:%s, apibase:%s", version, gitcommit, conf.Apibase)
 
 	if err := pidfile.Create(conf.Pidfile); err != nil {
@@ -288,4 +290,30 @@ func notifyUpdateFile(c chan<- os.Signal, file string, interval time.Duration) {
 	}
 	logger.Infof("Detected %s was updated; shutting down", file)
 	c <- os.Interrupt
+}
+
+func fromVCS() (version, rev string) {
+	version = "unknown"
+	rev = "unknown"
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return
+	}
+	// trim a prefix `v`
+	version, _ = strings.CutPrefix(info.Main.Version, "v")
+
+	// strings like "v0.1.2-0.20060102150405-xxxxxxxxxxxx" are long, so they are cut out.
+	if strings.Contains(version, "-") {
+		index := strings.IndexRune(version, '-')
+		version = version[0:index]
+	}
+
+	for _, s := range info.Settings {
+		if s.Key == "vcs.revision" {
+			// emulate "git rev-parse --short HEAD"
+			rev = s.Value[0:min(len(s.Value), 7)]
+			return
+		}
+	}
+	return
 }
