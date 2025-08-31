@@ -7,7 +7,7 @@ toolchain go1.24.3
 require (
 	github.com/mackerelio/go-check-plugins v0.49.0
 	github.com/mackerelio/mackerel-agent-plugins v0.88.2
-	github.com/mackerelio/mkr v0.61.0
+	github.com/mackerelio/mkr v0.62.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.33.0
 )
@@ -46,12 +46,13 @@ require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.3 // indirect
 	github.com/mackerelio/go-osstat v0.2.5 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
-	github.com/mackerelio/mackerel-agent v0.84.3 // indirect
-	github.com/mackerelio/mackerel-client-go v0.37.0 // indirect
+	github.com/mackerelio/mackerel-agent v0.85.0 // indirect
+	github.com/mackerelio/mackerel-client-go v0.37.2 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-zglob v0.0.6 // indirect
-	github.com/mholt/archives v0.1.2 // indirect
+	github.com/mholt/archives v0.1.3 // indirect
+	github.com/mikelolasagasti/xz v1.0.1 // indirect
 	github.com/minio/minlz v1.0.1 // indirect
 	github.com/motemen/go-colorine v0.0.0-20180816141035-45d19169413a // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
@@ -67,9 +68,8 @@ require (
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/tatsushid/go-fastping v0.0.0-20160109021039-d7bb493dee3e // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
-	github.com/therootcompany/xz v1.0.1 // indirect
 	github.com/ulikunitz/xz v0.5.12 // indirect
-	github.com/urfave/cli v1.22.16 // indirect
+	github.com/urfave/cli v1.22.17 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
@@ -77,7 +77,7 @@ require (
 	golang.org/x/crypto v0.38.0 // indirect
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sync v0.14.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/term v0.32.0 // indirect
 	golang.org/x/text v0.25.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
