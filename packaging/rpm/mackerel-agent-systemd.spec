@@ -54,6 +54,20 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Sep 8 2025 <mackerel-developers@hatena.ne.jp> - 0.85.1
+- use Go 1.24.x (by yseto)
+- Bump actions/setup-go from 5 to 6 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.61.0 to 0.62.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.36.0 to 0.37.3 (by dependabot[bot])
+- Bump actions/checkout from 4 to 5 (by dependabot[bot])
+- Bump actions/download-artifact from 4 to 5 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.88.2 to 0.88.3 in /wix (by dependabot[bot])
+- Bump github.com/Songmu/goxz from 0.9.1 to 0.10.1 (by dependabot[bot])
+- Bump github.com/mackerelio/go-osstat from 0.2.5 to 0.2.6 (by dependabot[bot])
+- Bump mackerelio/workflows from 1.4.0 to 1.5.0 (by dependabot[bot])
+- Updated runner to use latest Windows 2025 image (by appare45)
+- Remove rewrite some files on every releases (by yseto)
+
 * Fri May 16 2025 <mackerel-developers@hatena.ne.jp> - 0.85.0
 - update mackerelio/* on wix/ (by yseto)
 - Remove old build tags. (by yseto)
