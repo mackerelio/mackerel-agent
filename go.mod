@@ -13,7 +13,7 @@ require (
 	github.com/Songmu/timeout v0.4.0
 	github.com/agext/levenshtein v1.2.3
 	github.com/fatih/color v1.18.0
-	github.com/mackerelio/go-osstat v0.2.5
+	github.com/mackerelio/go-osstat v0.2.6
 	github.com/mackerelio/golib v1.2.1
 	github.com/mackerelio/mackerel-client-go v0.37.3
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
@@ -46,6 +46,6 @@ require (
 	github.com/vishvananda/netns v0.0.4 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/sync v0.12.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
 )
