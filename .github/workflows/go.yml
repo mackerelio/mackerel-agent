@@ -31,7 +31,7 @@ jobs:
     steps:
       # before-deploy
       - name: Set up Go 1.x
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: 1.23.x
       - name: Check out code into the Go module directory
@@ -92,7 +92,7 @@ jobs:
           install: mingw-w64-i686-gcc
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: 1.23.x
 
