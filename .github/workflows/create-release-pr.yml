@@ -15,7 +15,7 @@ jobs:
   create:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: mackerelio/mackerel-create-release-pull-request-action@main
         id: start
