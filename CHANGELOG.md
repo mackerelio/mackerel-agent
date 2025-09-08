@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.85.1 (2025-09-08)
+
+* use Go 1.24.x #1107 (yseto)
+* Bump actions/setup-go from 5 to 6 #1106 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.61.0 to 0.62.0 in /wix #1104 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.36.0 to 0.37.3 #1103 (dependabot[bot])
+* Bump actions/checkout from 4 to 5 #1100 (dependabot[bot])
+* Bump actions/download-artifact from 4 to 5 #1099 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.88.2 to 0.88.3 in /wix #1093 (dependabot[bot])
+* Bump github.com/Songmu/goxz from 0.9.1 to 0.10.1 #1092 (dependabot[bot])
+* Bump github.com/mackerelio/go-osstat from 0.2.5 to 0.2.6 #1090 (dependabot[bot])
+* Bump mackerelio/workflows from 1.4.0 to 1.5.0 #1088 (dependabot[bot])
+* Updated runner to use latest Windows 2025 image #1087 (appare45)
+* Remove rewrite some files on every releases #1083 (yseto)
+
+
 ## 0.85.0 (2025-05-16)
 
 * update mackerelio/* on wix/ #1085 (yseto)
