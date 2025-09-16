@@ -86,7 +86,7 @@ func CollectFilesystemValues() (map[string]FilesystemInfo, error) {
 			uintptr(unsafe.Pointer(&fsnamebuf[0])),
 			uintptr(len(fsnamebuf)))
 		if r == 0 {
-			windowsLogger.Warningf("do not get volume [%q] or fsname [%q]: %v", volumebuf, fsnamebuf, err)
+			windowsLogger.Warningf("do not get %v volume [%q] or fsname [%q]: %v", drive, volumebuf, fsnamebuf, err)
 			continue
 		}
 		freeBytesAvailable := int64(0)
