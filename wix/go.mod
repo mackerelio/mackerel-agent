@@ -6,7 +6,7 @@ toolchain go1.24.3
 
 require (
 	github.com/mackerelio/go-check-plugins v0.50.0
-	github.com/mackerelio/mackerel-agent-plugins v0.89.0
+	github.com/mackerelio/mackerel-agent-plugins v0.89.1
 	github.com/mackerelio/mkr v0.62.1
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.35.0
@@ -44,7 +44,7 @@ require (
 	github.com/mackerelio/checkers v0.2.0 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.5 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.3 // indirect
-	github.com/mackerelio/go-osstat v0.2.5 // indirect
+	github.com/mackerelio/go-osstat v0.2.6 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
 	github.com/mackerelio/mackerel-agent v0.85.0 // indirect
 	github.com/mackerelio/mackerel-client-go v0.37.2 // indirect
@@ -77,8 +77,8 @@ require (
 	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
-	golang.org/x/term v0.33.0 // indirect
-	golang.org/x/text v0.27.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
+	golang.org/x/term v0.34.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
