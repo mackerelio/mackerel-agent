@@ -54,6 +54,13 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Sep 19 2025 <mackerel-developers@hatena.ne.jp> - 0.85.2
+- Bump github.com/mackerelio/go-check-plugins from 0.49.0 to 0.50.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.0 to 0.89.1 in /wix (by dependabot[bot])
+- Add drive letter to Windows filesystem error logging (by mechairoi)
+- Bump github.com/mackerelio/mkr from 0.62.0 to 0.62.1 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.88.3 to 0.89.0 in /wix (by dependabot[bot])
+
 * Mon Sep 8 2025 <mackerel-developers@hatena.ne.jp> - 0.85.1
 - use Go 1.24.x (by yseto)
 - Bump actions/setup-go from 5 to 6 (by dependabot[bot])

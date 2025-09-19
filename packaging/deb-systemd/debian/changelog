@@ -1,3 +1,18 @@
+mackerel-agent (0.85.2-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/go-check-plugins from 0.49.0 to 0.50.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1114>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.0 to 0.89.1 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1113>
+  * Add drive letter to Windows filesystem error logging (by mechairoi)
+    <https://github.com/mackerelio/mackerel-agent/pull/1112>
+  * Bump github.com/mackerelio/mkr from 0.62.0 to 0.62.1 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1111>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.88.3 to 0.89.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1110>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Fri, 19 Sep 2025 08:23:35 +0000
+
 mackerel-agent (0.85.1-1.systemd) stable; urgency=low
 
   * use Go 1.24.x (by yseto)

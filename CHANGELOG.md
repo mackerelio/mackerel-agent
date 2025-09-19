@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.85.2 (2025-09-19)
+
+* Bump github.com/mackerelio/go-check-plugins from 0.49.0 to 0.50.0 in /wix #1114 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.0 to 0.89.1 in /wix #1113 (dependabot[bot])
+* Add drive letter to Windows filesystem error logging #1112 (mechairoi)
+* Bump github.com/mackerelio/mkr from 0.62.0 to 0.62.1 in /wix #1111 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.88.3 to 0.89.0 in /wix #1110 (dependabot[bot])
+
+
 ## 0.85.1 (2025-09-08)
 
 * use Go 1.24.x #1107 (yseto)
