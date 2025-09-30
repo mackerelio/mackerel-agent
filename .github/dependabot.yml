@@ -3,20 +3,36 @@ updates:
   - package-ecosystem: gomod
     directory: "/"
     schedule:
-      interval: weekly
+      interval: daily
       time: "01:00"
       timezone: Asia/Tokyo
+    cooldown:
+      default-days: 5
+      include:
+        - "*"
+      exclude:
+        - "github.com/mackerelio/*"
     open-pull-requests-limit: 10
   - package-ecosystem: gomod
     directory: "/wix"
     schedule:
-      interval: weekly
+      interval: daily
       time: "01:00"
       timezone: Asia/Tokyo
+    cooldown:
+      default-days: 5
+      include:
+        - "*"
+      exclude:
+        - "github.com/mackerelio/*"
     open-pull-requests-limit: 10
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: weekly
+      interval: daily
       time: "01:00"
       timezone: Asia/Tokyo
+    cooldown:
+      default-days: 5
+      include:
+        - "*"
