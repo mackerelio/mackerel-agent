@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.1
 
 require (
-	github.com/BurntSushi/toml v1.3.2
+	github.com/BurntSushi/toml v1.5.0
 	github.com/Songmu/gocredits v0.3.1
 	github.com/Songmu/goxz v0.10.1
 	github.com/Songmu/prompter v0.5.1
