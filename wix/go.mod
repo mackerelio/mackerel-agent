@@ -6,7 +6,7 @@ toolchain go1.24.3
 
 require (
 	github.com/mackerelio/go-check-plugins v0.50.0
-	github.com/mackerelio/mackerel-agent-plugins v0.89.1
+	github.com/mackerelio/mackerel-agent-plugins v0.89.2
 	github.com/mackerelio/mkr v0.62.1
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.36.0
@@ -33,7 +33,7 @@ require (
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/google/go-github/v49 v49.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/gosnmp/gosnmp v1.40.0 // indirect
+	github.com/gosnmp/gosnmp v1.42.1 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/itchyny/gojq v0.12.17 // indirect
 	github.com/itchyny/timefmt-go v0.1.6 // indirect
@@ -43,7 +43,7 @@ require (
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/mackerelio/checkers v0.2.0 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.5 // indirect
-	github.com/mackerelio/go-mackerel-plugin-helper v0.1.3 // indirect
+	github.com/mackerelio/go-mackerel-plugin-helper v0.1.4 // indirect
 	github.com/mackerelio/go-osstat v0.2.6 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
 	github.com/mackerelio/mackerel-agent v0.85.0 // indirect
