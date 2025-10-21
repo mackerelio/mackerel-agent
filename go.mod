@@ -21,7 +21,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/vishvananda/netlink v1.3.0
 	github.com/yusufpapurcu/wmi v1.2.4
-	golang.org/x/text v0.29.0
+	golang.org/x/text v0.30.0
 )
 
 require (
