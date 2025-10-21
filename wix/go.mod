@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.3
 
 require (
-	github.com/mackerelio/go-check-plugins v0.50.0
+	github.com/mackerelio/go-check-plugins v0.50.1
 	github.com/mackerelio/mackerel-agent-plugins v0.89.2
 	github.com/mackerelio/mkr v0.62.3
 	github.com/mattn/go-encoding v0.0.2
@@ -74,11 +74,11 @@ require (
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
-	golang.org/x/crypto v0.40.0 // indirect
-	golang.org/x/net v0.41.0 // indirect
+	golang.org/x/crypto v0.42.0 // indirect
+	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/oauth2 v0.32.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/term v0.34.0 // indirect
+	golang.org/x/term v0.35.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
