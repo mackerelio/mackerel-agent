@@ -33,7 +33,7 @@ func (api *API) ReportCheckMonitors(hostID string, reports []*checks.Report) err
 			MaxCheckAttempts:     normalize(report.MaxCheckAttempts, 0),
 		}
 	}
-	return api.Client.PostCheckReports(payload)
+	return api.PostCheckReports(payload)
 }
 
 // normalize returns rounded valid number for Mackerel's Check API.

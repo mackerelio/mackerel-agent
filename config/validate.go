@@ -150,7 +150,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		if k1 != "metrics" && k1 != "checks" && k1 != "metadata" {
 			suggestResult := keySuggestion(k1, []string{"metrics", "checks", "metadata"})
 			for k2 := range v {
-				var key string = fmt.Sprintf("plugin.%s.%s", k1, k2)
+				var key = fmt.Sprintf("plugin.%s.%s", k1, k2)
 				var suggestKey string
 
 				if suggestResult == "" {

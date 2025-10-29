@@ -215,7 +215,7 @@ type MetricPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
-	cmd, err := pconf.CommandConfig.parse()
+	cmd, err := pconf.parse()
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ type CheckPlugin struct {
 }
 
 func (pconf *PluginConfig) buildCheckPlugin(name string) (*CheckPlugin, error) {
-	cmd, err := pconf.CommandConfig.parse()
+	cmd, err := pconf.parse()
 	if err != nil {
 		return nil, err
 	}
@@ -314,7 +314,7 @@ type MetadataPlugin struct {
 }
 
 func (pconf *PluginConfig) buildMetadataPlugin() (*MetadataPlugin, error) {
-	cmd, err := pconf.CommandConfig.parse()
+	cmd, err := pconf.parse()
 	if err != nil {
 		return nil, err
 	}
