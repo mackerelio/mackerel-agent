@@ -100,11 +100,11 @@ func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration, use
 				if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
 					continue
 				}
-				name = strings.Replace(name, "(", "[", -1)
-				name = strings.Replace(name, ")", "]", -1)
-				name = strings.Replace(name, "#", "_", -1)
-				name = strings.Replace(name, "/", "_", -1)
-				name = strings.Replace(name, `\`, "_", -1)
+				name = strings.ReplaceAll(name, "(", "[")
+				name = strings.ReplaceAll(name, ")", "]")
+				name = strings.ReplaceAll(name, "#", "_")
+				name = strings.ReplaceAll(name, "/", "_")
+				name = strings.ReplaceAll(name, `\`, "_")
 				var counter *windows.CounterInfo
 
 				queryType := "Interface"
