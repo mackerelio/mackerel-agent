@@ -13,14 +13,17 @@ jobs:
   convention:
     uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@7653987676cc233af59a390d142b5cf6e65a526f # v1.6.0
     with:
-      run: make convention
+      run: |
+        export GOTOOLCHAIN=auto
+        make convention
   test:
     uses: mackerelio/workflows/.github/workflows/go-test.yml@7653987676cc233af59a390d142b5cf6e65a526f # v1.6.0
     with:
       # Please do not specify `windows-latest`
       # Build process is complex then need to check operation.
       os-versions: '["ubuntu-latest", "windows-2025"]'
-
+      pre: |
+        echo "GOTOOLCHAIN=auto" >> $GITHUB_ENV
   build-linux:
     name: Build (Linux)
     runs-on: ubuntu-latest
