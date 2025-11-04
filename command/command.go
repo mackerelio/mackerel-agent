@@ -479,7 +479,7 @@ func runChecker(ctx context.Context, checker *checks.Checker, checkReportCh chan
 
 			// If status has changed, send it immediately
 			// but if the status was OK and it's first invocation of a check, do not
-			if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) {
+			if report.Status != lastStatus && !(report.Status == checks.StatusOK && lastStatus == checks.StatusUndefined) { // nolint
 				logger.Debugf("checker %q: status has changed %v -> %v: send it immediately", checker.Name, lastStatus, report.Status)
 				reportImmediateCh <- struct{}{}
 			}

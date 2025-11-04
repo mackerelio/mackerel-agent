@@ -72,7 +72,7 @@ out:
 	_, err = os.Stat(outFile)
 	outFileIsExists := err == nil
 	if !(outFileIsExists) {
-		err = os.WriteFile(outFile, []byte(strings.Replace(string(content), oldStr, newStr, -1)), 0644)
+		err = os.WriteFile(outFile, []byte(strings.ReplaceAll(string(content), oldStr, newStr)), 0644)
 		if err != nil {
 			log.Fatal(err)
 		}

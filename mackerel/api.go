@@ -76,7 +76,7 @@ func (api *API) FindHostByCustomIdentifier(customIdentifier string) (*mkr.Host, 
 		CustomIdentifier: customIdentifier,
 		Statuses:         []string{"working", "standby", "maintenance", "poweroff"},
 	}
-	hosts, err := api.Client.FindHosts(&param)
+	hosts, err := api.FindHosts(&param)
 	if err != nil {
 		return nil, err
 	}
