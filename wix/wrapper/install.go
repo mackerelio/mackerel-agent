@@ -1,7 +1,6 @@
 // This is based on https://github.com/golang/sys/tree/master/windows/svc
 
 //go:build windows
-// +build windows
 
 package main
 
