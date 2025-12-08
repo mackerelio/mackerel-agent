@@ -9,7 +9,7 @@ require (
 	github.com/mackerelio/mackerel-agent-plugins v0.89.2
 	github.com/mackerelio/mkr v0.62.3
 	github.com/mattn/go-encoding v0.0.2
-	golang.org/x/sys v0.38.0
+	golang.org/x/sys v0.39.0
 )
 
 require (
