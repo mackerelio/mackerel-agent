@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.85.3 (2025-12-10)
+
+* Bump golang.org/x/sys from 0.38.0 to 0.39.0 in /wix #1145 (dependabot[bot])
+* Bump actions/checkout from 6.0.0 to 6.0.1 #1144 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/go-test.yml from 1.7.0 to 1.8.0 #1143 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/setup-go-matrix.yml from 1.7.0 to 1.8.0 #1142 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/go-lint.yml from 1.6.0 to 1.8.0 #1141 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/go-test.yml from 1.6.0 to 1.7.0 #1140 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/setup-go-matrix.yml from 1.6.0 to 1.7.0 #1139 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.37.3 to 0.38.0 #1138 (dependabot[bot])
+* Bump actions/checkout from 5.0.0 to 6.0.0 #1137 (dependabot[bot])
+* Bump actions/setup-go from 6.0.0 to 6.1.0 #1136 (dependabot[bot])
+* Bump golang.org/x/crypto from 0.42.0 to 0.45.0 in /wix #1135 (dependabot[bot])
+* Bump peter-evans/repository-dispatch from 4.0.0 to 4.0.1 #1133 (dependabot[bot])
+* Bump golang.org/x/text from 0.30.0 to 0.31.0 #1132 (dependabot[bot])
+* Bump golang.org/x/sys from 0.37.0 to 0.38.0 in /wix #1131 (dependabot[bot])
+* fix buildtag #1130 (yseto)
+* update CI #1126 (yseto)
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.1 to 0.89.2 in /wix #1125 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.62.1 to 0.62.3 in /wix #1124 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.50.0 to 0.50.1 in /wix #1123 (dependabot[bot])
+* Bump golang.org/x/text from 0.29.0 to 0.30.0 #1121 (dependabot[bot])
+* Bump golang.org/x/sys from 0.36.0 to 0.37.0 in /wix #1119 (dependabot[bot])
+* Bump peter-evans/repository-dispatch from 3 to 4 #1118 (dependabot[bot])
+* added dependabot cooldown #1116 (yseto)
+* Bump golang.org/x/text from 0.23.0 to 0.29.0 #1109 (dependabot[bot])
+* Bump golang.org/x/sys from 0.33.0 to 0.36.0 in /wix #1105 (dependabot[bot])
+* Bump github.com/ulikunitz/xz from 0.5.12 to 0.5.14 in /wix #1102 (dependabot[bot])
+* Bump azure/trusted-signing-action from 0.5.1 to 0.5.9 #1095 (dependabot[bot])
+* Bump github.com/vishvananda/netlink from 1.3.0 to 1.3.1 #1082 (dependabot[bot])
+
+
 ## 0.85.2 (2025-09-19)
 
 * Bump github.com/mackerelio/go-check-plugins from 0.49.0 to 0.50.0 in /wix #1114 (dependabot[bot])
