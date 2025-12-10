@@ -152,8 +152,8 @@ github.com/mackerelio/golib v1.2.1 h1:SDcDn6Jw3p9bi1N0bg1Z/ilG5qcBB23qL8xNwrU0gg
 github.com/mackerelio/golib v1.2.1/go.mod h1:b8ZaapsHGH1FlEJlCqfD98CqafLeyMevyATDlID2BsM=
 github.com/mackerelio/mackerel-agent v0.85.2 h1:MsQbXJif1EJtI6epMoF2WzjJI9PmrM1wKf60EmhaDjY=
 github.com/mackerelio/mackerel-agent v0.85.2/go.mod h1:yNIqaMLkJJF65B2AuUxbfh2VMs2TKHl//bMpvo8zsdo=
-github.com/mackerelio/mackerel-agent-plugins v0.89.2 h1:1y+rvUoiTAdk1ziYG+iU0lRTrKKDncGPZxKumPvRmbk=
-github.com/mackerelio/mackerel-agent-plugins v0.89.2/go.mod h1:hVRje88LLgsFscJSGQFiPeKV4UG4nYwXW/hosxzK0uc=
+github.com/mackerelio/mackerel-agent-plugins v0.89.3 h1:H7cmY0/zSaX9xWYFuBQN9BUpHut842fPjyqK3Uh2HAA=
+github.com/mackerelio/mackerel-agent-plugins v0.89.3/go.mod h1:cxeNcYhiLF2z34i8FMbIGUE2EEZUxjwrCRnLUF0Oovs=
 github.com/mackerelio/mackerel-client-go v0.37.3 h1:ZwTYuYAuw95iriKXkNUR0Mea72hPoe0co97rjIHB/H0=
 github.com/mackerelio/mackerel-client-go v0.37.3/go.mod h1:NhftEa+AZ0c5wwaXs71QHkPd8C1pLHoz+apMSXJSYvU=
 github.com/mackerelio/mkr v0.62.3 h1:TI436SOJC3AX6oEIo4ujtefqBy04jm99hLOcMyAkkY4=
