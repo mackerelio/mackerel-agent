@@ -54,6 +54,36 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Wed Dec 10 2025 <mackerel-developers@hatena.ne.jp> - 0.85.3
+- Bump golang.org/x/sys from 0.38.0 to 0.39.0 in /wix (by dependabot[bot])
+- Bump actions/checkout from 6.0.0 to 6.0.1 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/go-test.yml from 1.7.0 to 1.8.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/setup-go-matrix.yml from 1.7.0 to 1.8.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/go-lint.yml from 1.6.0 to 1.8.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/go-test.yml from 1.6.0 to 1.7.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/setup-go-matrix.yml from 1.6.0 to 1.7.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.37.3 to 0.38.0 (by dependabot[bot])
+- Bump actions/checkout from 5.0.0 to 6.0.0 (by dependabot[bot])
+- Bump actions/setup-go from 6.0.0 to 6.1.0 (by dependabot[bot])
+- Bump golang.org/x/crypto from 0.42.0 to 0.45.0 in /wix (by dependabot[bot])
+- Bump peter-evans/repository-dispatch from 4.0.0 to 4.0.1 (by dependabot[bot])
+- Bump golang.org/x/text from 0.30.0 to 0.31.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.37.0 to 0.38.0 in /wix (by dependabot[bot])
+- fix buildtag (by yseto)
+- update CI (by yseto)
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.1 to 0.89.2 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.62.1 to 0.62.3 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.50.0 to 0.50.1 in /wix (by dependabot[bot])
+- Bump golang.org/x/text from 0.29.0 to 0.30.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.36.0 to 0.37.0 in /wix (by dependabot[bot])
+- Bump peter-evans/repository-dispatch from 3 to 4 (by dependabot[bot])
+- added dependabot cooldown (by yseto)
+- Bump golang.org/x/text from 0.23.0 to 0.29.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.33.0 to 0.36.0 in /wix (by dependabot[bot])
+- Bump github.com/ulikunitz/xz from 0.5.12 to 0.5.14 in /wix (by dependabot[bot])
+- Bump azure/trusted-signing-action from 0.5.1 to 0.5.9 (by dependabot[bot])
+- Bump github.com/vishvananda/netlink from 1.3.0 to 1.3.1 (by dependabot[bot])
+
 * Fri Sep 19 2025 <mackerel-developers@hatena.ne.jp> - 0.85.2
 - Bump github.com/mackerelio/go-check-plugins from 0.49.0 to 0.50.0 in /wix (by dependabot[bot])
 - Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.0 to 0.89.1 in /wix (by dependabot[bot])
