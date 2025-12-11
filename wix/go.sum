@@ -140,8 +140,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/mackerelio/checkers v0.2.0 h1:YBOQjpU2Qno66eUrUEH6DjWn+Wna5BXCKMdekz50XWs=
 github.com/mackerelio/checkers v0.2.0/go.mod h1:CW3k/5bvHhxDrfKgWvMvNH0R51zco141ZVxlI7o/KAc=
-github.com/mackerelio/go-check-plugins v0.50.1 h1:B4VksS5Fd/xZbm5yFS2tRt9CyqiZzHCRiudNTP8EgfU=
-github.com/mackerelio/go-check-plugins v0.50.1/go.mod h1:IipHoGJVVuSNScNcIFm69qaGkQZxHjcIhkdQhbrVKek=
+github.com/mackerelio/go-check-plugins v0.51.0 h1:O9jDvfwdjuFyyNpc7ubNPXihOICl0htkdmB5v3Gwe7Y=
+github.com/mackerelio/go-check-plugins v0.51.0/go.mod h1:wXo8kluUSm1H9DMfv3CWN1+4HoKeFP0mXG1fGghU9wQ=
 github.com/mackerelio/go-mackerel-plugin v0.1.5 h1:8k0xrZd1bllGKfki/ndCdQ1Pe/l8MTetfZP76ejtFt0=
 github.com/mackerelio/go-mackerel-plugin v0.1.5/go.mod h1:c1Y27qQnuMBK6QqLrmW5OcDqMLrUGbPo2KEjZd37DH4=
 github.com/mackerelio/go-mackerel-plugin-helper v0.1.4 h1:U2Yaaj5R/6K5BjM/y36QkOZhvbiobtXEDf4rUxoPEUM=

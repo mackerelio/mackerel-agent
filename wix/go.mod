@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.3
 
 require (
-	github.com/mackerelio/go-check-plugins v0.50.1
+	github.com/mackerelio/go-check-plugins v0.51.0
 	github.com/mackerelio/mackerel-agent-plugins v0.89.3
 	github.com/mackerelio/mkr v0.62.3
 	github.com/mattn/go-encoding v0.0.2
