@@ -23,7 +23,7 @@ func TestParseDuration(t *testing.T) {
 		},
 		{
 			src: "-10",
-			err: "duration out of range: -10",
+			err: `toml: line 1 (last key "duration"): duration out of range: -10`,
 		},
 		{
 			src:      "10m",
@@ -39,19 +39,19 @@ func TestParseDuration(t *testing.T) {
 		},
 		{
 			src: "-10m",
-			err: "duration out of range: -10m0s",
+			err: `toml: line 1 (last key "duration"): duration out of range: -10m0s`,
 		},
 		{
 			src: "1s",
-			err: "duration not multiple of 1m: 1s",
+			err: `toml: line 1 (last key "duration"): duration not multiple of 1m: 1s`,
 		},
 		{
 			src: "1ms",
-			err: "duration not multiple of 1m: 1ms",
+			err: `toml: line 1 (last key "duration"): duration not multiple of 1m: 1ms`,
 		},
 		{
 			src: "1.1m",
-			err: "duration not multiple of 1m: 1m6s",
+			err: `toml: line 1 (last key "duration"): duration not multiple of 1m: 1m6s`,
 		},
 	}
 	for _, tc := range testCases {
