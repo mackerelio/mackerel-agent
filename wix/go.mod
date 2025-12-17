@@ -6,7 +6,7 @@ toolchain go1.24.3
 
 require (
 	github.com/mackerelio/go-check-plugins v0.51.0
-	github.com/mackerelio/mackerel-agent-plugins v0.89.3
+	github.com/mackerelio/mackerel-agent-plugins v0.90.0
 	github.com/mackerelio/mkr v0.63.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.39.0
@@ -79,6 +79,6 @@ require (
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/term v0.37.0 // indirect
-	golang.org/x/text v0.31.0 // indirect
+	golang.org/x/text v0.32.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
