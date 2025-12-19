@@ -1,7 +1,7 @@
 github.com/BurntSushi/toml v1.5.0 h1:W5quZX/G/csjUnuI8SUYlsHs9M38FC7znL0lIO+DvMg=
 github.com/BurntSushi/toml v1.5.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
-github.com/Songmu/gocredits v0.3.1 h1:ggwVwnlQet7OAPvES8y1uoJ4ysJFEEc77c82HpIIW7g=
-github.com/Songmu/gocredits v0.3.1/go.mod h1:GGUAT/3BmUVgvfHxm07agU6Zz+ZSeGg5gvqN6N/CxH0=
+github.com/Songmu/gocredits v0.4.0 h1:Fx3WIK91gs+u/LUi9dqDTmSJLUCtQCyhOUlPRBi654k=
+github.com/Songmu/gocredits v0.4.0/go.mod h1:1TicQbxTFM5JOEPcgH88TlrO7nZU8p/giC7FWDsirHU=
 github.com/Songmu/goxz v0.10.1 h1:EkfljID8fp5GZCmbOCciCIQkZHGz1SOoP4rp9XRpMcQ=
 github.com/Songmu/goxz v0.10.1/go.mod h1:fAi6kShBlksu8bqS5z+5/UnIE2irAgdDxzmvA5Svyk8=
 github.com/Songmu/prompter v0.5.1 h1:IAsttKsOZWSDw7bV1mtGn9TAmLFAjXbp9I/eYmUUogo=
