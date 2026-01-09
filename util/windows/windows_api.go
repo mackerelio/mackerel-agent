@@ -6,6 +6,8 @@ import (
 	"os"
 	"syscall"
 	"unsafe"
+
+	"golang.org/x/sys/windows"
 )
 
 // ref. https://github.com/mackerelio/mackerel-agent/pull/134
@@ -213,21 +215,45 @@ func GetCounterValue(counter syscall.Handle) (float64, error) {
 	return float64(value.DoubleValue), nil
 }
 
-// GetAdapterList XXX
-func GetAdapterList() (*syscall.IpAdapterInfo, error) {
-	b := make([]byte, 1000)
-	l := uint32(len(b))
-	a := (*syscall.IpAdapterInfo)(unsafe.Pointer(&b[0]))
-	err := syscall.GetAdaptersInfo(a, &l)
-	if err == syscall.ERROR_BUFFER_OVERFLOW {
+type Adapter struct {
+	Index int
+	Name  string
+}
+
+func GetAdapterList() ([]Adapter, error) {
+	// Reference from src/net/interface_windows.go at Go 1.25
+	var b []byte
+	l := uint32(15000)
+	for {
 		b = make([]byte, l)
-		a = (*syscall.IpAdapterInfo)(unsafe.Pointer(&b[0]))
-		err = syscall.GetAdaptersInfo(a, &l)
+		const flags = windows.GAA_FLAG_INCLUDE_PREFIX | windows.GAA_FLAG_INCLUDE_GATEWAYS
+		err := windows.GetAdaptersAddresses(syscall.AF_UNSPEC, flags, 0, (*windows.IpAdapterAddresses)(unsafe.Pointer(&b[0])), &l)
+
+		if err == nil {
+			if l == 0 {
+				return nil, nil
+			}
+			break
+		}
+		if err.(syscall.Errno) != syscall.ERROR_BUFFER_OVERFLOW {
+			return nil, os.NewSyscallError("getadaptersaddresses", err)
+		}
+		if l <= uint32(len(b)) {
+			return nil, os.NewSyscallError("getadaptersaddresses", err)
+		}
 	}
-	if err != nil {
-		return nil, os.NewSyscallError("GetAdaptersInfo", err)
+	var ads []Adapter
+	for aa := (*windows.IpAdapterAddresses)(unsafe.Pointer(&b[0])); aa != nil; aa = aa.Next {
+		index := aa.IfIndex
+		if index == 0 { // ipv6IfIndex is a substitute for ifIndex
+			index = aa.Ipv6IfIndex
+		}
+		ads = append(ads, Adapter{
+			Index: int(index),
+			Name:  windows.UTF16PtrToString(aa.Description),
+		})
 	}
-	return a, nil
+	return ads, nil
 }
 
 // BytePtrToString XXX
