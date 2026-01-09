@@ -58,15 +58,10 @@ func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration, use
 		return nil, err
 	}
 
-	first := ai
-
 	// make sorted list of names to escape device names.
 	names := []string{}
-	for ai = first; ai != nil; ai = ai.Next {
-		name, err := windows.AnsiBytePtrToString(&ai.Description[0])
-		if err == nil && name != "" {
-			names = append(names, name)
-		}
+	for _, ad := range ai {
+		names = append(names, ad.Name)
 	}
 	sort.Strings(names)
 
@@ -85,12 +80,10 @@ func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration, use
 	}
 
 	for _, ifi := range ifs {
-		for ai = first; ai != nil; ai = ai.Next {
-			if ifi.Index == int(ai.Index) {
-				name, err := windows.AnsiBytePtrToString(&ai.Description[0])
-				if err != nil {
-					name = windows.BytePtrToString(&ai.Description[0])
-				}
+		for _, ad := range ai {
+			if ifi.Index == ad.Index {
+				name := ad.Name
+
 				// convert to escaped name
 				escaped, ok := nameMap[name]
 				if !ok {
