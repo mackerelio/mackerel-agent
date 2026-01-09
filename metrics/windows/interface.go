@@ -80,6 +80,9 @@ func NewInterfaceGenerator(ignoreReg *regexp.Regexp, interval time.Duration, use
 	}
 
 	for _, ifi := range ifs {
+		if ifi.Flags&net.FlagLoopback != 0 {
+			continue
+		}
 		for _, ad := range ai {
 			if ifi.Index == ad.Index {
 				name := ad.Name
