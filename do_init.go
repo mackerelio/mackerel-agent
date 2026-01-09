@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"os"
@@ -13,6 +14,7 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 	var (
 		conffile = fs.String("conf", config.DefaultConfig.Conffile, "Config file path")
 		apikey   = fs.String("apikey", "", "API key from mackerel.io web site (Required)")
+		apibase  = fs.String("apibase", "", "API base")
 	)
 	err := fs.Parse(argv)
 	if err != nil {
@@ -47,15 +49,19 @@ func doInitialize(fs *flag.FlagSet, argv []string) error {
 			return apikeyAlreadySetError(*conffile)
 		}
 	}
-	contents := []byte(fmt.Sprintf("apikey = %q\n", *apikey))
+	var contents bytes.Buffer
+	fmt.Fprintf(&contents, "apikey = %q\n", *apikey)
+	if *apibase != "" {
+		fmt.Fprintf(&contents, "apibase = %q\n", *apibase)
+	}
 	if confExists {
 		cBytes, err := os.ReadFile(*conffile)
 		if err != nil {
 			return err
 		}
-		contents = append(contents, cBytes...)
+		contents.Write(cBytes)
 	}
-	return os.WriteFile(*conffile, contents, 0644)
+	return os.WriteFile(*conffile, contents.Bytes(), 0644)
 }
 
 type apikeyAlreadySetError string
