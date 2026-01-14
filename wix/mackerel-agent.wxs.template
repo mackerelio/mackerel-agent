@@ -22,7 +22,7 @@
               <File Id="MackerelAgentExe" Name="mackerel-agent.exe" DiskId="1" Source="..\build\mackerel-agent.exe" KeyPath="yes"></File>
             </Component>
             <Component Id="SampleConfig" Win64="___WIN64___">
-              <File Id="MackerelAgentSampleConfig" Name="mackerel-agent.sample.conf" DiskId="1" Source="mackerel-agent.sample.conf" KeyPath="yes"></File>
+              <File Id="MackerelAgentSampleConfig" Name="mackerel-agent.sample.conf" DiskId="1" Source="___CONFIG_SOURCE___" KeyPath="yes"></File>
             </Component>
             <Component Id="AgentEventLog" Win64="___WIN64___">
               <util:EventSource

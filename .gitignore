@@ -13,6 +13,8 @@
 /pid
 /wix/mackerel-agent.wxs
 /wix/mackerel-agent.wixobj
+/wix/mackerel-agent-kcps.wxs
+/wix/mackerel-agent-kcps.wixobj
 /rpmbuild/
 /CREDITS
 
