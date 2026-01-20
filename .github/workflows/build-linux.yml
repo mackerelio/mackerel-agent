@@ -1,0 +1,77 @@
+name: Build(Linux packages)
+
+on:
+  push:
+    branches:
+      - master
+      - refactor-b # temp
+    tags:
+      - v*
+  pull_request:
+
+jobs:
+  build-linux:
+    name: Build (Unix-like OSes)
+    uses: ./.github/workflows/go-build.yml
+    with:
+      os-version: ubuntu-latest
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y devscripts debhelper fakeroot binutils-mips-linux-gnu binutils-aarch64-linux-gnu binutils-arm-linux-gnueabihf
+        docker pull mackerel/docker-mackerel-rpm-builder:c7
+        make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
+        make crossbuild
+      upload-artifact-path: |
+        rpmbuild/RPMS/*/*.rpm
+        packaging/*.deb
+        snapshot/*.zip
+        snapshot/*.tar.gz
+        build/*.tar.gz
+  build-windows-x64:
+    name: Build (64bit Windows)
+    uses: ./.github/workflows/go-build.yml
+    with:
+      os-version: windows-2022
+      architecture: amd64
+      with-cgo: true
+      run: |
+        commit=$(git rev-parse --short HEAD)
+        mkdir build/
+        go build -o build/mackerel-agent.exe -ldflags="-X main.gitcommit=$commit" github.com/mackerelio/mackerel-agent
+        go build -o build/mackerel-agent-kcps.exe -ldflags="-X main.gitcommit=$commit -X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16" github.com/mackerelio/mackerel-agent
+
+        cd wix
+        for p in $(./pluginlist.sh)
+        do
+          name=$(basename "$p")
+          go build -o "../build/$name.exe" "$p"
+        done
+        go build -o ../build/wrapper.exe wrapper/wrapper_windows.go wrapper/install.go
+        go build -o ../build/replace.exe replace/replace_windows.go replace/shell_windows.go
+        go build -o ../build/generate_wxs.exe generate_wxs/generate_wxs.go
+      upload-artifact-name: windows-build-artifacts-x64
+      upload-artifact-path: build/
+  build-windows-x86:
+    name: Build (32bit Windows)
+    uses: ./.github/workflows/go-build.yml
+    with:
+      os-version: windows-2022
+      architecture: '386'
+      with-cgo: true
+      run: |
+        commit=$(git rev-parse --short HEAD)
+        mkdir build/
+        go build -o build/mackerel-agent.exe -ldflags="-X main.gitcommit=$commit" github.com/mackerelio/mackerel-agent
+        go build -o build/mackerel-agent-kcps.exe -ldflags="-X main.gitcommit=$commit -X github.com/mackerelio/mackerel-agent/config.apibase=http://198.18.0.16" github.com/mackerelio/mackerel-agent
+
+        cd wix
+        for p in $(./pluginlist.sh)
+        do
+          name=$(basename "$p")
+          go build -o "../build/$name.exe" "$p"
+        done
+        go build -o ../build/wrapper.exe wrapper/wrapper_windows.go wrapper/install.go
+        go build -o ../build/replace.exe replace/replace_windows.go replace/shell_windows.go
+        go build -o ../build/generate_wxs.exe generate_wxs/generate_wxs.go
+      upload-artifact-name: windows-build-artifacts-x86
+      upload-artifact-path: build/

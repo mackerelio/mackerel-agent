@@ -1,0 +1,99 @@
+name: Build(Go)
+run-name: Build (${{ inputs.os-version }}/${{ inputs.go-version }})
+
+on:
+  workflow_call:
+    inputs:
+      os-version:
+        description: 'GitHub-hosted runnners'
+        default: ubuntu-22.04
+        required: false
+        type: string
+      go-version:
+        description: 'target Go versions'
+        default: 1.22.x
+        required: false
+        type: string
+      architecture:
+        description: 'Target architecture for Go to use (GOARCH)'
+        default: ''
+        required: false
+        type: string
+      platform:
+        description: 'Target operating system for Go to use (GOOS)'
+        default: ''
+        required: false
+        type: string
+      with-cgo:
+        description: 'xx (CGO_ENABLED)'
+        default: false
+        type: boolean
+      run:
+        description: 'The commands to run in bash'
+        default: go build
+        required: false
+        type: string
+      upload-artifact-path:
+        description: >
+          A file, directory or wildcard pattern that describes what to upload.
+          If empty, the workflow will upload no artifacts.
+        default: ''
+        required: false
+        type: string
+      upload-artifact-name:
+        description: 'Artifact name'
+        default: artifact
+        required: false
+        type: string
+
+env:
+  DEBIAN_FRONTEND: noninteractive
+jobs:
+  run:
+    runs-on: ${{ inputs.os-version }}
+    env:
+      CGO_ENABLED: ${{ inputs.with-cgo && 1 || 0 }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v5
+      with:
+        go-version: ${{ inputs.go-version }}
+        cache: true
+    - name: Setup environment variables
+      id: spec
+      run: |
+        GOHOSTARCH="$(go env GOHOSTARCH)"
+        GOARCH="${INPUT_ARCHITECTURE:-$GOHOSTARCH}"
+        echo "GOARCH=$GOARCH" >>"$GITHUB_ENV"
+
+        GOHOSTOS="$(go env GOHOSTOS)"
+        GOOS="${INPUT_PLATFORM:-$GOHOSTOS}"
+        echo "GOOS=$GOOS" >>"$GITHUB_ENV"
+
+        if [[ $GOHOSTOS = windows && $CGO_ENABLED = 1 ]]
+        then
+          case "$GOARCH" in
+          *64)
+            echo 'MSYS=MINGW64' >>"$GITHUB_ENV" ;;
+          *)
+            echo 'MSYS=MINGW32' >>"$GITHUB_ENV" ;;
+          esac
+        fi
+      shell: bash
+    - if: env.MSYS != ''
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: ${{ env.MSYS }}
+        path-type: inherit
+        install: mingw-w64-i686-gcc
+    - if: env.MSYS == ''
+      run: ${{ inputs.run }}
+      shell: bash
+    - if: env.MSYS != ''
+      run: ${{ inputs.run }}
+      shell: msys2 {0}
+    - if: inputs.upload-artifact-path != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.upload-artifact-name }}
+        path: ${{ inputs.upload-artifact-path }}
