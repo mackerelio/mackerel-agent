@@ -54,6 +54,32 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Jan 26 2026 <mackerel-developers@hatena.ne.jp> - 0.86.0
+- Bump actions/checkout from 6.0.1 to 6.0.2 (by dependabot[bot])
+- Bump actions/cache from 5.0.1 to 5.0.2 (by dependabot[bot])
+- Bump azure/trusted-signing-action from 0.5.11 to 1.0.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.39.0 to 0.40.0 (by dependabot[bot])
+- Bump actions/setup-go from 6.1.0 to 6.2.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.32.0 to 0.33.0 (by dependabot[bot])
+- add -apibase option for init subcommand (by lufia)
+- Fix interface mojibake on windows (by yseto)
+- Bump golang.org/x/sys from 0.39.0 to 0.40.0 in /wix (by dependabot[bot])
+- Bump github.com/BurntSushi/toml from 1.5.0 to 1.6.0 (by dependabot[bot])
+- Bump msys2/setup-msys2 from 2.29.0 to 2.30.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.38.0 to 0.39.0 (by dependabot[bot])
+- Bump actions/download-artifact from 6.0.0 to 7.0.0 (by dependabot[bot])
+- Bump actions/upload-artifact from 5.0.0 to 6.0.0 (by dependabot[bot])
+- Bump github.com/Songmu/gocredits from 0.3.1 to 0.4.0 (by dependabot[bot])
+- Bump actions/cache from 4.3.0 to 5.0.1 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.3 to 0.90.0 in /wix (by dependabot[bot])
+- change error response because upgrade to github.com/BurntSushi/toml@v1.5.0 (by yseto)
+- Bump golang.org/x/text from 0.31.0 to 0.32.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.62.3 to 0.63.0 in /wix (by dependabot[bot])
+- Bump azure/trusted-signing-action from 0.5.10 to 0.5.11 (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.50.1 to 0.51.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.2 to 0.89.3 in /wix (by dependabot[bot])
+- Bump github.com/BurntSushi/toml from 1.3.2 to 1.5.0 (by dependabot[bot])
+
 * Wed Dec 10 2025 <mackerel-developers@hatena.ne.jp> - 0.85.3
 - Bump golang.org/x/sys from 0.38.0 to 0.39.0 in /wix (by dependabot[bot])
 - Bump actions/checkout from 6.0.0 to 6.0.1 (by dependabot[bot])
