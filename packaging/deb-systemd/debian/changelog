@@ -1,3 +1,56 @@
+mackerel-agent (0.86.0-1.systemd) stable; urgency=low
+
+  * Bump actions/checkout from 6.0.1 to 6.0.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1170>
+  * Bump actions/cache from 5.0.1 to 5.0.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1169>
+  * Bump azure/trusted-signing-action from 0.5.11 to 1.0.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1168>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.39.0 to 0.40.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1167>
+  * Bump actions/setup-go from 6.1.0 to 6.2.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1166>
+  * Bump golang.org/x/text from 0.32.0 to 0.33.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1165>
+  * add -apibase option for init subcommand (by lufia)
+    <https://github.com/mackerelio/mackerel-agent/pull/1163>
+  * Fix interface mojibake on windows (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1162>
+  * Bump golang.org/x/sys from 0.39.0 to 0.40.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1161>
+  * Bump github.com/BurntSushi/toml from 1.5.0 to 1.6.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1160>
+  * Bump msys2/setup-msys2 from 2.29.0 to 2.30.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1159>
+  * Bump github.com/mackerelio/mackerel-client-go from 0.38.0 to 0.39.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1158>
+  * Bump actions/download-artifact from 6.0.0 to 7.0.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1157>
+  * Bump actions/upload-artifact from 5.0.0 to 6.0.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1156>
+  * Bump github.com/Songmu/gocredits from 0.3.1 to 0.4.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1155>
+  * Bump actions/cache from 4.3.0 to 5.0.1 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1154>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.3 to 0.90.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1153>
+  * change error response because upgrade to github.com/BurntSushi/toml@v1.5.0 (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1152>
+  * Bump golang.org/x/text from 0.31.0 to 0.32.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1151>
+  * Bump github.com/mackerelio/mkr from 0.62.3 to 0.63.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1150>
+  * Bump azure/trusted-signing-action from 0.5.10 to 0.5.11 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1149>
+  * Bump github.com/mackerelio/go-check-plugins from 0.50.1 to 0.51.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1148>
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.89.2 to 0.89.3 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1147>
+  * Bump github.com/BurntSushi/toml from 1.3.2 to 1.5.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1069>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Mon, 26 Jan 2026 00:48:11 +0000
+
 mackerel-agent (0.85.3-1.systemd) stable; urgency=low
 
   * Bump golang.org/x/sys from 0.38.0 to 0.39.0 in /wix (by dependabot[bot])
