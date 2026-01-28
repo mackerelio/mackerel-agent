@@ -262,6 +262,7 @@ var (
 	buildDir       = flag.String("buildDir", "", "build directory")
 	productVersion = flag.String("productVersion", "", "product version")
 	templateFile   = flag.String("templateFile", "", "path to template file")
+	configFile     = flag.String("configFile", "mackerel-agent.sample.conf", "path to config file")
 	outputFile     = flag.String("outputFile", "", "path to output file")
 
 	platform = Platform("x86")
@@ -303,6 +304,10 @@ func main() {
 	ok = updateElementAttr(v, "Component", "Win64", "___WIN64___", platform.Win64())
 	if !ok {
 		log.Fatal("___WIN64___ not found")
+	}
+	ok = updateElementAttr(v, "File", "Source", "___CONFIG_SOURCE___", *configFile)
+	if !ok {
+		log.Fatal("___CONFIG_SOURCE___ not found")
 	}
 
 	// generate Component/File(s) from listing plugins on *buildDir.
