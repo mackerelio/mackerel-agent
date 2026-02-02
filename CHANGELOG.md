@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.86.1 (2026-02-02)
+
+* update github.com/mackerelio/go-check-plugins #1172 (yseto)
+* wix: build a installer for new KDDI platform service #1164 (lufia)
+
+
 ## 0.86.0 (2026-01-26)
 
 * Bump actions/checkout from 6.0.1 to 6.0.2 #1170 (dependabot[bot])
