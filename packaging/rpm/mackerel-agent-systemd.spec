@@ -54,6 +54,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Feb 2 2026 <mackerel-developers@hatena.ne.jp> - 0.86.1
+- update github.com/mackerelio/go-check-plugins (by yseto)
+- wix: build a installer for new KDDI platform service (by lufia)
+
 * Mon Jan 26 2026 <mackerel-developers@hatena.ne.jp> - 0.86.0
 - Bump actions/checkout from 6.0.1 to 6.0.2 (by dependabot[bot])
 - Bump actions/cache from 5.0.1 to 5.0.2 (by dependabot[bot])
