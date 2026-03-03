@@ -9,7 +9,7 @@ on:
 
 jobs:
   lint:
-    uses: mackerelio/workflows/.github/workflows/go-lint.yml@52736435ff08612880b76fd6618ca82ae7bba420 # v1.8.0
+    uses: mackerelio/workflows/.github/workflows/go-lint.yml@09b7117485bc1a52a8ff736f2759f863bc657fcd # v1.9.0
   convention:
     uses: mackerelio/workflows/.github/workflows/setup-go-matrix.yml@09b7117485bc1a52a8ff736f2759f863bc657fcd # v1.9.0
     with:
