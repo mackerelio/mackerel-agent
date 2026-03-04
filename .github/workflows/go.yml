@@ -46,7 +46,7 @@ jobs:
       - run: docker pull ghcr.io/mackerelio/mackerel-rpm-builder:u8
       - run: make rpm deb rpm-kcps deb-kcps rpm-stage deb-stage tgz
       - run: make crossbuild
-      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: linux-build-artifacts
           path: |
@@ -135,7 +135,7 @@ jobs:
         shell: msys2 {0}
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: windows-build-artifacts-${{ matrix.PLATFORM_ID }}
           path: |
@@ -202,7 +202,7 @@ jobs:
           exclude-interactive-browser-credential: true
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: windows-packages-${{ matrix.PLATFORM_ID }}
           path: |
