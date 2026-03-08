@@ -1,15 +1,13 @@
 module github.com/mackerelio/mackerel-agent/wix
 
-go 1.24.0
-
-toolchain go1.24.3
+go 1.25.0
 
 require (
 	github.com/mackerelio/go-check-plugins v0.52.0
 	github.com/mackerelio/mackerel-agent-plugins v0.90.0
 	github.com/mackerelio/mkr v0.63.0
 	github.com/mattn/go-encoding v0.0.2
-	golang.org/x/sys v0.41.0
+	golang.org/x/sys v0.42.0
 )
 
 require (
