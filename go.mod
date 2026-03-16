@@ -20,7 +20,7 @@ require (
 	github.com/vishvananda/netlink v1.3.1
 	github.com/yusufpapurcu/wmi v1.2.4
 	golang.org/x/sys v0.42.0
-	golang.org/x/text v0.34.0
+	golang.org/x/text v0.35.0
 )
 
 require (
@@ -34,6 +34,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
-	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
 )
