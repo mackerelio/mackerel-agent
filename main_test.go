@@ -140,7 +140,7 @@ func TestCreateAndRemovePidFile(t *testing.T) {
 	}
 
 	pidfile.Remove(fpath)
-	os.WriteFile(fpath, []byte(fmt.Sprint(math.MaxInt32)), 0644)
+	os.WriteFile(fpath, fmt.Append(nil, math.MaxInt32), 0644)
 	if err := pidfile.Create(fpath); err != nil {
 		t.Errorf("old pid file should be ignored and new pid file should be created but, %s", err)
 	}

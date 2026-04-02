@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -909,10 +910,5 @@ func newTempFileWithContent(content string) (*os.File, error) {
 }
 
 func expectContainsString(slice []string, contains string) bool {
-	for _, v := range slice {
-		if v == contains {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(slice, contains)
 }

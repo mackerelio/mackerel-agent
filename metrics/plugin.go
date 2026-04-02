@@ -145,7 +145,7 @@ func (g *pluginGenerator) loadPluginMeta() error {
 		return fmt.Errorf("bad format of first line: %q", headerLine)
 	}
 
-	for _, field := range strings.Fields(m[1]) {
+	for field := range strings.FieldsSeq(m[1]) {
 		keyValue := strings.Split(field, "=")
 		var value string
 		if len(keyValue) > 1 {
@@ -226,7 +226,7 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 	}
 
 	results := make(map[string]float64, 0)
-	for _, line := range strings.Split(stdout, "\n") {
+	for line := range strings.SplitSeq(stdout, "\n") {
 		// Key, value, timestamp
 		// ex.) tcp.CLOSING 0 1397031808
 		items := strings.Fields(line)

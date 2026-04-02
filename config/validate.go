@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"sort"
 	"strings"
 	"unicode"
@@ -31,7 +32,7 @@ func addKeyToCandidates(f reflect.StructField, candidates []string) []string {
 }
 
 func makeCandidates(t reflect.Type) []string {
-	if t.Kind() == reflect.Map || t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Map || t.Kind() == reflect.Pointer {
 		return makeCandidates(t.Elem())
 	}
 	var candidates []string
@@ -70,8 +71,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		return nil, fmt.Errorf("failed to test config: %s", err)
 	}
 
-	var c Config
-	candidates := makeCandidates(reflect.TypeOf(c))
+	candidates := makeCandidates(reflect.TypeFor[Config]())
 
 	var unexpectedKeys []UnexpectedKey
 	var detectedKeys []string
@@ -175,10 +175,5 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 }
 
 func containKey(target []string, want string) bool {
-	for _, v := range target {
-		if v == want {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(target, want)
 }

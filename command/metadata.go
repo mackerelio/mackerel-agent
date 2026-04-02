@@ -36,8 +36,8 @@ func metadataGenerators(conf *config.Config) []*metadata.Generator {
 func lookupPluginWorkDir(env []string) string {
 	workDirPrefix := "MACKEREL_PLUGIN_WORKDIR="
 	for _, e := range env {
-		if strings.HasPrefix(e, workDirPrefix) {
-			return strings.TrimPrefix(e, workDirPrefix)
+		if after, ok := strings.CutPrefix(e, workDirPrefix); ok {
+			return after
 		}
 	}
 	return ""
