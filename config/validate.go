@@ -113,14 +113,14 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 		parentKey := strings.Join(splitedKey[:len(splitedKey)-1], ".")
 		// When parentKey (e.g., plugin.checks.incorrect.action.en) or topKey (e.g., plugins) already exists in detected keys,
 		// childKey (e.g., plugin.checks.incorrect.action.en.TEST_KEY, plugins.check.incorrect.command) isn't detected.
-		if containKey(detectedKeys, parentKey) || containKey(detectedKeys, topKey) {
+		if slices.Contains(detectedKeys, parentKey) || slices.Contains(detectedKeys, topKey) {
 			continue
 		}
 
 		var key string
 		var suggestKey string
 
-		if containKey(candidates, topKey) {
+		if slices.Contains(candidates, topKey) {
 			key = v.String() // same as parantKey + "." + lastKey
 			suggestResult := keySuggestion(lastKey, candidates)
 			if suggestResult == "" {
@@ -174,6 +174,7 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 	return unexpectedKeys, nil
 }
 
+//go:fix inline
 func containKey(target []string, want string) bool {
 	return slices.Contains(target, want)
 }
