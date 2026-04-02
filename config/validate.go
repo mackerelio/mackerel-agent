@@ -173,8 +173,3 @@ func ValidateConfigFile(file string) ([]UnexpectedKey, error) {
 
 	return unexpectedKeys, nil
 }
-
-//go:fix inline
-func containKey(target []string, want string) bool {
-	return slices.Contains(target, want)
-}

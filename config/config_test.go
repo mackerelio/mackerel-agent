@@ -908,8 +908,3 @@ func newTempFileWithContent(content string) (*os.File, error) {
 	tmpf.Close()
 	return tmpf, nil
 }
-
-//go:fix inline
-func expectContainsString(slice []string, contains string) bool {
-	return slices.Contains(slice, contains)
-}
