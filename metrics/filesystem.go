@@ -27,7 +27,7 @@ func (g *FilesystemGenerator) Generate() (Values, error) {
 		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
 			continue
 		}
-		if device := strings.TrimPrefix(name, "/dev/"); name != device {
+		if device, ok := strings.CutPrefix(name, "/dev/"); ok {
 			var metricName string
 			if g.UseMountpoint {
 				metricName = util.SanitizeMetricKey(dfs.Mounted)

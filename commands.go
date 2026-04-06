@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/Songmu/prompter"
@@ -124,15 +125,15 @@ func doConfigtest(fs *flag.FlagSet, argv []string) error {
 		return errors.New(red.Sprintf("[CRITICAL] failed to test config: %s", err))
 	}
 	if len(validResult) > 0 {
-		var messages string
+		var messages strings.Builder
 		for _, v := range validResult {
 			if v.SuggestKey == "" {
-				messages += yellow.Sprintf("[WARNING] %s is unexpected key.\n", v.Key)
+				messages.WriteString(yellow.Sprintf("[WARNING] %s is unexpected key.\n", v.Key))
 			} else {
-				messages += yellow.Sprintf("[WARNING] %s is unexpected key. Did you mean %s ?\n", v.Key, v.SuggestKey)
+				messages.WriteString(yellow.Sprintf("[WARNING] %s is unexpected key. Did you mean %s ?\n", v.Key, v.SuggestKey))
 			}
 		}
-		return errors.New(messages)
+		return errors.New(messages.String())
 	}
 
 	fmt.Fprintf(os.Stderr, "SUCCESS (%s)\n", conf.Conffile)

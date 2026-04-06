@@ -1,14 +1,14 @@
 package metrics
 
+import "maps"
+
 import mkr "github.com/mackerelio/mackerel-client-go"
 
 // Values represents metric values
 type Values map[string]float64
 
 func merge(v1, v2 Values) Values {
-	for k, v := range v2 {
-		v1[k] = v
-	}
+	maps.Copy(v1, v2)
 	return v1
 }
 

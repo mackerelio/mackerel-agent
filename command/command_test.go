@@ -376,7 +376,7 @@ func TestLoop(t *testing.T) {
 
 	sort.Sort(byTime(receivedDataPoints))
 
-	for i := 0; i < totalPosts; i++ {
+	for i := range totalPosts {
 		value := receivedDataPoints[i].Value.(float64)
 		if value != float64(i+1) {
 			t.Errorf("the %dth datapoint should have value %d, got: %+v", i, i+1, receivedDataPoints)
