@@ -5,13 +5,13 @@ go 1.25.0
 require (
 	github.com/mackerelio/go-check-plugins v0.52.0
 	github.com/mackerelio/mackerel-agent-plugins v0.90.0
-	github.com/mackerelio/mkr v0.63.0
+	github.com/mackerelio/mkr v0.64.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.43.0
 )
 
 require (
-	github.com/BurntSushi/toml v1.5.0 // indirect
+	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/STARRY-S/zip v0.2.3 // indirect
 	github.com/Songmu/prompter v0.5.1 // indirect
 	github.com/Songmu/retry v0.1.0 // indirect
@@ -23,29 +23,28 @@ require (
 	github.com/bodgit/plumbing v1.3.0 // indirect
 	github.com/bodgit/sevenzip v1.6.1 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/daviddengcn/go-colortext v1.0.0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
-	github.com/fatih/color v1.18.0 // indirect
+	github.com/fatih/color v1.19.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/google/go-github/v49 v49.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gosnmp/gosnmp v1.42.1 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
-	github.com/itchyny/gojq v0.12.18 // indirect
-	github.com/itchyny/timefmt-go v0.1.7 // indirect
+	github.com/itchyny/gojq v0.12.19 // indirect
+	github.com/itchyny/timefmt-go v0.1.8 // indirect
 	github.com/jessevdk/go-flags v1.6.1 // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
-	github.com/mackerelio/checkers v0.2.0 // indirect
+	github.com/mackerelio/checkers v0.2.1 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.5 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.4 // indirect
 	github.com/mackerelio/go-osstat v0.2.6 // indirect
 	github.com/mackerelio/golib v1.2.1 // indirect
-	github.com/mackerelio/mackerel-agent v0.85.3 // indirect
-	github.com/mackerelio/mackerel-client-go v0.38.0 // indirect
+	github.com/mackerelio/mackerel-agent v0.86.1 // indirect
+	github.com/mackerelio/mackerel-client-go v0.40.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-zglob v0.0.6 // indirect
@@ -59,7 +58,6 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.22 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
-	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/shirou/gopsutil/v3 v3.24.5 // indirect
 	github.com/sorairolake/lzip-go v0.3.8 // indirect
@@ -67,16 +65,16 @@ require (
 	github.com/tatsushid/go-fastping v0.0.0-20160109021039-d7bb493dee3e // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
-	github.com/urfave/cli v1.22.17 // indirect
+	github.com/urfave/cli/v3 v3.8.0 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
 	golang.org/x/crypto v0.47.0 // indirect
 	golang.org/x/net v0.49.0 // indirect
-	golang.org/x/oauth2 v0.34.0 // indirect
-	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/oauth2 v0.36.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/term v0.39.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
