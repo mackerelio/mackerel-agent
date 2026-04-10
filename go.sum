@@ -29,8 +29,8 @@ github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 h1:6E+4a0GO5zZEnZ
 github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0/go.mod h1:zJYVVT2jmtg6P3p1VtQj7WsuWi/y4VnjVBn7F8KPB3I=
 github.com/mackerelio/go-osstat v0.2.7 h1:TCavZi10wF49bT6iQZ9eT2keGZQpC69MTDfdJej5e94=
 github.com/mackerelio/go-osstat v0.2.7/go.mod h1:dwpYh5pIPmvk+IEwBKNIWRFMB92mrC08CmXOhDC7nQk=
-github.com/mackerelio/golib v1.2.1 h1:SDcDn6Jw3p9bi1N0bg1Z/ilG5qcBB23qL8xNwrU0gg4=
-github.com/mackerelio/golib v1.2.1/go.mod h1:b8ZaapsHGH1FlEJlCqfD98CqafLeyMevyATDlID2BsM=
+github.com/mackerelio/golib v1.2.2 h1:fQfW1o2KvPyIsAH/7+M2J0gpf2jLu+NyYpDCN79zxW4=
+github.com/mackerelio/golib v1.2.2/go.mod h1:itcSOfrsT5XvkzflFPebT43RrliaKDz2T6YGYt3jclw=
 github.com/mackerelio/mackerel-client-go v0.41.0 h1:2/yuToHH/iBZlFnlUQVPHyBsgJdjdQPBqbVQ9/SFao4=
 github.com/mackerelio/mackerel-client-go v0.41.0/go.mod h1:idAyt+GkVknFIupw1Y3vW1v5fJuqz2eiQrWU/oHOrEM=
 github.com/mattn/go-colorable v0.1.14 h1:9A9LHSqF/7dyVVX6g0U9cwm9pG3kP9gSzcuIPHPsaIE=
