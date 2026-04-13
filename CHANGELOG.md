@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.86.2 (2026-04-13)
+
+* Bump github.com/mackerelio/golib from 1.2.1 to 1.2.2 #1200 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.40.0 to 0.41.0 #1199 (dependabot[bot])
+* Bump golang.org/x/sys from 0.42.0 to 0.43.0 #1198 (dependabot[bot])
+* Bump golang.org/x/sys from 0.42.0 to 0.43.0 in /wix #1197 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.63.0 to 0.64.0 in /wix #1196 (dependabot[bot])
+* Go 1.26 #1195 (yseto)
+* Bump actions/setup-go from 6.3.0 to 6.4.0 #1194 (dependabot[bot])
+* Bump msys2/setup-msys2 from 2.30.0 to 2.31.0 #1193 (dependabot[bot])
+* Bump azure/trusted-signing-action from 1.1.0 to 1.2.0 #1192 (dependabot[bot])
+* Bump github.com/fatih/color from 1.18.0 to 1.19.0 #1191 (dependabot[bot])
+* Bump actions/cache from 5.0.3 to 5.0.4 #1190 (dependabot[bot])
+* Bump actions/download-artifact from 8.0.0 to 8.0.1 #1189 (dependabot[bot])
+* Bump golang.org/x/text from 0.34.0 to 0.35.0 #1188 (dependabot[bot])
+* Bump github.com/mackerelio/go-osstat from 0.2.6 to 0.2.7 #1187 (dependabot[bot])
+* Bump golang.org/x/sys from 0.41.0 to 0.42.0 #1186 (dependabot[bot])
+* Bump golang.org/x/sys from 0.41.0 to 0.42.0 in /wix #1185 (dependabot[bot])
+* Bump actions/upload-artifact from 6.0.0 to 7.0.0 #1184 (dependabot[bot])
+* Bump actions/setup-go from 6.2.0 to 6.3.0 #1183 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/setup-go-matrix.yml from 1.8.0 to 1.9.0 #1182 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/go-lint.yml from 1.8.0 to 1.9.0 #1181 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/go-test.yml from 1.8.0 to 1.9.0 #1180 (dependabot[bot])
+* Bump actions/download-artifact from 7.0.0 to 8.0.0 #1179 (dependabot[bot])
+* Bump azure/trusted-signing-action from 1.0.0 to 1.1.0 #1178 (dependabot[bot])
+* Bump golang.org/x/text from 0.33.0 to 0.34.0 #1177 (dependabot[bot])
+* Bump golang.org/x/sys from 0.40.0 to 0.41.0 in /wix #1176 (dependabot[bot])
+* Bump golang.org/x/sys from 0.40.0 to 0.41.0 #1175 (dependabot[bot])
+* Bump actions/cache from 5.0.2 to 5.0.3 #1174 (dependabot[bot])
+
+
 ## 0.86.1 (2026-02-02)
 
 * update github.com/mackerelio/go-check-plugins #1172 (yseto)

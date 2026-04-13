@@ -54,6 +54,35 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Apr 13 2026 <mackerel-developers@hatena.ne.jp> - 0.86.2
+- Bump github.com/mackerelio/golib from 1.2.1 to 1.2.2 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.40.0 to 0.41.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.42.0 to 0.43.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.42.0 to 0.43.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.63.0 to 0.64.0 in /wix (by dependabot[bot])
+- Go 1.26 (by yseto)
+- Bump actions/setup-go from 6.3.0 to 6.4.0 (by dependabot[bot])
+- Bump msys2/setup-msys2 from 2.30.0 to 2.31.0 (by dependabot[bot])
+- Bump azure/trusted-signing-action from 1.1.0 to 1.2.0 (by dependabot[bot])
+- Bump github.com/fatih/color from 1.18.0 to 1.19.0 (by dependabot[bot])
+- Bump actions/cache from 5.0.3 to 5.0.4 (by dependabot[bot])
+- Bump actions/download-artifact from 8.0.0 to 8.0.1 (by dependabot[bot])
+- Bump golang.org/x/text from 0.34.0 to 0.35.0 (by dependabot[bot])
+- Bump github.com/mackerelio/go-osstat from 0.2.6 to 0.2.7 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.41.0 to 0.42.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.41.0 to 0.42.0 in /wix (by dependabot[bot])
+- Bump actions/upload-artifact from 6.0.0 to 7.0.0 (by dependabot[bot])
+- Bump actions/setup-go from 6.2.0 to 6.3.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/setup-go-matrix.yml from 1.8.0 to 1.9.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/go-lint.yml from 1.8.0 to 1.9.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/go-test.yml from 1.8.0 to 1.9.0 (by dependabot[bot])
+- Bump actions/download-artifact from 7.0.0 to 8.0.0 (by dependabot[bot])
+- Bump azure/trusted-signing-action from 1.0.0 to 1.1.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.33.0 to 0.34.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.40.0 to 0.41.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/sys from 0.40.0 to 0.41.0 (by dependabot[bot])
+- Bump actions/cache from 5.0.2 to 5.0.3 (by dependabot[bot])
+
 * Mon Feb 2 2026 <mackerel-developers@hatena.ne.jp> - 0.86.1
 - update github.com/mackerelio/go-check-plugins (by yseto)
 - wix: build a installer for new KDDI platform service (by lufia)
