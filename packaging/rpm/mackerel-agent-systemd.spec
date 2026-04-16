@@ -54,6 +54,10 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Apr 16 2026 <mackerel-developers@hatena.ne.jp> - 0.86.3
+- Bump golang.org/x/text from 0.35.0 to 0.36.0 (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.52.0 to 0.52.2 in /wix (by dependabot[bot])
+
 * Mon Apr 13 2026 <mackerel-developers@hatena.ne.jp> - 0.86.2
 - Bump github.com/mackerelio/golib from 1.2.1 to 1.2.2 (by dependabot[bot])
 - Bump github.com/mackerelio/mackerel-client-go from 0.40.0 to 0.41.0 (by dependabot[bot])
