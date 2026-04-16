@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/mackerelio/go-check-plugins v0.52.2
-	github.com/mackerelio/mackerel-agent-plugins v0.90.0
+	github.com/mackerelio/mackerel-agent-plugins v0.90.1
 	github.com/mackerelio/mkr v0.64.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.43.0
@@ -26,11 +26,10 @@ require (
 	github.com/daviddengcn/go-colortext v1.0.0 // indirect
 	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
 	github.com/fatih/color v1.19.0 // indirect
-	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/google/go-github/v49 v49.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/gosnmp/gosnmp v1.42.1 // indirect
+	github.com/gosnmp/gosnmp v1.43.2 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/itchyny/gojq v0.12.19 // indirect
 	github.com/itchyny/timefmt-go v0.1.8 // indirect
@@ -39,7 +38,7 @@ require (
 	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/mackerelio/checkers v0.2.1 // indirect
-	github.com/mackerelio/go-mackerel-plugin v0.1.5 // indirect
+	github.com/mackerelio/go-mackerel-plugin v0.1.6 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.4 // indirect
 	github.com/mackerelio/go-osstat v0.2.7 // indirect
 	github.com/mackerelio/golib v1.2.2 // indirect
