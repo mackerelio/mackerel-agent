@@ -60,8 +60,8 @@ github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7
 github.com/fatih/color v1.19.0 h1:Zp3PiM21/9Ld6FzSKyL5c/BULoe/ONr9KlbYVOfG8+w=
 github.com/fatih/color v1.19.0/go.mod h1:zNk67I0ZUT1bEGsSGyCZYZNrHuTkJJB+r6Q9VuMi0LE=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
-github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=
-github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
+github.com/fsnotify/fsnotify v1.9.0 h1:2Ml+OJNzbYCTzsxtv8vKSFD9PbJjmhYF14k/jKC7S9k=
+github.com/fsnotify/fsnotify v1.9.0/go.mod h1:8jBTzvmWwFyi3Pb8djgCCO5IBqzKJ/Jwo8TRcHyHii0=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-ole/go-ole v1.2.5/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiUsvbm0=
@@ -106,8 +106,8 @@ github.com/google/pprof v0.0.0-20200212024743-f11f1df84d12/go.mod h1:ZgVRPoUq/hf
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/googleapis/gax-go/v2 v2.0.4/go.mod h1:0Wqv26UfaUD9n4G6kQubkQ+KchISgw+vpHVxEJEs9eg=
 github.com/googleapis/gax-go/v2 v2.0.5/go.mod h1:DWXyrwAJ9X0FpwwEdw+IPEYBICEFu5mhpdKc/us6bOk=
-github.com/gosnmp/gosnmp v1.42.1 h1:MEJxhpC5v1coL3tFRix08PYmky9nyb1TLRRgJAmXm8A=
-github.com/gosnmp/gosnmp v1.42.1/go.mod h1:CxVS6bXqmWZlafUj9pZUnQX5e4fAltqPcijxWpCitDo=
+github.com/gosnmp/gosnmp v1.43.2 h1:F9loz6uMCNtIQj0RNO5wz/mZ+FZt2WyNKJYOvw+Zosw=
+github.com/gosnmp/gosnmp v1.43.2/go.mod h1:smHIwoaqr1M+HTAEd7+mKkPs8lp3Lf/U+htPUql1Q3c=
 github.com/hashicorp/golang-lru v0.5.0/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
 github.com/hashicorp/golang-lru v0.5.1/go.mod h1:/m3WP610KZHVQ1SGc6re/UDhFvYD7pJ4Ao+sR/qLZy8=
 github.com/hashicorp/golang-lru/v2 v2.0.7 h1:a+bsQ5rvGLjzHuww6tVxozPZFVghXaHOwFs4luLUK2k=
@@ -141,8 +141,8 @@ github.com/mackerelio/checkers v0.2.1 h1:vRXzAT+CEyaLjSrHVxKUBjyWq1kfo8QcI8ZoSKZ
 github.com/mackerelio/checkers v0.2.1/go.mod h1:CW3k/5bvHhxDrfKgWvMvNH0R51zco141ZVxlI7o/KAc=
 github.com/mackerelio/go-check-plugins v0.52.2 h1:gwAvbs3TGw7rmIn0N9NoaNWiMSJzbVjeU+OiTlQHrtU=
 github.com/mackerelio/go-check-plugins v0.52.2/go.mod h1:A2bSrzmWB5fOwhfCDCXFek/JB9ielUvAQY3BYSZAfn0=
-github.com/mackerelio/go-mackerel-plugin v0.1.5 h1:8k0xrZd1bllGKfki/ndCdQ1Pe/l8MTetfZP76ejtFt0=
-github.com/mackerelio/go-mackerel-plugin v0.1.5/go.mod h1:c1Y27qQnuMBK6QqLrmW5OcDqMLrUGbPo2KEjZd37DH4=
+github.com/mackerelio/go-mackerel-plugin v0.1.6 h1:NKAutTQLxBH8/T0aeawIMfPSg4ZRf+TivkOwgUK2Yj0=
+github.com/mackerelio/go-mackerel-plugin v0.1.6/go.mod h1:2OkQFK5HpUiVJ+p8Xa8wwxzaPusUFTNsj5OQjL9Mw7k=
 github.com/mackerelio/go-mackerel-plugin-helper v0.1.4 h1:U2Yaaj5R/6K5BjM/y36QkOZhvbiobtXEDf4rUxoPEUM=
 github.com/mackerelio/go-mackerel-plugin-helper v0.1.4/go.mod h1:uamT583zYP/mJa7BB/ms+Z+1nO1lVVpcEnz4r/VZUL0=
 github.com/mackerelio/go-osstat v0.2.7 h1:TCavZi10wF49bT6iQZ9eT2keGZQpC69MTDfdJej5e94=
@@ -151,8 +151,8 @@ github.com/mackerelio/golib v1.2.2 h1:fQfW1o2KvPyIsAH/7+M2J0gpf2jLu+NyYpDCN79zxW
 github.com/mackerelio/golib v1.2.2/go.mod h1:itcSOfrsT5XvkzflFPebT43RrliaKDz2T6YGYt3jclw=
 github.com/mackerelio/mackerel-agent v0.86.1 h1:lC/3JMctkgl5XruW6frRJwoAEdVVHzA4+1rEEz5Jv+I=
 github.com/mackerelio/mackerel-agent v0.86.1/go.mod h1:Tu3h95ytehoEKcBJUVTLhiwO9w7+VPHL1GWlOw3SrTg=
-github.com/mackerelio/mackerel-agent-plugins v0.90.0 h1:GB3Svn9TUv8extQn6keVTlGgM7hgs1Fe1p1zZLJD13o=
-github.com/mackerelio/mackerel-agent-plugins v0.90.0/go.mod h1:+q7/d4Y8z7q7ZqrD3QN1bsu0K2Ik0Fq/LuCrBg1T2sM=
+github.com/mackerelio/mackerel-agent-plugins v0.90.1 h1:kgRnaXGzdnYrUREKTWYLjBvhxbkVc9YPllwrZC6CkXY=
+github.com/mackerelio/mackerel-agent-plugins v0.90.1/go.mod h1:cMKFyITgWPy7FAzn1vP5s7yxO8I0z5HmfBQW6x22vVA=
 github.com/mackerelio/mackerel-client-go v0.40.0 h1:PYjQg5WSzDqZUlasOQuMaUfS0JcNpw526tC0TauGvA0=
 github.com/mackerelio/mackerel-client-go v0.40.0/go.mod h1:hIMlFC/wuvBBQEjh0plBLUUTT/bcjmiwoPMxTucVFYk=
 github.com/mackerelio/mkr v0.64.0 h1:9qM4uoqkg/duHUEBQU9cG6FWEW7aOZ9PqpCBriLxE7w=
@@ -328,7 +328,6 @@ golang.org/x/sys v0.0.0-20201204225414-ed752295db88/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220722155257-8c9f86f7a55f/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
-golang.org/x/sys v0.0.0-20220908164124-27713097b956/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.1.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
