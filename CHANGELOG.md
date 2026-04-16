@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.86.3 (2026-04-16)
+
+* Bump golang.org/x/text from 0.35.0 to 0.36.0 #1204 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.52.0 to 0.52.2 in /wix #1203 (dependabot[bot])
+
+
 ## 0.86.2 (2026-04-13)
 
 * Bump github.com/mackerelio/golib from 1.2.1 to 1.2.2 #1200 (dependabot[bot])

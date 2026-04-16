@@ -1,3 +1,12 @@
+mackerel-agent (0.86.3-1.systemd) stable; urgency=low
+
+  * Bump golang.org/x/text from 0.35.0 to 0.36.0 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1204>
+  * Bump github.com/mackerelio/go-check-plugins from 0.52.0 to 0.52.2 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1203>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 16 Apr 2026 08:04:55 +0000
+
 mackerel-agent (0.86.2-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/golib from 1.2.1 to 1.2.2 (by dependabot[bot])
