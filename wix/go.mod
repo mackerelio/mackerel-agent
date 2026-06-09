@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/mackerelio/go-check-plugins v0.52.2
-	github.com/mackerelio/mackerel-agent-plugins v0.90.1
+	github.com/mackerelio/mackerel-agent-plugins v0.91.0
 	github.com/mackerelio/mkr v0.64.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.46.0
@@ -73,7 +73,7 @@ require (
 	golang.org/x/net v0.52.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/term v0.42.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/term v0.43.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
