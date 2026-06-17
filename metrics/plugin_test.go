@@ -3,6 +3,7 @@ package metrics
 import (
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/mackerelio/mackerel-agent/config"
 	mkr "github.com/mackerelio/mackerel-client-go"
@@ -172,4 +173,63 @@ func TestPluginMakeGraphDefsParam(t *testing.T) {
 		t.Errorf("Bat metric payload created: %+v", metricOneFoo1)
 	}
 
+}
+
+func Test_validateActualTime(t *testing.T) {
+	testCases := []struct {
+		name  string
+		now   time.Time
+		time  time.Time
+		valid bool
+	}{
+		{
+			name:  "same time",
+			now:   time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			time:  time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			valid: true,
+		},
+		{
+			name:  "+14:59",
+			now:   time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			time:  time.Date(2026, 1, 1, 0, 14, 59, 0, time.UTC),
+			valid: true,
+		},
+		{
+			name:  "+15:00",
+			now:   time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			time:  time.Date(2026, 1, 1, 0, 15, 0, 0, time.UTC),
+			valid: false,
+		},
+		{
+			name:  "+30:00",
+			now:   time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			time:  time.Date(2026, 1, 1, 0, 30, 0, 0, time.UTC),
+			valid: false,
+		},
+		{
+			name:  "-14:59",
+			now:   time.Date(2026, 1, 1, 0, 14, 59, 0, time.UTC),
+			time:  time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			valid: true,
+		},
+		{
+			name:  "-15:00",
+			now:   time.Date(2026, 1, 1, 0, 15, 0, 0, time.UTC),
+			time:  time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			valid: false,
+		},
+		{
+			name:  "-30:00",
+			now:   time.Date(2026, 1, 1, 0, 30, 0, 0, time.UTC),
+			time:  time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+			valid: false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if validateActualTime(tc.now, tc.time) != tc.valid {
+				t.Error("invalid")
+			}
+		})
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/config"
@@ -42,6 +43,8 @@ var pluginLogger = logging.GetLogger("metrics.plugin")
 const pluginPrefix = "custom."
 
 var pluginConfigurationEnvName = "MACKEREL_AGENT_PLUGIN_META"
+
+const allowTimeWindow = 15 * time.Minute
 
 // NewPluginGenerator XXX
 func NewPluginGenerator(conf *config.MetricPlugin) PluginGenerator {
@@ -254,4 +257,9 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 	}
 
 	return results, nil
+}
+
+func validateActualTime(now, ts time.Time) bool {
+	duration := now.Sub(ts).Seconds()
+	return math.Abs(float64(duration)) < allowTimeWindow.Seconds()
 }
