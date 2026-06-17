@@ -42,14 +42,14 @@ func (g *InterfaceGenerator) Generate() (Values, error) {
 		return nil, err
 	}
 
-	ret := make(map[string]float64)
+	ret := make(Values)
 	for name, prevValue := range prevValues {
 		if currValue, ok := currValues[name]; ok && currValue >= prevValue {
-			ret[name+".delta"] = float64(currValue-prevValue) / g.Interval.Seconds()
+			ret[name+".delta"] = NewValueAttribute(float64(currValue-prevValue) / g.Interval.Seconds())
 		}
 	}
 
-	return Values(ret), nil
+	return ret, nil
 }
 
 func (g *InterfaceGenerator) collectInterfacesValues() (map[string]uint64, error) {

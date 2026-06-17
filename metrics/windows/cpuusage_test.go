@@ -2,8 +2,10 @@
 
 package windows
 
-import "math"
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 var cpuUsageMetricNames = []string{
 	"cpu.user.percentage",
@@ -39,7 +41,7 @@ func TestCPUUsageGenerate(t *testing.T) {
 			t.Logf("CPUUsage '%s' collected: %+v", metricName, value)
 		}
 
-		sumPercentage += value
+		sumPercentage += value.Value
 	}
 
 	percentDistFrom100 := math.Mod(sumPercentage, 100)

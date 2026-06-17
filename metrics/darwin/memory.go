@@ -29,13 +29,12 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		memoryLogger.Errorf("failed to get memory statistics: %s", err)
 		return nil, err
 	}
-	ret := map[string]float64{
-		"memory.total":      float64(memory.Total),
-		"memory.used":       float64(memory.Used),
-		"memory.cached":     float64(memory.Cached),
-		"memory.free":       float64(memory.Free),
-		"memory.swap_total": float64(memory.SwapTotal),
-		"memory.swap_free":  float64(memory.SwapFree),
-	}
-	return metrics.Values(ret), nil
+	return metrics.Values{
+		"memory.total":      metrics.NewValueAttribute(float64(memory.Total)),
+		"memory.used":       metrics.NewValueAttribute(float64(memory.Used)),
+		"memory.cached":     metrics.NewValueAttribute(float64(memory.Cached)),
+		"memory.free":       metrics.NewValueAttribute(float64(memory.Free)),
+		"memory.swap_total": metrics.NewValueAttribute(float64(memory.SwapTotal)),
+		"memory.swap_free":  metrics.NewValueAttribute(float64(memory.SwapFree)),
+	}, nil
 }

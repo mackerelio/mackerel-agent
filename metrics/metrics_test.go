@@ -7,19 +7,19 @@ import (
 
 func TestMergeValuesCustomIdentifiers(t *testing.T) {
 	var v0 = Values{
-		"aa": 10,
+		"aa": NewValueAttribute(10),
 	}
 	var v1 = Values{
-		"bb": 20,
-		"cc": 30,
+		"bb": NewValueAttribute(20),
+		"cc": NewValueAttribute(30),
 	}
 	var v2 = Values{
-		"dd": 40,
-		"ee": 50,
+		"dd": NewValueAttribute(40),
+		"ee": NewValueAttribute(50),
 	}
 	var v3 = Values{
-		"ff": 60,
-		"gg": 70,
+		"ff": NewValueAttribute(60),
+		"gg": NewValueAttribute(70),
 	}
 
 	v := MergeValuesCustomIdentifiers([]*ValuesCustomIdentifier{
@@ -29,9 +29,9 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
 		{
 			Values: Values{
-				"aa": 10,
-				"bb": 20,
-				"cc": 30,
+				"aa": NewValueAttribute(10),
+				"bb": NewValueAttribute(20),
+				"cc": NewValueAttribute(30),
 			},
 			CustomIdentifier: nil,
 		}}) {
@@ -44,16 +44,16 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
 		{
 			Values: Values{
-				"aa": 10,
-				"bb": 20,
-				"cc": 30,
+				"aa": NewValueAttribute(10),
+				"bb": NewValueAttribute(20),
+				"cc": NewValueAttribute(30),
 			},
 			CustomIdentifier: nil,
 		},
 		{
 			Values: Values{
-				"dd": 40,
-				"ee": 50,
+				"dd": NewValueAttribute(40),
+				"ee": NewValueAttribute(50),
 			},
 			CustomIdentifier: &customIdentifiers,
 		},
@@ -67,18 +67,18 @@ func TestMergeValuesCustomIdentifiers(t *testing.T) {
 	if !reflect.DeepEqual(v, []*ValuesCustomIdentifier{
 		{
 			Values: Values{
-				"aa": 10,
-				"bb": 20,
-				"cc": 30,
+				"aa": NewValueAttribute(10),
+				"bb": NewValueAttribute(20),
+				"cc": NewValueAttribute(30),
 			},
 			CustomIdentifier: nil,
 		},
 		{
 			Values: Values{
-				"dd": 40,
-				"ee": 50,
-				"ff": 60,
-				"gg": 70,
+				"dd": NewValueAttribute(40),
+				"ee": NewValueAttribute(50),
+				"ff": NewValueAttribute(60),
+				"gg": NewValueAttribute(70),
 			},
 			CustomIdentifier: &customIdentifiers,
 		},

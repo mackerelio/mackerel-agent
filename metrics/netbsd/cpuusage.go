@@ -50,7 +50,7 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 		return nil, fmt.Errorf("iostat result malformed: [%q]", iostat)
 	}
 
-	cpuUsage := make(map[string]float64, len(iostatFieldToMetricName))
+	cpuUsage := make(metrics.Values, len(iostatFieldToMetricName))
 
 	for i, n := range iostatFieldToMetricName {
 		if i == 3 {
@@ -61,8 +61,8 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 			return nil, err
 		}
 
-		cpuUsage["cpu."+n+".percentage"] = value
+		cpuUsage["cpu."+n+".percentage"] = metrics.NewValueAttribute(value)
 	}
 
-	return metrics.Values(cpuUsage), nil
+	return cpuUsage, nil
 }

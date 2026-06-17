@@ -27,7 +27,7 @@ func TestPluginCollectValuesCommand(t *testing.T) {
 		if name != "custom.just.echo.1" {
 			t.Errorf("Wrong name: %s", name)
 		}
-		if value != 1.0 {
+		if value.Value != 1.0 {
 			t.Errorf("Wrong value: %+v", value)
 		}
 	}
@@ -51,7 +51,7 @@ func TestPluginCollectValuesCommandWithSpaces(t *testing.T) {
 		if name != "custom.just.echo.2" {
 			t.Errorf("Wrong name: %s", name)
 		}
-		if value != 2.0 {
+		if value.Value != 2.0 {
 			t.Errorf("Wrong value: %+v", value)
 		}
 	}

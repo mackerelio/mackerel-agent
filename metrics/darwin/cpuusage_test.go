@@ -39,9 +39,9 @@ func TestCPUUsageGenerator_parseIostatOutput(t *testing.T) {
  16 12 72  2.50 3.04 3.20
 `,
 			values: metrics.Values{
-				"cpu.user.percentage":   16.0,
-				"cpu.system.percentage": 12.0,
-				"cpu.idle.percentage":   72.0,
+				"cpu.user.percentage":   metrics.NewValueAttribute(16.0),
+				"cpu.system.percentage": metrics.NewValueAttribute(12.0),
+				"cpu.idle.percentage":   metrics.NewValueAttribute(72.0),
 			},
 		},
 		{
@@ -53,9 +53,9 @@ func TestCPUUsageGenerator_parseIostatOutput(t *testing.T) {
  16 12 72  2.50 3.04 3.20
 `,
 			values: metrics.Values{
-				"cpu.user.percentage":   16.0,
-				"cpu.system.percentage": 12.0,
-				"cpu.idle.percentage":   72.0,
+				"cpu.user.percentage":   metrics.NewValueAttribute(16.0),
+				"cpu.system.percentage": metrics.NewValueAttribute(12.0),
+				"cpu.idle.percentage":   metrics.NewValueAttribute(72.0),
 			},
 		},
 	}
@@ -64,7 +64,7 @@ func TestCPUUsageGenerator_parseIostatOutput(t *testing.T) {
 		if err != nil {
 			t.Errorf("error should be nil but got: %s", err)
 		}
-		if !reflect.DeepEqual(map[string]float64(got), map[string]float64(testCase.values)) {
+		if !reflect.DeepEqual(got, testCase.values) {
 			t.Errorf("metric values should be %#v but got: %#v", testCase.values, got)
 		}
 	}
