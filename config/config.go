@@ -140,6 +140,7 @@ type PluginConfig struct {
 	ExcludePattern        *string       `toml:"exclude_pattern"`
 	Action                CommandConfig `toml:"action" conf:"parent"`
 	Memo                  string        `toml:"memo"`
+	UsePluginTimestamp    bool          `toml:"use_plugin_timestamp"`
 }
 
 // CommandConfig represents an executable command configuration.
@@ -208,10 +209,11 @@ func (cmd *Command) CommandString() string {
 // MetricPlugin represents the configuration of a metric plugin
 // The User option is ignored on Windows
 type MetricPlugin struct {
-	Command          Command
-	CustomIdentifier *string
-	IncludePattern   *regexp.Regexp
-	ExcludePattern   *regexp.Regexp
+	Command            Command
+	CustomIdentifier   *string
+	IncludePattern     *regexp.Regexp
+	ExcludePattern     *regexp.Regexp
+	UsePluginTimestamp bool
 }
 
 func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
@@ -241,10 +243,11 @@ func (pconf *PluginConfig) buildMetricPlugin() (*MetricPlugin, error) {
 	}
 
 	return &MetricPlugin{
-		Command:          *cmd,
-		CustomIdentifier: pconf.CustomIdentifier,
-		IncludePattern:   includePattern,
-		ExcludePattern:   excludePattern,
+		Command:            *cmd,
+		CustomIdentifier:   pconf.CustomIdentifier,
+		IncludePattern:     includePattern,
+		ExcludePattern:     excludePattern,
+		UsePluginTimestamp: pconf.UsePluginTimestamp,
 	}, nil
 }
 
