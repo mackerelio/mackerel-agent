@@ -407,10 +407,15 @@ func enqueueLoop(ctx context.Context, app *App, postQueue chan *postValue) {
 						continue
 					}
 				}
-				for name, value := range values.Values {
-					if math.IsNaN(value) || math.IsInf(value, 0) {
-						logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", hostID, name, value)
+				for name, attribute := range values.Values {
+					if math.IsNaN(attribute.Value) || math.IsInf(attribute.Value, 0) {
+						logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", hostID, name, attribute)
 						continue
+					}
+
+					var ts = created
+					if attribute.Time != nil {
+						ts = *attribute.Time
 					}
 
 					creatingValues = append(
@@ -419,8 +424,8 @@ func enqueueLoop(ctx context.Context, app *App, postQueue chan *postValue) {
 							HostID: hostID,
 							MetricValue: &mkr.MetricValue{
 								Name:  name,
-								Time:  created,
-								Value: value,
+								Time:  ts,
+								Value: attribute.Value,
 							},
 						},
 					)
