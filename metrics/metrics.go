@@ -1,11 +1,22 @@
 package metrics
 
-import "maps"
+import (
+	"maps"
 
-import mkr "github.com/mackerelio/mackerel-client-go"
+	mkr "github.com/mackerelio/mackerel-client-go"
+)
 
 // Values represents metric values
-type Values map[string]float64
+type Values map[string]ValueAttribute
+
+type ValueAttribute struct {
+	Time  *int64
+	Value float64
+}
+
+func NewValueAttribute(v float64) ValueAttribute {
+	return ValueAttribute{Value: v}
+}
 
 func merge(v1, v2 Values) Values {
 	maps.Copy(v1, v2)
