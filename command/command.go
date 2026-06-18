@@ -409,7 +409,7 @@ func enqueueLoop(ctx context.Context, app *App, postQueue chan *postValue) {
 				}
 				for name, attribute := range values.Values {
 					if math.IsNaN(attribute.Value) || math.IsInf(attribute.Value, 0) {
-						logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", hostID, name, attribute)
+						logger.Warningf("Invalid value: hostID = %s, name = %s, value = %f\n is not sent.", hostID, name, attribute.Value)
 						continue
 					}
 
