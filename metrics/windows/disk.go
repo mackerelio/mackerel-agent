@@ -41,7 +41,7 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	results := make(map[string]float64)
+	results := make(metrics.Values)
 	for _, record := range records {
 		name := record.Name
 		if g.IgnoreRegexp != nil && g.IgnoreRegexp.MatchString(name) {
@@ -52,8 +52,8 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 			continue
 		}
 		name = name[:1]
-		results[fmt.Sprintf(`disk.%s.reads.delta`, name)] = float64(record.DiskReadsPerSec)
-		results[fmt.Sprintf(`disk.%s.writes.delta`, name)] = float64(record.DiskWritesPerSec)
+		results[fmt.Sprintf(`disk.%s.reads.delta`, name)] = metrics.NewValueAttribute(float64(record.DiskReadsPerSec))
+		results[fmt.Sprintf(`disk.%s.writes.delta`, name)] = metrics.NewValueAttribute(float64(record.DiskWritesPerSec))
 	}
 	diskLogger.Debugf("disk %#v", results)
 	return results, nil

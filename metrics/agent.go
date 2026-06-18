@@ -17,15 +17,13 @@ var memStats = new(runtime.MemStats)
 func (g *AgentGenerator) Generate() (Values, error) {
 	runtime.ReadMemStats(memStats)
 
-	ret := map[string]float64{
-		"custom.agent.memory.alloc":          float64(memStats.Alloc),
-		"custom.agent.memory.sys":            float64(memStats.Sys),
-		"custom.agent.memory.heapAlloc":      float64(memStats.HeapAlloc),
-		"custom.agent.memory.heapSys":        float64(memStats.HeapSys),
-		"custom.agent.runtime.goroutine_num": float64(runtime.NumGoroutine()),
-	}
-
-	return ret, nil
+	return Values{
+		"custom.agent.memory.alloc":          NewValueAttribute(float64(memStats.Alloc)),
+		"custom.agent.memory.sys":            NewValueAttribute(float64(memStats.Sys)),
+		"custom.agent.memory.heapAlloc":      NewValueAttribute(float64(memStats.HeapAlloc)),
+		"custom.agent.memory.heapSys":        NewValueAttribute(float64(memStats.HeapSys)),
+		"custom.agent.runtime.goroutine_num": NewValueAttribute(float64(runtime.NumGoroutine())),
+	}, nil
 }
 
 // CustomIdentifier for PluginGenerator interface

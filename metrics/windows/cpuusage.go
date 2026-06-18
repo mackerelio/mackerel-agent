@@ -65,12 +65,13 @@ func (g *CPUUsageGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	results := make(map[string]float64)
+	results := make(metrics.Values)
 	for _, v := range g.counters {
-		results[v.PostName], err = windows.GetCounterValue(v.Counter)
+		counter, err := windows.GetCounterValue(v.Counter)
 		if err != nil {
 			return nil, err
 		}
+		results[v.PostName] = metrics.NewValueAttribute(counter)
 	}
 
 	cpuUsageLogger.Debugf("cpuusage: %#v", results)

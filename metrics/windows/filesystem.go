@@ -38,8 +38,8 @@ func (g *FilesystemGenerator) Generate() (metrics.Values, error) {
 		}
 		if matches := driveLetterReg.FindStringSubmatch(name); matches != nil {
 			device := util.SanitizeMetricKey(matches[1])
-			ret["filesystem."+device+".size"] = values.KbSize * 1024
-			ret["filesystem."+device+".used"] = values.KbUsed * 1024
+			ret["filesystem."+device+".size"] = metrics.NewValueAttribute(values.KbSize * 1024)
+			ret["filesystem."+device+".used"] = metrics.NewValueAttribute(values.KbUsed * 1024)
 		}
 	}
 	logger.Debugf("filesystem %#v", ret)

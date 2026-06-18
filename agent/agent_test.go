@@ -42,14 +42,14 @@ func TestAgent_Watch(t *testing.T) {
 	g1 := &fakeGenerator{
 		FakeGenerate: func() (metrics.Values, error) {
 			g1Cnt++
-			return map[string]float64{"g1.a": float64(g1Cnt)}, nil
+			return metrics.Values{"g1.a": metrics.NewValueAttribute(float64(g1Cnt))}, nil
 		},
 	}
 	g2i := "g2"
 	g2 := &fakePluginGenerator{
 		FakeCustomIdentifier: &g2i,
 		FakeGenerate: func() (metrics.Values, error) {
-			return map[string]float64{"g2.a": float64(14), "g2.b": float64(42)}, nil
+			return metrics.Values{"g2.a": metrics.NewValueAttribute(float64(14)), "g2.b": metrics.NewValueAttribute(float64(42))}, nil
 		},
 	}
 
@@ -81,7 +81,7 @@ func TestAgent_Watch(t *testing.T) {
 			}
 
 			if got, ok := v1.Values["g1.a"]; ok {
-				if want := float64(cnt); got != want {
+				if want := float64(cnt); got.Value != want {
 					t.Errorf("got %v, want %v", got, want)
 				}
 			} else {
@@ -89,12 +89,12 @@ func TestAgent_Watch(t *testing.T) {
 			}
 
 			if got, ok := v2.Values["g2.a"]; ok {
-				if want := float64(14); got != want {
+				if want := float64(14); got.Value != want {
 					t.Errorf("generator2: g2.a: got %v, want %v", got, want)
 				}
 			}
 			if got, ok := v2.Values["g2.b"]; ok {
-				if want := float64(42); got != want {
+				if want := float64(42); got.Value != want {
 					t.Errorf("generator2: g2.b: got %v, want %v", got, want)
 				}
 			}

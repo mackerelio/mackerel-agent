@@ -23,7 +23,7 @@ func NewMemoryGenerator() (*MemoryGenerator, error) {
 
 // Generate XXX
 func (g *MemoryGenerator) Generate() (metrics.Values, error) {
-	ret := make(map[string]float64)
+	ret := make(metrics.Values)
 
 	var memoryStatusEx windows.MEMORY_STATUS_EX
 	memoryStatusEx.Length = uint32(unsafe.Sizeof(memoryStatusEx))
@@ -34,12 +34,12 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 
 	free := float64(memoryStatusEx.AvailPhys)
 	total := float64(memoryStatusEx.TotalPhys)
-	ret["memory.free"] = free
-	ret["memory.total"] = total
-	ret["memory.used"] = total - free
-	ret["memory.pagefile_total"] = float64(memoryStatusEx.TotalPageFile)
-	ret["memory.pagefile_free"] = float64(memoryStatusEx.AvailPageFile)
+	ret["memory.free"] = metrics.NewValueAttribute(free)
+	ret["memory.total"] = metrics.NewValueAttribute(total)
+	ret["memory.used"] = metrics.NewValueAttribute(total - free)
+	ret["memory.pagefile_total"] = metrics.NewValueAttribute(float64(memoryStatusEx.TotalPageFile))
+	ret["memory.pagefile_free"] = metrics.NewValueAttribute(float64(memoryStatusEx.AvailPageFile))
 
 	memoryLogger.Debugf("memory : %#v", ret)
-	return metrics.Values(ret), nil
+	return ret, nil
 }

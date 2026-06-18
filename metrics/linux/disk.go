@@ -72,18 +72,18 @@ func (g *DiskGenerator) Generate() (metrics.Values, error) {
 		return nil, err
 	}
 
-	ret := make(map[string]float64)
+	ret := make(metrics.Values)
 	for name, value := range prevValues {
 		if !postDiskMetricsRegexp.MatchString(name) {
 			continue
 		}
 		currValue, ok := currValues[name]
 		if ok {
-			ret[name+".delta"] = (currValue - value) / g.Interval.Seconds()
+			ret[name+".delta"] = metrics.NewValueAttribute((currValue.Value - value.Value) / g.Interval.Seconds())
 		}
 	}
 
-	return metrics.Values(ret), nil
+	return ret, nil
 }
 
 func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
@@ -107,7 +107,7 @@ func (g *DiskGenerator) collectDiskstatValues() (metrics.Values, error) {
 
 func (g *DiskGenerator) parseDiskStats(out []byte, mapping map[string]string) (metrics.Values, error) {
 	lineScanner := bufio.NewScanner(bytes.NewReader(out))
-	results := make(map[string]float64)
+	results := make(metrics.Values)
 	for lineScanner.Scan() {
 		text := lineScanner.Text()
 		cols := strings.Fields(text)
@@ -152,7 +152,7 @@ func (g *DiskGenerator) parseDiskStats(out []byte, mapping map[string]string) (m
 		}
 		if hasNonZeroValue {
 			for k, v := range deviceResult {
-				results[k] = v
+				results[k] = metrics.NewValueAttribute(v)
 			}
 		}
 	}

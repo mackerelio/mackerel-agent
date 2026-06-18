@@ -9,8 +9,8 @@ import (
 type testGenerator struct{}
 
 func (g *testGenerator) Generate() (metrics.Values, error) {
-	values := make(map[string]float64)
-	values["test"] = 10
+	values := make(metrics.Values)
+	values["test"] = metrics.NewValueAttribute(10)
 	return values, nil
 }
 

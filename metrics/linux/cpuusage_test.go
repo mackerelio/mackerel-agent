@@ -24,7 +24,7 @@ func TestCPUUsageGenerate(t *testing.T) {
 		if !ok {
 			t.Errorf("cpu values shuold have '%s': %v", metricName, values)
 		}
-		sumPercentage += value
+		sumPercentage += value.Value
 	}
 
 	percentDistFrom100 := math.Mod(sumPercentage, 100)

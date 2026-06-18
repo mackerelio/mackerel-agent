@@ -35,8 +35,8 @@ func (g *FilesystemGenerator) Generate() (Values, error) {
 				metricName = util.SanitizeMetricKey(device)
 			}
 			// kilo bytes -> bytes
-			ret["filesystem."+metricName+".size"] = float64(dfs.Used+dfs.Available) * 1024
-			ret["filesystem."+metricName+".used"] = float64(dfs.Used) * 1024
+			ret["filesystem."+metricName+".size"] = NewValueAttribute(float64(dfs.Used+dfs.Available) * 1024)
+			ret["filesystem."+metricName+".used"] = NewValueAttribute(float64(dfs.Used) * 1024)
 		}
 	}
 	return ret, nil

@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/mackerelio/golib/logging"
 	"github.com/mackerelio/mackerel-agent/config"
@@ -42,6 +44,8 @@ var pluginLogger = logging.GetLogger("metrics.plugin")
 const pluginPrefix = "custom."
 
 var pluginConfigurationEnvName = "MACKEREL_AGENT_PLUGIN_META"
+
+const allowTimeWindow = 15 * time.Minute
 
 // NewPluginGenerator XXX
 func NewPluginGenerator(conf *config.MetricPlugin) PluginGenerator {
@@ -225,7 +229,8 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 		return nil, err
 	}
 
-	results := make(map[string]float64, 0)
+	now := time.Now()
+	results := make(Values, 0)
 	for line := range strings.SplitSeq(stdout, "\n") {
 		// Key, value, timestamp
 		// ex.) tcp.CLOSING 0 1397031808
@@ -250,8 +255,29 @@ func (g *pluginGenerator) collectValues() (Values, error) {
 			continue
 		}
 
-		results[pluginPrefix+key] = value
+		if g.Config.UsePluginTimestamp {
+			metricTimestamp, err := strconv.ParseInt(items[2], 10, 64)
+			if err != nil {
+				pluginLogger.Warningf("Failed to parse time (key=%s): %s", key, err)
+				continue
+			}
+
+			if mtsTime := time.Unix(metricTimestamp, 0); !validateActualTime(now, mtsTime) {
+				pluginLogger.Warningf("Rejected because it exceeds the acceptable time window. (key=%s): metric_timestamp=%d now=%d", key, mtsTime.Unix(), now.Unix())
+				continue
+			}
+
+			results[pluginPrefix+key] = ValueAttribute{Value: value, Time: &metricTimestamp}
+			continue
+		}
+
+		results[pluginPrefix+key] = NewValueAttribute(value)
 	}
 
 	return results, nil
+}
+
+func validateActualTime(now, ts time.Time) bool {
+	duration := now.Sub(ts).Seconds()
+	return math.Abs(float64(duration)) < allowTimeWindow.Seconds()
 }

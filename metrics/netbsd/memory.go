@@ -27,7 +27,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		memoryLogger.Warningf("'top -bn 1' command exited with a non-zero status: '%s'", err)
 		errRet = err
 	}
-	ret := make(map[string]float64)
+	ret := make(metrics.Values)
 
 	out := string(outBytes)
 	lines := strings.Split(out, "\n")
@@ -45,15 +45,15 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 					k := strings.TrimSuffix(fields[i+1], ",")
 					switch k {
 					case "Act":
-						ret["memory.act"] = v
+						ret["memory.act"] = metrics.NewValueAttribute(v)
 					case "Wired":
-						ret["memory.wired"] = v
+						ret["memory.wired"] = metrics.NewValueAttribute(v)
 					case "Exec":
-						ret["memory.exec"] = v
+						ret["memory.exec"] = metrics.NewValueAttribute(v)
 					case "File":
-						ret["memory.file"] = v
+						ret["memory.file"] = metrics.NewValueAttribute(v)
 					case "Free":
-						ret["memory.free"] = v
+						ret["memory.free"] = metrics.NewValueAttribute(v)
 					}
 				} else {
 					errRet = err
@@ -62,7 +62,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 		}
 		if fields[0] == "Swap:" {
 			if v, err := getValue(fields[1]); err == nil {
-				ret["memory.swap_total"] = v
+				ret["memory.swap_total"] = metrics.NewValueAttribute(v)
 			} else {
 				errRet = err
 			}
@@ -71,7 +71,7 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 				swapFreeIndex = 3
 			}
 			if v, err := getValue(fields[swapFreeIndex]); err == nil {
-				ret["memory.swap_free"] = v
+				ret["memory.swap_free"] = metrics.NewValueAttribute(v)
 			} else {
 				errRet = err
 			}
@@ -82,10 +82,10 @@ func (g *MemoryGenerator) Generate() (metrics.Values, error) {
 	if err != nil {
 		return nil, err
 	}
-	ret["memory.total"] = v
+	ret["memory.total"] = metrics.NewValueAttribute(v)
 
 	if errRet == nil {
-		return metrics.Values(ret), nil
+		return ret, nil
 	}
 	return nil, errRet
 }

@@ -26,8 +26,8 @@ func (g *LoadavgGenerator) Generate() (Values, error) {
 		return nil, err
 	}
 	return Values{
-		"loadavg1":  loadavgs.Loadavg1,
-		"loadavg5":  loadavgs.Loadavg5,
-		"loadavg15": loadavgs.Loadavg15,
+		"loadavg1":  NewValueAttribute(loadavgs.Loadavg1),
+		"loadavg5":  NewValueAttribute(loadavgs.Loadavg5),
+		"loadavg15": NewValueAttribute(loadavgs.Loadavg15),
 	}, nil
 }

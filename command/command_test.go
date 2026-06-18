@@ -271,7 +271,7 @@ func (g *counterGenerator) Generate() (metrics.Values, error) {
 	g.Lock()
 	defer g.Unlock()
 	g.counter = g.counter + 1
-	return map[string]float64{"dummy.a": float64(g.counter)}, nil
+	return metrics.Values{"dummy.a": metrics.NewValueAttribute(float64(g.counter))}, nil
 }
 
 type byTime []mkr.HostMetricValue
