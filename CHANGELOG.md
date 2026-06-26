@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.87.0 (2026-06-26)
+
+* update to github.com/shirou/gopsutil/v4 #1226 (yseto)
+* Bump actions/checkout from 6.0.3 to 7.0.0 #1225 (dependabot[bot])
+* Bump msys2/setup-msys2 from 2.31.1 to 2.32.0 #1224 (dependabot[bot])
+* Use the time reported by the plugin. #1223 (yseto)
+* Bump golang.org/x/text from 0.37.0 to 0.38.0 #1222 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.90.1 to 0.91.0 in /wix #1221 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.52.2 to 0.52.3 in /wix #1220 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.42.0 to 0.43.0 #1219 (dependabot[bot])
+* Bump golang.org/x/sys from 0.45.0 to 0.46.0 in /wix #1218 (dependabot[bot])
+* Bump golang.org/x/sys from 0.45.0 to 0.46.0 #1217 (dependabot[bot])
+* Bump actions/checkout from 6.0.2 to 6.0.3 #1216 (dependabot[bot])
+* Bump golang.org/x/sys from 0.44.0 to 0.45.0 in /wix #1215 (dependabot[bot])
+* Bump golang.org/x/sys from 0.44.0 to 0.45.0 #1214 (dependabot[bot])
+* Bump azure/trusted-signing-action from 1.2.0 to 2.0.0 #1213 (dependabot[bot])
+* Bump golang.org/x/text from 0.36.0 to 0.37.0 #1212 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.41.0 to 0.42.0 #1211 (dependabot[bot])
+* Bump golang.org/x/sys from 0.43.0 to 0.44.0 in /wix #1210 (dependabot[bot])
+* Bump golang.org/x/sys from 0.43.0 to 0.44.0 #1209 (dependabot[bot])
+* Bump msys2/setup-msys2 from 2.31.0 to 2.31.1 #1208 (dependabot[bot])
+* Bump actions/cache from 5.0.4 to 5.0.5 #1207 (dependabot[bot])
+* Bump actions/upload-artifact from 7.0.0 to 7.0.1 #1205 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.90.0 to 0.90.1 in /wix #1202 (dependabot[bot])
+
+
 ## 0.86.3 (2026-04-16)
 
 * Bump golang.org/x/text from 0.35.0 to 0.36.0 #1204 (dependabot[bot])
