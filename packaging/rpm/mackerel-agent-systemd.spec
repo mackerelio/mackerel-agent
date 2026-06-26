@@ -54,6 +54,30 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Fri Jun 26 2026 <mackerel-developers@hatena.ne.jp> - 0.87.0
+- update to github.com/shirou/gopsutil/v4 (by yseto)
+- Bump actions/checkout from 6.0.3 to 7.0.0 (by dependabot[bot])
+- Bump msys2/setup-msys2 from 2.31.1 to 2.32.0 (by dependabot[bot])
+- Use the time reported by the plugin. (by yseto)
+- Bump golang.org/x/text from 0.37.0 to 0.38.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.90.1 to 0.91.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.52.2 to 0.52.3 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.42.0 to 0.43.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.45.0 to 0.46.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/sys from 0.45.0 to 0.46.0 (by dependabot[bot])
+- Bump actions/checkout from 6.0.2 to 6.0.3 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.44.0 to 0.45.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/sys from 0.44.0 to 0.45.0 (by dependabot[bot])
+- Bump azure/trusted-signing-action from 1.2.0 to 2.0.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.36.0 to 0.37.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.41.0 to 0.42.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.43.0 to 0.44.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/sys from 0.43.0 to 0.44.0 (by dependabot[bot])
+- Bump msys2/setup-msys2 from 2.31.0 to 2.31.1 (by dependabot[bot])
+- Bump actions/cache from 5.0.4 to 5.0.5 (by dependabot[bot])
+- Bump actions/upload-artifact from 7.0.0 to 7.0.1 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.90.0 to 0.90.1 in /wix (by dependabot[bot])
+
 * Thu Apr 16 2026 <mackerel-developers@hatena.ne.jp> - 0.86.3
 - Bump golang.org/x/text from 0.35.0 to 0.36.0 (by dependabot[bot])
 - Bump github.com/mackerelio/go-check-plugins from 0.52.0 to 0.52.2 in /wix (by dependabot[bot])
