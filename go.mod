@@ -18,7 +18,7 @@ require (
 	github.com/mackerelio/mackerel-client-go v0.43.0
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
-	github.com/shirou/gopsutil/v4 v4.26.5
+	github.com/shirou/gopsutil/v4 v4.26.6
 	github.com/vishvananda/netlink v1.3.1
 	github.com/yusufpapurcu/wmi v1.2.4
 	golang.org/x/sys v0.46.0
