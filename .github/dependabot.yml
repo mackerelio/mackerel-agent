@@ -3,9 +3,7 @@ updates:
   - package-ecosystem: gomod
     directory: "/"
     schedule:
-      interval: daily
-      time: "01:00"
-      timezone: Asia/Tokyo
+      interval: weekly
     cooldown:
       default-days: 5
       include:
@@ -16,9 +14,7 @@ updates:
   - package-ecosystem: gomod
     directory: "/wix"
     schedule:
-      interval: daily
-      time: "01:00"
-      timezone: Asia/Tokyo
+      interval: weekly
     cooldown:
       default-days: 5
       include:
@@ -29,9 +25,7 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: daily
-      time: "01:00"
-      timezone: Asia/Tokyo
+      interval: weekly
     cooldown:
       default-days: 5
       include:
