@@ -13,7 +13,7 @@ require (
 	github.com/Songmu/timeout v0.4.0
 	github.com/agext/levenshtein v1.2.3
 	github.com/fatih/color v1.19.0
-	github.com/mackerelio/go-osstat v0.2.7
+	github.com/mackerelio/go-osstat v0.2.8
 	github.com/mackerelio/golib v1.2.2
 	github.com/mackerelio/mackerel-client-go v0.43.0
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
