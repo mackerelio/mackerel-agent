@@ -3,7 +3,7 @@ module github.com/mackerelio/mackerel-agent/wix
 go 1.25.5
 
 require (
-	github.com/mackerelio/go-check-plugins v0.52.3
+	github.com/mackerelio/go-check-plugins v0.52.4
 	github.com/mackerelio/mackerel-agent-plugins v0.91.0
 	github.com/mackerelio/mkr v0.64.0
 	github.com/mattn/go-encoding v0.0.2
@@ -40,7 +40,7 @@ require (
 	github.com/mackerelio/checkers v0.2.1 // indirect
 	github.com/mackerelio/go-mackerel-plugin v0.1.6 // indirect
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.4 // indirect
-	github.com/mackerelio/go-osstat v0.2.7 // indirect
+	github.com/mackerelio/go-osstat v0.2.8 // indirect
 	github.com/mackerelio/golib v1.2.2 // indirect
 	github.com/mackerelio/mackerel-agent v0.86.1 // indirect
 	github.com/mackerelio/mackerel-client-go v0.40.0 // indirect
@@ -69,11 +69,11 @@ require (
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
-	golang.org/x/crypto v0.52.0 // indirect
-	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/crypto v0.54.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
-	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/term v0.43.0 // indirect
-	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/term v0.45.0 // indirect
+	golang.org/x/text v0.40.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
