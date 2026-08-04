@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	github.com/mackerelio/go-check-plugins v0.52.4
 	github.com/mackerelio/mackerel-agent-plugins v0.91.0
-	github.com/mackerelio/mkr v0.64.0
+	github.com/mackerelio/mkr v0.65.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.47.0
 )
@@ -42,8 +42,8 @@ require (
 	github.com/mackerelio/go-mackerel-plugin-helper v0.1.4 // indirect
 	github.com/mackerelio/go-osstat v0.2.8 // indirect
 	github.com/mackerelio/golib v1.2.2 // indirect
-	github.com/mackerelio/mackerel-agent v0.86.1 // indirect
-	github.com/mackerelio/mackerel-client-go v0.40.0 // indirect
+	github.com/mackerelio/mackerel-agent v0.87.0 // indirect
+	github.com/mackerelio/mackerel-client-go v0.45.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-zglob v0.0.6 // indirect
@@ -64,7 +64,7 @@ require (
 	github.com/tatsushid/go-fastping v0.0.0-20160109021039-d7bb493dee3e // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
-	github.com/urfave/cli/v3 v3.8.0 // indirect
+	github.com/urfave/cli/v3 v3.10.1 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
