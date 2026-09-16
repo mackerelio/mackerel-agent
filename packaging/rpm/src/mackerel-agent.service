@@ -13,6 +13,7 @@ ExecStopPost=/bin/sh -c '[ "$AUTO_RETIREMENT" == "" ] || [ "$AUTO_RETIREMENT" ==
 ExecReload=/bin/kill -HUP $MAINPID
 LimitNOFILE=65536
 LimitNPROC=65536
+KillMode=mixed
 
 [Install]
 WantedBy=multi-user.target
