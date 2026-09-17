@@ -1,6 +1,6 @@
 module github.com/mackerelio/mackerel-agent/wix
 
-go 1.25.5
+go 1.27.0
 
 require (
 	github.com/mackerelio/go-check-plugins v0.52.4

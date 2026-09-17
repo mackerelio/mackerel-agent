@@ -5,6 +5,7 @@ package darwin
 import (
 	"fmt"
 	"os/exec"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -45,11 +46,11 @@ func parseIostatOutput(output string) (metrics.Values, error) {
 	lines := strings.Split(output, "\n")
 
 	var fields []string
-	for i := len(lines) - 1; i >= 0; i-- {
-		if lines[i] == "" {
+	for _, line := range slices.Backward(lines) {
+		if line == "" {
 			continue
 		}
-		xs := strings.Fields(lines[i])
+		xs := strings.Fields(line)
 		if len(xs) >= len(iostatFieldToMetricName) {
 			fields = xs
 			break

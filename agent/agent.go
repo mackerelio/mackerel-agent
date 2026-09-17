@@ -100,8 +100,7 @@ func (agent *Agent) CollectGraphDefsOfPlugins() []*mkr.GraphDefsParam {
 	for _, g := range agent.PluginGenerators {
 		p, err := g.PrepareGraphDefs()
 
-		var faultError *metrics.PluginFaultError
-		if errors.As(err, &faultError) {
+		if _, ok := errors.AsType[*metrics.PluginFaultError](err); ok {
 			logger.Errorf("Failed to fetch meta information from plugin %v; seems that the plugin has a bug: %v", g, err)
 		} else if err != nil {
 			logger.Debugf("Failed to fetch meta information from plugin %v (non critical); seems that this plugin does not have meta information: %v", g, err)
