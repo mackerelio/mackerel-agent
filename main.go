@@ -164,12 +164,7 @@ func resolveConfig(fs *flag.FlagSet, argv []string) (*config.Config, error) {
 }
 
 func setProxy(conf *config.Config) {
-	if canEnableProxy(conf.HTTPProxy) {
-		os.Setenv("HTTP_PROXY", conf.HTTPProxy)
-	}
-	if canEnableProxy(conf.HTTPSProxy) {
-		os.Setenv("HTTPS_PROXY", conf.HTTPSProxy)
-	}
+	httpProxy, httpsProxy := conf.HTTPProxy, conf.HTTPSProxy
 
 	// Fallback.
 	// Since Go 1.16, HTTP_PROXY and HTTPS_PROXY are now handled specifically separately.
@@ -179,13 +174,39 @@ func setProxy(conf *config.Config) {
 	// also handled as https_proxy, so there could be cases where the plugin depends on
 	// the environment variables set here.
 	// So, to support the behavior in the old configuration file
-	if canEnableProxy(conf.HTTPProxy) && conf.HTTPSProxy == "" {
-		os.Setenv("HTTPS_PROXY", conf.HTTPProxy)
+	if httpsProxy == "" {
+		httpsProxy = httpProxy
+	}
+
+	applyProxyEnv("HTTP_PROXY", httpProxy)
+	applyProxyEnv("HTTPS_PROXY", httpsProxy)
+}
+
+// applyProxyEnv reflects a proxy configuration to the environment variable,
+// which is referred by net/http and inherited by the plugins.
+//
+// An empty address keeps the environment variables given to the process, while
+// "direct" removes them so that a proxy configured outside of mackerel-agent
+// is never used.
+//
+// Both the upper and the lower case names are handled, because net/http looks
+// up the upper case name first while some plugins (and curl) prefer the lower
+// case one.
+func applyProxyEnv(name, address string) {
+	switch {
+	case address == "":
+		// respect the environment variables given to the process
+	case isDirectProxy(address):
+		os.Unsetenv(name)
+		os.Unsetenv(strings.ToLower(name))
+	default:
+		os.Setenv(name, address)
+		os.Setenv(strings.ToLower(name), address)
 	}
 }
 
-func canEnableProxy(address string) bool {
-	return address != "" && address != "direct"
+func isDirectProxy(address string) bool {
+	return address == "direct"
 }
 
 func setLogLevel(silent, verbose bool) {
