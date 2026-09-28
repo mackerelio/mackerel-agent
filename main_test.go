@@ -243,7 +243,9 @@ func TestConfigProxy(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			os.Unsetenv("HTTP_PROXY")
+			os.Unsetenv("http_proxy")
 			os.Unsetenv("HTTPS_PROXY")
+			os.Unsetenv("https_proxy")
 
 			setProxy(&config.Config{
 				HTTPProxy:  tt.httpProxy,
@@ -258,6 +260,58 @@ func TestConfigProxy(t *testing.T) {
 			httpsProxy := os.Getenv("HTTPS_PROXY")
 			if httpsProxy != tt.wantHTTPSProxy {
 				t.Errorf("HTTPS_PROXY=%s; but want %s", httpsProxy, tt.wantHTTPSProxy)
+			}
+		})
+	}
+}
+
+// TestConfigProxyWithEnv confirms that a proxy configured in the OS
+// environment is ignored when "direct" is specified, and is respected when the
+// configuration is empty.
+func TestConfigProxyWithEnv(t *testing.T) {
+	const (
+		envHTTP  = "http://env.example.com:8080"
+		envHTTPS = "http://env.example.com:8443"
+	)
+
+	tests := []struct {
+		name           string
+		httpProxy      string
+		httpsProxy     string
+		wantHTTPProxy  string
+		wantHTTPSProxy string
+	}{
+		{"empty keeps the environment", "", "", envHTTP, envHTTPS},
+		{"http is direct", "direct", "", "", ""},
+		{"https is direct", "", "direct", envHTTP, ""},
+		{"http and https is direct", "direct", "direct", "", ""},
+		{"http is direct, https is given", "direct", "https", "", "https"},
+		{"http is given, https is direct", "http", "direct", "http", ""},
+		{"http and https are given", "http", "https", "http", "https"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// net/http looks up the upper case name first, then the lower case one
+			t.Setenv("HTTP_PROXY", envHTTP)
+			t.Setenv("http_proxy", envHTTP)
+			t.Setenv("HTTPS_PROXY", envHTTPS)
+			t.Setenv("https_proxy", envHTTPS)
+
+			setProxy(&config.Config{
+				HTTPProxy:  tt.httpProxy,
+				HTTPSProxy: tt.httpsProxy,
+			})
+
+			for _, name := range []string{"HTTP_PROXY", "http_proxy"} {
+				if got := os.Getenv(name); got != tt.wantHTTPProxy {
+					t.Errorf("%s=%q; but want %q", name, got, tt.wantHTTPProxy)
+				}
+			}
+			for _, name := range []string{"HTTPS_PROXY", "https_proxy"} {
+				if got := os.Getenv(name); got != tt.wantHTTPSProxy {
+					t.Errorf("%s=%q; but want %q", name, got, tt.wantHTTPSProxy)
+				}
 			}
 		})
 	}
