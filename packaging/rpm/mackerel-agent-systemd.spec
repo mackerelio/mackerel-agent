@@ -54,6 +54,32 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Mon Sep 28 2026 <mackerel-developers@hatena.ne.jp> - 0.87.1
+- Ignore proxy environment variables when "direct" is specified (by masarasi)
+- KillMode=control-group (default) was conflict the processing on_stop (by yseto)
+- Bump github.com/shirou/gopsutil/v4 from 4.26.7 to 4.26.8 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.46.0 to 0.47.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.40.0 to 0.41.0 (by dependabot[bot])
+- Bump github.com/shirou/gopsutil/v4 from 4.26.6 to 4.26.7 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.45.1 to 0.46.0 (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.64.0 to 0.65.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.45.0 to 0.45.1 (by dependabot[bot])
+- Bump actions/checkout from 7.0.0 to 7.0.1 (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.52.3 to 0.52.4 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.44.0 to 0.45.0 (by dependabot[bot])
+- Bump actions/setup-go from 6.5.0 to 7.0.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.39.0 to 0.40.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.46.0 to 0.47.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/sys from 0.46.0 to 0.47.0 (by dependabot[bot])
+- Bump github.com/mackerelio/go-osstat from 0.2.7 to 0.2.8 (by dependabot[bot])
+- Bump github.com/mackerelio/mackerel-client-go from 0.43.0 to 0.44.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.38.0 to 0.39.0 (by dependabot[bot])
+- Change Dependabot schedule from daily to weekly (by yseto)
+- Bump golang.org/x/net from 0.54.0 to 0.55.0 in /wix (by dependabot[bot])
+- Bump github.com/shirou/gopsutil/v4 from 4.26.5 to 4.26.6 (by dependabot[bot])
+- Bump actions/setup-go from 6.4.0 to 6.5.0 (by dependabot[bot])
+- Bump actions/cache from 5.0.5 to 6.1.0 (by dependabot[bot])
+
 * Fri Jun 26 2026 <mackerel-developers@hatena.ne.jp> - 0.87.0
 - update to github.com/shirou/gopsutil/v4 (by yseto)
 - Bump actions/checkout from 6.0.3 to 7.0.0 (by dependabot[bot])
