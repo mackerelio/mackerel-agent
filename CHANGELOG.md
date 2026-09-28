@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.87.1 (2026-09-28)
+
+* Ignore proxy environment variables when "direct" is specified #1256 (masarasi)
+* KillMode=control-group (default) was conflict the processing on_stop #1254 (yseto)
+* Bump github.com/shirou/gopsutil/v4 from 4.26.7 to 4.26.8 #1250 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.46.0 to 0.47.0 #1248 (dependabot[bot])
+* Bump golang.org/x/text from 0.40.0 to 0.41.0 #1247 (dependabot[bot])
+* Bump github.com/shirou/gopsutil/v4 from 4.26.6 to 4.26.7 #1246 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.45.1 to 0.46.0 #1245 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.64.0 to 0.65.0 in /wix #1244 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.45.0 to 0.45.1 #1243 (dependabot[bot])
+* Bump actions/checkout from 7.0.0 to 7.0.1 #1242 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.52.3 to 0.52.4 in /wix #1241 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.44.0 to 0.45.0 #1240 (dependabot[bot])
+* Bump actions/setup-go from 6.5.0 to 7.0.0 #1239 (dependabot[bot])
+* Bump golang.org/x/text from 0.39.0 to 0.40.0 #1238 (dependabot[bot])
+* Bump golang.org/x/sys from 0.46.0 to 0.47.0 in /wix #1237 (dependabot[bot])
+* Bump golang.org/x/sys from 0.46.0 to 0.47.0 #1236 (dependabot[bot])
+* Bump github.com/mackerelio/go-osstat from 0.2.7 to 0.2.8 #1235 (dependabot[bot])
+* Bump github.com/mackerelio/mackerel-client-go from 0.43.0 to 0.44.0 #1234 (dependabot[bot])
+* Bump golang.org/x/text from 0.38.0 to 0.39.0 #1233 (dependabot[bot])
+* Change Dependabot schedule from daily to weekly #1232 (yseto)
+* Bump golang.org/x/net from 0.54.0 to 0.55.0 in /wix #1231 (dependabot[bot])
+* Bump github.com/shirou/gopsutil/v4 from 4.26.5 to 4.26.6 #1230 (dependabot[bot])
+* Bump actions/setup-go from 6.4.0 to 6.5.0 #1229 (dependabot[bot])
+* Bump actions/cache from 5.0.5 to 6.1.0 #1228 (dependabot[bot])
+
+
 ## 0.87.0 (2026-06-26)
 
 * update to github.com/shirou/gopsutil/v4 #1226 (yseto)
