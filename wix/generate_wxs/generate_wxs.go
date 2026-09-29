@@ -102,18 +102,18 @@ func hasAttr(node *Node, name, value string) bool {
 }
 
 func toCamelCase(name string) string {
-	out := ""
+	var out strings.Builder
 	rs := []rune(name)
-	out += string(unicode.ToUpper(rs[0]))
+	out.WriteString(string(unicode.ToUpper(rs[0])))
 	for i := 1; i < len(rs); i++ {
 		if i < len(rs)-1 && (rs[i] == '.' || rs[i] == '-') {
 			i++
-			out += string(unicode.ToUpper(rs[i]))
+			out.WriteString(string(unicode.ToUpper(rs[i])))
 		} else {
-			out += string(rs[i])
+			out.WriteString(string(rs[i]))
 		}
 	}
-	return out
+	return out.String()
 }
 
 func updateElementAttr(node *Node, name, attr, oldValue, newValue string) bool {

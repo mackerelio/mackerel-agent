@@ -177,6 +177,7 @@ func TestMetadataGeneratorInterval(t *testing.T) {
 	}
 }
 
+//go:fix inline
 func pint(i int32) *int32 {
-	return &i
+	return new(i)
 }
