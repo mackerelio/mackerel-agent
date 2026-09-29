@@ -1,6 +1,6 @@
 module github.com/mackerelio/mackerel-agent
 
-go 1.25.0
+go 1.26.0
 
 toolchain go1.26.1
 
@@ -21,7 +21,7 @@ require (
 	github.com/shirou/gopsutil/v4 v4.26.8
 	github.com/vishvananda/netlink v1.3.1
 	github.com/yusufpapurcu/wmi v1.2.4
-	golang.org/x/sys v0.47.0
+	golang.org/x/sys v0.48.0
 	golang.org/x/text v0.41.0
 )
 
