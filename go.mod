@@ -1,13 +1,13 @@
 module github.com/mackerelio/mackerel-agent
 
-go 1.25.0
+go 1.26.0
 
 toolchain go1.26.1
 
 require (
 	github.com/BurntSushi/toml v1.6.0
 	github.com/Songmu/gocredits v0.4.0
-	github.com/Songmu/goxz v0.10.1
+	github.com/Songmu/goxz v0.13.0
 	github.com/Songmu/prompter v0.5.1
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
@@ -36,6 +36,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
-	golang.org/x/sync v0.22.0 // indirect
+	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
 )
