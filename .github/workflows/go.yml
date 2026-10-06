@@ -17,7 +17,7 @@ jobs:
         export GOTOOLCHAIN=auto
         make convention
   test:
-    uses: mackerelio/workflows/.github/workflows/go-test.yml@09b7117485bc1a52a8ff736f2759f863bc657fcd # v1.9.0
+    uses: mackerelio/workflows/.github/workflows/go-test.yml@7286c9384065633bf7d1ff6e733138deca03a764 # v1.10.0
     with:
       # Please do not specify `windows-latest`
       # Build process is complex then need to check operation.
