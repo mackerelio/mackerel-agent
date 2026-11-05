@@ -4,8 +4,6 @@ go 1.26.10
 
 require (
 	github.com/BurntSushi/toml v1.6.0
-	github.com/Songmu/gocredits v1.1.0
-	github.com/Songmu/goxz v0.13.0
 	github.com/Songmu/prompter v1.0.0
 	github.com/Songmu/retry v0.1.0
 	github.com/Songmu/timeout v0.4.0
@@ -24,6 +22,8 @@ require (
 )
 
 require (
+	github.com/Songmu/gocredits v1.1.0 // indirect
+	github.com/Songmu/goxz v0.13.0 // indirect
 	github.com/Songmu/wrapcommander v0.1.0 // indirect
 	github.com/ebitengine/purego v0.11.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
