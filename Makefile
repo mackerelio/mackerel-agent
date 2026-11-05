@@ -35,7 +35,7 @@ deps:
 .PHONY: credits
 credits: deps
 	go mod tidy # not `go get` to get all the dependencies regardress of OS, architecture and build tags
-	gocredits -skip-missing -w .
+	go tool github.com/Songmu/gocredits/cmd/gocredits -skip-missing -w .
 
 .PHONY: lint
 lint:
@@ -49,23 +49,23 @@ convention:
 .PHONY: crossbuild
 crossbuild: deps credits
 	cp mackerel-agent.sample.conf mackerel-agent.conf
-	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,freebsd,netbsd -arch=386 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,darwin,freebsd,netbsd -arch=amd64 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,freebsd,netbsd -arch=arm -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,darwin -arch=arm64 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux -arch=mips -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
