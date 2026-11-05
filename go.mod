@@ -1,8 +1,6 @@
 module github.com/mackerelio/mackerel-agent
 
-go 1.26.0
-
-toolchain go1.26.1
+go 1.26.10
 
 require (
 	github.com/BurntSushi/toml v1.6.0
@@ -15,7 +13,7 @@ require (
 	github.com/fatih/color v1.19.0
 	github.com/mackerelio/go-osstat v0.2.8
 	github.com/mackerelio/golib v1.2.2
-	github.com/mackerelio/mackerel-client-go v0.47.0
+	github.com/mackerelio/mackerel-client-go v0.48.0
 	github.com/motemen/go-cli v0.0.0-20180105012931-9961a876eb5f
 	github.com/pkg/errors v0.9.1
 	github.com/shirou/gopsutil/v4 v4.26.8
