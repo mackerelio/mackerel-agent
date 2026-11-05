@@ -2,8 +2,8 @@ github.com/BurntSushi/toml v1.6.0 h1:dRaEfpa2VI55EwlIW72hMRHdWouJeRF7TPYhI+AUQjk
 github.com/BurntSushi/toml v1.6.0/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/Songmu/gocredits v1.1.0 h1:DdXPcL9nmZ54QPPpzg5qfmRy5nsuDwZshy4HFOaJYTo=
 github.com/Songmu/gocredits v1.1.0/go.mod h1:1TicQbxTFM5JOEPcgH88TlrO7nZU8p/giC7FWDsirHU=
-github.com/Songmu/goxz v0.10.1 h1:EkfljID8fp5GZCmbOCciCIQkZHGz1SOoP4rp9XRpMcQ=
-github.com/Songmu/goxz v0.10.1/go.mod h1:fAi6kShBlksu8bqS5z+5/UnIE2irAgdDxzmvA5Svyk8=
+github.com/Songmu/goxz v0.13.0 h1:wMgYeKCwRW3JbHmJDoePZQMRdLDZf9IlDcucdhmwi8k=
+github.com/Songmu/goxz v0.13.0/go.mod h1:+mdasXHBzzXMytu+6bncs3gPjPLpTEEHQqMWMSe5M+g=
 github.com/Songmu/prompter v0.5.1 h1:IAsttKsOZWSDw7bV1mtGn9TAmLFAjXbp9I/eYmUUogo=
 github.com/Songmu/prompter v0.5.1/go.mod h1:CS3jEPD6h9IaLaG6afrl1orTgII9+uDWuw95dr6xHSw=
 github.com/Songmu/retry v0.1.0 h1:hPA5xybQsksLR/ry/+t/7cFajPW+dqjmjhzZhioBILA=
@@ -61,8 +61,8 @@ github.com/vishvananda/netns v0.0.5 h1:DfiHV+j8bA32MFM7bfEunvT8IAqQ/NzSJHtcmW5zd
 github.com/vishvananda/netns v0.0.5/go.mod h1:SpkAiCQRtJ6TvvxPnOSyH3BMl6unz3xZlaprSwhNNJM=
 github.com/yusufpapurcu/wmi v1.2.4 h1:zFUKzehAFReQwLys1b/iSMl+JQGSCSjtVqQn9bBrPo0=
 github.com/yusufpapurcu/wmi v1.2.4/go.mod h1:SBZ9tNy3G9/m5Oi98Zks0QjeHVDvuK0qfxQmPyzfmi0=
-golang.org/x/sync v0.22.0 h1:SZjpbeLmrCk4xhRSZFNZW5gFUeCeFgjekvI/+gfScek=
-golang.org/x/sync v0.22.0/go.mod h1:9xrNwdLfx4jkKbNva9FpL6vEN7evnE43NNNJQ2LF3+0=
+golang.org/x/sync v0.23.0 h1:KameEIfc1IkluZyXWLn39Wd4tURc6GbCiISGiZm2bQk=
+golang.org/x/sync v0.23.0/go.mod h1:sUUOizhqBxiL6pEWpqNLUiaJn1ShEbZ6BBqskPbjZm0=
 golang.org/x/sys v0.0.0-20190916202348-b4ddaad3f8a3/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20201204225414-ed752295db88/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.2.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
