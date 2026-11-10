@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/mackerelio/go-check-plugins v0.53.0
-	github.com/mackerelio/mackerel-agent-plugins v0.91.0
+	github.com/mackerelio/mackerel-agent-plugins v0.91.1
 	github.com/mackerelio/mkr v0.66.0
 	github.com/mattn/go-encoding v0.0.2
 	golang.org/x/sys v0.49.0
@@ -29,7 +29,7 @@ require (
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/google/go-github/v49 v49.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/gosnmp/gosnmp v1.43.2 // indirect
+	github.com/gosnmp/gosnmp v1.47.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/itchyny/gojq v0.12.19 // indirect
 	github.com/itchyny/timefmt-go v0.1.8 // indirect
@@ -73,6 +73,6 @@ require (
 	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/term v0.45.0 // indirect
-	golang.org/x/text v0.41.0 // indirect
+	golang.org/x/text v0.43.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
