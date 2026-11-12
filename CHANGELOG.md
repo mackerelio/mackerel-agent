@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.87.3 (2026-11-12)
+
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.91.0 to 0.91.1 in /wix #1283 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.66.0 to 0.67.0 in /wix #1282 (dependabot[bot])
+* Bump mackerelio/staging-release-update-action from 0.0.1 to 0.0.2 #1281 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.53.0 to 0.53.1 in /wix #1280 (dependabot[bot])
+* Bump mackerelio/mackerel-create-release-pull-request-action from 0.0.1 to 0.0.2 #1279 (dependabot[bot])
+* s/ubuntu-latest/ubuntu-24.04/ #1278 (yseto)
+* Disable cgo in crossbuild to produce static binaries #1277 (fujiwara)
+
+
 ## 0.87.2 (2026-11-06)
 
 * Bump github.com/mackerelio/mackerel-client-go from 0.47.0 to 0.48.0 #1274 (dependabot[bot])
