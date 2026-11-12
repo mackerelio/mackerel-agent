@@ -1,3 +1,22 @@
+mackerel-agent (0.87.3-1.systemd) stable; urgency=low
+
+  * Bump github.com/mackerelio/mackerel-agent-plugins from 0.91.0 to 0.91.1 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1283>
+  * Bump github.com/mackerelio/mkr from 0.66.0 to 0.67.0 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1282>
+  * Bump mackerelio/staging-release-update-action from 0.0.1 to 0.0.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1281>
+  * Bump github.com/mackerelio/go-check-plugins from 0.53.0 to 0.53.1 in /wix (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1280>
+  * Bump mackerelio/mackerel-create-release-pull-request-action from 0.0.1 to 0.0.2 (by dependabot[bot])
+    <https://github.com/mackerelio/mackerel-agent/pull/1279>
+  * s/ubuntu-latest/ubuntu-24.04/ (by yseto)
+    <https://github.com/mackerelio/mackerel-agent/pull/1278>
+  * Disable cgo in crossbuild to produce static binaries (by fujiwara)
+    <https://github.com/mackerelio/mackerel-agent/pull/1277>
+
+ -- mackerel <mackerel-developers@hatena.ne.jp>  Thu, 12 Nov 2026 01:40:39 +0000
+
 mackerel-agent (0.87.2-1.systemd) stable; urgency=low
 
   * Bump github.com/mackerelio/mackerel-client-go from 0.47.0 to 0.48.0 (by dependabot[bot])
