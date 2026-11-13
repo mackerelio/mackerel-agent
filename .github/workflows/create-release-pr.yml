@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: mackerelio/mackerel-create-release-pull-request-action@c30e6538510d81ac7acb49cbadd7a6d15162006d # v0.0.1
+      - uses: mackerelio/mackerel-create-release-pull-request-action@8cdb0267df55b57da105f2f65f354a9f9d6dc6f2 # v0.0.2
         id: start
         with:
           github_token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
@@ -25,7 +25,7 @@ jobs:
           package_name: mackerel-agent
           ignore_update_program_files: "true"
 
-      - uses: mackerelio/mackerel-create-release-pull-request-action@c30e6538510d81ac7acb49cbadd7a6d15162006d # v0.0.1
+      - uses: mackerelio/mackerel-create-release-pull-request-action@8cdb0267df55b57da105f2f65f354a9f9d6dc6f2 # v0.0.2
         with:
           github_token: ${{ secrets.MACKERELBOT_GITHUB_TOKEN }}
           finished: "true"

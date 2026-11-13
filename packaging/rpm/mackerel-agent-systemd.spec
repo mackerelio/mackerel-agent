@@ -54,6 +54,33 @@ systemctl enable %{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 
 %changelog
+* Thu Nov 12 2026 <mackerel-developers@hatena.ne.jp> - 0.87.3
+- Bump github.com/mackerelio/mackerel-agent-plugins from 0.91.0 to 0.91.1 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.66.0 to 0.67.0 in /wix (by dependabot[bot])
+- Bump mackerelio/staging-release-update-action from 0.0.1 to 0.0.2 (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.53.0 to 0.53.1 in /wix (by dependabot[bot])
+- Bump mackerelio/mackerel-create-release-pull-request-action from 0.0.1 to 0.0.2 (by dependabot[bot])
+- s/ubuntu-latest/ubuntu-24.04/ (by yseto)
+- Disable cgo in crossbuild to produce static binaries (by fujiwara)
+
+* Fri Nov 6 2026 <mackerel-developers@hatena.ne.jp> - 0.87.2
+- Bump github.com/mackerelio/mackerel-client-go from 0.47.0 to 0.48.0 (by dependabot[bot])
+- Bump github.com/shirou/gopsutil/v4 from 4.26.8 to 4.26.10 (by dependabot[bot])
+- Bump github.com/Songmu/prompter from 0.5.1 to 1.0.0 (by dependabot[bot])
+- Bump golang.org/x/sys from 0.47.0 to 0.49.0 in /wix (by dependabot[bot])
+- Bump golang.org/x/sys from 0.47.0 to 0.49.0 (by dependabot[bot])
+- Bump golang.org/x/text from 0.41.0 to 0.43.0 (by dependabot[bot])
+- Bump actions/upload-artifact from 7.0.1 to 7.0.2 (by dependabot[bot])
+- Bump actions/download-artifact from 8.0.1 to 8.0.2 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/go-test.yml from 1.9.0 to 1.10.0 (by dependabot[bot])
+- Bump github.com/Songmu/gocredits from 0.4.0 to 1.1.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/setup-go-matrix.yml from 1.9.0 to 1.10.0 (by dependabot[bot])
+- Bump mackerelio/workflows/.github/workflows/go-lint.yml from 1.9.0 to 1.10.0 (by dependabot[bot])
+- Bump msys2/setup-msys2 from 2.32.0 to 2.33.0 (by dependabot[bot])
+- Bump github.com/Songmu/goxz from 0.10.1 to 0.13.0 (by dependabot[bot])
+- Bump github.com/mackerelio/go-check-plugins from 0.52.4 to 0.53.0 in /wix (by dependabot[bot])
+- Bump github.com/mackerelio/mkr from 0.65.0 to 0.66.0 in /wix (by dependabot[bot])
+
 * Mon Sep 28 2026 <mackerel-developers@hatena.ne.jp> - 0.87.1
 - Ignore proxy environment variables when "direct" is specified (by masarasi)
 - KillMode=control-group (default) was conflict the processing on_stop (by yseto)

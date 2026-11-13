@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.87.3 (2026-11-12)
+
+* Bump github.com/mackerelio/mackerel-agent-plugins from 0.91.0 to 0.91.1 in /wix #1283 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.66.0 to 0.67.0 in /wix #1282 (dependabot[bot])
+* Bump mackerelio/staging-release-update-action from 0.0.1 to 0.0.2 #1281 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.53.0 to 0.53.1 in /wix #1280 (dependabot[bot])
+* Bump mackerelio/mackerel-create-release-pull-request-action from 0.0.1 to 0.0.2 #1279 (dependabot[bot])
+* s/ubuntu-latest/ubuntu-24.04/ #1278 (yseto)
+* Disable cgo in crossbuild to produce static binaries #1277 (fujiwara)
+
+
+## 0.87.2 (2026-11-06)
+
+* Bump github.com/mackerelio/mackerel-client-go from 0.47.0 to 0.48.0 #1274 (dependabot[bot])
+* Bump github.com/shirou/gopsutil/v4 from 4.26.8 to 4.26.10 #1273 (dependabot[bot])
+* Bump github.com/Songmu/prompter from 0.5.1 to 1.0.0 #1272 (dependabot[bot])
+* Bump golang.org/x/sys from 0.47.0 to 0.49.0 in /wix #1271 (dependabot[bot])
+* Bump golang.org/x/sys from 0.47.0 to 0.49.0 #1270 (dependabot[bot])
+* Bump golang.org/x/text from 0.41.0 to 0.43.0 #1269 (dependabot[bot])
+* Bump actions/upload-artifact from 7.0.1 to 7.0.2 #1268 (dependabot[bot])
+* Bump actions/download-artifact from 8.0.1 to 8.0.2 #1267 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/go-test.yml from 1.9.0 to 1.10.0 #1266 (dependabot[bot])
+* Bump github.com/Songmu/gocredits from 0.4.0 to 1.1.0 #1265 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/setup-go-matrix.yml from 1.9.0 to 1.10.0 #1263 (dependabot[bot])
+* Bump mackerelio/workflows/.github/workflows/go-lint.yml from 1.9.0 to 1.10.0 #1262 (dependabot[bot])
+* Bump msys2/setup-msys2 from 2.32.0 to 2.33.0 #1261 (dependabot[bot])
+* Bump github.com/Songmu/goxz from 0.10.1 to 0.13.0 #1260 (dependabot[bot])
+* Bump github.com/mackerelio/go-check-plugins from 0.52.4 to 0.53.0 in /wix #1258 (dependabot[bot])
+* Bump github.com/mackerelio/mkr from 0.65.0 to 0.66.0 in /wix #1249 (dependabot[bot])
+
+
 ## 0.87.1 (2026-09-28)
 
 * Ignore proxy environment variables when "direct" is specified #1256 (masarasi)

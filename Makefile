@@ -43,23 +43,23 @@ convention:
 .PHONY: crossbuild
 crossbuild: credits
 	cp mackerel-agent.sample.conf mackerel-agent.conf
-	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,freebsd,netbsd -arch=386 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,darwin,freebsd,netbsd -arch=amd64 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,freebsd,netbsd -arch=arm -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,darwin -arch=arm64 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux -arch=mips -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
