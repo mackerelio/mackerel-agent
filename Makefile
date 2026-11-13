@@ -18,7 +18,7 @@ test:
 	go test -v -short $(TESTFLAGS) ./...
 
 .PHONY: build
-build: deps
+build:
 	CGO_ENABLED=0 go build -ldflags=$(BUILD_LDFLAGS) \
 	  -o build/$(MACKEREL_AGENT_NAME)
 
@@ -26,16 +26,10 @@ build: deps
 run: build
 	./build/$(MACKEREL_AGENT_NAME) $(ARGS)
 
-.PHONY: deps
-deps:
-	go install \
-		github.com/Songmu/gocredits/cmd/gocredits \
-		github.com/Songmu/goxz/cmd/goxz \
-
 .PHONY: credits
-credits: deps
+credits:
 	go mod tidy # not `go get` to get all the dependencies regardress of OS, architecture and build tags
-	gocredits -skip-missing -w .
+	go tool github.com/Songmu/gocredits/cmd/gocredits -skip-missing -w .
 
 .PHONY: lint
 lint:
@@ -47,39 +41,35 @@ convention:
 	  (echo 'please `go generate ./...` and commit them' && false)
 
 .PHONY: crossbuild
-crossbuild: deps credits
+crossbuild: credits
 	cp mackerel-agent.sample.conf mackerel-agent.conf
-	CGO_ENABLED=0 goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,freebsd,netbsd -arch=386 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	CGO_ENABLED=0 goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,darwin,freebsd,netbsd -arch=amd64 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	CGO_ENABLED=0 goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,freebsd,netbsd -arch=arm -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	CGO_ENABLED=0 goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux,darwin -arch=arm64 -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
-	CGO_ENABLED=0 goxz -build-ldflags=$(BUILD_LDFLAGS) \
+	CGO_ENABLED=0 go tool github.com/Songmu/goxz/cmd/goxz -build-ldflags=$(BUILD_LDFLAGS) \
 		-os=linux -arch=mips -d ./snapshot \
 		-include=mackerel-agent.conf \
 		-n $(MACKEREL_AGENT_NAME) -o $(MACKEREL_AGENT_NAME)
 
 .PHONY: cover
-cover: deps
+cover:
 	go test -race -short -covermode=atomic -coverprofile=.profile.cov ./...
 
-# Depending to deps looks like not needed.
-# However `make build` in recipe depends deps,
-# and it would install some tools as GOARCH=386 if tools are not installed.
-# We should be installed tools of native architecture.
 .PHONY: crossbuild-package
-crossbuild-package: deps
+crossbuild-package:
 	mkdir -p ./build-linux-386 ./build-linux-amd64 ./build-linux-arm64 ./build-linux-mips ./build-linux-armhf
 	GOOS=linux GOARCH=386 make build
 	mv build/$(MACKEREL_AGENT_NAME) build-linux-386/
