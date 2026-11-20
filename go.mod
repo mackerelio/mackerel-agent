@@ -17,7 +17,7 @@ require (
 	github.com/shirou/gopsutil/v4 v4.26.10
 	github.com/vishvananda/netlink v1.3.1
 	github.com/yusufpapurcu/wmi v1.2.4
-	golang.org/x/sys v0.49.0
+	golang.org/x/sys v0.50.0
 	golang.org/x/text v0.44.0
 )
 
