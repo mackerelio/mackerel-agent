@@ -234,7 +234,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag: staging
 
-      - uses: mackerelio/create-release-action@5af34070474b72efdb3f5057e50d2f3836453c56 # v0.0.4
+      - uses: mackerelio/create-release-action@48529663dc5ee23f6916186060b6df1fe715878a # v0.0.5
         if: startsWith(github.ref, 'refs/tags/v')
         with:
           directory: artifacts/
