@@ -227,7 +227,7 @@ jobs:
           name: windows-packages-x64
           path: artifacts/
 
-      - uses: mackerelio/staging-release-update-action@c1d461c4fece35038aea38f6d7def24789a921b2 # v0.0.2
+      - uses: mackerelio/staging-release-update-action@c250e02c41c316eaa2e4fda0f67d014473396429 # v0.0.3
         if: github.ref == 'refs/heads/master'
         with:
           directory: artifacts/
